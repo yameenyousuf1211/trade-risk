@@ -7,7 +7,7 @@ interface IFetchLcsParams {
 
 export const fetchLcs = async () => {
     try {
-        const { data } = await api.get(`/lcs`); 
+        const { data } = await api.get(`/lcs?limit=15`); 
         return data.data.data;
     } catch (error:any) {
         console.log(error);

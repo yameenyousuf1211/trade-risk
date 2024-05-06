@@ -61,7 +61,9 @@ const RequestCard = ({ isBank }: { isBank: boolean }) => {
             </Link>
           </div>
         ) : (
-          <AddBid triggerTitle="Add Bid" />
+          <>
+          </>
+          // <AddBid triggerTitle="Add Bid"/>
         )}
       </div>
       {/* Slider cards*/}

@@ -90,13 +90,15 @@ export const BankTable = () => {
 
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     {item.status !== "pending" ? (
-                      <AddBid
-                        triggerTitle={item.status}
-                        status={item.status}
-                        isInfo={item.status !== "add bid"}
-                        isDiscount
-                        border
-                      />
+                      <></>
+                      // <AddBid
+                      //   triggerTitle={item.status}
+                      //   status={item.status}
+                      //   isInfo={item.status !== "add bid"}
+                      //   isDiscount
+                      //   border
+                        
+                      // />
                     ) : (
                       <Button
                         variant="ghost"
@@ -107,7 +109,7 @@ export const BankTable = () => {
                     )}
                   </TableCell>
                   <TableCell className="px-1 py-1 max-w-[200px]">
-                    <TableDialog id=""/>
+                    {/* <TableDialog id="" /> */}
                   </TableCell>
                 </TableRow>
               ))}

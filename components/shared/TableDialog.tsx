@@ -7,7 +7,11 @@ import {
 } from "@/components/ui/dialog";
 import { ArrowUpNarrowWide, Eye, ListFilter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+<<<<<<< HEAD
 import { ApiResponse, IBids } from "@/types/type";
+=======
+import { ApiResponse, IBids, ILcs } from "@/types/type";
+>>>>>>> danish-dashboards
 import { acceptOrRejectBid, fetchBids } from "@/services/apis/bids.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { convertDateToYYYYMMDD } from "@/utils";
@@ -109,7 +113,11 @@ const LCInfo = ({
   );
 };
 
+<<<<<<< HEAD
 export const TableDialog = ({ id }: { id: string }) => {
+=======
+export const TableDialog = ({ id, lcData }: { id: string; lcData: ILcs }) => {
+>>>>>>> danish-dashboards
   const {
     isLoading,
     error,
@@ -118,18 +126,30 @@ export const TableDialog = ({ id }: { id: string }) => {
     useQuery({
       queryKey: ["single-lcs-bids", id],
       queryFn: () => fetchBids({ id }),
+<<<<<<< HEAD
       // FetchUsers({ token: token!, search: searchData, page: Number(Page) }),
+=======
+>>>>>>> danish-dashboards
     });
 
   // built a proper loading page later
   if (isLoading)
     return (
+<<<<<<< HEAD
       <div className="w-screen h-screen center">
         <Loader />
       </div>
     );
   if (error) return <div>{error}</div>;
   if (!data) return <div>No data found</div>;
+=======
+      <div className="w-full h-full center">
+        <Loader />
+      </div>
+    );
+  // if (error) return <div>{error}</div>;
+  // if (!data) return <div>No data found</div>;
+>>>>>>> danish-dashboards
 
   return (
     <Dialog>
@@ -138,7 +158,11 @@ export const TableDialog = ({ id }: { id: string }) => {
       </DialogTrigger>
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
+<<<<<<< HEAD
           <h2 className="text-lg font-semibold">LC Confirmation Request</h2>
+=======
+          <h2 className="text-lg font-semibold">{lcData.lcType}</h2>
+>>>>>>> danish-dashboards
           <DialogClose>
             <X className="size-7" />
           </DialogClose>
@@ -149,18 +173,31 @@ export const TableDialog = ({ id }: { id: string }) => {
           <div className="w-full py-5 border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[75vh]">
             <div className="px-4">
               <h2 className="text-2xl font-semibold mb-1">
+<<<<<<< HEAD
                 <span className="text-para font-medium">LC Amount:</span> USD
                 1,000,000.00
               </h2>
               <p className="text-sm text-para">
                 Created at, Feb 28 2023 16:43, by{" "}
                 <span className="text-text">Saif Arab Aramco</span>
+=======
+                <span className="text-para font-medium">LC Amount:</span> USD{" "}
+                {lcData.amount}
+              </h2>
+              <p className="text-sm text-para">
+                Created at, {convertDateToYYYYMMDD(lcData.lcPeriod.startDate)},
+                by{" "}
+                <span className="text-text">
+                  {lcData.exporterInfo.beneficiaryName}
+                </span>
+>>>>>>> danish-dashboards
               </p>
 
               <div className="h-[2px] w-full bg-neutral-800 mt-5" />
             </div>
             {/* Main Info */}
             <div className="px-4">
+<<<<<<< HEAD
               <LCInfo label="LC Issuing Bank" value="Habib Bank Ltd" />
               <LCInfo label="LC Applicant" value="John Wick" />
               <LCInfo label="Advising Bank" value="HSBC UK (Local Bank)" />
@@ -168,6 +205,21 @@ export const TableDialog = ({ id }: { id: string }) => {
               <LCInfo
                 label="Payments Terms"
                 value="Usance LC 90 days from acceptance date"
+=======
+              <LCInfo label="LC Issuing Bank" value={lcData.issuingBank.bank} />
+              <LCInfo
+                label="LC Applicant"
+                value={lcData.importerInfo.applicantName}
+              />
+              <LCInfo label="Advising Bank" value={lcData.advisingBank.bank} />
+              <LCInfo
+                label="Confirming Bank"
+                value={lcData.confirmingBank.bank}
+              />
+              <LCInfo
+                label="Payments Terms"
+                value={lcData.paymentTerms}
+>>>>>>> danish-dashboards
                 noBorder
               />
             </div>
@@ -176,6 +228,7 @@ export const TableDialog = ({ id }: { id: string }) => {
             {/* LC Details */}
             <div className="px-4 mt-4">
               <h2 className="text-xl font-semibold">LC Details</h2>
+<<<<<<< HEAD
               <LCInfo label="LC Issuance (Expected)" value="Jan 12, 2023" />
               <LCInfo label="LC Expiry Date" value="Feb 16, 2023" />
               <LCInfo label="Transhipment" value="Not allowed" />
@@ -184,6 +237,35 @@ export const TableDialog = ({ id }: { id: string }) => {
               <h2 className="text-xl font-semibold mt-3">Exporter Info</h2>
               <LCInfo label="Beneficiary" value="Adnan Syed" />
               <LCInfo label="Country" value="Saudi Arabia" />
+=======
+              <LCInfo
+                label="LC Issuance (Expected)"
+                value={convertDateToYYYYMMDD(lcData.lcPeriod.startDate)}
+              />
+              <LCInfo
+                label="LC Expiry Date"
+                value={convertDateToYYYYMMDD(lcData.lcPeriod.endDate)}
+              />
+              <LCInfo
+                label="Transhipment"
+                value={lcData.transhipment === true ? "Allowed" : "Not allowed"}
+              />
+              <LCInfo
+                label="Port of Shipment"
+                value={lcData.shipmentPort.port}
+                noBorder
+              />
+
+              <h2 className="text-xl font-semibold mt-3">Exporter Info</h2>
+              <LCInfo
+                label="Beneficiary"
+                value={lcData.exporterInfo.beneficiaryName || ""}
+              />
+              <LCInfo
+                label="Country"
+                value={lcData.exporterInfo.countryOfExport || ""}
+              />
+>>>>>>> danish-dashboards
               <LCInfo
                 label="Charges on account of"
                 value="Beneficiary"
@@ -198,7 +280,11 @@ export const TableDialog = ({ id }: { id: string }) => {
             <div className="flex items-center justify-between w-full pt-5">
               <div className="flex items-center gap-x-2">
                 <p className="bg-primaryCol text-white font-semibold text-lg rounded-xl py-1 px-3">
+<<<<<<< HEAD
                   3
+=======
+                  {data && data.data.length}
+>>>>>>> danish-dashboards
                 </p>
                 <p className="text-xl font-semibold">Bids recieved</p>
               </div>
@@ -216,9 +302,14 @@ export const TableDialog = ({ id }: { id: string }) => {
             </div>
             {/* Bids */}
             <div className="flex flex-col gap-y-4 max-h-[65vh] overflow-y-auto overflow-x-hidden mt-5">
+<<<<<<< HEAD
               {data.data.map((data) => (
                 <BidCard data={data} key={data._id} />
               ))}
+=======
+              {data &&
+                data.data.map((data) => <BidCard data={data} key={data._id} />)}
+>>>>>>> danish-dashboards
             </div>
           </div>
         </div>

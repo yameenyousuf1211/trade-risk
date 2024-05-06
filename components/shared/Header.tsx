@@ -2,13 +2,38 @@
 import Link from "next/link";
 import { UserProfile } from "../helpers/UserProfile";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
+import { getCurrentUser } from "@/services/apis";
+import Cookies from "js-cookie";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 export const Header = () => {
   const pathname = usePathname();
-  const { user } = useAuth();
-  const role = typeof window !== 'undefined' ? window.localStorage.getItem('userRole') : null
+
+  const { user, setUser } = useAuth();
+  const router = useRouter();
+
+  // Fetching current User
+  const { data, isLoading } = useQuery({
+    queryKey: ["current-user"],
+    queryFn: () => getCurrentUser(),
+    initialData: user ? { success: true, response: user } : undefined,
+  });
+  if (!isLoading && data && !data.success) {
+    localStorage.removeItem("accessToken");
+    Cookies.remove("accessToken");
+    toast.error("Session expired");
+    router.push("/login");
+  }
+  useEffect(() => {
+    if (!isLoading && data && data.success && data.response) {
+      setUser(data.response);
+    }
+  }, [data]);
+  
   return (
     <header className="relative 2xl:px-20 px-10 flex items-center justify-between gap-x-2 ">
       <div className="flex items-center gap-x-2 py-4">
@@ -24,7 +49,7 @@ export const Header = () => {
         </Link>
       </div>
       <nav className="flex items-center gap-x-20">
-        {role === "bank" ? (
+        {user && user.role === "bank" ? (
           <>
             <div className="relative py-6">
               <Link

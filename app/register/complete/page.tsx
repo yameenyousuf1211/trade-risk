@@ -1,6 +1,7 @@
 import RegisterComplete from "@/components/layouts/RegisterComplete";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 const RegisterCompletepage = () => {
   return (
@@ -19,16 +20,20 @@ const RegisterCompletepage = () => {
           </h1>
         </div>
         <div className="flex flex-col items-center gap-y-4 mt-10">
-          <h2 className="text-2xl font-semibold text-center">Information Submitted!</h2>
+          <h2 className="text-2xl font-semibold text-center">
+            Information Submitted!
+          </h2>
           <p className="text-sm text-para max-w-lg text-center text-pretty">
             Thank you for adding your information. We will verify your
             information and a sales agent will contact you soon to conclude your
             onboarding.
           </p>
 
-          <Button className="bg-primaryCol hover:bg-primaryCol/90">
-            Learn more about us
-          </Button>
+          <Link href="/login">
+            <Button className="bg-primaryCol hover:bg-primaryCol/90">
+              Learn more about us
+            </Button>
+          </Link>
         </div>
       </section>
     </RegisterComplete>

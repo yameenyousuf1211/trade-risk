@@ -17,6 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
+import { ILcs } from "@/types/type";
+import { convertDateToYYYYMMDD } from "@/utils";
 
 const LCInfo = ({
   label,
@@ -45,12 +47,14 @@ export const AddBid = ({
   status,
   triggerTitle,
   border,
+  lcData,
 }: {
   isDiscount?: boolean;
   isInfo?: boolean;
   status?: string;
   triggerTitle: string;
   border?: boolean;
+  lcData: ILcs;
 }) => {
   return (
     <Dialog>
@@ -59,19 +63,19 @@ export const AddBid = ({
       </DialogTrigger> */}
       <DialogTrigger
         className={`${
-          status === "rejected"
+          status === "Rejected"
             ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
                 border && "border border-[#D20000]"
               }`
-            : status === "accepted"
+            : status === "Accepted"
             ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
                 border && "border border-[#29C084]"
               }`
-            : status === "expired"
+            : status === "Expired"
             ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
                 border && "border border-[#7E7E7E] bg-transparent"
               }`
-            : status === "add bid"
+            : status === "Add bid"
             ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
             : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
         } rounded-md w-full p-2 capitalize hover:opacity-85`}
@@ -80,11 +84,7 @@ export const AddBid = ({
       </DialogTrigger>
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
-          <h2 className="text-lg font-semibold">
-            {isDiscount || isInfo
-              ? "LC Confirmation & Discounting Request"
-              : "LC Confirmation Request"}
-          </h2>
+          <h2 className="text-lg font-semibold">{lcData.lcType}</h2>
           <DialogClose>
             <X className="size-7" />
           </DialogClose>
@@ -96,18 +96,34 @@ export const AddBid = ({
             <div className="px-4">
               <h2 className="text-2xl font-semibold mb-1">
                 <span className="text-para font-medium">LC Amount:</span> USD
-                1,000,000.00
+                {lcData.amount}
               </h2>
               <div className="h-[2px] w-full bg-neutral-800 mt-5" />
             </div>
             {/* Main Info */}
             <div className="px-4">
-              <LCInfo label="LC Issuing Bank" value="Habib Bank Ltd" />
-              <LCInfo label="Country of LC Issuing Bank" value="Pakistan" />
-              <LCInfo label="LC Applicant" value="John Wick" />
-              <LCInfo label="LC Advising Bank" value="HSBC UK (Local Bank)" />
-              <LCInfo label="Confirming Bank" value="Habib Bank Ltd" />
-              <LCInfo label="Payments Terms" value="Sight LC" noBorder />
+              <LCInfo label="LC Issuing Bank" value={lcData.issuingBank.bank} />
+              <LCInfo
+                label="Country of LC Issuing Bank"
+                value={lcData.issuingBank.country}
+              />
+              <LCInfo
+                label="LC Applicant"
+                value={lcData.importerInfo.applicantName}
+              />
+              <LCInfo
+                label="LC Advising Bank"
+                value={lcData.advisingBank.bank}
+              />
+              <LCInfo
+                label="Confirming Bank"
+                value={lcData.confirmingBank.bank}
+              />
+              <LCInfo
+                label="Payments Terms"
+                value={lcData.paymentTerms}
+                noBorder
+              />
               <div className="border border-borderCol p-2 flex items-center justify-between w-full gap-x-2 rounded-lg">
                 <div className="flex items-center gap-x-2">
                   <Button
@@ -137,22 +153,37 @@ export const AddBid = ({
             {/* LC Details */}
             <div className="px-4 mt-4">
               <h2 className="text-xl font-semibold">LC Details</h2>
-              <LCInfo label="LC Issuance (Expected)" value="Jan 12, 2023" />
-              <LCInfo label="LC Expiry Date" value="Feb 16, 2023" />
+              <LCInfo
+                label="LC Issuance (Expected)"
+                value={convertDateToYYYYMMDD(lcData.lcPeriod.startDate)}
+              />
+              <LCInfo
+                label="LC Expiry Date"
+                value={convertDateToYYYYMMDD(lcData.lcPeriod.endDate)}
+              />
               <LCInfo
                 label="Confirmation Date (Expected)"
-                value="Jan 11, 2023"
+                value={convertDateToYYYYMMDD(lcData.lcPeriod.endDate)}
               />
-              <LCInfo label="Transhipment" value="Not allowed" />
-              <LCInfo label="Port of Shipment" value="Karachi" />
+              <LCInfo
+                label="Transhipment"
+                value={lcData.transhipment === true ? "Allowed" : "Not allowed"}
+              />
+              <LCInfo
+                label="Port of Shipment"
+                value={lcData.shipmentPort.port}
+              />
               <LCInfo
                 label="Product Description"
-                value="20 stop gap"
+                value={lcData.productDescription}
                 noBorder
               />
 
               <h2 className="text-xl font-semibold mt-3">Exporter Info</h2>
-              <LCInfo label="Country" value="Saudi Arabia" />
+              <LCInfo
+                label="Country"
+                value={lcData.exporterInfo.countryOfExport || ""}
+              />
               <LCInfo
                 label="Charges on account of"
                 value="Beneficiary"

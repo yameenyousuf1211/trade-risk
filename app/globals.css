@@ -98,10 +98,6 @@
   -o-border-radius: 10px;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> danish-dashboards
 .progress-ring {
   transform: rotate(-90deg);
 }
@@ -127,11 +123,6 @@
   -o-transform: translate(-50%, -50%);
 }
 
-<<<<<<< HEAD
-
-/* Spinner */
-
-=======
 /* For WebKit-based browsers (Chrome, Safari, Opera) */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -144,7 +135,6 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 /* Spinner */
->>>>>>> danish-dashboards
 .lds-ripple,
 .lds-ripple div {
   box-sizing: border-box;
@@ -195,7 +185,3 @@ input[type="number"] {
     opacity: 0;
   }
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> danish-dashboards

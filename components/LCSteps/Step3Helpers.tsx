@@ -225,7 +225,7 @@ export const Transhipment = ({register,setValue}:any) => {
   );
 };
 
-export const DiscountBanks = () => {
+export const DiscountBanks = ({register}:any) => {
   return (
     <div className="flex items-center justify-between w-full mb-3 gap-x-4">
       {/* Issuing Bank */}
@@ -235,13 +235,15 @@ export const DiscountBanks = () => {
           <DDInput
             placeholder="Select a country"
             label="Country"
-            id="select-issue-country-detail"
+            id="issuingBank.country"
+            register={register}
             
           />
           <DDInput
             placeholder="Select bank"
             label="Bank"
-            id="select-issue-bank-detail"
+            id="issuingBank.bank"
+            register={register}
           />
         </div>
       </div>
@@ -252,12 +254,16 @@ export const DiscountBanks = () => {
           <DDInput
             placeholder="Select a country"
             label="Country"
-            id="select-advising-country-detail"
+            id="advisingBank.country"
+            register={register}
+
           />
           <DDInput
             placeholder="Select bank"
             label="Bank"
-            id="select-advising-bank-detail"
+            id="advisingBank.bank"
+            register={register}
+
           />
         </div>
       </div>
@@ -283,12 +289,16 @@ export const DiscountBanks = () => {
           <DDInput
             placeholder="Select a country"
             label="Country"
-            id="select-confirming-country-detail"
+            id="confirmingBank.country"
+            register={register}
+
           />
           <DDInput
             placeholder="Select bank"
             label="Bank"
-            id="select-confirming-bank-detail"
+            id="confirmingBank.bank"
+            register={register}
+
           />
         </div>
       </div>

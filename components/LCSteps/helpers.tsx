@@ -102,7 +102,6 @@ export const BgRadioInput = ({
     >
       <input
         type="radio"
-        name={name}
         id={id}
         value={value}
         {...register(name)}

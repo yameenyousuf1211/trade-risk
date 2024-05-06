@@ -20,11 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-<<<<<<< HEAD
-    <html lang="en">
-=======
     <html lang="en" suppressHydrationWarning>
->>>>>>> danish-dashboards
       <ReactQueryProvider>
         <AuthProvider>
           <body className={`${poppins.className}`}>{children}</body>

@@ -6,11 +6,7 @@ const loginSchema = z.object({
       required_error: "Please enter a valid email address.",
     })
     .email(),
-<<<<<<< HEAD
-  password: z.string().min(6,"Password must be at least 6 characters long."),
-=======
   password: z.string().min(6, "Password must be at least 6 characters long."),
->>>>>>> danish-dashboards
 });
 
 const registerSchema = z.object({
@@ -22,13 +18,6 @@ const companyInfoSchema = z.object({
   name: z.string().min(5, "Company name must be at least 5 characters long."),
   email: z.string().email("Must be a valid email.").trim(),
   address: z.string().min(6, "Address must be at least 6 characters long."),
-<<<<<<< HEAD
-  phone: z.string().max(15).min(6, "Phone number must be at least 6 characters long."),
-  bank: z.string().min(1, "Bank field cannot be empty."),
-  swiftCode: z.string().min(5, "Swift code must be at least 5 characters long."),
-  accountNumber: z.string().min(3, "Account number field cannot be empty."),
-  accountHolderName: z.string().min(3, "Account holder name field cannot be empty."),
-=======
   phone: z
     .string()
     .max(15)
@@ -41,7 +30,6 @@ const companyInfoSchema = z.object({
   accountHolderName: z
     .string()
     .min(3, "Account holder name field cannot be empty."),
->>>>>>> danish-dashboards
   businessNature: z.string().min(3, "Business nature field cannot be empty."),
   constitution: z.string().min(3, "Constitution field cannot be empty."),
   accountCountry: z.string().min(3, "Account country field cannot be empty."),

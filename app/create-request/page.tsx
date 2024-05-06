@@ -43,13 +43,13 @@ const CreateRequestPage = () => {
   const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data: any
   ) => {
-    console.log(data,"DATA");
+    console.log(data, "DATA");
     const reqData = {
       ...data,
       lcType: "LC Confirmation",
-      advisingBank: { bank: "Al habib", country: "Pak" },// will be removed
+      advisingBank: { bank: "Al habib", country: "Pak" }, // will be removed
       transhipment: false,
-      expectedDiscountingDate: new Date() // will be removed
+      expectedDiscountingDate: new Date(), // will be removed
     };
     const { response, success } = await onCreateLC(reqData);
     if (!success) return toast.error(response);
@@ -68,12 +68,10 @@ const CreateRequestPage = () => {
         <Step3 register={register} setValue={setValue} />
         <Step4 register={register} setValue={setValue} />
         <Step5 register={register} setValue={setValue} />
-
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6 register={register} title="Confirmation Charges" step={6} />
           <Step7 register={register} step={7} />
         </div>
-
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
           <Button variant="ghost" className="bg-none w-1/3">

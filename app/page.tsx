@@ -43,7 +43,7 @@ const HomePage = () => {
           {/* Charts */}
           <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 h-fit">
             <ProgressCharts title="Total Requests" />
-            <LineCharts />
+            <LineCharts /> 
           </div>
           <RequestTable isBank={false} data={data} key={"Corperate"} />
         </div>

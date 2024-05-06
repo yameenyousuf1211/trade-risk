@@ -19,7 +19,7 @@ const PointContactPage = () => {
     router.push("/register/corporate/current-banking");
   };
   const setValues = useRegisterStore((state) => state.setValues);
-  
+
   const {
     register,
     setValue,
@@ -29,25 +29,25 @@ const PointContactPage = () => {
     resolver: zodResolver(pointOfContractSchema),
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof pointOfContractSchema>>  = async (data:any) => {
+  const onSubmit: SubmitHandler<z.infer<typeof pointOfContractSchema>> = async (
+    data: any
+  ) => {
+    setValues(data);
+    console.log(getStateValues(useRegisterStore.getState()));
 
-    setValues(data)
-  console.log(getStateValues(useRegisterStore.getState()))
+    router.push("/register/corporate/current-banking");
+  };
 
-      router.push("/register/corporate/current-banking");
-    };
-    
-    useEffect(() => {
-      if (errors) {
-        Object.keys(errors).forEach((fieldName: string) => {
-          const errorMessage = errors[fieldName as keyof typeof errors]?.message; 
-          if (errorMessage) {
-            toast.error(`${fieldName}: ${errorMessage}`);
-          }
-        });
-      }
-    }, [errors]);
-
+  useEffect(() => {
+    if (errors) {
+      Object.keys(errors).forEach((fieldName: string) => {
+        const errorMessage = errors[fieldName as keyof typeof errors]?.message;
+        if (errorMessage) {
+          toast.error(`${fieldName}: ${errorMessage}`);
+        }
+      });
+    }
+  }, [errors]);
 
   return (
     <CorporateStepLayout
@@ -55,7 +55,10 @@ const PointContactPage = () => {
       title="Point of Contact"
       text="Give us the details of the POC our sales team should get in touch with after verification"
     >
-      <form className="max-w-xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="max-w-xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <FloatingInput
           register={register}
           type="text"
@@ -64,19 +67,34 @@ const PointContactPage = () => {
         />
         <div className="flex items-center gap-x-2">
           <FloatingInput
-          register={register}
+            register={register}
             name="pocEmail"
             placeholder="Company Email"
             type="email"
           />
-          <FloatingInput type="text" name="pocPhone" placeholder="pocPhone" register={register} />
+          <FloatingInput
+            type="text"
+            name="pocPhone"
+            placeholder="pocPhone"
+            register={register}
+          />
         </div>
 
         <div className="h-[2px] w-full bg-borderCol" />
 
         <div className="flex items-center gap-x-2">
-          <FloatingInput type="text" name="poc" placeholder="Authorized POC" register={register} />
-          <FloatingInput type="text" name="pocDesignation" placeholder="POC Designation" register={register}/>
+          <FloatingInput
+            type="text"
+            name="poc"
+            placeholder="Authorized POC"
+            register={register}
+          />
+          <FloatingInput
+            type="text"
+            name="pocDesignation"
+            placeholder="POC Designation"
+            register={register}
+          />
         </div>
 
         <label

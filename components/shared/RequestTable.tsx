@@ -45,6 +45,7 @@ export const RequestTable = ({
   isBank: boolean;
   data: ApiResponse<ILcs> | undefined;
 }) => {
+  
   return (
     <div>
       <div className="rounded-md border px-4 py-4">

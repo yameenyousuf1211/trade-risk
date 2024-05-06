@@ -43,7 +43,7 @@ const CompanyInfoPage = () => {
     
     useEffect(() => {
       if (errors) {
-        Object.keys(errors).forEach((fieldName: string) => {
+        Object.keys(errors).reverse().forEach((fieldName: string) => {
           const errorMessage = errors[fieldName as keyof typeof errors]?.message; 
           if (errorMessage) {
             toast.error(`${fieldName}: ${errorMessage}`);
@@ -104,7 +104,7 @@ const CompanyInfoPage = () => {
                 placeholder="Nature of Business"
                 register={register}
               />
-              {errors.businessNature && <p className="text-red-500 text-sm">{errors.businessNature.message}</p>}
+              {/* {errors.businessNature && <p className="text-red-500 text-sm">{errors.businessNature.message}</p>} */}
             </div>
              <Select onValueChange={(value)=>setValue('businessType', value, { shouldValidate: true })}>
               <SelectTrigger className="w-full py-5 px-4 text-gray-500">

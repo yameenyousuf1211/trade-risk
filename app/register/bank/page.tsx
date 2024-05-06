@@ -48,24 +48,26 @@ const BankRegisterPage = () => {
   ) => {
     const { response, success } = await onRegister(data);
     if (!success) return toast.error(response);
-    if (success) toast.success("Account Register successfully");
-
-    console.log(response);
-    router.push("/login");
-
+    if (success) {
+      toast.success("Account Register successfully");
+      router.push("/register/complete");
+    }
     // router.push("/register/corporate/current-banking");
   };
 
-  // useEffect(() => {
-  //   if (errors) {
-  //     Object.keys(errors).forEach((fieldName: string) => {
-  //       const errorMessage = errors[fieldName as keyof typeof errors]?.message;
-  //       if (errorMessage) {
-  //         toast.error(`${fieldName}: ${errorMessage}`);
-  //       }
-  //     });
-  //   }
-  // }, [errors]);
+  useEffect(() => {
+    if (errors) {
+      Object.keys(errors)
+        .reverse()
+        .forEach((fieldName: string) => {
+          const errorMessage =
+            errors[fieldName as keyof typeof errors]?.message;
+          if (errorMessage) {
+            toast.error(`${fieldName}: ${errorMessage}`);
+          }
+        });
+    }
+  }, [errors]);
 
   return (
     <AuthLayout>
@@ -120,6 +122,7 @@ const BankRegisterPage = () => {
               type="email"
             />
             <FloatingInput
+              type="number"
               name="pocPhone"
               placeholder="POC Telephone"
               register={register}
@@ -191,7 +194,7 @@ const BankRegisterPage = () => {
             <Button
               className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
-              // disabled={true}
+              disabled={isSubmitting}
               type="submit"
             >
               Get Started

@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronUp, Ellipsis, Plus } from "lucide-react";
+import { ChevronUp, Ellipsis, Eye, Plus } from "lucide-react";
 import {
   CountrySelect,
   DateRangePicker,
@@ -19,11 +19,7 @@ import {
 import { Button } from "../ui/button";
 import { TableDialog } from "./TableDialog";
 import Image from "next/image";
-import {
-  columnHeaders,
-  bankColumnHeaders,
-  bankTableData,
-} from "@/utils/data";
+import { columnHeaders, bankColumnHeaders, bankTableData } from "@/utils/data";
 import { AddBid } from "./AddBid";
 import { ApiResponse, ILcs } from "@/types/type";
 import { convertDateToYYYYMMDD } from "@/utils";
@@ -36,15 +32,19 @@ const TableDataCell = ({ data }: TableDataCellProps) => {
   return (
     <TableCell className="px-1 py-1 max-w-[200px]">
       <div className="truncate border border-borderCol rounded-md w-full p-2 py-2.5">
-        {data !== undefined ? String(data) : '-'} 
+        {data !== undefined ? String(data) : "-"}
       </div>
     </TableCell>
   );
 };
 
-export const RequestTable = ({ isBank,data }: { isBank: boolean,data:ApiResponse<ILcs> }) => {
-  
-    
+export const RequestTable = ({
+  isBank,
+  data,
+}: {
+  isBank: boolean;
+  data: ApiResponse<ILcs> | undefined;
+}) => {
   return (
     <div>
       <div className="rounded-md border px-4 py-4">
@@ -106,54 +106,14 @@ export const RequestTable = ({ isBank,data }: { isBank: boolean,data:ApiResponse
             </TableHeader>
             <TableBody>
               {isBank
-                ? bankTableData.map((item, index) => (
-                    <TableRow key={index} className="border-none ">
-                      <TableDataCell data={item.dealsReceived} />
-                      <TableDataCell data={item.expires} />
-                      <TableDataCell data={item.productType} />
-                      <TableCell className="px-1 py-1 max-w-[200px]">
-                        <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                          <Image
-                            src="/images/flag.png"
-                            alt="country"
-                            width={100}
-                            height={100}
-                            className="object-cover size-5"
-                          />
-                          <div className="truncate">{item.lcIssuingBank}</div>
-                        </div>
-                      </TableCell>
-                      <TableDataCell data={item.beneficiary} />
-                      <TableDataCell data={item.lcApplicant} />
-                      <TableDataCell data={item.lcAmount} />
-                      <TableCell className="px-1 py-1 max-w-[200px]">
-                        {item.bids !== "pending" ? (
-                          <AddBid
-                            triggerTitle={item.bids}
-                            status={item.bids}
-                            isInfo={item.bids !== "add bid"}
-                            isDiscount
-                          />
-                        ) : (
-                          <Button
-                            variant="ghost"
-                            className="bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]  rounded-md w-full p-2 capitalize hover:opacity-85"
-                          >
-                            {item.bids}
-                          </Button>
-                        )}
-                      </TableCell>
-                      <TableCell className="px-1 py-1 max-w-[200px]">
-                        {/* <TableDialog id="id"/>  */}
-                      </TableCell>
-                    </TableRow>
-                  ))
+                ? data &&
                   // @ts-ignore
-                : data.map((item, index) => (
+                  data.map((item: ILcs, index: number) => (
                     <TableRow key={index} className="border-none ">
-                      <TableDataCell data={item.refId} />
-                      <TableDataCell data={convertDateToYYYYMMDD(item.lcPeriod?.startDate)} />
-                      <TableDataCell data={convertDateToYYYYMMDD(item.lcPeriod?.endDate)} />
+                      <TableDataCell data={2} />
+                      <TableDataCell
+                        data={convertDateToYYYYMMDD(item.lcPeriod.endDate)}
+                      />
                       <TableDataCell data={item.lcType} />
                       <TableCell className="px-1 py-1 max-w-[200px]">
                         <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
@@ -164,7 +124,67 @@ export const RequestTable = ({ isBank,data }: { isBank: boolean,data:ApiResponse
                             height={100}
                             className="object-cover size-5"
                           />
-                          <div className="truncate">{item.issuingBank.bank}</div>
+                          <div className="truncate">
+                            {item.issuingBank.bank}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableDataCell data={item.exporterInfo.beneficiaryName} />
+                      <TableDataCell data={item.importerInfo.applicantName} />
+                      <TableDataCell data={item.amount} />
+                      <TableCell className="px-1 py-1 max-w-[200px]">
+                        {item.status !== "Pending" ? (
+                          <AddBid
+                            triggerTitle={item.status || ""}
+                            status={item.status}
+                            isInfo={item.status !== "Add bid"}
+                            isDiscount
+                            lcData={item}
+                          />
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            className="bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]  rounded-md w-full p-2 capitalize hover:opacity-85"
+                          >
+                            {item.status}
+                          </Button>
+                        )}
+                      </TableCell>
+                      <TableCell className="px-1 py-1 max-w-[200px]">
+                        <Button
+                          variant="ghost"
+                          className="center border border-borderCol rounded-md w-full px-1 py-2"
+                        >
+                          <Eye className="size-5" />
+                        </Button>
+                        {/* <TableDialog id="id"/>  */}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                : data
+                ? // @ts-ignore
+                  data.map((item: ILcs, index: number) => (
+                    <TableRow key={index} className="border-none ">
+                      <TableDataCell data={item.refId} />
+                      <TableDataCell
+                        data={convertDateToYYYYMMDD(item.lcPeriod?.startDate)}
+                      />
+                      <TableDataCell
+                        data={convertDateToYYYYMMDD(item.lcPeriod?.endDate)}
+                      />
+                      <TableDataCell data={item.lcType} />
+                      <TableCell className="px-1 py-1 max-w-[200px]">
+                        <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
+                          <Image
+                            src="/images/flag.png"
+                            alt="country"
+                            width={100}
+                            height={100}
+                            className="object-cover size-5"
+                          />
+                          <div className="truncate">
+                            {item.issuingBank.bank}
+                          </div>
                         </div>
                       </TableCell>
                       <TableDataCell data={item.exporterInfo.beneficiaryName} />
@@ -180,10 +200,11 @@ export const RequestTable = ({ isBank,data }: { isBank: boolean,data:ApiResponse
                         </Button>
                       </TableCell>
                       <TableCell className="px-1 py-1 max-w-[200px]">
-                        <TableDialog id={item._id}/>
+                        <TableDialog id={item._id} lcData={item} />
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ))
+                : null}
             </TableBody>
           </Table>
         </div>

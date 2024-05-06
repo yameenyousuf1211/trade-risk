@@ -195,6 +195,7 @@ export interface ILcs  {
   refId?:number
   attachments?:string[]
   draft?:boolean,
+  status?:string
 }
 
 export interface IBids {

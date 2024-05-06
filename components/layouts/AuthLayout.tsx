@@ -11,7 +11,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.className}`}>
         <header className="border-b border-neutral-200 py-4 px-2 flex items-center justify-center gap-2 bg-white">
           <Image

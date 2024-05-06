@@ -139,7 +139,7 @@ export const RequestTable = ({
                             triggerTitle={item.status || ""}
                             status={item.status}
                             isInfo={item.status !== "Add bid"}
-                            isDiscount
+                            isDiscount={item.lcType?.includes("Discount")}
                             lcData={item}
                           />
                         ) : (

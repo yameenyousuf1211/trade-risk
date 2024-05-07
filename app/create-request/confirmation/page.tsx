@@ -25,14 +25,18 @@ import {
   Transhipment,
 } from "@/components/LCSteps/Step3Helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { confirmationSchema } from "@/validation/lc.validation";
 import { z } from "zod";
+import { onCreateLC } from "@/services/apis/lcs.api";
+import { useRouter } from "next/navigation";
+import useLoading from "@/hooks/useLoading";
+import Loader from "@/components/ui/loader";
+import { DisclaimerDialog } from "@/components/helpers";
 
 const ConfirmationPage = () => {
-
   const {
     register,
     setValue,
@@ -41,6 +45,10 @@ const ConfirmationPage = () => {
   } = useForm<z.infer<typeof confirmationSchema>>({
     resolver: zodResolver(confirmationSchema),
   });
+
+  const { startLoading, stopLoading, isLoading } = useLoading();
+  const router = useRouter();
+  
 
   useEffect(() => {
     if (errors) {
@@ -52,10 +60,36 @@ const ConfirmationPage = () => {
       });
     }
   }, [errors]);
+
+  const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
+    data: any
+  ) => {
+    startLoading()
+    const reqData = {
+      ...data,
+      lcType: "LC Confirmation",
+      advisingBank: { bank: "Al habib", country: "Pak" }, // will be removed
+      transhipment: false,
+      expectedDiscountingDate: new Date(), // will be removed
+    };
+    const { response, success } = await onCreateLC(reqData);
+    stopLoading()
+    if (!success) return toast.error(response);
+    if (success) toast.success(response?.message);
+    router.push("/dashboard");
+
+  };
+
+  const handleSelectChange = (value: string) => {
+    register("curreny", { value: value });
+  };
   return (
     <CreateLCLayout>
-      <form className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
-        <Step1 register={register}/>
+      <form
+        className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <Step1 register={register} />
         {/* Step 2 */}
         <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
           <div className="flex items-center gap-x-2 justify-between mb-3">
@@ -66,7 +100,7 @@ const ConfirmationPage = () => {
               <p className="font-semibold text-lg text-lightGray">Amount</p>
             </div>
             <div className="flex items-center gap-x-2">
-              <Select>
+              <Select onValueChange={handleSelectChange}>
                 <SelectTrigger className="w-[100px] bg-borderCol/80">
                   <SelectValue placeholder="USD" />
                 </SelectTrigger>
@@ -78,6 +112,7 @@ const ConfirmationPage = () => {
               <Input
                 type="text"
                 register={register}
+                name="amount"
                 className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0"
               />
             </div>
@@ -87,31 +122,32 @@ const ConfirmationPage = () => {
             <h5 className="font-semibold ml-3">LC Payment Terms</h5>
             <div className="flex items-center gap-x-3 w-full mt-2">
               <RadioInput
-              register={register}
-              value=""
                 id="payment-sight"
                 label="Sight LC"
-                name="lc-payment-terms"
+                name="paymentTerms"
+                register={register}
+                value="sight-lc"
               />
               <RadioInput
-               register={register}
-               value=""
                 id="payment-usance"
                 label="Usance LC"
-                name="lc-payment-terms"
-              />
-              <RadioInput register={register}
-              value=""
-                id="payment-deferred"
-                label="Deferred LC"
-                name="lc-payment-terms"
+                name="paymentTerms"
+                value="usance-lc"
+                register={register}
               />
               <RadioInput
-               register={register}
-               value=""
+                id="payment-deferred"
+                label="Deferred LC"
+                name="paymentTerms"
+                value="deferred-lc"
+                register={register}
+              />
+              <RadioInput
                 id="payment-upas"
                 label="UPAS LC (Usance payment at sight)"
-                name="lc-payment-terms"
+                name="paymentTerms"
+                value="upas-lc"
+                register={register}
               />
             </div>
           </div>
@@ -124,20 +160,31 @@ const ConfirmationPage = () => {
             </p>
             <p className="font-semibold text-lg text-lightGray">LC Details</p>
           </div>
-          <DiscountBanks />
+          <DiscountBanks register={register} />
           {/* Period */}
           <Period register={register} setValue={setValue} />
           {/* Transhipment */}
-          <Transhipment register={register}/>
+          <Transhipment register={register} setValue={setValue} />
         </div>
         <Step4 register={register} setValue={setValue} />
-        {/* <Step5 /> */}
+        <Step5 register={register} setValue={setValue} />
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
-          <Step6 register={register} title="Confirmation Info" isConfirmation step={6} />
-          <Step6 register={register} title="Discounting Info" isConfirmation isDiscount step={7} />
+          <Step6
+            register={register}
+            title="Confirmation Info"
+            isConfirmation
+            step={6}
+          />
+          <Step6
+            register={register}
+            title="Discounting Info"
+            isConfirmation
+            isDiscount
+            step={7}
+          />
         </div>
-        <Step7 register={register} step={8}/>
+        <Step7 register={register} step={8} />
 
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
@@ -145,10 +192,11 @@ const ConfirmationPage = () => {
             Save as draft
           </Button>
           <Button
+          disabled={isLoading}
             size="lg"
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
           >
-            Submit request
+            {isLoading ? <Loader /> : "Submit request"}
           </Button>
         </div>
         {/* <DisclaimerDialog /> */}

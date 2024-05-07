@@ -30,15 +30,15 @@ export const Step6 = ({
           <BgRadioInput
             id="discount-yes"
             label="Yes"
-            name="chargesAccount"
-            value="beneficiary"
+            name="discountAtSight"
+            value="yes"
             register={register}
           />
           <BgRadioInput
             id="discount-no"
             label="No"
-            name="chargesAccount"
-            value="applicant"
+            name="discountAtSight"
+            value="no"
             register={register}
             bg
           />

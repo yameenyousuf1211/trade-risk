@@ -11,13 +11,16 @@ import {
   Step6,
   Step7,
 } from "@/components/LCSteps";
-import { confirmationSchema } from "@/validation/lc.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { onCreateLC } from "@/services/apis/lcs.api";
+import { confirmationSchema } from "@/validation/lc.validation";
+import useLoading from "@/hooks/useLoading";
+import  Loader from "../../components/ui/loader";
+import { useRouter } from "next/navigation";
 
 const CreateRequestPage = () => {
   const {
@@ -28,6 +31,8 @@ const CreateRequestPage = () => {
   } = useForm<z.infer<typeof confirmationSchema>>({
     resolver: zodResolver(confirmationSchema),
   });
+  const { startLoading, stopLoading, isLoading } = useLoading();
+  const router = useRouter()
 
   useEffect(() => {
     if (errors) {
@@ -43,7 +48,7 @@ const CreateRequestPage = () => {
   const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data: any
   ) => {
-    console.log(data, "DATA");
+    startLoading();
     const reqData = {
       ...data,
       lcType: "LC Confirmation",
@@ -54,8 +59,8 @@ const CreateRequestPage = () => {
     const { response, success } = await onCreateLC(reqData);
     if (!success) return toast.error(response);
     if (success) toast.success(response?.message);
-
-    console.log(response);
+    router.push("/dashboard");
+    stopLoading();
   };
   return (
     <CreateLCLayout>
@@ -79,9 +84,10 @@ const CreateRequestPage = () => {
           </Button>
           <Button
             size="lg"
+            disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
           >
-            Submit request
+            {isLoading ? <Loader /> : "Submit request"}
           </Button>
         </div>
         {/* <DisclaimerDialog /> */}

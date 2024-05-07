@@ -38,7 +38,7 @@ export const Period = ({register,setValue}:any) => {
               id="date-lc-issued"
               value="date-lc-issued"
               className="accent-primaryCol size-4"
-              {...register('lcPeriodDateType')}
+              name="lcPeriodType"
             />
             <label htmlFor="date-lc-issued">Date LC Issued</label>
           </div>
@@ -47,8 +47,8 @@ export const Period = ({register,setValue}:any) => {
               type="radio"
               id="expected-date"
               value="expected-date"
-              {...register('lcPeriodDateType')}
               className="accent-primaryCol size-4"
+              name="lcPeriodType"
             />
             <label htmlFor="expected-date">Expected date of LC issuance</label>
           </div>

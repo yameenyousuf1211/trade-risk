@@ -19,10 +19,16 @@ import {
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { confirmationSchema, discountingSchema } from "@/validation/lc.validation";
+import {
+  confirmationSchema,
+  discountingSchema,
+} from "@/validation/lc.validation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { onCreateLC } from "@/services/apis/lcs.api";
+import { useRouter } from "next/navigation";
+import useLoading from "@/hooks/useLoading";
+import Loader from "@/components/ui/loader";
 
 const CreateDiscountPage = () => {
   const {
@@ -33,6 +39,8 @@ const CreateDiscountPage = () => {
   } = useForm<z.infer<typeof discountingSchema>>({
     resolver: zodResolver(discountingSchema),
   });
+  const { startLoading, stopLoading, isLoading } = useLoading();
+  const router = useRouter();
 
   useEffect(() => {
     if (errors) {
@@ -48,19 +56,27 @@ const CreateDiscountPage = () => {
   const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async (
     data: any
   ) => {
-    console.log(data, "DATA");
+    startLoading();
     const reqData = {
       ...data,
-      lcType: "LC Confirmation",
-      advisingBank: { bank: "Al habib", country: "Pak" }, // will be removed
       transhipment: false,
-      expectedDiscountingDate: new Date(), // will be removed
+      discountAtSight: "false",
+      lcType: "LC Discounting",
+      extraInfo: {
+        dats: new Date("2024-04-28"),
+        other: "nothing",
+      },
+      expectedDiscountingDate: new Date("2024-04-28"),
     };
     const { response, success } = await onCreateLC(reqData);
     if (!success) return toast.error(response);
+    stopLoading();
     if (success) toast.success(response?.message);
+    router.push("/dashboard");
+  };
 
-    console.log(response);
+  const handleSelectChange = (value: string) => {
+    register("curreny", { value: value });
   };
   return (
     <CreateLCLayout>
@@ -79,7 +95,7 @@ const CreateDiscountPage = () => {
               <p className="font-semibold text-lg text-lightGray">Amount</p>
             </div>
             <div className="flex items-center gap-x-2">
-              <Select>
+              <Select onValueChange={handleSelectChange}>
                 <SelectTrigger className="w-[100px] bg-borderCol/80">
                   <SelectValue placeholder="USD" />
                 </SelectTrigger>
@@ -91,7 +107,7 @@ const CreateDiscountPage = () => {
               <Input
                 type="text"
                 register={register}
-                name="ssasd"
+                name="amount"
                 className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0"
               />
             </div>
@@ -102,29 +118,29 @@ const CreateDiscountPage = () => {
               <RadioInput
                 id="payment-sight"
                 label="Sight LC"
-                name="lc-payment-terms"
-                value=""
+                name="paymentTerms"
                 register={register}
+                value="sight-lc"
               />
               <RadioInput
                 id="payment-usance"
                 label="Usance LC"
-                name="lc-payment-terms"
-                value=""
+                name="paymentTerms"
+                value="usance-lc"
                 register={register}
               />
               <RadioInput
                 id="payment-deferred"
                 label="Deferred LC"
-                name="lc-payment-terms"
-                value=""
+                name="paymentTerms"
+                value="deferred-lc"
                 register={register}
               />
               <RadioInput
                 id="payment-upas"
                 label="UPAS LC (Usance payment at sight)"
-                name="lc-payment-terms"
-                value=""
+                name="paymentTerms"
+                value="upas-lc"
                 register={register}
               />
             </div>
@@ -220,9 +236,9 @@ const CreateDiscountPage = () => {
           </div>
           <DiscountBanks register={register} />
           {/* Period */}
-          <Period register={register} setValu={setValue} />
+          <Period register={register} setValue={setValue} />
           {/* Transhipment */}
-          <Transhipment register={register} />
+          <Transhipment register={register} setValue={setValue} />
         </div>
 
         <Step4 register={register} setValue={setValue} />
@@ -244,10 +260,11 @@ const CreateDiscountPage = () => {
             Save as draft
           </Button>
           <Button
+            disabled={isLoading}
             size="lg"
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
           >
-            Submit request
+            {isLoading ? <Loader /> : "Submit request"}
           </Button>
         </div>
       </form>

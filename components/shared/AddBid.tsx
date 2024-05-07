@@ -19,6 +19,15 @@ import {
 import Image from "next/image";
 import { ILcs } from "@/types/type";
 import { convertDateToYYYYMMDD } from "@/utils";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { addBidTypes } from "@/validation/bids.validation";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addBid } from "@/services/apis/bids.api";
+import { toast } from "sonner";
+import { ChangeEvent, useState } from "react";
 
 const LCInfo = ({
   label,
@@ -56,6 +65,52 @@ export const AddBid = ({
   border?: boolean;
   lcData: ILcs;
 }) => {
+  const queryClient = useQueryClient();
+  const [discountBaseRate, setDiscountBaseRate] = useState("");
+  const [discountMargin, setDiscountMargin] = useState("");
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: addBid,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["fetch-lcs"],
+      });
+    },
+  });
+
+  const {
+    handleSubmit,
+    register,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<z.infer<typeof addBidTypes>>({
+    resolver: zodResolver(addBidTypes),
+  });
+
+  const onSubmit: SubmitHandler<z.infer<typeof addBidTypes>> = async (
+    data: z.infer<typeof addBidTypes>
+  ) => {
+    if (isDiscount && !discountBaseRate)
+      return toast.error("Please provide discount base rate");
+    if (isDiscount && !discountMargin)
+      return toast.error("Please provide discount margin");
+
+    const { success, response } = await mutateAsync({
+      confirmationPrice: data.confirmationPrice,
+      lc: lcData._id,
+      type: lcData.lcType!,
+      validity: data.validity,
+      ...(isDiscount && {
+        discountingPrice: (
+          Number(discountBaseRate) + Number(discountMargin)
+        ).toString(),
+      }),
+    });
+
+    if (!success) return toast.error("Something went wrong");
+    else toast.success("Bid added");
+  };
+
   return (
     <Dialog>
       {/* <DialogTrigger className="rounded-md py-2 px-3 mt-2 w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white">
@@ -268,7 +323,10 @@ export const AddBid = ({
               </>
             ) : (
               // Add Bids
-              <form className="flex flex-col gap-y-4 py-4 px-4 mt-5 border border-borderCol rounded-lg">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col gap-y-4 py-4 px-4 mt-5 border border-borderCol rounded-lg"
+              >
                 <div>
                   <label
                     htmlFor="validity"
@@ -276,7 +334,17 @@ export const AddBid = ({
                   >
                     Bid Validity
                   </label>
-                  <DatePicker />
+                  {/* <DatePicker register={register}/> */}
+                  <Input
+                    placeholder="DD/MM/YYYY"
+                    id="validity"
+                    {...register("validity")}
+                  />
+                  {errors.validity && (
+                    <span className="text-red-500 text-[12px]">
+                      {errors.validity.message}
+                    </span>
+                  )}
                 </div>
 
                 <div>
@@ -289,7 +357,14 @@ export const AddBid = ({
                   <Input
                     placeholder="Enter your pricing (%)"
                     id="confirmation"
+                    type="number"
+                    {...register("confirmationPrice")}
                   />
+                  {errors.confirmationPrice && (
+                    <span className="text-red-500 text-[12px]">
+                      {errors.confirmationPrice.message}
+                    </span>
+                  )}
                 </div>
 
                 {isDiscount && (
@@ -301,16 +376,29 @@ export const AddBid = ({
                       Discount Pricing
                     </label>
                     <div className="flex flex-col gap-y-3 items-center w-full">
-                      <Select>
+                      <Select
+                        onValueChange={(val: string) =>
+                          setDiscountBaseRate(val)
+                        }
+                      >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select Base Rate" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="200">200</SelectItem>
+                          <SelectItem value="300">300</SelectItem>
+                          <SelectItem value="400">400</SelectItem>
                         </SelectContent>
                       </Select>
                       <Plus strokeWidth={4.5} className="size-4" />
-                      <Input placeholder="Margin (%)" id="margin" />
+                      <Input
+                        placeholder="Margin (%)"
+                        id="margin"
+                        value={discountMargin}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                          setDiscountMargin(e.target.value)
+                        }
+                      />
                     </div>
                   </div>
                 )}
@@ -319,6 +407,8 @@ export const AddBid = ({
                   <Button
                     className="bg-[#29C084] hover:bg-[#29C084]/90 text-white hover:text-white w-full"
                     size="lg"
+                    type="submit"
+                    disabled={isSubmitting}
                   >
                     Submit
                   </Button>

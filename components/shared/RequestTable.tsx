@@ -164,7 +164,7 @@ export const RequestTable = ({
                   ))
                 : data
                 ? // @ts-ignore
-                  data.map((item: ILcs, index: number) => (
+                  data?.map((item: ILcs, index: number) => (
                     <TableRow key={index} className="border-none ">
                       <TableDataCell data={item.refId} />
                       <TableDataCell

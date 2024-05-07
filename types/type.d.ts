@@ -146,7 +146,7 @@ export interface ILcs  {
   _id:string
   participantRole?:string
   lcType?:string
-  curreny:string 
+  currency:string 
   amount?:number
   paymentTerms:string
   createdBy?:string

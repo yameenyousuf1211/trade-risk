@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 
 export const Step2 = ({ register }: any) => {
   const handleSelectChange = (value: string) => {
-    register('curreny', { value: value }); 
+    register('currency', { value: value }); 
   };
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">

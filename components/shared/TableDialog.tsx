@@ -19,7 +19,9 @@ const BidCard = ({ data }: { data: IBids }) => {
     const { success, response } = await acceptOrRejectBid(status, id);
     if (!success) return;
     if (success)
-      queryClient.invalidateQueries({ queryKey: ["single-lcs-bids"] });
+      queryClient.invalidateQueries({
+        queryKey: ["single-lcs-bids", "fetch-lcs"],
+      });
   };
   return (
     <div className="border border-borderCol py-5 px-3 rounded-lg grid grid-cols-2 gap-y-1.5">
@@ -121,12 +123,12 @@ export const TableDialog = ({ id, lcData }: { id: string; lcData: ILcs }) => {
     });
 
   // built a proper loading page later
-  if (isLoading)
-    return (
-      <div className="w-full h-full center">
-        <Loader />
-      </div>
-    );
+  // if (isLoading)
+  //   return (
+  //     <div className="w-full h-full center">
+  //       <Loader />
+  //     </div>
+  //   );
   // if (error) return <div>{error}</div>;
   // if (!data) return <div>No data found</div>;
 

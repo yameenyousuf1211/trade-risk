@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { onCreateLC } from "@/services/apis/lcs.api";
 import { confirmationSchema } from "@/validation/lc.validation";
 import useLoading from "@/hooks/useLoading";
-import  Loader from "../../components/ui/loader";
+import Loader from "../../components/ui/loader";
 import { useRouter } from "next/navigation";
 
 const CreateRequestPage = () => {
@@ -32,7 +32,7 @@ const CreateRequestPage = () => {
     resolver: zodResolver(confirmationSchema),
   });
   const { startLoading, stopLoading, isLoading } = useLoading();
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     if (errors) {
@@ -52,15 +52,13 @@ const CreateRequestPage = () => {
     const reqData = {
       ...data,
       lcType: "LC Confirmation",
-      advisingBank: { bank: "Al habib", country: "Pak" }, // will be removed
       transhipment: false,
-      expectedDiscountingDate: new Date(), // will be removed
     };
     const { response, success } = await onCreateLC(reqData);
+    stopLoading();
     if (!success) return toast.error(response);
     if (success) toast.success(response?.message);
     router.push("/dashboard");
-    stopLoading();
   };
   return (
     <CreateLCLayout>

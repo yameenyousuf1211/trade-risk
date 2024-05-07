@@ -76,7 +76,7 @@ const CreateDiscountPage = () => {
   };
 
   const handleSelectChange = (value: string) => {
-    register("curreny", { value: value });
+    register("currency", { value: value });
   };
   return (
     <CreateLCLayout>

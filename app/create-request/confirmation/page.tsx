@@ -28,13 +28,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { confirmationSchema } from "@/validation/lc.validation";
 import { z } from "zod";
 import { onCreateLC } from "@/services/apis/lcs.api";
 import { useRouter } from "next/navigation";
-import useLoading from "@/hooks/useLoading";
+import { confirmationSchema } from "@/validation/lc.validation";
 import Loader from "@/components/ui/loader";
-import { DisclaimerDialog } from "@/components/helpers";
+import useLoading from "@/hooks/useLoading";
 
 const ConfirmationPage = () => {
   const {
@@ -77,11 +76,10 @@ const ConfirmationPage = () => {
     if (!success) return toast.error(response);
     if (success) toast.success(response?.message);
     router.push("/dashboard");
-
   };
 
   const handleSelectChange = (value: string) => {
-    register("curreny", { value: value });
+    register("currency", { value: value });
   };
   return (
     <CreateLCLayout>

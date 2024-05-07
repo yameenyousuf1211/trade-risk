@@ -16,7 +16,7 @@ export const confirmationSchema = z.object({
   paymentTerms: z.enum(["sight-lc", "usance-lc", "deferred-lc", "upas-lc"], {
     message: "Select a payment term",
   }),
-  curreny: z.string({ message: "Currency is required" }),
+  currency: z.string({ message: "Currency is required" }),
   issuingBank: z.object({
     bank: z.string({ message: "Issuing bank name is required" }),
     country: z.string({ message: "Issuing bank country is required" }),
@@ -56,7 +56,7 @@ export const confirmationSchema = z.object({
     }),
   }),
   pricePerAnnum: z.string({ message: "Enter expected price" }),
-  attachments: z.union([z.array(fileSchema), z.undefined()]),
+  // attachments: z.union([z.array(fileSchema), z.undefined()]),
 });
 
 

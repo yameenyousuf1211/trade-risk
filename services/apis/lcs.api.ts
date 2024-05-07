@@ -7,13 +7,13 @@ interface IFetchLcsParams {
 }
 
 export const fetchLcs = async () => {
-  try {
-    const { data } = await api.get(`/lcs`);
-    return data.data.data;
-  } catch (error: any) {
-    console.log(error);
-    return error.response?.data?.message || "Something went wrong";
-  }
+    try {
+        const { data } = await api.get(`/lcs?limit=15`); 
+        return data.data.data;
+    } catch (error:any) {
+        console.log(error);
+        return error.response?.data?.message || "Something went wrong";    
+    }
 };
 
 export const onCreateLC = async (payload: any) => {

@@ -1,12 +1,39 @@
 "use client";
+import { Loader } from "@/components/helpers";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { BankTable } from "@/components/shared/BankTable";
 import { Sidebar } from "@/components/shared/Sidebar";
+import { useAuth } from "@/context/AuthProvider";
+import { fetchMyBids } from "@/services/apis/bids.api";
+import { ApiResponse, ILcs } from "@/types/type";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 
 const MyBidsPage = () => {
   const pathname = usePathname();
+  const { user } = useAuth();
+  const {
+    isLoading,
+    error,
+    data,
+  }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
+    useQuery({
+      queryKey: ["fetch-my-bids"],
+      queryFn: fetchMyBids,
+    });
+
+  if (isLoading)
+    return (
+      <div className="w-screen h-screen center">
+        <Loader />
+      </div>
+    );
+
+  if (user && user.role !== "bank") {
+    redirect("/");
+  }
+  console.log(data);
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">

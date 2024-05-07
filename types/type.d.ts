@@ -146,7 +146,7 @@ export interface ILcs  {
   _id:string
   participantRole?:string
   lcType?:string
-  curreny:string 
+  currency:string 
   amount?:number
   paymentTerms:string
   createdBy?:string
@@ -195,6 +195,7 @@ export interface ILcs  {
   refId?:number
   attachments?:string[]
   draft?:boolean,
+  status?:string
 }
 
 export interface IBids {

@@ -11,7 +11,7 @@ export default function RegisterCompleteLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.className}`}>
         <main className="bg-bg px-2 relative w-full min-h-screen flex flex-col items-center justify-center">
           {children}

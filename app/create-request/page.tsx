@@ -11,22 +11,70 @@ import {
   Step6,
   Step7,
 } from "@/components/LCSteps";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { onCreateLC } from "@/services/apis/lcs.api";
+import { confirmationSchema } from "@/validation/lc.validation";
+import useLoading from "@/hooks/useLoading";
+import Loader from "../../components/ui/loader";
+import { useRouter } from "next/navigation";
 
 const CreateRequestPage = () => {
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<z.infer<typeof confirmationSchema>>({
+    resolver: zodResolver(confirmationSchema),
+  });
+  const { startLoading, stopLoading, isLoading } = useLoading();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (errors) {
+      Object.keys(errors).forEach((fieldName: string) => {
+        const errorMessage = errors[fieldName as keyof typeof errors]?.message;
+        if (errorMessage) {
+          toast.error(`${fieldName}: ${errorMessage}`);
+        }
+      });
+    }
+  }, [errors]);
+
+  const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
+    data: any
+  ) => {
+    startLoading();
+    const reqData = {
+      ...data,
+      lcType: "LC Confirmation",
+      transhipment: false,
+    };
+    const { response, success } = await onCreateLC(reqData);
+    stopLoading();
+    if (!success) return toast.error(response);
+    if (success) toast.success(response?.message);
+    router.push("/dashboard");
+  };
   return (
     <CreateLCLayout>
-      <div className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
-        <Step1 />
-        <Step2 />
-        <Step3 />
-        <Step4 />
-        <Step5 />
-
+      <form
+        className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <Step1 register={register} />
+        <Step2 register={register} />
+        <Step3 register={register} setValue={setValue} />
+        <Step4 register={register} setValue={setValue} />
+        <Step5 register={register} setValue={setValue} />
         <div className="flex items-start gap-x-4 h-full w-full relative">
-          <Step6 title="Confirmation Charges" step={6} />
-          <Step7 step={7} />
+          <Step6 register={register} title="Confirmation Charges" step={6} />
+          <Step7 register={register} step={7} />
         </div>
-
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
           <Button variant="ghost" className="bg-none w-1/3">
@@ -34,13 +82,14 @@ const CreateRequestPage = () => {
           </Button>
           <Button
             size="lg"
+            disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
           >
-            Submit request
+            {isLoading ? <Loader /> : "Submit request"}
           </Button>
         </div>
         {/* <DisclaimerDialog /> */}
-      </div>
+      </form>
     </CreateLCLayout>
   );
 };

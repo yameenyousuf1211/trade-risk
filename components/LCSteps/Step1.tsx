@@ -1,6 +1,6 @@
 import { BgRadioInput } from "./helpers";
 
-export const Step1 = () => {
+export const Step1 = ({register} :any) => {
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -14,13 +14,17 @@ export const Step1 = () => {
       <BgRadioInput
         id="role-exporter"
         label="Exporter/Supplier (Beneficiary)"
-        name="role"
+        name="participantRole"
+        value="exporter"
+        register={register}
         bg
       />
       <BgRadioInput
         id="role-importer"
         label="Importer (Applicant)"
-        name="role"
+        name="participantRole"
+        value="importer"
+        register={register}
       />
     </div>
   );

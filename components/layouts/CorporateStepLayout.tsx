@@ -18,7 +18,7 @@ export default function CorporateStepLayout({
   text: string;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.className}`}>
         <RegisterStepnav step={step}/>
         <main className="bg-bg px-2 relative w-full min-h-[88vh] flex flex-col items-center justify-center py-10">

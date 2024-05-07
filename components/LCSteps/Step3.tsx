@@ -3,7 +3,7 @@ import { DDInput } from "./helpers";
 import { Plus } from "lucide-react";
 import { Period, Transhipment } from "./Step3Helpers";
 
-export const Step3 = () => {
+export const Step3 = ({ register, setValue }: any) => {
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -20,12 +20,14 @@ export const Step3 = () => {
             <DDInput
               placeholder="Select a country"
               label="Country"
-              id="select-country-detail"
+              id="issuingBank.country"
+              register={register}
             />
             <DDInput
               placeholder="Select bank"
               label="Bank"
-              id="select-bank-detail"
+              id="issuingBank.bank"
+              register={register}
             />
           </div>
         </div>
@@ -44,14 +46,16 @@ export const Step3 = () => {
             <p className="font-semibold">1.</p>
             <DDInput
               label="Country"
-              id="select-country-confirming"
+              id="confirmingBank.country"
               placeholder="Select a Country"
+              register={register}
             />
           </div>
           <DDInput
             label="Bank"
-            id="select-bank-confirming"
+            id="confirmingBank.bank"
             placeholder="Select bank"
+            register={register}
           />
         </div>
 
@@ -62,10 +66,8 @@ export const Step3 = () => {
           <p className="text-sm text-lightGray">Add Confirming Bank</p>
         </div>
       </div>
-      {/* Period */}
-      <Period />
-      {/* Transhipment */}
-      <Transhipment />
+      <Period register={register} setValue={setValue} />
+      <Transhipment register={register} setValue={setValue} />
     </div>
   );
 };

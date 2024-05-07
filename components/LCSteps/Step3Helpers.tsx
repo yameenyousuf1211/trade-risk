@@ -12,105 +12,118 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useForm } from "react-hook-form";
 
-export const Period = () => {
-  const [date, setDate] = useState<Date>();
+export const Period = ({register,setValue}:any) => {
+
+
+  const [lcPeriodDate, setLcPeriodDate] = useState<Date>();
+  const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
+
+
+  // Function to update value in React Hook Form
+  const updateValue = (name: string, value: any) => {
+    console.log(name,value)
+    setValue(name, value);
+  };
 
   return (
     <div className="flex items-start gap-x-4 my-5">
       <div className="border border-borderCol py-3 px-2 rounded-md w-2/3">
         <p className="font-semibold mb-2 ml-3">LC Period</p>
-        <div className="flex items-center gap-x-4 justify-between border borer-borderCol rounded-md py-3 px-3 mb-3">
+        <div className="flex items-center gap-x-4 justify-between border border-borderCol rounded-md py-3 px-3 mb-3">
           <div className="w-full rounded-md flex items-center gap-x-2">
             <input
               type="radio"
-              name="role"
               id="date-lc-issued"
+              value="date-lc-issued"
               className="accent-primaryCol size-4"
+              name="lcPeriodType"
             />
             <label htmlFor="date-lc-issued">Date LC Issued</label>
           </div>
-
           <div className="w-full rounded-md flex items-center gap-x-2">
             <input
               type="radio"
-              name="role"
-              id="expected-date-lc-issued"
+              id="expected-date"
+              value="expected-date"
               className="accent-primaryCol size-4"
+              name="lcPeriodType"
             />
-            <label htmlFor="expected-date-lc-issued">
-              Expected date of LC issuance
-            </label>
+            <label htmlFor="expected-date">Expected date of LC issuance</label>
           </div>
-
+          {/* Popover for LC Period Date */}
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
-                className={cn(
-                  "w-fit justify-start text-left font-normal border-none",
-                  !date &&
-                    "text-muted-foreground flex items-center justify-between w-fit"
-                )}
+                className="w-fit justify-start text-left font-normal border-none"
                 id="period-lc-date"
               >
-                {date ? format(date, "PPP") : <span>DD/MM/YYYY</span>}
+                {lcPeriodDate ? format(lcPeriodDate, "PPP") : <span>DD/MM/YYYY</span>}
                 <CalendarIcon className="ml-2 mr-2 h-4 w-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"
-                selected={date}
-                onSelect={setDate}
+                selected={lcPeriodDate}
+                onSelect={(date) => {
+                  setLcPeriodDate(date);
+                  updateValue("lcPeriod.startDate", date); // Update value in React Hook Form
+                }}
                 initialFocus
               />
             </PopoverContent>
           </Popover>
         </div>
+        {/* LC Expiry Date */}
         <label
           id="period-expiry-date"
           className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
         >
           <p>LC Expiry Date</p>
+          {/* Popover for LC Expiry Date */}
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
-                className={cn(
-                  "w-fit justify-start text-left font-normal border-none",
-                  !date &&
-                    "text-muted-foreground flex items-center justify-between w-fit"
-                )}
+                className="w-fit justify-start text-left font-normal border-none"
                 id="period-expiry-date"
               >
-                {date ? format(date, "PPP") : <span>DD/MM/YYYY</span>}
+                {lcExpiryDate ? format(lcExpiryDate, "PPP") : <span>DD/MM/YYYY</span>}
                 <CalendarIcon className="ml-2 mr-2 size-5" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"
-                selected={date}
-                onSelect={setDate}
+                selected={lcExpiryDate}
+                onSelect={(date) => {
+                  setLcExpiryDate(date);
+                  updateValue("lcPeriod.endDate", date); // Update value in React Hook Form
+                }}
                 initialFocus
               />
             </PopoverContent>
           </Popover>
         </label>
       </div>
+      {/* Port of Shipment */}
       <div className="border border-borderCol py-3 px-2 rounded-md w-1/3 h-full min-h-44">
         <p className="font-semibold ml-3">Port of Shipment</p>
         <div className="flex flex-col gap-y-2 mt-2">
           <DDInput
-            id="port-country-select"
+            id="shipmentPort.country"
             label="Country"
             placeholder="Select a country"
+            register={register}
           />
           <DDInput
-            id="port-select-port"
             label="Select port"
+            id="shipmentPort.port"
             placeholder="Select port"
+            register={register}
           />
         </div>
       </div>
@@ -118,23 +131,35 @@ export const Period = () => {
   );
 };
 
-export const Transhipment = () => {
-  const [date, setDate] = useState<Date>();
+export const Transhipment = ({register,setValue}:any) => {
 
-  return (
+  const [expectedConfirmationDate, setExpectedConfirmationDate] = useState<Date>();
+
+
+  // Function to update value in React Hook Form
+  const updateValue = (name: string, value: any) => {
+    console.log(name,value)
+    setValue(name, value);
+    } 
+    
+    return (
     <div className="w-full flex items-start gap-x-4 justify-between mt-4">
       <div className="border border-borderCol py-3 px-2 rounded-md w-full">
         <p className="font-semibold mb-2 ml-3">Transhipment Allowed</p>
         <BgRadioInput
           id="transhipment-allowed-yes"
           label="Yes"
-          name="transhipment-allowed"
+          name="transhipment"
+          value={'yes'}
+          register={register}
           bg
         />
         <BgRadioInput
           id="transhipment-allowed-no"
           label="No"
-          name="transhipment-allowed"
+          name="transhipment"
+          value={'no'}
+          register={register}
         />
       </div>
       <div className="border border-borderCol py-3 px-2 rounded-md w-full">
@@ -152,20 +177,23 @@ export const Transhipment = () => {
                 variant={"outline"}
                 className={cn(
                   "w-fit justify-start text-left font-normal border-none",
-                  !date &&
+                  !expectedConfirmationDate &&
                     "text-muted-foreground flex items-center justify-between w-fit"
                 )}
                 id="expected-confirmation-date"
               >
-                {date ? format(date, "PPP") : <span>DD/MM/YYYY</span>}
+                {expectedConfirmationDate ? format(expectedConfirmationDate, "PPP") : <span>DD/MM/YYYY</span>}
                 <CalendarIcon className="mr-2 h-4 w-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"
-                selected={date}
-                onSelect={setDate}
+                selected={expectedConfirmationDate}
+                onSelect={(date) => {
+                  setExpectedConfirmationDate(date)
+                  setValue('expectedConfirmationDate',date)
+                }}
                 initialFocus
               />
             </PopoverContent>
@@ -186,6 +214,8 @@ export const Transhipment = () => {
       <div className="border border-borderCol py-3 px-2 rounded-md w-full">
         <p className="font-semibold mb-2 ml-3">Product Description</p>
         <Textarea
+          name="productDescription"
+          register={register}
           placeholder="Enter the description of the product (being imported under this LC)"
           className="border border-borderCol placeholder:text-para resize-none focus-visible:ring-0 focus-visible:ring-offset-0 "
           rows={4}
@@ -195,7 +225,7 @@ export const Transhipment = () => {
   );
 };
 
-export const DiscountBanks = () => {
+export const DiscountBanks = ({register}:any) => {
   return (
     <div className="flex items-center justify-between w-full mb-3 gap-x-4">
       {/* Issuing Bank */}
@@ -205,12 +235,15 @@ export const DiscountBanks = () => {
           <DDInput
             placeholder="Select a country"
             label="Country"
-            id="select-issue-country-detail"
+            id="issuingBank.country"
+            register={register}
+            
           />
           <DDInput
             placeholder="Select bank"
             label="Bank"
-            id="select-issue-bank-detail"
+            id="issuingBank.bank"
+            register={register}
           />
         </div>
       </div>
@@ -221,12 +254,16 @@ export const DiscountBanks = () => {
           <DDInput
             placeholder="Select a country"
             label="Country"
-            id="select-advising-country-detail"
+            id="advisingBank.country"
+            register={register}
+
           />
           <DDInput
             placeholder="Select bank"
             label="Bank"
-            id="select-advising-bank-detail"
+            id="advisingBank.bank"
+            register={register}
+
           />
         </div>
       </div>
@@ -252,12 +289,16 @@ export const DiscountBanks = () => {
           <DDInput
             placeholder="Select a country"
             label="Country"
-            id="select-confirming-country-detail"
+            id="confirmingBank.country"
+            register={register}
+
           />
           <DDInput
             placeholder="Select bank"
             label="Bank"
-            id="select-confirming-bank-detail"
+            id="confirmingBank.bank"
+            register={register}
+
           />
         </div>
       </div>

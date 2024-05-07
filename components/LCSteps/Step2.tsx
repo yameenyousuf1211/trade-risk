@@ -10,7 +10,10 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 
-export const Step2 = () => {
+export const Step2 = ({ register }: any) => {
+  const handleSelectChange = (value: string) => {
+    register('currency', { value: value }); 
+  };
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -22,7 +25,7 @@ export const Step2 = () => {
 
       <div className="flex items-center gap-x-2 justify-between w-full mb-3 border border-borderCol py-2 px-3 rounded-md">
         <div className="flex items-center gap-x-2">
-          <Select>
+          <Select onValueChange={handleSelectChange}>
             <SelectTrigger className="w-[100px] bg-borderCol/80">
               <SelectValue placeholder="USD" />
             </SelectTrigger>
@@ -33,6 +36,8 @@ export const Step2 = () => {
           </Select>
           <Input
             type="text"
+            name="amount"
+            register={register}
             className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0"
           />
         </div>
@@ -49,22 +54,30 @@ export const Step2 = () => {
           <RadioInput
             id="payment-sight"
             label="Sight LC"
-            name="amount-payment-terms"
+            name="paymentTerms"
+            register={register}
+            value="sight-lc"
           />
           <RadioInput
             id="payment-usance"
             label="Usance LC"
-            name="amount-payment-terms"
+            name="paymentTerms"
+            value="usance-lc"
+            register={register}
           />
           <RadioInput
             id="payment-deferred"
             label="Deferred LC"
-            name="amount-payment-terms"
+            name="paymentTerms"
+            value="deferred-lc"
+            register={register}
           />
           <RadioInput
             id="payment-upas"
             label="UPAS LC (Usance payment at sight)"
-            name="amount-payment-terms"
+            name="paymentTerms"
+            value="upas-lc"
+            register={register}
           />
         </div>
       </div>

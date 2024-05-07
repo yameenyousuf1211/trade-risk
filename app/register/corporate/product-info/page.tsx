@@ -15,7 +15,6 @@ import { z } from "zod";
 const ProductInfoPage = () => {
   const router = useRouter();
   const setValues = useRegisterStore((state) => state.setValues);
-  
   const {
     register,
     setValue,
@@ -25,26 +24,26 @@ const ProductInfoPage = () => {
     resolver: zodResolver(productsInfoSchema),
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof productsInfoSchema>>  = async (data:any) => {
-
-    setValues(data)
-  console.log(getStateValues(useRegisterStore.getState()))
+  const onSubmit: SubmitHandler<z.infer<typeof productsInfoSchema>> = async (
+    data: any
+  ) => {
+    setValues(data);
+    console.log(getStateValues(useRegisterStore.getState()));
     console.log(data);
-    
-      // console.log(data);
-      router.push("/register/corporate/point-contact");
-    };
-    
-    useEffect(() => {
-      if (errors) {
-        Object.keys(errors).forEach((fieldName: string) => {
-          const errorMessage = errors[fieldName as keyof typeof errors]?.message; 
-          if (errorMessage) {
-            toast.error(`${fieldName}: ${errorMessage}`);
-          }
-        });
-      }
-    }, [errors]);
+
+    router.push("/register/corporate/point-contact");
+  };
+
+  useEffect(() => {
+    if (errors) {
+      Object.keys(errors).forEach((fieldName: string) => {
+        const errorMessage = errors[fieldName as keyof typeof errors]?.message;
+        if (errorMessage) {
+          toast.error(`${fieldName}: ${errorMessage}`);
+        }
+      });
+    }
+  }, [errors]);
 
   return (
     <CorporateStepLayout
@@ -52,9 +51,12 @@ const ProductInfoPage = () => {
       title="Product Info"
       text="Please add information about your products and trade volume below"
     >
-      <form className="max-w-xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="max-w-xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <FloatingInput
-                    register={register}
+          register={register}
           type="text"
           name="product"
           placeholder="product"
@@ -66,8 +68,7 @@ const ProductInfoPage = () => {
           </div>
           <div className="w-full">
             <FloatingInput
-                        register={register}
-
+              register={register}
               type="text"
               name="annualSalary"
               placeholder="Annual Sales of your Company"
@@ -81,7 +82,7 @@ const ProductInfoPage = () => {
           </div>
           <div className="w-full">
             <FloatingInput
-            register={register}
+              register={register}
               type="text"
               name="annualValueExports"
               placeholder="Annual Value of Exports"
@@ -95,7 +96,7 @@ const ProductInfoPage = () => {
           </div>
           <div className="w-full">
             <FloatingInput
-                        register={register}
+              register={register}
               type="text"
               name="annualValueImports"
               placeholder="Annual Value of Imports"

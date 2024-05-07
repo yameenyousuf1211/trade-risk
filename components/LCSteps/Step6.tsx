@@ -8,11 +8,13 @@ export const Step6 = ({
   isDiscount,
   isConfirmation,
   step,
+  register,
 }: {
   title: string;
   isDiscount?: boolean;
   isConfirmation?: boolean;
   step: number;
+  register: any;
 }) => {
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full h-full">
@@ -28,12 +30,16 @@ export const Step6 = ({
           <BgRadioInput
             id="discount-yes"
             label="Yes"
-            name="discount-at-sight"
+            name="discountAtSight"
+            value="yes"
+            register={register}
           />
           <BgRadioInput
             id="discount-no"
             label="No"
-            name="discount-at-sight"
+            name="discountAtSight"
+            value="no"
+            register={register}
             bg
           />
         </div>
@@ -43,13 +49,17 @@ export const Step6 = ({
         <BgRadioInput
           id="account-beneficiary"
           label="Exporter/Supplier (Beneficiary)"
-          name="account-role"
+          name="confirmationCharges.behalfOf"
+          value="Exporter"
+          register={register}
           bg
         />
         <BgRadioInput
           id="account-importer"
           label="Importer (Applicant)"
-          name="account-role"
+          name="confirmationCharges.behalfOf"
+          value="Importer"
+          register={register}
         />
       </div>
 
@@ -63,6 +73,7 @@ export const Step6 = ({
               id="select-base-rate"
               label="Select base rate"
               placeholder="Select Value"
+              register={register}
             />
           </div>
         )}
@@ -78,8 +89,10 @@ export const Step6 = ({
               -
             </Button>
             <Input
-              id="expected-pricing"
-              placeholder="Value (%)"
+              // placeholder="Value (%)"
+              type="number"
+              name="pricePerAnnum"
+              register={register}
               className="border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
             />
             <Button variant="ghost" className="bg-none border-none text-lg">

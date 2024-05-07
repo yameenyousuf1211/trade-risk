@@ -7,10 +7,10 @@ import { LineChart, Line } from "recharts";
 const CountrySearch = () => {
   return (
     <div className="relative">
-      <Input
+      {/* <Input
         className="placeholder:text-[13px] pr-5 !h-8 max-w-[200px]"
         placeholder="Enter country name"
-      />
+      /> */}
       <Search className="size-4 text-para absolute right-2 top-2" />
     </div>
   );

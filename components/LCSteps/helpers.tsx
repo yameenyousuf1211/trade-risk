@@ -24,7 +24,7 @@ export const RadioInput = ({
   return (
     <label
       htmlFor={id}
-      className="px-3 py-4 w-full rounded-md flex items-center gap-x-3 mb-2 border border-borderCol text-lightGray"
+      className="px-3 py-4 w-full rounded-md flex items-center gap-x-3 mb-2 border border-borderCol text-lightGray bg-white"
     >
       <input
         type="radio"
@@ -56,7 +56,7 @@ export const DDInput = ({
   return (
     <label
       id={id}
-      className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
+      className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
     >
       <p className="text-lightGray">{label}</p>
       <Select onValueChange={handleSelectChange}>
@@ -93,8 +93,8 @@ export const BgRadioInput = ({
     <label
       htmlFor={id}
       className={`px-3 py-4 w-full transition-colors duration-100 ${
-        checked ? "bg-[#EEE9FE]" : "border border-borderCol"
-      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray`}
+        checked ? "bg-[#EEE9FE]" : "border border-borderCol bg-white"
+      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray `}
     >
       <input
         type="radio"

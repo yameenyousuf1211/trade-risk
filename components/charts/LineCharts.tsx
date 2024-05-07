@@ -137,7 +137,7 @@ export const LineCharts = () => {
   ];
 
   return (
-    <div className="rounded-lg border border-borderCol py-4 px-5 w-full overflow-x-auto">
+    <div className="rounded-lg border border-borderCol py-4 px-5 w-full overflow-x-auto bg-white">
       <div className="w-full flex items-center gap-x-2 justify-between">
         <h4 className="text-lg font-semibold w-full max-w-[100px]">Risk Price</h4>
         <div className="flex items-center justify-end gap-x-1 w-full">

@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 
 export const Step2 = ({ register }: any) => {
   const handleSelectChange = (value: string) => {
-    register('currency', { value: value }); 
+    register("currency", { value: value });
   };
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
@@ -23,11 +23,11 @@ export const Step2 = ({ register }: any) => {
         <p className="font-semibold text-lg text-lightGray">Amount</p>
       </div>
 
-      <div className="flex items-center gap-x-2 justify-between w-full mb-3 border border-borderCol py-2 px-3 rounded-md">
+      <div className="flex items-center gap-x-2 justify-between w-full mb-3 border border-borderCol py-2 px-3 rounded-md bg-[#F5F7F9]">
         <div className="flex items-center gap-x-2">
           <Select onValueChange={handleSelectChange}>
             <SelectTrigger className="w-[100px] bg-borderCol/80">
-              <SelectValue placeholder="USD" />
+              <SelectValue placeholder="USD" defaultValue="USD" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="USD">USD</SelectItem>
@@ -48,7 +48,7 @@ export const Step2 = ({ register }: any) => {
         </p>
       </div>
 
-      <div className="border border-borderCol px-2 py-3 rounded-md">
+      <div className="border border-borderCol px-2 py-3 rounded-md bg-[#F5F7F9]">
         <h5 className="font-semibold ml-3">Payment Terms</h5>
         <div className="flex items-center gap-x-3 w-full mt-2">
           <RadioInput

@@ -11,8 +11,8 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${poppins.className}`}>
+    <div>
+      <div>
         <header className="border-b border-neutral-200 py-4 px-2 flex items-center justify-center gap-2 bg-white">
           <Image
             src="/images/logo.png"
@@ -35,7 +35,7 @@ export default function AuthLayout({
             className="object-cover absolute bottom-0 right-0"
           />
         </main>
-      </body>
-    </html>
+      </div>
+    </div>
   );
 }

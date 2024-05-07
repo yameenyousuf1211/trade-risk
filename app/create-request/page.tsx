@@ -58,13 +58,13 @@ const CreateRequestPage = () => {
     }
   }, [errors]);
   const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
-    data: any
+    data: z.infer<typeof confirmationSchema>
   ) => {
     startLoading();
     const reqData = {
       ...data,
       lcType: "LC Confirmation",
-      transhipment: false,
+      transhipment: data.transhipment === "yes" ? true : false,
     };
 
     const { response, success } = await onCreateLC(reqData);
@@ -80,7 +80,7 @@ const CreateRequestPage = () => {
   return (
     <CreateLCLayout>
       <form
-        className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg"
+        className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg"
         onSubmit={handleSubmit(onSubmit)}
       >
         <Step1 register={register} />
@@ -94,7 +94,6 @@ const CreateRequestPage = () => {
             setValue={setValue}
             getValues={getValues}
             title="Confirmation Charges"
-            step={6}
           />
           <Step7 register={register} step={7} />
         </div>

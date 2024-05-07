@@ -4,6 +4,8 @@ import { Plus } from "lucide-react";
 import { Period, Transhipment } from "./Step3Helpers";
 
 export const Step3 = ({ register, setValue }: any) => {
+
+  
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">

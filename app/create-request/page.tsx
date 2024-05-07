@@ -26,6 +26,8 @@ const CreateRequestPage = () => {
   const {
     register,
     setValue,
+    getValues,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof confirmationSchema>>({
@@ -36,15 +38,25 @@ const CreateRequestPage = () => {
 
   useEffect(() => {
     if (errors) {
-      Object.keys(errors).forEach((fieldName: string) => {
-        const errorMessage = errors[fieldName as keyof typeof errors]?.message;
-        if (errorMessage) {
-          toast.error(`${fieldName}: ${errorMessage}`);
-        }
-      });
+      const showNestedErrors = (errorsObj: any, parentKey = "") => {
+        Object.keys(errorsObj)
+          .reverse()
+          .forEach((key) => {
+            const errorMessage =
+              errorsObj[key as keyof typeof errorsObj]?.message;
+
+            if (errorMessage) {
+              const fieldName = parentKey ? `${parentKey}.${key}` : key;
+              toast.error(`${fieldName}: ${errorMessage}`);
+            } else if (typeof errorsObj[key] === "object") {
+              showNestedErrors(errorsObj[key], key);
+            }
+          });
+      };
+
+      showNestedErrors(errors);
     }
   }, [errors]);
-
   const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data: any
   ) => {
@@ -54,12 +66,17 @@ const CreateRequestPage = () => {
       lcType: "LC Confirmation",
       transhipment: false,
     };
+
     const { response, success } = await onCreateLC(reqData);
     stopLoading();
     if (!success) return toast.error(response);
-    if (success) toast.success(response?.message);
-    router.push("/dashboard");
+    else {
+      toast.success(response?.message);
+      reset();
+      router.push("/");
+    }
   };
+
   return (
     <CreateLCLayout>
       <form
@@ -72,12 +89,18 @@ const CreateRequestPage = () => {
         <Step4 register={register} setValue={setValue} />
         <Step5 register={register} setValue={setValue} />
         <div className="flex items-start gap-x-4 h-full w-full relative">
-          <Step6 register={register} title="Confirmation Charges" step={6} />
+          <Step6
+            register={register}
+            setValue={setValue}
+            getValues={getValues}
+            title="Confirmation Charges"
+            step={6}
+          />
           <Step7 register={register} step={7} />
         </div>
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
-          <Button variant="ghost" className="bg-none w-1/3">
+          <Button type="button" variant="ghost" className="bg-none w-1/3">
             Save as draft
           </Button>
           <Button

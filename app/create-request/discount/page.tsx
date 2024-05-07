@@ -19,10 +19,7 @@ import {
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import {
-  confirmationSchema,
-  discountingSchema,
-} from "@/validation/lc.validation";
+import { discountingSchema } from "@/validation/lc.validation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { onCreateLC } from "@/services/apis/lcs.api";
@@ -34,6 +31,8 @@ const CreateDiscountPage = () => {
   const {
     register,
     setValue,
+    getValues,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof discountingSchema>>({
@@ -41,26 +40,36 @@ const CreateDiscountPage = () => {
   });
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
-
   useEffect(() => {
     if (errors) {
-      Object.keys(errors).forEach((fieldName: string) => {
-        const errorMessage = errors[fieldName as keyof typeof errors]?.message;
-        if (errorMessage) {
-          toast.error(`${fieldName}: ${errorMessage}`);
-        }
-      });
+      const showNestedErrors = (errorsObj: any, parentKey = "") => {
+        Object.keys(errorsObj)
+          .reverse()
+          .forEach((key) => {
+            const errorMessage =
+              errorsObj[key as keyof typeof errorsObj]?.message;
+
+            if (errorMessage) {
+              const fieldName = parentKey ? `${parentKey}.${key}` : key;
+              toast.error(`${fieldName}: ${errorMessage}`);
+            } else if (typeof errorsObj[key] === "object") {
+              showNestedErrors(errorsObj[key], key);
+            }
+          });
+      };
+
+      showNestedErrors(errors);
     }
   }, [errors]);
 
   const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async (
-    data: any
+    data: z.infer<typeof discountingSchema>
   ) => {
     startLoading();
     const reqData = {
       ...data,
       transhipment: false,
-      discountAtSight: "false",
+      discountAtSight: data.discountAtSight === "yes" ? true : false,
       lcType: "LC Discounting",
       extraInfo: {
         dats: new Date("2024-04-28"),
@@ -68,16 +77,20 @@ const CreateDiscountPage = () => {
       },
       expectedDiscountingDate: new Date("2024-04-28"),
     };
+    console.log(reqData)
     const { response, success } = await onCreateLC(reqData);
-    if (!success) return toast.error(response);
     stopLoading();
-    if (success) toast.success(response?.message);
-    router.push("/dashboard");
+    if (!success) return toast.error(response);
+    else {
+      toast.success(response?.message);
+      router.push("/");
+    }
   };
 
   const handleSelectChange = (value: string) => {
     register("currency", { value: value });
   };
+
   return (
     <CreateLCLayout>
       <form
@@ -250,16 +263,19 @@ const CreateDiscountPage = () => {
             title="Discounting Info"
             isDiscount
             step={6}
+            setValue={setValue}
+            getValues={getValues}
           />
           <Step7 register={register} step={7} />
         </div>
 
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
-          <Button variant="ghost" className="bg-none w-1/3">
+          <Button type="button" variant="ghost" className="bg-none w-1/3">
             Save as draft
           </Button>
           <Button
+            type="submit"
             disabled={isLoading}
             size="lg"
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"

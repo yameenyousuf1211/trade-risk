@@ -5,23 +5,35 @@ import { BankTable } from "@/components/shared/BankTable";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { useAuth } from "@/context/AuthProvider";
 import { fetchMyBids } from "@/services/apis/bids.api";
-import { ApiResponse, ILcs } from "@/types/type";
+import { ApiResponse, ILcs, IMyBids } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
 
-const MyBidsPage = () => {
+interface SearchParams {
+  searchParams: {
+    page: number;
+    limit: number;
+  };
+}
+
+const MyBidsPage = ({ searchParams }: SearchParams) => {
+  const { page, limit } = searchParams;
+
   const pathname = usePathname();
   const { user } = useAuth();
   const {
     isLoading,
     error,
     data,
-  }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
-    useQuery({
-      queryKey: ["fetch-my-bids"],
-      queryFn: fetchMyBids,
-    });
+  }: {
+    data: ApiResponse<IMyBids> | undefined;
+    error: any;
+    isLoading: boolean;
+  } = useQuery({
+    queryKey: ["fetch-my-bids", page, limit],
+    queryFn: () => fetchMyBids({ page, limit }),
+  });
 
   if (isLoading)
     return (
@@ -33,7 +45,7 @@ const MyBidsPage = () => {
   if (user && user.role !== "bank") {
     redirect("/");
   }
-  console.log(data);
+
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">
@@ -64,7 +76,7 @@ const MyBidsPage = () => {
                 )}
               </div>
             </div>
-            <BankTable />
+            {data && <BankTable data={data} />}
           </div>
         </div>
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">

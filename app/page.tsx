@@ -10,16 +10,23 @@ import { ApiResponse, ILcs } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 
-const HomePage = () => {
+interface SearchParams {
+  searchParams: {
+    page: number;
+    limit:number
+  };
+}
+
+const HomePage = ({ searchParams }: SearchParams) => {
+  const { page, limit } = searchParams;
   const { user } = useAuth();
   const {
     isLoading,
-    error,
     data,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
-      queryKey: ["fetch-lcs"],
-      queryFn: fetchLcs,
+      queryKey: ["fetch-lcs", page, limit],
+      queryFn: () => fetchLcs({page, limit}),
     });
 
   if (isLoading)
@@ -43,9 +50,11 @@ const HomePage = () => {
           {/* Charts */}
           <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 h-fit">
             <ProgressCharts title="Total Requests" />
-            <LineCharts /> 
+            <LineCharts />
           </div>
-          <RequestTable isBank={false} data={data} key={"Corperate"} />
+          {data && (
+            <RequestTable isBank={false} data={data} key={"Corperate"} />
+          )}
         </div>
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
           <Sidebar isBank={false} />

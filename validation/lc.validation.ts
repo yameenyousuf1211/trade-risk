@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-
 const fileSchema = z.object({
   name: z.string(),
   type: z.string(),
@@ -9,10 +8,15 @@ const fileSchema = z.object({
 });
 
 export const confirmationSchema = z.object({
-  participantRole: z.enum(["exporter", "imorter"], {
+  participantRole: z.enum(["exporter", "importer"], {
     message: "Select transaction role",
   }),
-  amount: z.string({ message: "Enter amount" }),
+  amount: z
+    .string({ message: "Enter amount" })
+    .nonempty("Enter amount")
+    .refine((value) => /^\d+$/.test(value), {
+      message: "Enter a valid number",
+    }),
   paymentTerms: z.enum(["sight-lc", "usance-lc", "deferred-lc", "upas-lc"], {
     message: "Select a payment term",
   }),
@@ -40,11 +44,17 @@ export const confirmationSchema = z.object({
     .min(10, { message: "Description must be greater than 10 characters" })
     .max(300, { message: "Description cannot be more than 300 characters" }),
   importerInfo: z.object({
-    applicantName: z.string({ message: "Enter applicant name" }),
-    countryOfImport: z.string({ message: "Select country of import" }),
+    applicantName: z
+      .string({ message: "Enter applicant name" })
+      .nonempty("Enter applicant name"),
+    countryOfImport: z
+      .string({ message: "Select country of import" })
+      .nonempty("Select country of import"),
   }),
   exporterInfo: z.object({
-    beneficiaryName: z.string({ message: "Enter beneficiary name" }),
+    beneficiaryName: z
+      .string({ message: "Enter beneficiary name" })
+      .nonempty("Enter beneficiary name"),
     countryOfExport: z.string({ message: "Select country of export" }),
     beneficiaryCountry: z.string({
       message: "Select beneficiary country",
@@ -55,10 +65,14 @@ export const confirmationSchema = z.object({
       message: "Select one of above",
     }),
   }),
-  pricePerAnnum: z.string({ message: "Enter expected price" }),
+  pricePerAnnum: z
+    .string({ message: "Enter expected price" })
+    .nonempty("Enter expected price")
+    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+      message: "Enter a valid number",
+    }),
   // attachments: z.union([z.array(fileSchema), z.undefined()]),
 });
-
 
 export const discountingSchema = z.lazy(() =>
   confirmationSchema.merge(

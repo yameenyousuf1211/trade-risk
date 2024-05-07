@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BgRadioInput, DDInput } from "./helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,13 +9,59 @@ export const Step6 = ({
   isConfirmation,
   step,
   register,
+  setValue,
+  getValues,
 }: {
   title: string;
   isDiscount?: boolean;
   isConfirmation?: boolean;
   step: number;
   register: any;
+  setValue: any;
+  getValues: any;
 }) => {
+  const [checkedState, setCheckedState] = useState({
+    "account-beneficiary": false,
+    "account-importer": false,
+  });
+
+  const handleCheckChange = (id: string) => {
+    setCheckedState((prevState) => ({
+      ...prevState,
+      "account-beneficiary": id === "account-beneficiary",
+      "account-importer": id === "account-importer",
+    }));
+  };
+
+  const [checkedDiscountState, setCheckedDiscountState] = useState({
+    "discount-yes": false,
+    "discount-no": false,
+  });
+
+  const handleCheckDiscountChange = (id: string) => {
+    setCheckedState((prevState) => ({
+      ...prevState,
+      "discount-yes": id === "discount-yes",
+      "discount-no": id === "discount-no",
+    }));
+  };
+
+  const handleIncrement = () => {
+    const currentValue = getValues("pricePerAnnum") || "0";
+    const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
+    setValue("pricePerAnnum", newValue);
+  };
+
+  const handleDecrement = () => {
+    const currentValue = getValues("pricePerAnnum") || "0";
+    let newValue = parseFloat(currentValue) - 0.5;
+
+    if (newValue < 0) newValue = 0;
+    // @ts-ignore
+    newValue = newValue.toFixed(1);
+    setValue("pricePerAnnum", newValue);
+  };
+
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full h-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -33,6 +79,8 @@ export const Step6 = ({
             name="discountAtSight"
             value="yes"
             register={register}
+            checked={checkedDiscountState["discount-yes"]}
+            handleCheckChange={handleCheckDiscountChange}
           />
           <BgRadioInput
             id="discount-no"
@@ -40,7 +88,8 @@ export const Step6 = ({
             name="discountAtSight"
             value="no"
             register={register}
-            bg
+            checked={checkedDiscountState["discount-no"]}
+            handleCheckChange={handleCheckDiscountChange}
           />
         </div>
       )}
@@ -52,7 +101,8 @@ export const Step6 = ({
           name="confirmationCharges.behalfOf"
           value="Exporter"
           register={register}
-          bg
+          checked={checkedState["account-beneficiary"]}
+          handleCheckChange={handleCheckChange}
         />
         <BgRadioInput
           id="account-importer"
@@ -60,6 +110,8 @@ export const Step6 = ({
           name="confirmationCharges.behalfOf"
           value="Importer"
           register={register}
+          checked={checkedState["account-importer"]}
+          handleCheckChange={handleCheckChange}
         />
       </div>
 
@@ -85,17 +137,27 @@ export const Step6 = ({
             {isConfirmation ? "Per Annum(%)" : "Pricing Per Annum"}
           </p>
           <div className="flex items-center gap-x-2">
-            <Button variant="ghost" className="bg-none border-none text-lg">
+            <Button
+              type="button"
+              variant="ghost"
+              className="bg-none border-none text-lg"
+              onClick={handleDecrement}
+            >
               -
             </Button>
             <Input
-              // placeholder="Value (%)"
-              type="number"
+              placeholder="Value (%)"
+              type="string"
               name="pricePerAnnum"
               register={register}
               className="border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
             />
-            <Button variant="ghost" className="bg-none border-none text-lg">
+            <Button
+              type="button"
+              variant="ghost"
+              className="bg-none border-none text-lg"
+              onClick={handleIncrement}
+            >
               +
             </Button>
           </div>

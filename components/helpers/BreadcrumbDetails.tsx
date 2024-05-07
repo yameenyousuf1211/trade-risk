@@ -39,12 +39,12 @@ export const BreadcrumbDetails = () => {
       <Breadcrumb>
         <BreadcrumbList>
           {crumbs.map((crumb, idx) => (
-            <>
+            <div className="flex items-center gap-x-2" key={`${crumb}-${idx}`}>
               <BreadcrumbItem key={`${crumb}-${idx}`}>
                 <BreadcrumbList>{crumb}</BreadcrumbList>
               </BreadcrumbItem>
               {idx !== crumbs.length - 1 && <Separator />}
-            </>
+            </div>
           ))}
         </BreadcrumbList>
       </Breadcrumb>

@@ -63,7 +63,7 @@ export const AddBid = ({
   status?: string;
   triggerTitle: string;
   border?: boolean;
-  lcData: ILcs;
+  lcData: ILcs | undefined;
 }) => {
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
@@ -110,7 +110,7 @@ export const AddBid = ({
     if (!success) return toast.error("Something went wrong");
     else toast.success("Bid added");
   };
-
+  console.log(status);
   return (
     <Dialog>
       {/* <DialogTrigger className="rounded-md py-2 px-3 mt-2 w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white">
@@ -135,11 +135,11 @@ export const AddBid = ({
             : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
         } rounded-md w-full p-2 capitalize hover:opacity-85`}
       >
-        {triggerTitle}
+        {triggerTitle || "Pending"}
       </DialogTrigger>
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
-          <h2 className="text-lg font-semibold">{lcData.lcType}</h2>
+          <h2 className="text-lg font-semibold">{lcData?.lcType || ""}</h2>
           <DialogClose>
             <X className="size-7" />
           </DialogClose>
@@ -151,32 +151,35 @@ export const AddBid = ({
             <div className="px-4">
               <h2 className="text-2xl font-semibold mb-1">
                 <span className="text-para font-medium">LC Amount:</span> USD
-                {lcData.amount}
+                {lcData?.amount || ""}
               </h2>
               <div className="h-[2px] w-full bg-neutral-800 mt-5" />
             </div>
             {/* Main Info */}
             <div className="px-4">
-              <LCInfo label="LC Issuing Bank" value={lcData.issuingBank.bank} />
+              <LCInfo
+                label="LC Issuing Bank"
+                value={lcData?.issuingBank?.bank || ""}
+              />
               <LCInfo
                 label="Country of LC Issuing Bank"
-                value={lcData.issuingBank.country}
+                value={lcData?.issuingBank?.country || ""}
               />
               <LCInfo
                 label="LC Applicant"
-                value={lcData.importerInfo.applicantName}
+                value={lcData?.importerInfo?.applicantName || ""}
               />
               <LCInfo
                 label="LC Advising Bank"
-                value={lcData.advisingBank.bank}
+                value={lcData?.advisingBank?.bank || ""}
               />
               <LCInfo
                 label="Confirming Bank"
-                value={lcData.confirmingBank.bank}
+                value={lcData?.confirmingBank?.bank || ""}
               />
               <LCInfo
                 label="Payments Terms"
-                value={lcData.paymentTerms}
+                value={lcData?.paymentTerms || ""}
                 noBorder
               />
               <div className="border border-borderCol p-2 flex items-center justify-between w-full gap-x-2 rounded-lg">
@@ -210,34 +213,36 @@ export const AddBid = ({
               <h2 className="text-xl font-semibold">LC Details</h2>
               <LCInfo
                 label="LC Issuance (Expected)"
-                value={convertDateToYYYYMMDD(lcData.lcPeriod.startDate)}
+                value={convertDateToYYYYMMDD(lcData?.lcPeriod?.startDate || "")}
               />
               <LCInfo
                 label="LC Expiry Date"
-                value={convertDateToYYYYMMDD(lcData.lcPeriod.endDate)}
+                value={convertDateToYYYYMMDD(lcData?.lcPeriod?.endDate || "")}
               />
               <LCInfo
                 label="Confirmation Date (Expected)"
-                value={convertDateToYYYYMMDD(lcData.lcPeriod.endDate)}
+                value={convertDateToYYYYMMDD(lcData?.lcPeriod?.endDate || "")}
               />
               <LCInfo
                 label="Transhipment"
-                value={lcData.transhipment === true ? "Allowed" : "Not allowed"}
+                value={
+                  lcData?.transhipment === true ? "Allowed" : "Not allowed"
+                }
               />
               <LCInfo
                 label="Port of Shipment"
-                value={lcData.shipmentPort.port}
+                value={lcData?.shipmentPort?.port || ""}
               />
               <LCInfo
                 label="Product Description"
-                value={lcData.productDescription}
+                value={lcData?.productDescription || ""}
                 noBorder
               />
 
               <h2 className="text-xl font-semibold mt-3">Exporter Info</h2>
               <LCInfo
                 label="Country"
-                value={lcData.exporterInfo.countryOfExport || ""}
+                value={lcData?.exporterInfo?.countryOfExport || ""}
               />
               <LCInfo
                 label="Charges on account of"
@@ -338,7 +343,8 @@ export const AddBid = ({
                   <Input
                     placeholder="DD/MM/YYYY"
                     id="validity"
-                    {...register("validity")}
+                    name="validity"
+                    register={register}
                   />
                   {errors.validity && (
                     <span className="text-red-500 text-[12px]">
@@ -355,10 +361,11 @@ export const AddBid = ({
                     Confirmation Pricing
                   </label>
                   <Input
+                    type="string"
+                    name="confirmationPrice"
+                    register={register}
                     placeholder="Enter your pricing (%)"
                     id="confirmation"
-                    type="number"
-                    {...register("confirmationPrice")}
                   />
                   {errors.confirmationPrice && (
                     <span className="text-red-500 text-[12px]">
@@ -398,6 +405,7 @@ export const AddBid = ({
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
                           setDiscountMargin(e.target.value)
                         }
+                        register={register}
                       />
                     </div>
                   </div>

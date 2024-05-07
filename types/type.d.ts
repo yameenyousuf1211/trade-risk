@@ -58,10 +58,10 @@ type RegisterStore = {
   accountCountry?: string;
   accountCity?: string;
   productInfo?: {
-      product: string;
-      annualSalary: number;
-      annualValueExports: number;
-      annualValueImports: number;
+    product: string;
+    annualSalary: number;
+    annualValueExports: number;
+    annualValueImports: number;
   };
   pocEmail: string;
   pocPhone: string;
@@ -69,9 +69,9 @@ type RegisterStore = {
   poc?: string;
   pocDesignation?: string;
   currentBanks?: {
-      name: string;
-      country: string;
-      city: string;
+    name: string;
+    country: string;
+    city: string;
   }[];
   confirmationLcs?: boolean;
   discountingLcs?: boolean;
@@ -80,7 +80,6 @@ type RegisterStore = {
   avalizationExportBills?: boolean;
   riskParticipation?: boolean;
 };
-
 
 export type UseRegisterStore = RegisterStore & {
   setValues: (values: Partial<RegisterStore>) => void;
@@ -101,7 +100,7 @@ export interface ApiResponse<T> {
   pagination: Pagination;
 }
 
-export interface IUser{
+export interface IUser {
   _id?: string;
   name?: string;
   email: string;
@@ -119,10 +118,10 @@ export interface IUser{
   accountCity?: string;
   businessType?: string;
   productInfo?: {
-      product: string;
-      annualSalary: number;
-      annualValueExports: number;
-      annualValueImports: number;
+    product: string;
+    annualSalary: number;
+    annualValueExports: number;
+    annualValueImports: number;
   };
   pocName?: string;
   pocEmail?: string;
@@ -131,120 +130,152 @@ export interface IUser{
   pocDesignation?: string;
   currentBanks?: string[];
   authorizationPocLetter?: string;
-  confirmationLcs?:boolean;
-  discountingLcs?:boolean
-  guaranteesCounterGuarantees?:boolean
-  discountingAvalizedBills?:boolean
-  avalizationExportBills?:boolean
-  riskParticipation:boolean
+  confirmationLcs?: boolean;
+  discountingLcs?: boolean;
+  guaranteesCounterGuarantees?: boolean;
+  discountingAvalizedBills?: boolean;
+  avalizationExportBills?: boolean;
+  riskParticipation: boolean;
   isDeleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-export interface ILcs  {
-  _id:string
-  participantRole?:string
-  lcType?:string
-  currency:string 
-  amount?:number
-  paymentTerms:string
-  createdBy?:string
-  issuingBank:{
-      bank:string
-      country:string
-  }
-  extraInfo:{
-      days:Date
-      other:string
-  }
-  advisingBank:{
-      bank:string
-      country:string
-  }
-  confirmingBank:{
-      bank:string
-      country:string
-  }
-  shipmentPort:{
-      country:string
-      port:string
-  }
-  transhipment:boolean
-  expectedConfirmationDate:Date
-  expectedDiscountingDate:Date
-  productDescription:string
-  lcPeriod:{
-      startDate:Date
-      endDate:Date
-  }
-  importerInfo:{
-      applicantName:string
-      countryOfImport:string
-  }
-  exporterInfo:{
-      beneficiaryName?:string
-      countryOfExport?:string
-      beneficiaryCountry?:string
-  }
-  confirmationCharges:{
-    behalfOf?: string
-  }
-  discountAtSight?:string
-  pricePerAnnum?:number
-  refId?:number
-  attachments?:string[]
-  draft?:boolean,
-  status?:string
+export interface ILcs {
+  _id: string;
+  participantRole?: string;
+  lcType?: string;
+  currency: string;
+  amount?: number;
+  paymentTerms: string;
+  createdBy?: string;
+  issuingBank: {
+    bank: string;
+    country: string;
+  };
+  extraInfo: {
+    days: Date;
+    other: string;
+  };
+  advisingBank: {
+    bank: string;
+    country: string;
+  };
+  confirmingBank: {
+    bank: string;
+    country: string;
+  };
+  shipmentPort: {
+    country: string;
+    port: string;
+  };
+  transhipment: boolean;
+  expectedConfirmationDate: Date;
+  expectedDiscountingDate: Date;
+  productDescription: string;
+  lcPeriod: {
+    startDate: Date;
+    endDate: Date;
+  };
+  importerInfo: {
+    applicantName: string;
+    countryOfImport: string;
+  };
+  exporterInfo: {
+    beneficiaryName?: string;
+    countryOfExport?: string;
+    beneficiaryCountry?: string;
+  };
+  confirmationCharges: {
+    behalfOf?: string;
+  };
+  discountAtSight?: string;
+  pricePerAnnum?: number;
+  refId?: number;
+  attachments?: string[];
+  draft?: boolean;
+  status?: string;
 }
 
 export interface IBids {
-  _id:string
-    status: string;
-    bidType: string;
-    discountingPrice:number
-    confirmationPrice:number
-    bidBy:{
-      _id?: string;
-  name?: string;
-  email: string;
-  role: string;
-  country?: string;
-  phone?: string;
-  address?: string;
-  constitution?: string;
-  password?: string;
-  bank?: string;
-  accountNumber?: number;
-  swiftCode?: string;
-  accountHolderName?: string;
-  accountCountry?: string;
-  accountCity?: string;
-  businessType?: string;
-  productInfo?: {
+  _id: string;
+  status: string;
+  bidType: string;
+  discountingPrice: number;
+  confirmationPrice: number;
+  bidBy: {
+    _id?: string;
+    name?: string;
+    email: string;
+    role: string;
+    country?: string;
+    phone?: string;
+    address?: string;
+    constitution?: string;
+    password?: string;
+    bank?: string;
+    accountNumber?: number;
+    swiftCode?: string;
+    accountHolderName?: string;
+    accountCountry?: string;
+    accountCity?: string;
+    businessType?: string;
+    productInfo?: {
       product: string;
       annualSalary: number;
       annualValueExports: number;
       annualValueImports: number;
+    };
+    pocName?: string;
+    pocEmail?: string;
+    pocPhone?: string;
+    poc?: string;
+    pocDesignation?: string;
+    currentBanks?: string[];
+    authorizationPocLetter?: string;
+    confirmationLcs?: boolean;
+    discountingLcs?: boolean;
+    guaranteesCounterGuarantees?: boolean;
+    discountingAvalizedBills?: boolean;
+    avalizationExportBills?: boolean;
+    riskParticipation: boolean;
+    isDeleted?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
-  pocName?: string;
-  pocEmail?: string;
-  pocPhone?: string;
-  poc?: string;
-  pocDesignation?: string;
-  currentBanks?: string[];
-  authorizationPocLetter?: string;
-  confirmationLcs?:boolean;
-  discountingLcs?:boolean
-  guaranteesCounterGuarantees?:boolean
-  discountingAvalizedBills?:boolean
-  avalizationExportBills?:boolean
-  riskParticipation:boolean
-  isDeleted?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-    }
-    isDeleted:boolean
-    createdAt: Date;
-    updatedAt: Date;
+  isDeleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IMyBids {
+  _id: string;
+  bidBy: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  address: string;
+  avalizationExportBills: boolean;
+  confirmationLcs: boolean;
+  createdAt: string;
+  currentBanks: string[];
+  discountingAvalizedBills: boolean;
+  discountingLcs: boolean;
+  email: string;
+  guaranteesCounterGuarantees: boolean;
+  isDeleted: boolean;
+  name: string;
+  pocEmail: string;
+  pocPhone: string;
+  riskParticipation: boolean;
+  role: string;
+  swiftCode: string;
+  updatedAt: string;
+  bidType: string;
+  bidValidity: string;
+  confirmationPrice: number;
+  id: string;
+  lc: string;
+  status: string;
 }

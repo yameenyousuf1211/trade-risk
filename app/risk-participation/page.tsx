@@ -12,7 +12,7 @@ const RiskParticipationPage = () => {
           </h2>
           {/* Data Table */}
           <div className="rounded-md border border-borderCol px-4 py-4">
-            <BankTable />
+            {/* <BankTable /> */}
           </div>
         </div>
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">

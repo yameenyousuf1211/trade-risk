@@ -1,6 +1,21 @@
+"use client";
+import { useState } from "react";
 import { BgRadioInput } from "./helpers";
 
-export const Step1 = ({register} :any) => {
+export const Step1 = ({ register }: any) => {
+  const [checkedState, setCheckedState] = useState({
+    "role-exporter": false,
+    "role-importer": false,
+  });
+
+  const handleCheckChange = (id: string) => {
+    setCheckedState((prevState) => ({
+      ...prevState,
+      "role-exporter": id === "role-exporter",
+      "role-importer": id === "role-importer",
+    }));
+  };
+
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -17,7 +32,8 @@ export const Step1 = ({register} :any) => {
         name="participantRole"
         value="exporter"
         register={register}
-        bg
+        checked={checkedState["role-exporter"]}
+        handleCheckChange={handleCheckChange}
       />
       <BgRadioInput
         id="role-importer"
@@ -25,6 +41,8 @@ export const Step1 = ({register} :any) => {
         name="participantRole"
         value="importer"
         register={register}
+        checked={checkedState["role-importer"]}
+        handleCheckChange={handleCheckChange}
       />
     </div>
   );

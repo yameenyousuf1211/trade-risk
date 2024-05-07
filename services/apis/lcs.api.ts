@@ -6,14 +6,23 @@ interface IFetchLcsParams {
   page?: number;
 }
 
-export const fetchLcs = async () => {
-    try {
-        const { data } = await api.get(`/lcs?limit=15`); 
-        return data.data.data;
-    } catch (error:any) {
-        console.log(error);
-        return error.response?.data?.message || "Something went wrong";    
-    }
+export const fetchLcs = async ({
+  page,
+  limit,
+}: {
+  page: number;
+  limit: number;
+}) => {
+  try {
+    const { data } = await api.get(
+      `/lcs?limit=${limit || 10}&page=${page || 1}`
+    );
+    
+    return data.data.data;
+  } catch (error: any) {
+    console.log(error);
+    return error.response?.data?.message || "Something went wrong";
+  }
 };
 
 export const onCreateLC = async (payload: any) => {

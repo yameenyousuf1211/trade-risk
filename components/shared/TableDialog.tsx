@@ -12,11 +12,17 @@ import { acceptOrRejectBid, fetchBids } from "@/services/apis/bids.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { convertDateToYYYYMMDD } from "@/utils";
 import { Loader } from "../helpers";
+import useLoading from "@/hooks/useLoading";
 
 const BidCard = ({ data }: { data: IBids }) => {
   const queryClient = useQueryClient();
+
+  const { startLoading, stopLoading, isLoading } = useLoading();
+
   const handleSubmit = async (status: string, id: string) => {
+    startLoading();
     const { success, response } = await acceptOrRejectBid(status, id);
+    stopLoading();
     if (!success) return;
     if (success)
       queryClient.invalidateQueries({
@@ -75,6 +81,7 @@ const BidCard = ({ data }: { data: IBids }) => {
         size="lg"
         className="mt-2 bg-[#29C084] hover:bg-[#29C084]/90"
         onClick={() => handleSubmit("Accepted", data._id)}
+        disabled={isLoading}
       >
         Accept
       </Button>
@@ -83,6 +90,7 @@ const BidCard = ({ data }: { data: IBids }) => {
         className="mt-2 text-para"
         variant="ghost"
         onClick={() => handleSubmit("Rejected", data._id)}
+        disabled={isLoading}
       >
         Reject
       </Button>
@@ -151,13 +159,13 @@ export const TableDialog = ({ id, lcData }: { id: string; lcData: ILcs }) => {
             <div className="px-4">
               <h2 className="text-2xl font-semibold mb-1">
                 <span className="text-para font-medium">LC Amount:</span> USD{" "}
-                {lcData.amount}
+                {lcData.amount || ""}
               </h2>
               <p className="text-sm text-para">
                 Created at, {convertDateToYYYYMMDD(lcData.lcPeriod.startDate)},
                 by{" "}
                 <span className="text-text">
-                  {lcData.exporterInfo.beneficiaryName}
+                  {lcData.exporterInfo.beneficiaryName || ""}
                 </span>
               </p>
 
@@ -165,19 +173,25 @@ export const TableDialog = ({ id, lcData }: { id: string; lcData: ILcs }) => {
             </div>
             {/* Main Info */}
             <div className="px-4">
-              <LCInfo label="LC Issuing Bank" value={lcData.issuingBank.bank} />
+              <LCInfo
+                label="LC Issuing Bank"
+                value={lcData.issuingBank?.bank || ""}
+              />
               <LCInfo
                 label="LC Applicant"
-                value={lcData.importerInfo.applicantName}
+                value={lcData.importerInfo?.applicantName || ""}
               />
-              <LCInfo label="Advising Bank" value={lcData.advisingBank.bank} />
+              <LCInfo
+                label="Advising Bank"
+                value={lcData.advisingBank?.bank || ""}
+              />
               <LCInfo
                 label="Confirming Bank"
-                value={lcData.confirmingBank.bank}
+                value={lcData.confirmingBank?.bank || ""}
               />
               <LCInfo
                 label="Payments Terms"
-                value={lcData.paymentTerms}
+                value={lcData.paymentTerms || ""}
                 noBorder
               />
             </div>
@@ -200,7 +214,7 @@ export const TableDialog = ({ id, lcData }: { id: string; lcData: ILcs }) => {
               />
               <LCInfo
                 label="Port of Shipment"
-                value={lcData.shipmentPort.port}
+                value={lcData.shipmentPort.port || ""}
                 noBorder
               />
 

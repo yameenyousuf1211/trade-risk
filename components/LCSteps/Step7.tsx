@@ -5,7 +5,13 @@ import { useEffect, useState } from "react";
 import { formatFileSize } from "@/utils";
 import { filter } from "d3-array";
 
-const FileCard = ({file,onRemoveFile}:{file:FileList,onRemoveFile:(name:string) => void}) => {
+const FileCard = ({
+  file,
+  onRemoveFile,
+}: {
+  file: FileList;
+  onRemoveFile: (name: string) => void;
+}) => {
   return (
     <div className="flex items-center justify-between gap-x-2 border border-borderCol p-2 rounded-lg">
       <div className="flex items-center gap-x-2 w-full">
@@ -20,7 +26,10 @@ const FileCard = ({file,onRemoveFile}:{file:FileList,onRemoveFile:(name:string) 
         </Button>
         <div>
           <p className="text-lightGray">{file[0]?.name}</p>
-          <p className="text-[12px] text-para">{file[0]?.type.split('/')[1].toUpperCase()}, {formatFileSize(file[0]?.size)}</p>
+          <p className="text-[12px] text-para">
+            {file[0]?.type.split("/")[1].toUpperCase()},{" "}
+            {formatFileSize(file[0]?.size)}
+          </p>
         </div>
       </div>
 
@@ -31,30 +40,31 @@ const FileCard = ({file,onRemoveFile}:{file:FileList,onRemoveFile:(name:string) 
   );
 };
 
-export const Step7 = ({ register,step }: {register:any, step: number }) => {
-
+export const Step7 = ({ register, step }: { register: any; step: number }) => {
   const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const newFiles = Array.from(files).filter(file => {
-        return !selectedFiles?.some(fileList => Array.from(fileList).some(f => f.name === file.name));
+      const newFiles = Array.from(files).filter((file) => {
+        return !selectedFiles?.some((fileList) =>
+          Array.from(fileList).some((f) => f.name === file.name)
+        );
       });
-      setSelectedFiles(prevFiles => [...(prevFiles ?? []), newFiles]);
+      setSelectedFiles((prevFiles) => [...(prevFiles ?? []), newFiles]);
     }
   };
-  
-  const handleRemoveFile = (name:string) => {
-    const filterFiles = selectedFiles?.filter(file => file[0]?.name !== name)
-    setSelectedFiles(filterFiles as FileList[])
-  } 
+
+  const handleRemoveFile = (name: string) => {
+    const filterFiles = selectedFiles?.filter((file) => file[0]?.name !== name);
+    setSelectedFiles(filterFiles as FileList[]);
+  };
 
   useEffect(() => {
     if (selectedFiles) {
       selectedFiles.forEach((fileList, index) => {
         Array.from(fileList).forEach((file, subIndex) => {
-          // register(`attachments[${index}][${subIndex}]`); 
+          // register(`attachments[${index}][${subIndex}]`);
         });
       });
     }
@@ -72,14 +82,14 @@ export const Step7 = ({ register,step }: {register:any, step: number }) => {
       <p className="font-semibold">Add Documents (PDF,JPG,PNG,TIFF)</p>
       <label
         htmlFor="attachment-input"
-        className="flex flex-col justify-center items-center border-4 border-borderCol border-dotted py-4 rounded-md mt-2"
+        className="cursor-pointer flex flex-col justify-center items-center border-4 border-borderCol border-dotted py-4 rounded-md mt-2"
       >
         <input
           id="attachment-input"
           type="file"
           onChange={handleFileChange}
-          multiple 
-          style={{ display: 'none' }} 
+          multiple
+          style={{ display: "none" }}
         />
         <Image src="/images/attachment.png" alt="att" width={25} height={25} />
         <p className="text-lg font-semibold text-lightGray mt-4">
@@ -92,7 +102,11 @@ export const Step7 = ({ register,step }: {register:any, step: number }) => {
       {selectedFiles && (
         <div className="flex flex-col gap-y-3 mt-5">
           {Array.from(selectedFiles).map((fileList, index) => (
-            <FileCard key={fileList[0].name} file={fileList} onRemoveFile={handleRemoveFile} />
+            <FileCard
+              key={fileList[0].name}
+              file={fileList}
+              onRemoveFile={handleRemoveFile}
+            />
           ))}
         </div>
       )}

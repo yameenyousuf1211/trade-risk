@@ -19,7 +19,7 @@ import {
 import { Button } from "../ui/button";
 import { TableDialog } from "./TableDialog";
 import Image from "next/image";
-import { columnHeaders, bankColumnHeaders, bankTableData } from "@/utils/data";
+import { columnHeaders, bankColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
 import { ApiResponse, ILcs } from "@/types/type";
 import { convertDateToYYYYMMDD } from "@/utils";
@@ -45,7 +45,6 @@ export const RequestTable = ({
   isBank: boolean;
   data: ApiResponse<ILcs> | undefined;
 }) => {
-  
   return (
     <div>
       <div className="rounded-md border px-4 py-4">
@@ -108,8 +107,9 @@ export const RequestTable = ({
             <TableBody>
               {isBank
                 ? data &&
+                  data.data &&
                   // @ts-ignore
-                  data.map((item: ILcs, index: number) => (
+                  data.data.map((item: ILcs, index: number) => (
                     <TableRow key={index} className="border-none ">
                       <TableDataCell data={2} />
                       <TableDataCell
@@ -162,9 +162,8 @@ export const RequestTable = ({
                       </TableCell>
                     </TableRow>
                   ))
-                : data
-                ? // @ts-ignore
-                  data?.map((item: ILcs, index: number) => (
+                : data && data.data
+                ? data.data.map((item: ILcs, index: number) => (
                     <TableRow key={index} className="border-none ">
                       <TableDataCell data={item.refId} />
                       <TableDataCell
@@ -209,9 +208,11 @@ export const RequestTable = ({
             </TableBody>
           </Table>
         </div>
-        {/* <div className="mt-5">
-          <Pagination data=""/>
-        </div> */}
+        {data && (
+          <div className="mt-5">
+            <Pagination data={data?.pagination} />
+          </div>
+        )}
       </div>
     </div>
   );

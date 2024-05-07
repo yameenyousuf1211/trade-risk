@@ -9,21 +9,49 @@ import {
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-export const Period = ({register,setValue}:any) => {
+const ValidatingCalendar = ({
+  initialDate,
+  onChange,
+  onClose,
+}: {
+  initialDate: Date | undefined;
+  onChange: (date: Date) => void;
+  onClose: any;
+}) => {
+  const [selectedDate, setSelectedDate] = useState(initialDate);
 
+  const handleDateSelect = (date: Date) => {
+    const today = new Date();
+    if (date < today) return toast.error("Please don't select a past date ");
 
+    setSelectedDate(date);
+    onChange(date);
+    onClose();
+  };
+
+  return (
+    <Calendar
+      mode="single"
+      selected={selectedDate}
+      onSelect={handleDateSelect}
+      initialFocus
+    />
+  );
+};
+
+export const Period = ({ register, setValue }: any) => {
   const [lcPeriodDate, setLcPeriodDate] = useState<Date>();
   const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
-
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
 
   // Function to update value in React Hook Form
   const updateValue = (name: string, value: any) => {
-    console.log(name,value)
     setValue(name, value);
   };
 
@@ -53,14 +81,18 @@ export const Period = ({register,setValue}:any) => {
             <label htmlFor="expected-date">Expected date of LC issuance</label>
           </div>
           {/* Popover for LC Period Date */}
-          <Popover>
+          <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
                 className="w-fit justify-start text-left font-normal border-none"
                 id="period-lc-date"
               >
-                {lcPeriodDate ? format(lcPeriodDate, "PPP") : <span>DD/MM/YYYY</span>}
+                {lcPeriodDate ? (
+                  format(lcPeriodDate, "PPP")
+                ) : (
+                  <span>DD/MM/YYYY</span>
+                )}
                 <CalendarIcon className="ml-2 mr-2 h-4 w-4" />
               </Button>
             </PopoverTrigger>
@@ -70,7 +102,8 @@ export const Period = ({register,setValue}:any) => {
                 selected={lcPeriodDate}
                 onSelect={(date) => {
                   setLcPeriodDate(date);
-                  updateValue("lcPeriod.startDate", date); // Update value in React Hook Form
+                  updateValue("lcPeriod.startDate", date);
+                  setDatePopoverOpen(false);
                 }}
                 initialFocus
               />
@@ -84,26 +117,29 @@ export const Period = ({register,setValue}:any) => {
         >
           <p>LC Expiry Date</p>
           {/* Popover for LC Expiry Date */}
-          <Popover>
+          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
                 className="w-fit justify-start text-left font-normal border-none"
                 id="period-expiry-date"
               >
-                {lcExpiryDate ? format(lcExpiryDate, "PPP") : <span>DD/MM/YYYY</span>}
+                {lcExpiryDate ? (
+                  format(lcExpiryDate, "PPP")
+                ) : (
+                  <span>DD/MM/YYYY</span>
+                )}
                 <CalendarIcon className="ml-2 mr-2 size-5" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={lcExpiryDate}
-                onSelect={(date) => {
+              <ValidatingCalendar
+                initialDate={lcExpiryDate}
+                onChange={(date) => {
                   setLcExpiryDate(date);
-                  updateValue("lcPeriod.endDate", date); // Update value in React Hook Form
+                  updateValue("lcPeriod.endDate", date);
                 }}
-                initialFocus
+                onClose={() => setIsPopoverOpen(false)}
               />
             </PopoverContent>
           </Popover>
@@ -131,18 +167,28 @@ export const Period = ({register,setValue}:any) => {
   );
 };
 
-export const Transhipment = ({register,setValue}:any) => {
+export const Transhipment = ({ register, setValue }: any) => {
+  const [expectedConfirmationDate, setExpectedConfirmationDate] =
+    useState<Date>();
+  const [checkedState, setCheckedState] = useState({
+    "transhipment-allowed-yes": false,
+    "transhipment-allowed-no": false,
+  });
 
-  const [expectedConfirmationDate, setExpectedConfirmationDate] = useState<Date>();
+  const handleCheckChange = (id: string) => {
+    setCheckedState((prevState) => ({
+      ...prevState,
+      "transhipment-allowed-yes": id === "transhipment-allowed-yes",
+      "transhipment-allowed-no": id === "transhipment-allowed-no",
+    }));
+  };
 
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const currentDate = new Date();
+  const tomorrowDate = addDays(currentDate, 1);
+  const nextWeekDate = addDays(currentDate, 7);
 
-  // Function to update value in React Hook Form
-  const updateValue = (name: string, value: any) => {
-    console.log(name,value)
-    setValue(name, value);
-    } 
-    
-    return (
+  return (
     <div className="w-full flex items-start gap-x-4 justify-between mt-4">
       <div className="border border-borderCol py-3 px-2 rounded-md w-full">
         <p className="font-semibold mb-2 ml-3">Transhipment Allowed</p>
@@ -150,16 +196,19 @@ export const Transhipment = ({register,setValue}:any) => {
           id="transhipment-allowed-yes"
           label="Yes"
           name="transhipment"
-          value={'yes'}
+          value={"yes"}
           register={register}
-          bg
+          checked={checkedState["transhipment-allowed-yes"]}
+          handleCheckChange={handleCheckChange}
         />
         <BgRadioInput
           id="transhipment-allowed-no"
           label="No"
           name="transhipment"
-          value={'no'}
+          value={"no"}
           register={register}
+          checked={checkedState["transhipment-allowed-no"]}
+          handleCheckChange={handleCheckChange}
         />
       </div>
       <div className="border border-borderCol py-3 px-2 rounded-md w-full">
@@ -171,7 +220,7 @@ export const Transhipment = ({register,setValue}:any) => {
           className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between "
         >
           <p>Select Date</p>
-          <Popover>
+          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
@@ -182,32 +231,49 @@ export const Transhipment = ({register,setValue}:any) => {
                 )}
                 id="expected-confirmation-date"
               >
-                {expectedConfirmationDate ? format(expectedConfirmationDate, "PPP") : <span>DD/MM/YYYY</span>}
-                <CalendarIcon className="mr-2 h-4 w-4" />
+                {expectedConfirmationDate ? (
+                  format(expectedConfirmationDate, "PPP")
+                ) : (
+                  <span>DD/MM/YYYY</span>
+                )}
+                <CalendarIcon className="ml-2 h-4 w-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={expectedConfirmationDate}
-                onSelect={(date) => {
-                  setExpectedConfirmationDate(date)
-                  setValue('expectedConfirmationDate',date)
+              <ValidatingCalendar
+                initialDate={expectedConfirmationDate}
+                onChange={(date) => {
+                  setExpectedConfirmationDate(date);
+                  setValue("expectedConfirmationDate", date);
                 }}
-                initialFocus
+                onClose={() => setIsPopoverOpen(false)}
               />
             </PopoverContent>
           </Popover>
         </label>
 
         <div className="flex items-center mt-2 gap-x-2 justify-between w-full">
-          <Button className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90">
+          <Button
+            type="button"
+            className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
+            onClick={() => setExpectedConfirmationDate(tomorrowDate)}
+          >
             <p className="text-white">Tomorrow</p>
-            <p className="text-sm text-white/80 font-thin">19 April</p>
+            <p className="text-sm text-white/80 font-thin">
+              {" "}
+              {format(tomorrowDate, "d MMMM")}
+            </p>
           </Button>
-          <Button className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90">
+          <Button
+            type="button"
+            className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
+            onClick={() => setExpectedConfirmationDate(nextWeekDate)}
+          >
             <p className="text-white">Next week</p>
-            <p className="text-sm text-white/80 font-thin">25 April</p>
+            <p className="text-sm text-white/80 font-thin">
+              {" "}
+              {format(nextWeekDate, "d MMMM")}
+            </p>
           </Button>
         </div>
       </div>
@@ -225,7 +291,7 @@ export const Transhipment = ({register,setValue}:any) => {
   );
 };
 
-export const DiscountBanks = ({register}:any) => {
+export const DiscountBanks = ({ register }: any) => {
   return (
     <div className="flex items-center justify-between w-full mb-3 gap-x-4">
       {/* Issuing Bank */}
@@ -237,7 +303,6 @@ export const DiscountBanks = ({register}:any) => {
             label="Country"
             id="issuingBank.country"
             register={register}
-            
           />
           <DDInput
             placeholder="Select bank"
@@ -256,14 +321,12 @@ export const DiscountBanks = ({register}:any) => {
             label="Country"
             id="advisingBank.country"
             register={register}
-
           />
           <DDInput
             placeholder="Select bank"
             label="Bank"
             id="advisingBank.bank"
             register={register}
-
           />
         </div>
       </div>
@@ -291,14 +354,12 @@ export const DiscountBanks = ({register}:any) => {
             label="Country"
             id="confirmingBank.country"
             register={register}
-
           />
           <DDInput
             placeholder="Select bank"
             label="Bank"
             id="confirmingBank.bank"
             register={register}
-
           />
         </div>
       </div>

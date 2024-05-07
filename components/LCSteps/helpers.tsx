@@ -18,20 +18,19 @@ export const RadioInput = ({
   id: string;
   label: string;
   name: string;
-  value:string
+  value: string;
   register: UseFormRegister<any>;
 }) => {
   return (
     <label
       htmlFor={id}
-      className="px-3 py-4 w-full rounded-md flex items-center gap-x-2 mb-2 border border-borderCol text-lightGray"
+      className="px-3 py-4 w-full rounded-md flex items-center gap-x-3 mb-2 border border-borderCol text-lightGray"
     >
       <input
         type="radio"
         id={id}
         value={value}
         {...register(name)}
-
         className="accent-primaryCol size-4"
       />
       {label}
@@ -51,7 +50,6 @@ export const DDInput = ({
   register: UseFormRegister<any>;
 }) => {
   const handleSelectChange = (value: string) => {
-    console.log(value); // Log the selected value to the console
     register(id, { value: value }); // Register the selected value using react-hook-form
   };
 
@@ -62,10 +60,7 @@ export const DDInput = ({
     >
       <p className="text-lightGray">{label}</p>
       <Select onValueChange={handleSelectChange}>
-        <SelectTrigger
-          id={id}
-          className="w-fit border-none bg-transparent"
-        >
+        <SelectTrigger id={id} className="w-fit border-none bg-transparent">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
@@ -80,25 +75,26 @@ export const DDInput = ({
 export const BgRadioInput = ({
   id,
   label,
-  bg,
+  checked,
   name,
   value,
   register,
+  handleCheckChange,
 }: {
   id: string;
   label: string;
   name: string;
   value: string | boolean;
-  bg?: boolean;
+  checked: boolean;
   register?: any;
+  handleCheckChange: (id: string) => void;
 }) => {
-  console.log(name, "name");
   return (
     <label
       htmlFor={id}
-      className={`px-3 py-4 w-full ${
-        bg ? "bg-[#EEE9FE]" : "border border-borderCol"
-      }  rounded-md flex items-center gap-x-2 mb-2 text-lightGray`}
+      className={`px-3 py-4 w-full transition-colors duration-100 ${
+        checked ? "bg-[#EEE9FE]" : "border border-borderCol"
+      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray`}
     >
       <input
         type="radio"
@@ -106,6 +102,7 @@ export const BgRadioInput = ({
         value={value}
         {...register(name)}
         className="accent-primaryCol size-4"
+        onChange={() => handleCheckChange(id)}
       />
       {label}
     </label>

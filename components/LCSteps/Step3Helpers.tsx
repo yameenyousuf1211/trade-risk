@@ -57,7 +57,7 @@ export const Period = ({ register, setValue }: any) => {
 
   return (
     <div className="flex items-start gap-x-4 my-5">
-      <div className="border border-borderCol py-3 px-2 rounded-md w-2/3">
+      <div className="border border-borderCol py-3 px-2 rounded-md w-2/3 bg-[#F5F7F9]">
         <p className="font-semibold mb-2 ml-3">LC Period</p>
         <div className="flex items-center gap-x-4 justify-between border border-borderCol rounded-md py-3 px-3 mb-3">
           <div className="w-full rounded-md flex items-center gap-x-2">
@@ -146,7 +146,7 @@ export const Period = ({ register, setValue }: any) => {
         </label>
       </div>
       {/* Port of Shipment */}
-      <div className="border border-borderCol py-3 px-2 rounded-md w-1/3 h-full min-h-44">
+      <div className="border border-borderCol py-3 px-2 rounded-md w-1/3 h-full min-h-44 bg-[#F5F7F9]">
         <p className="font-semibold ml-3">Port of Shipment</p>
         <div className="flex flex-col gap-y-2 mt-2">
           <DDInput
@@ -167,7 +167,7 @@ export const Period = ({ register, setValue }: any) => {
   );
 };
 
-export const Transhipment = ({ register, setValue }: any) => {
+export const Transhipment = ({ register, setValue, isDiscount }: any) => {
   const [expectedConfirmationDate, setExpectedConfirmationDate] =
     useState<Date>();
   const [checkedState, setCheckedState] = useState({
@@ -190,7 +190,7 @@ export const Transhipment = ({ register, setValue }: any) => {
 
   return (
     <div className="w-full flex items-start gap-x-4 justify-between mt-4">
-      <div className="border border-borderCol py-3 px-2 rounded-md w-full">
+      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9]">
         <p className="font-semibold mb-2 ml-3">Transhipment Allowed</p>
         <BgRadioInput
           id="transhipment-allowed-yes"
@@ -211,7 +211,8 @@ export const Transhipment = ({ register, setValue }: any) => {
           handleCheckChange={handleCheckChange}
         />
       </div>
-      <div className="border border-borderCol py-3 px-2 rounded-md w-full">
+
+      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9]">
         <p className="font-semibold  mb-2 ml-3">
           Expecte Date to add Confirmation
         </p>
@@ -244,7 +245,9 @@ export const Transhipment = ({ register, setValue }: any) => {
                 initialDate={expectedConfirmationDate}
                 onChange={(date) => {
                   setExpectedConfirmationDate(date);
-                  setValue("expectedConfirmationDate", date);
+                  isDiscount
+                    ? setValue("expectedDiscountingDate", date)
+                    : setValue("expectedConfirmationDate", date);
                 }}
                 onClose={() => setIsPopoverOpen(false)}
               />
@@ -277,13 +280,14 @@ export const Transhipment = ({ register, setValue }: any) => {
           </Button>
         </div>
       </div>
-      <div className="border border-borderCol py-3 px-2 rounded-md w-full">
+
+      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9]">
         <p className="font-semibold mb-2 ml-3">Product Description</p>
         <Textarea
           name="productDescription"
           register={register}
           placeholder="Enter the description of the product (being imported under this LC)"
-          className="border border-borderCol placeholder:text-para resize-none focus-visible:ring-0 focus-visible:ring-offset-0 "
+          className="bg-white border border-borderCol placeholder:text-para resize-none focus-visible:ring-0 focus-visible:ring-offset-0 "
           rows={4}
         />
       </div>
@@ -295,7 +299,7 @@ export const DiscountBanks = ({ register }: any) => {
   return (
     <div className="flex items-center justify-between w-full mb-3 gap-x-4">
       {/* Issuing Bank */}
-      <div className="border border-borderCol rounded-md py-3 px-2 w-full">
+      <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
         <p className="font-semibold mb-2 ml-3">Issuing Bank</p>
         <div className="flex flex-col gap-y-2">
           <DDInput
@@ -313,7 +317,7 @@ export const DiscountBanks = ({ register }: any) => {
         </div>
       </div>
       {/* Advising Bank */}
-      <div className="border border-borderCol rounded-md py-3 px-2 w-full">
+      <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
         <p className="font-semibold mb-2 ml-3">Advising Bank</p>
         <div className="flex flex-col gap-y-2">
           <DDInput
@@ -331,7 +335,7 @@ export const DiscountBanks = ({ register }: any) => {
         </div>
       </div>
       {/* Confirming Bank */}
-      <div className="border border-borderCol rounded-md py-3 px-2 w-full">
+      <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
         <div className="flex items-center gap-x-2 justify-between mb-2">
           <p className="font-semibold  ml-3">Confirming Bank</p>
           <div>

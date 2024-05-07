@@ -82,7 +82,7 @@ export const Step7 = ({ register, step }: { register: any; step: number }) => {
       <p className="font-semibold">Add Documents (PDF,JPG,PNG,TIFF)</p>
       <label
         htmlFor="attachment-input"
-        className="cursor-pointer flex flex-col justify-center items-center border-4 border-borderCol border-dotted py-4 rounded-md mt-2"
+        className="cursor-pointer flex flex-col justify-center items-center border-4 border-borderCol border-dotted py-4 rounded-md mt-2 bg-[#F5F7F9]"
       >
         <input
           id="attachment-input"

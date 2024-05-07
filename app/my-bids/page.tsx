@@ -53,7 +53,7 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
           <h2 className="text-4xl font-semibold mb-5">My Bids</h2>
 
           {/* Data Table */}
-          <div className="rounded-md border border-borderCol px-4 py-4">
+          <div className="bg-white rounded-md border border-borderCol px-4 py-4">
             {/* Tabs */}
             <div className="flex items-center gap-x-5 mb-2">
               <div className="relative py-3">

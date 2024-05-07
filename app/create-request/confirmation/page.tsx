@@ -9,6 +9,7 @@ import {
   Step5,
   Step6,
   Step7,
+  Step7Disounting,
 } from "@/components/LCSteps";
 import { RadioInput } from "@/components/LCSteps/helpers";
 import {
@@ -31,7 +32,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { onCreateLC } from "@/services/apis/lcs.api";
 import { useRouter } from "next/navigation";
-import { confirmationSchema } from "@/validation/lc.validation";
+import { confirmationDiscountSchema } from "@/validation/lc.validation";
 import Loader from "@/components/ui/loader";
 import useLoading from "@/hooks/useLoading";
 
@@ -39,43 +40,55 @@ const ConfirmationPage = () => {
   const {
     register,
     setValue,
+    getValues,
+    reset,
     handleSubmit,
-    formState: { errors },
-  } = useForm<z.infer<typeof confirmationSchema>>({
-    resolver: zodResolver(confirmationSchema),
+    formState: { errors, isSubmitting },
+  } = useForm<z.infer<typeof confirmationDiscountSchema>>({
+    resolver: zodResolver(confirmationDiscountSchema),
   });
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
-  
-
   useEffect(() => {
     if (errors) {
-      Object.keys(errors).forEach((fieldName: string) => {
-        const errorMessage = errors[fieldName as keyof typeof errors]?.message;
-        if (errorMessage) {
-          toast.error(`${fieldName}: ${errorMessage}`);
-        }
-      });
+      const showNestedErrors = (errorsObj: any, parentKey = "") => {
+        Object.keys(errorsObj)
+          .reverse()
+          .forEach((key) => {
+            const errorMessage =
+              errorsObj[key as keyof typeof errorsObj]?.message;
+
+            if (errorMessage) {
+              const fieldName = parentKey ? `${parentKey}.${key}` : key;
+              toast.error(`${fieldName}: ${errorMessage}`);
+            } else if (typeof errorsObj[key] === "object") {
+              showNestedErrors(errorsObj[key], key);
+            }
+          });
+      };
+
+      showNestedErrors(errors);
     }
   }, [errors]);
 
-  const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
-    data: any
-  ) => {
-    startLoading()
+  const onSubmit: SubmitHandler<
+    z.infer<typeof confirmationDiscountSchema>
+  > = async (data: z.infer<typeof confirmationDiscountSchema>) => {
+    startLoading();
     const reqData = {
       ...data,
-      lcType: "LC Confirmation",
-      advisingBank: { bank: "Al habib", country: "Pak" }, // will be removed
-      transhipment: false,
-      expectedDiscountingDate: new Date(), // will be removed
+      transhipment: data.transhipment === "yes" ? true : false,
+      lcType: "LC Confirmation & Discounting",
     };
     const { response, success } = await onCreateLC(reqData);
-    stopLoading()
+    stopLoading();
     if (!success) return toast.error(response);
-    if (success) toast.success(response?.message);
-    router.push("/dashboard");
+    else {
+      toast.success(response?.message);
+      reset();
+      router.push("/");
+    }
   };
 
   const handleSelectChange = (value: string) => {
@@ -84,7 +97,7 @@ const ConfirmationPage = () => {
   return (
     <CreateLCLayout>
       <form
-        className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg"
+        className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white"
         onSubmit={handleSubmit(onSubmit)}
       >
         <Step1 register={register} />
@@ -100,7 +113,7 @@ const ConfirmationPage = () => {
             <div className="flex items-center gap-x-2">
               <Select onValueChange={handleSelectChange}>
                 <SelectTrigger className="w-[100px] bg-borderCol/80">
-                  <SelectValue placeholder="USD" />
+                  <SelectValue placeholder="USD" defaultValue="USD" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="USD">USD</SelectItem>
@@ -116,7 +129,7 @@ const ConfirmationPage = () => {
             </div>
           </div>
 
-          <div className="border border-borderCol px-2 py-3 rounded-md">
+          <div className="border border-borderCol px-2 py-3 rounded-md bg-[#F5F7F9]">
             <h5 className="font-semibold ml-3">LC Payment Terms</h5>
             <div className="flex items-center gap-x-3 w-full mt-2">
               <RadioInput
@@ -162,24 +175,22 @@ const ConfirmationPage = () => {
           {/* Period */}
           <Period register={register} setValue={setValue} />
           {/* Transhipment */}
-          <Transhipment register={register} setValue={setValue} />
+          <Transhipment register={register} setValue={setValue}/>
         </div>
-        <Step4 register={register} setValue={setValue} />
-        <Step5 register={register} setValue={setValue} />
+        <Step4 register={register} />
+        <Step5 register={register} isConfirmation/>
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6
             register={register}
             title="Confirmation Info"
-            isConfirmation
-            step={6}
+            getValues={getValues}
+            setValue={setValue}
           />
-          <Step6
+          <Step7Disounting
+            getValues={getValues}
+            setValue={setValue}
             register={register}
-            title="Discounting Info"
-            isConfirmation
-            isDiscount
-            step={7}
           />
         </div>
         <Step7 register={register} step={8} />
@@ -190,7 +201,7 @@ const ConfirmationPage = () => {
             Save as draft
           </Button>
           <Button
-          disabled={isLoading}
+            disabled={isLoading}
             size="lg"
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
           >

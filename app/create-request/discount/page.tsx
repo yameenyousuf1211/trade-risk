@@ -68,8 +68,7 @@ const CreateDiscountPage = () => {
     startLoading();
     const reqData = {
       ...data,
-      transhipment: false,
-      discountAtSight: data.discountAtSight === "yes" ? true : false,
+      transhipment: data.transhipment === "yes" ? true : false,
       lcType: "LC Discounting",
       extraInfo: {
         dats: new Date("2024-04-28"),
@@ -77,12 +76,13 @@ const CreateDiscountPage = () => {
       },
       expectedDiscountingDate: new Date("2024-04-28"),
     };
-    console.log(reqData)
+
     const { response, success } = await onCreateLC(reqData);
     stopLoading();
     if (!success) return toast.error(response);
     else {
       toast.success(response?.message);
+      reset();
       router.push("/");
     }
   };
@@ -94,7 +94,7 @@ const CreateDiscountPage = () => {
   return (
     <CreateLCLayout>
       <form
-        className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg"
+        className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white"
         onSubmit={handleSubmit(onSubmit)}
       >
         <Step1 register={register} />
@@ -125,7 +125,7 @@ const CreateDiscountPage = () => {
               />
             </div>
           </div>
-          <div className="border border-borderCol px-2 py-3 rounded-md">
+          <div className="border border-borderCol px-2 py-3 rounded-md bg-[#F5F7F9]">
             <h5 className="font-semibold ml-3">LC Payment Terms</h5>
             <div className="flex items-center gap-x-3 w-full mt-2">
               <RadioInput
@@ -233,7 +233,7 @@ const CreateDiscountPage = () => {
                 register={register}
                 type="text"
                 name="ds"
-                className="!border-b-2 !border-b-neutral-300 rounded-none border-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="bg-transparent !border-b-2 !border-b-neutral-300 rounded-none border-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
               />
             </div>
           </div>
@@ -251,7 +251,7 @@ const CreateDiscountPage = () => {
           {/* Period */}
           <Period register={register} setValue={setValue} />
           {/* Transhipment */}
-          <Transhipment register={register} setValue={setValue} />
+          <Transhipment register={register} isDiscount setValue={setValue} />
         </div>
 
         <Step4 register={register} setValue={setValue} />
@@ -262,7 +262,6 @@ const CreateDiscountPage = () => {
             register={register}
             title="Discounting Info"
             isDiscount
-            step={6}
             setValue={setValue}
             getValues={getValues}
           />
@@ -271,7 +270,7 @@ const CreateDiscountPage = () => {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
-          <Button type="button" variant="ghost" className="bg-none w-1/3">
+          <Button type="button" variant="ghost" className="bg-[#F5F7F9] w-1/3">
             Save as draft
           </Button>
           <Button

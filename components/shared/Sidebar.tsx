@@ -26,9 +26,9 @@ const SliderCard = () => {
 
 const RequestCard = ({ isBank }: { isBank: boolean }) => {
   return (
-    <div className="flex flex-col gap-y-5">
+    <div className="flex flex-col gap-y-5 bg-[#F5F7F9] rounded-md">
       {/* Data */}
-      <div>
+      <div className="px-3 pt-2">
         <p>Request #029199</p>
         {isBank && <p className="text-lg font-semibold my-1">Aramco</p>}
 
@@ -126,7 +126,7 @@ export const Sidebar = ({
         </div>
       )}
 
-      <div className="border border-borderCol py-4 px-5 mt-5 rounded-lg min-h-[70%] max-h-[80%] overflow-y-auto overflow-x-hidden flex flex-col justify-between">
+      <div className="bg-white border border-borderCol py-4 px-5 mt-5 rounded-lg min-h-[70%] max-h-[80%] overflow-y-auto overflow-x-hidden flex flex-col justify-between">
         <div>
           <h4 className="-ml-2 text-lg font-medium mb-3">
             {isBank ? "Needs Action" : "Needs your attention"}

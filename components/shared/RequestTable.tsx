@@ -45,9 +45,10 @@ export const RequestTable = ({
   isBank: boolean;
   data: ApiResponse<ILcs> | undefined;
 }) => {
+  console.log(data)
   return (
     <div>
-      <div className="rounded-md border px-4 py-4">
+      <div className="rounded-md border px-4 py-4 bg-white">
         <div className="flex items-center justify-between w-full gap-x-2 mb-4">
           <h2 className="text-2xl font-semibold">
             {isBank ? "Deals Received" : "Transaction Requests"}

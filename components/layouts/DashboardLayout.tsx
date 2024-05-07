@@ -11,13 +11,11 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${poppins.className}`}>
-        <Header />
-        <main className="bg-bg px-2 relative w-full min-h-[88vh] flex flex-col items-center justify-center py-10">
-          {children}
-        </main>
-      </body>
-    </html>
+    <>
+      <Header />
+      <main className="bg-bg px-2 relative w-full min-h-[88vh] flex flex-col items-center justify-center py-10">
+        {children}
+      </main>
+    </>
   );
 }

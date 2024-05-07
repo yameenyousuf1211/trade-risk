@@ -1,7 +1,7 @@
 import { DDInput } from "./helpers";
 import { Input } from "@/components/ui/input";
 
-export const Step5 = ({ register }: any) => {
+export const Step5 = ({ register, isConfirmation }: any) => {
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -10,7 +10,13 @@ export const Step5 = ({ register }: any) => {
         </p>
         <p className="font-semibold text-lg text-lightGray">Exporter Info</p>
       </div>
-      <div className="flex items-center gap-x-3">
+      <div
+        className={
+          isConfirmation
+            ? "grid grid-cols-2 gap-y-2 gap-x-2"
+            : "flex items-center gap-x-3"
+        }
+      >
         <label
           id="name"
           className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
@@ -37,6 +43,14 @@ export const Step5 = ({ register }: any) => {
           register={register}
           placeholder="Select a country"
         />
+        {isConfirmation && (
+          <DDInput
+            id="exporterInfo.bank"
+            label="Bank"
+            register={register}
+            placeholder="Select a country"
+          />
+        )}
       </div>
     </div>
   );

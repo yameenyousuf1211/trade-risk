@@ -16,7 +16,7 @@ export const Step3 = ({ register, setValue }: any) => {
       </div>
       {/* Issuing Bank */}
       <div className="flex items-center justify-between w-full mb-3 gap-x-4">
-        <div className="border border-borderCol rounded-md py-3 px-2 w-full">
+        <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
           <p className="font-semibold mb-2 ml-3">Issuing Bank</p>
           <div className="flex flex-col gap-y-2">
             <DDInput
@@ -41,7 +41,7 @@ export const Step3 = ({ register, setValue }: any) => {
         </div>
       </div>
       {/* Confirming Bank */}
-      <div className="py-3 px-2 rounded-md border border-borderCol">
+      <div className="py-3 px-2 rounded-md border border-borderCol bg-[#F5F7F9]">
         <p className="font-semibold">Confirming Bank</p>
         <div className="flex items-center gap-x-3 w-full">
           <div className="flex items-center gap-x-2 w-full">

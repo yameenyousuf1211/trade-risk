@@ -29,6 +29,7 @@ const BidCard = ({ data }: { data: IBids }) => {
         queryKey: ["single-lcs-bids", "fetch-lcs"],
       });
   };
+  console.log(data)
   return (
     <div className="border border-borderCol py-5 px-3 rounded-lg grid grid-cols-2 gap-y-1.5">
       <div>

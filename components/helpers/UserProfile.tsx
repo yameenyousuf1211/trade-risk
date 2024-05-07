@@ -5,14 +5,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogoutBtn } from "./LogoutBtn";
+import { useAuth } from "@/context/AuthProvider";
 
 export const UserProfile = () => {
   const hasNotifications = true;
+  const { user } = useAuth();
   return (
     <div className="flex items-center gap-x-4">
       <div className="relative">
@@ -34,7 +34,7 @@ export const UserProfile = () => {
         </Avatar>
 
         <div>
-          <h2 className="font-semibold">John Wick</h2>
+          <h2 className="font-semibold">{user && user.name}</h2>
           <p className="text-para text-sm">Trade Finance Solutions</p>
         </div>
       </div>
@@ -43,7 +43,7 @@ export const UserProfile = () => {
         <DropdownMenuTrigger>
           <div className="self-end w-0 h-0 border-b-transparent border-t-[10px] border-r-transparent border-r-[8px] border-t-para border-b-[10px] border-l-transparent border-l-[8px] rounded-[1px]" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" classNamew="w-[350px]">
+        <DropdownMenuContent align="end" className="w-[150px]">
           <DropdownMenuItem>
             <LogoutBtn />
           </DropdownMenuItem>

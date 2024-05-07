@@ -110,12 +110,9 @@ export const AddBid = ({
     if (!success) return toast.error("Something went wrong");
     else toast.success("Bid added");
   };
-  console.log(status);
+
   return (
     <Dialog>
-      {/* <DialogTrigger className="rounded-md py-2 px-3 mt-2 w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white">
-        Add Bid
-      </DialogTrigger> */}
       <DialogTrigger
         className={`${
           status === "Rejected"
@@ -295,29 +292,29 @@ export const AddBid = ({
 
                   <Button
                     className={`${
-                      status === "accepted"
+                      status === "Accepted"
                         ? "bg-[#29C08433] hover:bg-[#29C08433]"
-                        : status === "rejected"
+                        : status === "Rejected"
                         ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
-                        : status === "expired"
+                        : status === "Expired"
                         ? "bg-[#97979733] hover:bg-[#97979733]"
-                        : status === "submitted"
+                        : status === "Submitted"
                         ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
                         : ""
                     } mt-2 text-black`}
                   >
-                    {status === "accepted"
+                    {status === "Accepted"
                       ? "Bid Accepted"
-                      : status === "rejected"
+                      : status === "Rejected"
                       ? "Bid Rejected"
-                      : status === "expired"
+                      : status === "Expired"
                       ? "Request Expired"
-                      : status === "submitted"
+                      : status === "Submitted"
                       ? "Bid Submitted"
                       : ""}
                   </Button>
                 </div>
-                {status === "rejected" && (
+                {status === "Rejected" && (
                   <Button
                     size="lg"
                     className="py-6 text-[16px] mt-5 bg-primaryCol hover:bg-primaryCol/90 rounded-lg"
@@ -398,14 +395,15 @@ export const AddBid = ({
                         </SelectContent>
                       </Select>
                       <Plus strokeWidth={4.5} className="size-4" />
-                      <Input
+                      <input
+                        type="text"
                         placeholder="Margin (%)"
                         id="margin"
                         value={discountMargin}
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
                           setDiscountMargin(e.target.value)
                         }
-                        register={register}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
                       />
                     </div>
                   </div>

@@ -7,7 +7,7 @@ const fileSchema = z.object({
   // Add more properties if needed
 });
 
-export const confirmationSchema = z.object({
+export const generalLcSchema = z.object({
   participantRole: z.enum(["exporter", "importer"], {
     message: "Select transaction role",
   }),
@@ -38,11 +38,6 @@ export const confirmationSchema = z.object({
     port: z.string({ message: "Select port" }),
   }),
   transhipment: z.enum(["yes", "no"], { message: "Specify transhipment" }),
-  expectedConfirmationDate: z.date({ message: "select date" }),
-  productDescription: z
-    .string({ message: "Add product description" })
-    .min(10, { message: "Description must be greater than 10 characters" })
-    .max(300, { message: "Description cannot be more than 300 characters" }),
   importerInfo: z.object({
     applicantName: z
       .string({ message: "Enter applicant name" })
@@ -51,31 +46,42 @@ export const confirmationSchema = z.object({
       .string({ message: "Select country of import" })
       .nonempty("Select country of import"),
   }),
-  exporterInfo: z.object({
-    beneficiaryName: z
-      .string({ message: "Enter beneficiary name" })
-      .nonempty("Enter beneficiary name"),
-    countryOfExport: z.string({ message: "Select country of export" }),
-    beneficiaryCountry: z.string({
-      message: "Select beneficiary country",
-    }),
-  }),
-  confirmationCharges: z.object({
-    behalfOf: z.enum(["Exporter", "Importer"], {
-      message: "Select one of above",
-    }),
-  }),
-  pricePerAnnum: z
-    .string({ message: "Enter expected price" })
-    .nonempty("Enter expected price")
-    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-      message: "Enter a valid number",
-    }),
-  // attachments: z.union([z.array(fileSchema), z.undefined()]),
+  productDescription: z
+    .string({ message: "Add product description" })
+    .min(10, { message: "Description must be greater than 10 characters" })
+    .max(300, { message: "Description cannot be more than 300 characters" }),
 });
 
+export const confirmationSchema = z.lazy(() =>
+  generalLcSchema.merge(
+    z.object({
+      expectedConfirmationDate: z.date({ message: "select date" }),
+      exporterInfo: z.object({
+        beneficiaryName: z
+          .string({ message: "Enter beneficiary name" })
+          .nonempty("Enter beneficiary name"),
+        countryOfExport: z.string({ message: "Select country of export" }),
+        beneficiaryCountry: z.string({
+          message: "Select beneficiary country",
+        }),
+      }),
+      confirmationCharges: z.object({
+        behalfOf: z.enum(["Exporter", "Importer"], {
+          message: "Select one of above",
+        }),
+      }),
+      pricePerAnnum: z
+        .string({ message: "Enter expected price" })
+        .nonempty("Enter expected price")
+        .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+          message: "Enter a valid number",
+        }),
+    })
+  )
+);
+
 export const discountingSchema = z.lazy(() =>
-  confirmationSchema.merge(
+  generalLcSchema.merge(
     z.object({
       advisingBank: z.object({
         bank: z.string({ message: "Advising bank name is required" }),
@@ -83,6 +89,75 @@ export const discountingSchema = z.lazy(() =>
       }),
       discountAtSight: z.enum(["yes", "no"], {
         message: "Specify discount at sight",
+      }),
+      expectedDiscountingDate: z.date({ message: "select date" }),
+      exporterInfo: z.object({
+        beneficiaryName: z
+          .string({ message: "Enter beneficiary name" })
+          .nonempty("Enter beneficiary name"),
+        countryOfExport: z.string({ message: "Select country of export" }),
+        beneficiaryCountry: z.string({
+          message: "Select beneficiary country",
+        }),
+      }),
+      confirmationCharges: z.object({
+        behalfOf: z.enum(["Exporter", "Importer"], {
+          message: "Select one of above",
+        }),
+        pricePerAnnum: z
+          .string({ message: "Enter expected price" })
+          .nonempty("Enter expected price")
+          .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+            message: "Enter a valid number",
+          }),
+      }),
+    })
+  )
+);
+
+export const confirmationDiscountSchema = z.lazy(() =>
+  generalLcSchema.merge(
+    z.object({
+      advisingBank: z.object({
+        bank: z.string({ message: "Advising bank name is required" }),
+        country: z.string({ message: "Advising bank country is required" }),
+      }),
+      expectedConfirmationDate: z.date({ message: "select date" }),
+      // expectedDiscountingDate: z.date({ message: "select date" }),
+      exporterInfo: z.object({
+        beneficiaryName: z
+          .string({ message: "Enter beneficiary name" })
+          .nonempty("Enter beneficiary name"),
+        countryOfExport: z.string({ message: "Select country of export" }),
+        beneficiaryCountry: z.string({
+          message: "Select beneficiary country",
+        }),
+        bank: z.string({ message: "Select export bank" }),
+      }),
+      confirmationCharges: z.object({
+        behalfOf: z.enum(["Exporter", "Importer"], {
+          message: "Select one of above",
+        }),
+        pricePerAnnum: z
+          .string({ message: "Enter expected price" })
+          .nonempty("Enter expected price")
+          .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+            message: "Enter a valid number",
+          }),
+      }),
+      discountingInfo: z.object({
+        discountAtSight: z.enum(["yes", "no"], {
+          message: "Specify discount at sight",
+        }),
+        behalfOf: z.enum(["Exporter", "Importer"], {
+          message: "Select one of above",
+        }),
+        pricePerAnnum: z
+          .string({ message: "Enter expected price" })
+          .nonempty("Enter expected price")
+          .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+            message: "Enter a valid number",
+          }),
       }),
     })
   )

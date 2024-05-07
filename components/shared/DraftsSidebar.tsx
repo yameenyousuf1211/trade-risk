@@ -30,7 +30,7 @@ const DraftCard = ({ noBorder }: { noBorder?: boolean }) => {
 
 export const DraftsSidebar = () => {
   return (
-    <div className="border border-borderCol rounded-lg py-4 px-3 min-h-[70vh]">
+    <div className="border border-borderCol bg-white rounded-lg py-4 px-3 min-h-[70vh]">
       <h4 className="text-lg font-medium mb-3">Drafts (4)</h4>
 
       <div className="flex flex-col gap-y-2">

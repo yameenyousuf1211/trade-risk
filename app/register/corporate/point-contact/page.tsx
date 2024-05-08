@@ -122,7 +122,7 @@ const PointContactPage = () => {
             <Button
               type="button"
               variant="ghost"
-              className="text-para text-[16px]"
+              className="text-para text-[16px] w-full"
             >
               Previous
             </Button>

@@ -50,6 +50,7 @@ type RegisterStore = {
   address: string;
   constitution?: string;
   businessType?: string;
+  businessNature?: string;
   phone: string;
   bank: string;
   swiftCode: string;

@@ -81,6 +81,7 @@ const ConfirmationPage = () => {
       transhipment: data.transhipment === "yes" ? true : false,
       lcType: "LC Confirmation & Discounting",
     };
+    console.log(reqData);
     const { response, success } = await onCreateLC(reqData);
     stopLoading();
     if (!success) return toast.error(response);
@@ -175,10 +176,10 @@ const ConfirmationPage = () => {
           {/* Period */}
           <Period register={register} setValue={setValue} />
           {/* Transhipment */}
-          <Transhipment register={register} setValue={setValue}/>
+          <Transhipment register={register} setValue={setValue} />
         </div>
         <Step4 register={register} />
-        <Step5 register={register} isConfirmation/>
+        <Step5 register={register} isConfirmation />
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6

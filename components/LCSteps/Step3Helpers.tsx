@@ -214,7 +214,9 @@ export const Transhipment = ({ register, setValue, isDiscount }: any) => {
 
       <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9]">
         <p className="font-semibold  mb-2 ml-3">
-          Expecte Date to add Confirmation
+          {isDiscount
+            ? "Expected Date for Discounting"
+            : "Expected Date to add Confirmation"}
         </p>
         <label
           id="expected-confirmation-date"

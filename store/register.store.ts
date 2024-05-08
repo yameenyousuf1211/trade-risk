@@ -11,6 +11,7 @@ const useRegisterStore = create<UseRegisterStore>((set, get) => ({
     address: '',
     constitution: '',
     businessType: '',
+    businessNature: '',
     phone: '',
     bank: '',
     swiftCode: '',

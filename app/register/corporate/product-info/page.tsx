@@ -27,7 +27,9 @@ const ProductInfoPage = () => {
   const onSubmit: SubmitHandler<z.infer<typeof productsInfoSchema>> = async (
     data: any
   ) => {
-    setValues(data);
+    setValues({
+      productInfo: data,
+    });
     console.log(getStateValues(useRegisterStore.getState()));
     console.log(data);
 
@@ -118,7 +120,7 @@ const ProductInfoPage = () => {
             <Button
               type="button"
               variant="ghost"
-              className="text-para text-[16px]"
+              className="text-para text-[16px] w-full"
             >
               Previous
             </Button>

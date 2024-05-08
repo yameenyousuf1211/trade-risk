@@ -9,12 +9,14 @@ export const Step6 = ({
   register,
   setValue,
   getValues,
+  isConfirmation,
 }: {
   title: string;
   isDiscount?: boolean;
   register: any;
   setValue: any;
   getValues: any;
+  isConfirmation?: boolean;
 }) => {
   const [checkedState, setCheckedState] = useState({
     "account-beneficiary": false,
@@ -43,19 +45,19 @@ export const Step6 = ({
   };
 
   const handleIncrement = () => {
-    const currentValue = getValues("confirmationCharges.pricePerAnnum") || "0";
+    const currentValue = getValues("confirmationInfo.pricePerAnnum") || "0";
     const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
-    setValue("confirmationCharges.pricePerAnnum", newValue);
+    setValue("confirmationInfo.pricePerAnnum", newValue);
   };
 
   const handleDecrement = () => {
-    const currentValue = getValues("confirmationCharges.pricePerAnnum") || "0";
+    const currentValue = getValues("confirmationInfo.pricePerAnnum") || "0";
     let newValue = parseFloat(currentValue) - 0.5;
 
     if (newValue < 0) newValue = 0;
     // @ts-ignore
     newValue = newValue.toFixed(1);
-    setValue("confirmationCharges.pricePerAnnum", newValue);
+    setValue("confirmationInfo.pricePerAnnum", newValue);
   };
 
   return (
@@ -94,7 +96,7 @@ export const Step6 = ({
         <BgRadioInput
           id="account-beneficiary"
           label="Exporter/Supplier (Beneficiary)"
-          name="confirmationCharges.behalfOf"
+          name="confirmationInfo.behalfOf"
           value="Exporter"
           register={register}
           checked={checkedState["account-beneficiary"]}
@@ -103,7 +105,7 @@ export const Step6 = ({
         <BgRadioInput
           id="account-importer"
           label="Importer (Applicant)"
-          name="confirmationCharges.behalfOf"
+          name="confirmationInfo.behalfOf"
           value="Importer"
           register={register}
           checked={checkedState["account-importer"]}
@@ -140,7 +142,7 @@ export const Step6 = ({
             <Input
               placeholder="Value (%)"
               type="string"
-              name="confirmationCharges.pricePerAnnum"
+              name="confirmationInfo.pricePerAnnum"
               register={register}
               className="border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
             />

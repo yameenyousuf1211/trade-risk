@@ -13,7 +13,7 @@ export default function RegisterPage() {
 
   const navigate = () => {
     if (!role) return;
-    router.push(`/register/${role === "corporate" ? "/corporate" : "bank"}`);
+    router.push(`/register/${role === "corporate" ? "corporate" : "bank"}`);
   };
 
   return (

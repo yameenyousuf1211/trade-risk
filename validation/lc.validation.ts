@@ -65,17 +65,17 @@ export const confirmationSchema = z.lazy(() =>
           message: "Select beneficiary country",
         }),
       }),
-      confirmationCharges: z.object({
+      confirmationInfo: z.object({
         behalfOf: z.enum(["Exporter", "Importer"], {
           message: "Select one of above",
         }),
+        pricePerAnnum: z
+          .string({ message: "Enter expected price" })
+          .nonempty("Enter expected price")
+          .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+            message: "Enter a valid number",
+          }),
       }),
-      pricePerAnnum: z
-        .string({ message: "Enter expected price" })
-        .nonempty("Enter expected price")
-        .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-          message: "Enter a valid number",
-        }),
     })
   )
 );
@@ -100,7 +100,7 @@ export const discountingSchema = z.lazy(() =>
           message: "Select beneficiary country",
         }),
       }),
-      confirmationCharges: z.object({
+      confirmationInfo: z.object({
         behalfOf: z.enum(["Exporter", "Importer"], {
           message: "Select one of above",
         }),
@@ -134,7 +134,7 @@ export const confirmationDiscountSchema = z.lazy(() =>
         }),
         bank: z.string({ message: "Select export bank" }),
       }),
-      confirmationCharges: z.object({
+      confirmationInfo: z.object({
         behalfOf: z.enum(["Exporter", "Importer"], {
           message: "Select one of above",
         }),

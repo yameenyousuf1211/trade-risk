@@ -20,6 +20,8 @@ import { useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
+import { onRegister } from "@/services/apis";
+import { toast } from "sonner";
 
 const SelectedBank = () => {
   return (
@@ -32,9 +34,39 @@ const SelectedBank = () => {
 
 const CurrentBankingPage = () => {
   const router = useRouter();
-  const navigate = () => {
-     console.log(getStateValues(useRegisterStore.getState()))
-    router.push("/register/complete");
+  const navigate = async () => {
+    const data = getStateValues(useRegisterStore.getState());
+    const reqData = {
+      role: "corporate",
+      businessNature: data.businessNature,
+      name: data.name,
+      email: data.email,
+      address: data.address,
+      constitution: data.constitution,
+      businessType: data.businessType,
+      phone: data.phone,
+      bank: data.bank,
+      swiftCode: data.swiftCode,
+      accountNumber: data.accountNumber,
+      accountHolderName: data.accountHolderName,
+      accountCountry: data.accountCountry,
+      accountCity: data.accountCity,
+      productInfo: data.productInfo,
+      pocEmail: data.pocEmail,
+      pocPhone: data.pocPhone,
+      pocName: data.pocName,
+      poc: data.poc,
+      pocDesignation: data.pocDesignation,
+      currentBanks: data.currentBanks,
+    };
+    console.log(reqData);
+    const { response, success } = await onRegister(reqData);
+    console.log(response);
+    if (!success) return toast.error(response);
+    else {
+      toast.success("Account Register successfully");
+      router.push("/register/complete");
+    }
   };
 
   const countries = [
@@ -67,7 +99,7 @@ const CurrentBankingPage = () => {
       title="Current Banking"
       text="Add the banks you currently use so that they can be notified of any requests you add. This list can also be edited later."
     >
-      <form className="max-w-[800px] w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5">
+      <div className="max-w-[800px] w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5">
         <h2 className="text-lg font-semibold">Add your current banks</h2>
 
         <div className="grid grid-cols-3 gap-x-3">
@@ -257,6 +289,7 @@ const CurrentBankingPage = () => {
 
         <div className="flex flex-col gap-y-2">
           <Button
+            type="button"
             className="disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
             disabled={false}
@@ -272,13 +305,13 @@ const CurrentBankingPage = () => {
             <Button
               type="button"
               variant="ghost"
-              className="text-para text-[16px]"
+              className="text-para text-[16px] w-full"
             >
               Previous
             </Button>
           </Link>
         </div>
-      </form>
+      </div>
     </CorporateStepLayout>
   );
 };

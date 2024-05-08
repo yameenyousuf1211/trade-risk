@@ -24,7 +24,7 @@ export const onLogin = async (payload: ILoginFields) => {
   }
 };
 
-export const onRegister = async (payload: IRegisterFields) => {
+export const onRegister = async (payload: IRegisterFields | any) => {
   try {
     const response = await api.post("/auth/register", payload);
 
@@ -32,7 +32,7 @@ export const onRegister = async (payload: IRegisterFields) => {
       return { success: false, response: response.data.message };
     if (response.status === STATUS.BAD_REQUEST)
       return { success: false, response: response.data.message };
-    console.log(response)
+    console.log(response);
     return { success: true, response: response.data };
   } catch (error) {
     console.error(error);

@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { differenceInDays, endOfYear, format } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -26,6 +27,25 @@ export const convertDateToYYYYMMDD = (date: any) => {
   const month = String(jsDate.getMonth() + 1).padStart(2, "0"); // Month is zero-based, so add 1
   const day = String(jsDate.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+};
+
+export const formatLeftDate = (date: any) => {
+  const jsDate = new Date(date);
+  const daysLeftInYear = differenceInDays(endOfYear(jsDate), jsDate);
+  const formattedDate = `${format(
+    date,
+    "dd MMM yyyy"
+  )} (${daysLeftInYear} days left)`;
+
+  return formattedDate;
+};
+
+export const formatLeftDays = (date: any) => {
+  const jsDate = new Date(date);
+  const daysLeftInYear = differenceInDays(endOfYear(jsDate), jsDate);
+  const formattedDate = `${daysLeftInYear}d left`;
+
+  return formattedDate;
 };
 
 export const formatFileSize = (size: number): string => {

@@ -2,10 +2,20 @@
 import { DDInput } from "./helpers";
 import { Plus } from "lucide-react";
 import { Period, Transhipment } from "./Step3Helpers";
+import { useQuery } from "@tanstack/react-query";
+import { getBanks } from "@/services/apis/helpers.api";
 
-export const Step3 = ({ register, setValue }: any) => {
+export const Step3 = ({ register, setValue, getValues, countries }: any) => {
+  const issuingCountry = getValues("issuingBank.country");
+  // console.log(issuingCountry);
 
-  
+  // const { data: banks, isLoading: banksLoading } = useQuery({
+  //   queryKey: ["banks", issuingCountry],
+  //   queryFn: () => getBanks(issuingCountry),
+  //   enabled: !!issuingCountry,
+  // });
+  // console.log(banks);
+
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -24,12 +34,15 @@ export const Step3 = ({ register, setValue }: any) => {
               label="Country"
               id="issuingBank.country"
               register={register}
+              data={countries}
             />
             <DDInput
               placeholder="Select bank"
               label="Bank"
               id="issuingBank.bank"
               register={register}
+              // disabled={!banks || !banks?.response || !banks.success}
+              // data={banks?.response}
             />
           </div>
         </div>
@@ -51,6 +64,7 @@ export const Step3 = ({ register, setValue }: any) => {
               id="confirmingBank.country"
               placeholder="Select a Country"
               register={register}
+              data={countries}
             />
           </div>
           <DDInput

@@ -1,7 +1,8 @@
-import { Loader } from './Loader';
-import { Pagination } from './Pagination';
-import { DisclaimerDialog } from './DisclaimerDialog';
-import { BreadcrumbDetails } from './BreadcrumbDetails';
+import { TableBidStatus } from "./TableBidStatus";
+import { Loader } from "./Loader";
+import { Pagination } from "./Pagination";
+import { DisclaimerDialog } from "./DisclaimerDialog";
+import { BreadcrumbDetails } from "./BreadcrumbDetails";
 import { CreateTabs } from "./CreateTabs";
 import { DatePicker } from "./DatePicker";
 import { CountrySelect } from "./CountrySelect";
@@ -23,5 +24,6 @@ export {
   BreadcrumbDetails,
   DisclaimerDialog,
   Pagination,
-  Loader
+  Loader,
+  TableBidStatus,
 };

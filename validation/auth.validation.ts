@@ -15,7 +15,7 @@ const registerSchema = z.object({
 });
 
 const companyInfoSchema = z.object({
-  name: z.string().min(5, "Company name must be at least 5 characters long."),
+  name: z.string().min(3, "Company name must be at least 3 characters long."),
   email: z.string().email("Must be a valid email.").trim(),
   address: z.string().min(6, "Address must be at least 6 characters long."),
   phone: z
@@ -26,7 +26,12 @@ const companyInfoSchema = z.object({
   swiftCode: z
     .string()
     .min(5, "Swift code must be at least 5 characters long."),
-  accountNumber: z.string().min(3, "Account number field cannot be empty."),
+  accountNumber: z
+    .string()
+    .min(3, "Account number field cannot be empty.")
+    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+      message: "Enter a valid number",
+    }),
   accountHolderName: z
     .string()
     .min(3, "Account holder name field cannot be empty."),
@@ -41,7 +46,10 @@ const pointOfContractSchema = z.object({
   pocEmail: z.string().email("Must be a valid email."),
   pocPhone: z
     .string()
-    .min(6, "Poc phone number must be at least 6 characters long."),
+    .min(6, "Poc phone number must be at least 6 characters long.")
+    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+      message: "Enter a valid number",
+    }),
   pocName: z.string().min(1, "Poc name field cannot be empty."),
   poc: z.string().min(1, "Poc field cannot be empty."),
   pocDesignation: z.string().min(1, "Poc designation field cannot be empty."),
@@ -62,7 +70,13 @@ const bankSchema = z.object({
     .email("Must be a valid email.")
     .trim()
     .nonempty("Email is required"),
-  pocPhone: z.string().min(7, "Provide a valid phone number"),
+  country: z.string().nonempty("Select a country"),
+  pocPhone: z
+    .string()
+    .min(7, "Provide a valid phone number")
+    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+      message: "Enter a valid number",
+    }),
   address: z.string().nonempty("Bank address is required"),
   swiftCode: z.string().nonempty("SWIFT code is required"),
   pocEmail: z

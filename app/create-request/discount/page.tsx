@@ -26,6 +26,8 @@ import { onCreateLC } from "@/services/apis/lcs.api";
 import { useRouter } from "next/navigation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "@/components/ui/loader";
+import { getCountries } from "@/services/apis/helpers.api";
+import { useQuery } from "@tanstack/react-query";
 
 const CreateDiscountPage = () => {
   const {
@@ -90,6 +92,11 @@ const CreateDiscountPage = () => {
   const handleSelectChange = (value: string) => {
     register("currency", { value: value });
   };
+
+  const { data: countries, isLoading: countriesLoading } = useQuery({
+    queryKey: ["countries"],
+    queryFn: () => getCountries(),
+  });
 
   return (
     <CreateLCLayout>
@@ -247,15 +254,15 @@ const CreateDiscountPage = () => {
             </p>
             <p className="font-semibold text-lg text-lightGray">LC Details</p>
           </div>
-          <DiscountBanks register={register} />
+          <DiscountBanks register={register} countries={countries?.response} />
           {/* Period */}
           <Period register={register} setValue={setValue} />
           {/* Transhipment */}
           <Transhipment register={register} isDiscount setValue={setValue} />
         </div>
 
-        <Step4 register={register} setValue={setValue} />
-        <Step5 register={register} />
+        <Step4 register={register} setValue={setValue} countries={countries?.response}/>
+        <Step5 register={register} countries={countries?.response}/>
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6

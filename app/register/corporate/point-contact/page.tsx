@@ -15,9 +15,7 @@ import { z } from "zod";
 
 const PointContactPage = () => {
   const router = useRouter();
-  const navigate = () => {
-    router.push("/register/corporate/current-banking");
-  };
+
   const setValues = useRegisterStore((state) => state.setValues);
   const {
     register,
@@ -65,18 +63,27 @@ const PointContactPage = () => {
           placeholder="Authorized Point of Contact"
         />
         <div className="flex items-center gap-x-2">
-          <FloatingInput
-            register={register}
-            name="pocEmail"
-            placeholder="Company Email"
-            type="email"
-          />
-          <FloatingInput
-            type="text"
-            name="pocPhone"
-            placeholder="pocPhone"
-            register={register}
-          />
+          <div className="w-full">
+            <FloatingInput
+              register={register}
+              name="pocEmail"
+              placeholder="Company Email"
+              type="email"
+            />
+            {errors.pocEmail && (
+              <span className="text-[11px] text-red-500">
+                {errors.pocEmail.message}
+              </span>
+            )}
+          </div>
+          <div className="w-full">
+            <FloatingInput
+              type="text"
+              name="pocPhone"
+              placeholder="pocPhone"
+              register={register}
+            />
+          </div>
         </div>
 
         <div className="h-[2px] w-full bg-borderCol" />
@@ -113,7 +120,6 @@ const PointContactPage = () => {
             className="disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
             disabled={false}
-            onClick={navigate}
           >
             Continue
           </Button>

@@ -13,7 +13,7 @@ import { redirect } from "next/navigation";
 interface SearchParams {
   searchParams: {
     page: number;
-    limit:number
+    limit: number;
   };
 }
 
@@ -26,7 +26,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["fetch-lcs", page, limit],
-      queryFn: () => fetchLcs({page, limit}),
+      queryFn: () => fetchLcs({ page, limit }),
     });
 
   if (isLoading)

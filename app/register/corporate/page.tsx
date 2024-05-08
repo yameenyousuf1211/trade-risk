@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { companyInfoSchema } from "@/validation";
 import { z } from "zod";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
+import { CountrySelect } from "@/components/helpers";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
@@ -101,18 +102,31 @@ const CompanyInfoPage = () => {
             register={register}
           />
           <div className="flex items-center gap-x-2 max-sm:flex-col max-xs:gap-y-3">
-            <FloatingInput
-              name="email"
-              placeholder="Company Email"
-              type="email"
-              register={register}
-            />
-
-            <FloatingInput
-              name="phone"
-              placeholder="Telephone"
-              register={register}
-            />
+            <div className="w-full">
+              <FloatingInput
+                name="email"
+                placeholder="Company Email"
+                type="email"
+                register={register}
+              />
+              {errors.email && (
+                <span className="text-[11px] text-red-500">
+                  {errors.email.message}
+                </span>
+              )}
+            </div>
+            <div className="w-full">
+              <FloatingInput
+                name="phone"
+                placeholder="Telephone"
+                register={register}
+              />
+              {errors.phone && (
+                <span className="text-[11px] text-red-500">
+                  {errors.phone.message}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
@@ -171,7 +185,7 @@ const CompanyInfoPage = () => {
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
             {/* Country */}
-            <Select
+            {/* <Select
               onValueChange={(value) =>
                 setValue("accountCountry", value, { shouldValidate: true })
               }
@@ -186,7 +200,8 @@ const CompanyInfoPage = () => {
                   United Arab Emirates
                 </SelectItem>
               </SelectContent>
-            </Select>
+            </Select> */}
+            <CountrySelect setValue={setValue} name="accountCountry" />
             {/* City */}
             <Select
               onValueChange={(value) =>

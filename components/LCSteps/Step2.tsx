@@ -25,12 +25,18 @@ export const Step2 = ({ register }: any) => {
 
       <div className="flex items-center gap-x-2 justify-between w-full mb-3 border border-borderCol py-2 px-3 rounded-md bg-[#F5F7F9]">
         <div className="flex items-center gap-x-2">
-          <Select onValueChange={handleSelectChange}>
+          <Select
+            onValueChange={(value) => {
+              handleSelectChange(value);
+            }}
+          >
             <SelectTrigger className="w-[100px] bg-borderCol/80">
-              <SelectValue placeholder="USD" defaultValue="USD" />
+              <SelectValue placeholder="USD" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="USD">USD</SelectItem>
+              <SelectItem value="USD" defaultChecked>
+                USD
+              </SelectItem>
               <SelectItem value="PKR">PKR</SelectItem>
             </SelectContent>
           </Select>

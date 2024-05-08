@@ -43,11 +43,15 @@ export const DDInput = ({
   label,
   placeholder,
   register,
+  data,
+  disabled,
 }: {
   id: string;
   label: string;
   placeholder: string;
   register: UseFormRegister<any>;
+  data?: string[];
+  disabled?: boolean;
 }) => {
   const handleSelectChange = (value: string) => {
     register(id, { value: value }); // Register the selected value using react-hook-form
@@ -60,12 +64,26 @@ export const DDInput = ({
     >
       <p className="text-lightGray">{label}</p>
       <Select onValueChange={handleSelectChange}>
-        <SelectTrigger id={id} className="w-fit border-none bg-transparent">
+        <SelectTrigger
+          disabled={disabled}
+          id={id}
+          className="w-fit border-none bg-transparent"
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="Saudi Arabia">Saudi Arabia</SelectItem>
-          <SelectItem value="Pakistan">Pakistan</SelectItem>
+          {data?.map((val, idx) => (
+            <SelectItem value={val} key={`${val}-${idx}`}>
+              {val}
+            </SelectItem>
+          ))}
+          {!data && (
+            <>
+              <SelectItem value="Pakistan">Pakistan</SelectItem>
+              <SelectItem value="Saudia">Saudia</SelectItem>
+              <SelectItem value="Dubai">Dubai</SelectItem>
+            </>
+          )}
         </SelectContent>
       </Select>
     </label>

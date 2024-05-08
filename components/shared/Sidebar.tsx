@@ -5,18 +5,55 @@ import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { AddBid } from "./AddBid";
+import { fetchLcs } from "@/services/apis/lcs.api";
+import { ApiResponse, IBids, ILcs } from "@/types/type";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { formatLeftDate, formatLeftDays } from "@/utils";
+import useLoading from "@/hooks/useLoading";
+import { acceptOrRejectBid, fetchBids } from "@/services/apis/bids.api";
+import { toast } from "sonner";
 
-const SliderCard = () => {
+const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
+  const queryClient = useQueryClient();
+  const { startLoading, stopLoading, isLoading } = useLoading();
+
+  const handleSubmit = async (status: string, id: string) => {
+    startLoading();
+    const { success, response } = await acceptOrRejectBid(status, id);
+    stopLoading();
+    if (!success) return toast.error(response as string);
+    else {
+      queryClient.invalidateQueries({
+        queryKey: ["single-lcs-bids", "fetch-lcs"],
+      });
+      toast.success(`Bid ${status}`);
+    }
+  };
+
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-52">
-      <p>USD 100,000.00</p>
-      <p className="text-para font-medium mt-2">Standard Chartered</p>
-      <p className="text-para text-sm font-light">United Arab Emirates</p>
+      <p className="uppercase">
+        {lcData.currency} {lcData.amount}
+      </p>
+      <p className="text-para font-medium mt-2">
+        {lcData.confirmingBank.country}
+      </p>
+      <p className="text-para text-sm font-light">
+        {lcData.confirmingBank.bank}
+      </p>
       <div className="flex items-center gap-x-2 mt-2">
-        <Button className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-8 rounded-lg">
+        <Button
+          onClick={() => handleSubmit("Accepted", info._id)}
+          className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-8 rounded-lg"
+          disabled={isLoading}
+        >
           <Check className="size-5 text-para" />
         </Button>
-        <Button className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-8 rounded-lg">
+        <Button
+          onClick={() => handleSubmit("Rejected", info._id)}
+          className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-8 rounded-lg"
+          disabled={isLoading}
+        >
           <X className="size-5 text-para" />
         </Button>
       </div>
@@ -24,65 +61,85 @@ const SliderCard = () => {
   );
 };
 
-const RequestCard = ({ isBank }: { isBank: boolean }) => {
-  return (
-    <div className="flex flex-col gap-y-5 bg-[#F5F7F9] rounded-md">
-      {/* Data */}
-      <div className="px-3 pt-2">
-        <p>Request #029199</p>
-        {isBank && <p className="text-lg font-semibold my-1">Aramco</p>}
+const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
+  // Fetching all bids
+  const {
+    isLoading: isBidsLoading,
+    error,
+    data: bids,
+  }: {
+    data: ApiResponse<IBids> | undefined;
+    error: any;
+    isLoading: boolean;
+  } = useQuery({
+    queryKey: ["single-lcs-bids", data._id],
+    queryFn: () => fetchBids({ id: data._id }),
+  });
 
-        <p className="text-sm flex items-center">
-          <span className="text-text">LC Confirmation</span>
-          {!isBank && (
-            <span className="text-para text-[10px] flex items-center">
-              <Dot />
-              5d left
-            </span>
-          )}
-        </p>
-        {isBank && (
-          <>
-            <p className="text-para text-sm">Request Expiry</p>
-            <p className="text-neutral-900 font-medium text-sm mb-2">
-              28 Feb 2023 (1 day left)
+  return (
+    <>
+      {bids && bids.data.length > 0 ? (
+        <div className="flex flex-col gap-y-5 bg-[#F5F7F9] rounded-md">
+          {/* Data */}
+          <div className="px-3 pt-2">
+            <p>Request #{data._id.substring(0, 5)}</p>
+            {isBank && <p className="text-lg font-semibold my-1">Aramco</p>}
+
+            <p className="text-sm flex items-center flex-wrap">
+              <span className="text-text">{data.lcType}</span>
+              {!isBank && (
+                <span className="text-para text-[10px] flex items-center">
+                  <Dot />
+                  {formatLeftDays(data.lcPeriod.endDate)}
+                </span>
+              )}
             </p>
-          </>
-        )}
-        <h3 className="text-xl font-semibold">USD 2,000,000.00</h3>
-        {!isBank ? (
-          <div className="flex items-center justify-between gap-x-2">
-            <p className="text-gray-500 text-sm">5 bids</p>
-            <Link
-              href="#"
-              className="text-sm text-primaryCol font-light underline"
-            >
-              View all
-            </Link>
+            {isBank && (
+              <>
+                <p className="text-para text-sm">Request Expiry</p>
+                <p className="text-neutral-900 font-medium text-sm mb-2">
+                  {formatLeftDate(data.lcPeriod.endDate)}
+                </p>
+              </>
+            )}
+            <h3 className="text-xl font-semibold uppercase">
+              {data.currency} {data.amount}
+            </h3>
+            {!isBank ? (
+              <div className="flex items-center justify-between gap-x-2">
+                {bids && (
+                  <p className="text-gray-500 text-sm">
+                    {bids.data.length} bid
+                    {bids.data.length > 1 ? "s" : ""}
+                  </p>
+                )}
+                <Link
+                  href="#"
+                  className="text-sm text-primaryCol font-light underline"
+                >
+                  View all
+                </Link>
+              </div>
+            ) : (
+              <></>
+              // <AddBid triggerTitle="Add Bid"/>
+            )}
           </div>
-        ) : (
-          <>
-          </>
-          // <AddBid triggerTitle="Add Bid"/>
-        )}
-      </div>
-      {/* Slider cards*/}
-      {!isBank && (
-        <div className="w-full">
-          <Swiper slidesPerView={1.2} spaceBetween={10}>
-            <SwiperSlide>
-              <SliderCard />
-            </SwiperSlide>
-            <SwiperSlide>
-              <SliderCard />
-            </SwiperSlide>
-            <SwiperSlide>
-              <SliderCard />
-            </SwiperSlide>
-          </Swiper>
+          {/* Slider cards*/}
+          {!isBank && (
+            <div className="w-full">
+              <Swiper slidesPerView={1.2} spaceBetween={10}>
+                {bids.data.map((info: IBids) => (
+                  <SwiperSlide key={info._id}>
+                    <SliderCard info={info} lcData={data} key={info._id} />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      ) : null}
+    </>
   );
 };
 
@@ -93,6 +150,15 @@ export const Sidebar = ({
   isBank: boolean;
   createMode?: boolean;
 }) => {
+  const {
+    isLoading,
+    data,
+  }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
+    useQuery({
+      queryKey: ["fetch-lcs"],
+      queryFn: () => fetchLcs({ page: 1, limit: 5 }),
+    });
+
   return (
     <>
       {/* Action Box */}
@@ -132,13 +198,17 @@ export const Sidebar = ({
             {isBank ? "Needs Action" : "Needs your attention"}
           </h4>
           <div className="flex flex-col gap-y-5">
-            <RequestCard isBank={isBank} />
-            {!isBank && (
-              <>
-                <RequestCard isBank={isBank} />
-                <RequestCard isBank={isBank} />
-              </>
-            )}
+            {isBank
+              ? data &&
+                data.data &&
+                data.data.map((item: ILcs) => (
+                  <RequestCard isBank={isBank} data={item} key={item._id} />
+                ))
+              : data &&
+                data.data &&
+                data.data.map((item: ILcs) => (
+                  <RequestCard isBank={isBank} data={item} key={item._id} />
+                ))}
           </div>
         </div>
         {isBank && (

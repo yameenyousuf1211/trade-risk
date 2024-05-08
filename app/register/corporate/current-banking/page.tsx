@@ -22,6 +22,8 @@ import { cn } from "@/lib/utils";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
 import { onRegister } from "@/services/apis";
 import { toast } from "sonner";
+import { getBanks, getCountries } from "@/services/apis/helpers.api";
+import { useQuery } from "@tanstack/react-query";
 
 const SelectedBank = () => {
   return (
@@ -69,20 +71,20 @@ const CurrentBankingPage = () => {
     }
   };
 
-  const countries = [
-    {
-      value: "pakistan",
-      label: "Pakistan",
-    },
-    {
-      value: "dubai",
-      label: "dubai",
-    },
-    {
-      value: "saudi-arabia",
-      label: "Saudi Arabia",
-    },
-  ];
+  // const countries = [
+  //   {
+  //     value: "pakistan",
+  //     label: "Pakistan",
+  //   },
+  //   {
+  //     value: "dubai",
+  //     label: "dubai",
+  //   },
+  //   {
+  //     value: "saudi-arabia",
+  //     label: "Saudi Arabia",
+  //   },
+  // ];
 
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryVal, setCountryVal] = useState("");
@@ -92,6 +94,17 @@ const CurrentBankingPage = () => {
 
   const [bankOpen, setBankOpen] = useState(false);
   const [bankVal, setBankVal] = useState("");
+
+  const { data: countries, isLoading: countriesLoading } = useQuery({
+    queryKey: ["countries"],
+    queryFn: () => getCountries(),
+  });
+
+  const { data: banks, isLoading: banksLoading } = useQuery({
+    queryKey: ["banks", countryVal],
+    queryFn: () => getBanks(countryVal),
+    enabled: !!countryVal,
+  });
 
   return (
     <CorporateStepLayout
@@ -115,8 +128,10 @@ const CurrentBankingPage = () => {
                   className="w-[200px] justify-between"
                 >
                   {countryVal
-                    ? countries.find((country) => country.value === countryVal)
-                        ?.label
+                    ? countries?.response.find(
+                        (country: string) =>
+                          country.toLowerCase() === countryVal.toLowerCase()
+                      )
                     : "Select country..."}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -126,28 +141,34 @@ const CurrentBankingPage = () => {
                   <CommandInput placeholder="Search country..." />
                   <CommandEmpty>No country found.</CommandEmpty>
                   <CommandGroup>
-                    {countries.map((country) => (
-                      <CommandItem
-                        key={country.value}
-                        value={country.value}
-                        onSelect={(currentValue) => {
-                          setCountryVal(
-                            currentValue === countryVal ? "" : currentValue
-                          );
-                          setCountryOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            countryVal === country.value
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
-                        {country.label}
-                      </CommandItem>
-                    ))}
+                    {!countriesLoading &&
+                      countries &&
+                      countries.success &&
+                      countries?.response.map((country: string) => (
+                        <CommandItem
+                          key={country}
+                          value={country}
+                          onSelect={(currentValue) => {
+                            setCountryVal(
+                              currentValue.toLowerCase() ===
+                                countryVal.toLowerCase()
+                                ? ""
+                                : currentValue
+                            );
+                            setCountryOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              country.toLowerCase() === countryVal.toLowerCase()
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {country}
+                        </CommandItem>
+                      ))}
                   </CommandGroup>
                 </Command>
               </PopoverContent>
@@ -160,11 +181,14 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={bankOpen}
-                  className="w-[200px] justify-between"
-                  disabled={false}
+                  className="w-[200px] justify-between truncate"
+                  disabled={countryVal === ""}
                 >
                   {bankVal
-                    ? countries.find((bank) => bank.value === bankVal)?.label
+                    ? banks?.response.find(
+                        (bank: string) =>
+                          bank.toLowerCase() === bankVal.toLowerCase()
+                      )
                     : "Select bank..."}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -174,26 +198,34 @@ const CurrentBankingPage = () => {
                   <CommandInput placeholder="Search bank..." />
                   <CommandEmpty>No bank found.</CommandEmpty>
                   <CommandGroup>
-                    {countries.map((bank) => (
-                      <CommandItem
-                        key={bank.value}
-                        value={bank.value}
-                        onSelect={(currentValue) => {
-                          setBankVal(
-                            currentValue === bankVal ? "" : currentValue
-                          );
-                          setBankOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            bankVal === bank.value ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {bank.label}
-                      </CommandItem>
-                    ))}
+                    {!banksLoading &&
+                      banks &&
+                      banks.success &&
+                      banks?.response.map((bank: string) => (
+                        <CommandItem
+                          key={bank}
+                          value={bank}
+                          onSelect={(currentValue) => {
+                            setBankVal(
+                              currentValue.toLowerCase() ===
+                                bankVal.toLowerCase()
+                                ? ""
+                                : currentValue
+                            );
+                            setBankOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              bank.toLowerCase() === bankVal.toLowerCase()
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {bank}
+                        </CommandItem>
+                      ))}
                   </CommandGroup>
                 </Command>
               </PopoverContent>
@@ -207,10 +239,13 @@ const CurrentBankingPage = () => {
                   role="combobox"
                   aria-expanded={cityOpen}
                   className="w-[200px] justify-between"
-                  disabled={false}
+                  disabled={true}
                 >
-                  {cityVal
-                    ? countries.find((city) => city.value === cityVal)?.label
+                  {countryVal
+                    ? countries?.response.find(
+                        (country: string) =>
+                          country.toLowerCase() === cityVal.toLowerCase()
+                      )
                     : "Select city..."}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -218,28 +253,36 @@ const CurrentBankingPage = () => {
               <PopoverContent className="w-[200px] p-0">
                 <Command>
                   <CommandInput placeholder="Search city..." />
-                  <CommandEmpty>No cities found.</CommandEmpty>
+                  <CommandEmpty>No city found.</CommandEmpty>
                   <CommandGroup>
-                    {countries.map((city) => (
-                      <CommandItem
-                        key={city.value}
-                        value={city.value}
-                        onSelect={(currentValue) => {
-                          setCityVal(
-                            currentValue === cityVal ? "" : currentValue
-                          );
-                          setCityOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            cityVal === city.value ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {city.label}
-                      </CommandItem>
-                    ))}
+                    {!countriesLoading &&
+                      countries &&
+                      countries.success &&
+                      countries?.response.map((city: string) => (
+                        <CommandItem
+                          key={city}
+                          value={city}
+                          onSelect={(currentValue) => {
+                            setCityVal(
+                              currentValue.toLowerCase() ===
+                                cityVal.toLowerCase()
+                                ? ""
+                                : currentValue
+                            );
+                            setCityOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              city.toLowerCase() === cityVal.toLowerCase()
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {city}
+                        </CommandItem>
+                      ))}
                   </CommandGroup>
                 </Command>
               </PopoverContent>

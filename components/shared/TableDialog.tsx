@@ -13,6 +13,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { convertDateToYYYYMMDD } from "@/utils";
 import { Loader } from "../helpers";
 import useLoading from "@/hooks/useLoading";
+import { toast } from "sonner";
 
 const BidCard = ({ data }: { data: IBids }) => {
   const queryClient = useQueryClient();
@@ -23,13 +24,15 @@ const BidCard = ({ data }: { data: IBids }) => {
     startLoading();
     const { success, response } = await acceptOrRejectBid(status, id);
     stopLoading();
-    if (!success) return;
-    if (success)
+    if (!success) return toast.error(response as string);
+    else {
       queryClient.invalidateQueries({
         queryKey: ["single-lcs-bids", "fetch-lcs"],
       });
+      toast.success(`Bid ${status}`);
+    }
   };
-  console.log(data)
+
   return (
     <div className="border border-borderCol py-5 px-3 rounded-lg grid grid-cols-2 gap-y-1.5">
       <div>
@@ -130,16 +133,6 @@ export const TableDialog = ({ id, lcData }: { id: string; lcData: ILcs }) => {
       queryKey: ["single-lcs-bids", id],
       queryFn: () => fetchBids({ id }),
     });
-
-  // built a proper loading page later
-  // if (isLoading)
-  //   return (
-  //     <div className="w-full h-full center">
-  //       <Loader />
-  //     </div>
-  //   );
-  // if (error) return <div>{error}</div>;
-  // if (!data) return <div>No data found</div>;
 
   return (
     <Dialog>

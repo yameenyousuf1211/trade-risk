@@ -13,8 +13,10 @@ import { format, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { getCountries } from "@/services/apis/helpers.api";
+import { useQuery } from "@tanstack/react-query";
 
-const ValidatingCalendar = ({
+export const ValidatingCalendar = ({
   initialDate,
   onChange,
   onClose,
@@ -45,6 +47,11 @@ const ValidatingCalendar = ({
 };
 
 export const Period = ({ register, setValue }: any) => {
+  const { data: countries, isLoading: countriesLoading } = useQuery({
+    queryKey: ["countries"],
+    queryFn: () => getCountries(),
+  });
+
   const [lcPeriodDate, setLcPeriodDate] = useState<Date>();
   const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -154,6 +161,7 @@ export const Period = ({ register, setValue }: any) => {
             label="Country"
             placeholder="Select a country"
             register={register}
+            data={countries?.response}
           />
           <DDInput
             label="Select port"
@@ -297,7 +305,7 @@ export const Transhipment = ({ register, setValue, isDiscount }: any) => {
   );
 };
 
-export const DiscountBanks = ({ register }: any) => {
+export const DiscountBanks = ({ register, countries }: any) => {
   return (
     <div className="flex items-center justify-between w-full mb-3 gap-x-4">
       {/* Issuing Bank */}
@@ -309,6 +317,7 @@ export const DiscountBanks = ({ register }: any) => {
             label="Country"
             id="issuingBank.country"
             register={register}
+            data={countries}
           />
           <DDInput
             placeholder="Select bank"
@@ -327,6 +336,7 @@ export const DiscountBanks = ({ register }: any) => {
             label="Country"
             id="advisingBank.country"
             register={register}
+            data={countries}
           />
           <DDInput
             placeholder="Select bank"
@@ -360,6 +370,7 @@ export const DiscountBanks = ({ register }: any) => {
             label="Country"
             id="confirmingBank.country"
             register={register}
+            data={countries}
           />
           <DDInput
             placeholder="Select bank"

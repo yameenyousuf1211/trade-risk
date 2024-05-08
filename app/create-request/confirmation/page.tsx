@@ -35,6 +35,8 @@ import { useRouter } from "next/navigation";
 import { confirmationDiscountSchema } from "@/validation/lc.validation";
 import Loader from "@/components/ui/loader";
 import useLoading from "@/hooks/useLoading";
+import { getCountries } from "@/services/apis/helpers.api";
+import { useQuery } from "@tanstack/react-query";
 
 const ConfirmationPage = () => {
   const {
@@ -95,6 +97,12 @@ const ConfirmationPage = () => {
   const handleSelectChange = (value: string) => {
     register("currency", { value: value });
   };
+
+  const { data: countries, isLoading: countriesLoading } = useQuery({
+    queryKey: ["countries"],
+    queryFn: () => getCountries(),
+  });
+
   return (
     <CreateLCLayout>
       <form
@@ -172,14 +180,14 @@ const ConfirmationPage = () => {
             </p>
             <p className="font-semibold text-lg text-lightGray">LC Details</p>
           </div>
-          <DiscountBanks register={register} />
+          <DiscountBanks register={register} countries={countries?.response}/>
           {/* Period */}
           <Period register={register} setValue={setValue} />
           {/* Transhipment */}
           <Transhipment register={register} setValue={setValue} />
         </div>
-        <Step4 register={register} />
-        <Step5 register={register} isConfirmation />
+        <Step4 register={register} countries={countries?.response}/>
+        <Step5 register={register} isConfirmation countries={countries?.response}/>
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6

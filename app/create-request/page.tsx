@@ -21,9 +21,12 @@ import { confirmationSchema } from "@/validation/lc.validation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "../../components/ui/loader";
 import { useRouter } from "next/navigation";
+import { getCountries } from "@/services/apis/helpers.api";
+import { useQuery } from "@tanstack/react-query";
 
 const CreateRequestPage = () => {
   const {
+    control,
     register,
     setValue,
     getValues,
@@ -77,6 +80,11 @@ const CreateRequestPage = () => {
     }
   };
 
+  const { data: countries, isLoading: countriesLoading } = useQuery({
+    queryKey: ["countries"],
+    queryFn: () => getCountries(),
+  });
+
   return (
     <CreateLCLayout>
       <form
@@ -85,9 +93,22 @@ const CreateRequestPage = () => {
       >
         <Step1 register={register} />
         <Step2 register={register} />
-        <Step3 register={register} setValue={setValue} />
-        <Step4 register={register} setValue={setValue} />
-        <Step5 register={register} setValue={setValue} />
+        <Step3
+          register={register}
+          setValue={setValue}
+          countries={countries?.response}
+          getValues={getValues}
+        />
+        <Step4
+          register={register}
+          setValue={setValue}
+          countries={countries?.response}
+        />
+        <Step5
+          register={register}
+          setValue={setValue}
+          countries={countries?.response}
+        />
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6
             register={register}

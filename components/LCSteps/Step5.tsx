@@ -1,7 +1,7 @@
 import { DDInput } from "./helpers";
 import { Input } from "@/components/ui/input";
 
-export const Step5 = ({ register, isConfirmation }: any) => {
+export const Step5 = ({ register, isConfirmation, countries }: any) => {
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -36,19 +36,21 @@ export const Step5 = ({ register, isConfirmation }: any) => {
           label="Country of Export"
           placeholder="Select a country"
           register={register}
+          data={countries}
         />
         <DDInput
           id="exporterInfo.beneficiaryCountry"
           label="Beneficiary Country"
           register={register}
           placeholder="Select a country"
+          data={countries}
         />
         {isConfirmation && (
           <DDInput
             id="exporterInfo.bank"
             label="Bank"
             register={register}
-            placeholder="Select a country"
+            placeholder="Select bank"
           />
         )}
       </div>

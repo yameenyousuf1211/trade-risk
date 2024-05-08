@@ -130,7 +130,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
             <div className="w-full">
               <Swiper slidesPerView={1.2} spaceBetween={10}>
                 {bids.data.map((info: IBids) => (
-                  <SwiperSlide>
+                  <SwiperSlide key={info._id}>
                     <SliderCard info={info} lcData={data} key={info._id} />
                   </SwiperSlide>
                 ))}

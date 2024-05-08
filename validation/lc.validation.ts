@@ -87,9 +87,7 @@ export const discountingSchema = z.lazy(() =>
         bank: z.string({ message: "Advising bank name is required" }),
         country: z.string({ message: "Advising bank country is required" }),
       }),
-      discountAtSight: z.enum(["yes", "no"], {
-        message: "Specify discount at sight",
-      }),
+
       expectedDiscountingDate: z.date({ message: "select date" }),
       exporterInfo: z.object({
         beneficiaryName: z
@@ -100,7 +98,10 @@ export const discountingSchema = z.lazy(() =>
           message: "Select beneficiary country",
         }),
       }),
-      confirmationInfo: z.object({
+      discountingInfo: z.object({
+        discountAtSight: z.enum(["yes", "no"], {
+          message: "Specify discount at sight",
+        }),
         behalfOf: z.enum(["Exporter", "Importer"], {
           message: "Select one of above",
         }),

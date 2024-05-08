@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
-const ValidatingCalendar = ({
+export const ValidatingCalendar = ({
   initialDate,
   onChange,
   onClose,

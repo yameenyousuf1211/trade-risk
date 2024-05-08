@@ -330,19 +330,21 @@ export const AddBid = ({
                 className="flex flex-col gap-y-4 py-4 px-4 mt-5 border border-borderCol rounded-lg"
               >
                 <div>
-                  <label
-                    htmlFor="validity"
-                    className="block font-semibold mb-2"
-                  >
-                    Bid Validity
-                  </label>
-                  {/* <DatePicker register={register}/> */}
-                  <Input
+                  <div>
+                    <label
+                      htmlFor="validity"
+                      className="block font-semibold mb-2"
+                    >
+                      Bid Validity
+                    </label>
+                    <DatePicker setValue={setValue} />
+                    {/* <Input
                     placeholder="DD/MM/YYYY"
                     id="validity"
                     name="validity"
                     register={register}
-                  />
+                  /> */}
+                  </div>
                   {errors.validity && (
                     <span className="text-red-500 text-[12px]">
                       {errors.validity.message}

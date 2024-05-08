@@ -145,7 +145,7 @@ export interface IUser {
 export interface ILcs {
   _id: string;
   participantRole?: string;
-  lcType?: string;
+  lcType: string;
   currency: string;
   amount?: number;
   paymentTerms: string;

@@ -15,6 +15,7 @@ import {
   Pagination,
   ProductFilter,
   SearchBar,
+  TableBidStatus,
 } from "../helpers";
 import { Button } from "../ui/button";
 import { TableDialog } from "./TableDialog";
@@ -135,22 +136,7 @@ export const RequestTable = ({
                       <TableDataCell data={item.importerInfo.applicantName} />
                       <TableDataCell data={item.amount} />
                       <TableCell className="px-1 py-1 max-w-[200px]">
-                        {item.status !== "Pending" ? (
-                          <AddBid
-                            triggerTitle={item.status || ""}
-                            status={item.status}
-                            isInfo={item.status !== "Add bid"}
-                            isDiscount={item.lcType?.includes("Discount")}
-                            lcData={item}
-                          />
-                        ) : (
-                          <Button
-                            variant="ghost"
-                            className="bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]  rounded-md w-full p-2 capitalize hover:opacity-85"
-                          >
-                            {item.status}
-                          </Button>
-                        )}
+                        <TableBidStatus id={item._id} lcData={item} />
                       </TableCell>
                       <TableCell className="px-1 py-1 max-w-[200px]">
                         <Button
@@ -189,7 +175,7 @@ export const RequestTable = ({
                         </div>
                       </TableCell>
                       <TableDataCell data={item.exporterInfo.beneficiaryName} />
-                      <TableDataCell data={"BYCO"} />
+                      <TableDataCell data={item.importerInfo.applicantName} />
                       <TableDataCell data={item.amount} />
 
                       <TableCell className="px-1 py-1 max-w-[200px]">

@@ -1,4 +1,5 @@
 "use client";
+import { CountrySelect } from "@/components/helpers";
 import { FloatingInput } from "@/components/helpers/FloatingInput";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { Button } from "@/components/ui/button";
@@ -52,7 +53,6 @@ const BankRegisterPage = () => {
       toast.success("Account Register successfully");
       router.push("/register/complete");
     }
-    // router.push("/register/corporate/current-banking");
   };
 
   useEffect(() => {
@@ -86,20 +86,28 @@ const BankRegisterPage = () => {
               placeholder="Bank Name"
               register={register}
             />
-            <FloatingInput
-              name="email"
-              placeholder="email"
-              register={register}
-            />
+            <div className="w-full">
+              <FloatingInput
+                name="email"
+                placeholder="email"
+                register={register}
+              />
+              {errors.email && (
+                <span className="text-[11px] text-red-500">
+                  {errors.email.message}
+                </span>
+              )}
+            </div>
 
-            <Select>
+            {/* <Select>
               <SelectTrigger className="w-full py-5 px-4 text-gray-500">
                 <SelectValue placeholder="Select Country*" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="pakistan">Pakistan</SelectItem>
               </SelectContent>
-            </Select>
+            </Select> */}
+            <CountrySelect setValue={setValue} name="country" />
 
             <FloatingInput
               name="swiftCode"
@@ -115,12 +123,19 @@ const BankRegisterPage = () => {
           />
 
           <div className="flex items-center gap-x-2 w-full">
-            <FloatingInput
-              register={register}
-              name="pocEmail"
-              placeholder="POC Email"
-              type="email"
-            />
+            <div className="w-full">
+              <FloatingInput
+                register={register}
+                name="pocEmail"
+                placeholder="POC Email"
+                type="email"
+              />
+              {errors.pocEmail && (
+                <span className="text-[11px] text-red-500">
+                  {errors.pocEmail.message}
+                </span>
+              )}
+            </div>
             <FloatingInput
               type="number"
               name="pocPhone"

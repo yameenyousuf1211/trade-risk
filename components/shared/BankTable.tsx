@@ -35,6 +35,7 @@ const TableDataCell = ({ data }: { data: string | number }) => {
 };
 
 export const BankTable = ({ data }: { data: ApiResponse<IMyBids> }) => {
+
   return (
     <div className="">
       <div className="flex items-center justify-between gap-x-2 mb-2">

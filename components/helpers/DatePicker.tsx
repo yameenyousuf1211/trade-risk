@@ -10,42 +10,36 @@ import {
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { FieldValues, UseFormRegister } from "react-hook-form";
+import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
 
-interface Props<T extends FieldValues>
-  extends React.InputHTMLAttributes<HTMLInputElement> {
-  register: UseFormRegister<T>;
-}
-
-export const DatePicker = <T extends FieldValues>({ register }: Props<T>) => {
+export const DatePicker = ({ setValue }: { setValue: any }) => {
   const [date, setDate] = useState<Date>();
-
-  const handleDate = (e) => {
-    console.log(e);
-  };
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   return (
-    <Popover>
+    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}
           className={cn(
-            "w-[280px] justify-start text-left font-normal",
+            "w-full justify-between text-left font-normal",
             !date &&
               "text-muted-foreground flex items-center justify-between w-full"
           )}
-          // id="validity"
+          id="validity"
         >
           {date ? format(date, "PPP") : <span>DD/MM/YYYY</span>}
           <CalendarIcon className="mr-2 h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={(e) => handleDate(e)}
-          initialFocus
+        <ValidatingCalendar
+          initialDate={date}
+          onChange={(date) => {
+            setDate(date);
+            setValue("validity", date);
+          }}
+          onClose={() => setIsPopoverOpen(false)}
         />
       </PopoverContent>
     </Popover>

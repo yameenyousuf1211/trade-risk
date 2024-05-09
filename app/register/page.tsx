@@ -1,5 +1,4 @@
-
-"use client"
+"use client";
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,7 @@ export default function RegisterPage() {
           Please select your business entity{" "}
         </p>
 
-        <form className="bg-white shadow-md rounded-xl p-8 mt-5 flex flex-col gap-y-5">
+        <div className="bg-white shadow-md rounded-xl p-8 mt-5 flex flex-col gap-y-5">
           <div className="flex items-center justify-between gap-x-4">
             <div
               className={`${
@@ -78,7 +77,7 @@ export default function RegisterPage() {
           >
             Continue
           </Button>
-        </form>
+        </div>
       </section>
     </AuthLayout>
   );

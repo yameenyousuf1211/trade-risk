@@ -70,6 +70,7 @@ export const DraftsSidebar = () => {
               {data.data.length > 0 &&
                 data.data.map((draft, idx) => (
                   <DraftCard
+                    key={draft._id}
                     noBorder={idx === data.data.length - 1}
                     draft={draft}
                   />

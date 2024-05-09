@@ -26,7 +26,8 @@ const HomePage = ({ searchParams }: SearchParams) => {
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["fetch-lcs", page, limit],
-      queryFn: () => fetchLcs({ page, limit }),
+      queryFn: () => fetchLcs({ page, limit, userId: user._id }),
+      enabled: !!user?._id,
     });
 
   if (isLoading)
@@ -39,7 +40,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
   if (user && user.role !== "corporate") {
     redirect("/dashboard");
   }
-  console.log(data?.data[0])
+
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">

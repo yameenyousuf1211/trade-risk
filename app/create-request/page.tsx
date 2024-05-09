@@ -91,7 +91,7 @@ const CreateRequestPage = () => {
       ...data,
       lcType: "LC Confirmation",
       transhipment: data.transhipment === "yes" ? true : false,
-      isDraft: true,
+      isDraft: "true",
     };
 
     const { response, success } = await onCreateLC(reqData);
@@ -106,7 +106,7 @@ const CreateRequestPage = () => {
     }
   };
 
-  const { data: countries, isLoading: countriesLoading } = useQuery({
+  const { data: countries } = useQuery({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
   });
@@ -148,8 +148,9 @@ const CreateRequestPage = () => {
             type="button"
             variant="ghost"
             className="bg-none w-1/3"
+            disabled={isLoading}
           >
-            Save as draft
+            {isLoading ? <Loader /> : "Save as draft"}
           </Button>
           <Button
             type="button"

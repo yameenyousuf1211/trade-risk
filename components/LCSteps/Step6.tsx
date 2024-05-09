@@ -141,7 +141,7 @@ export const Step6 = ({
               id="select-base-rate"
               label="Select base rate"
               placeholder="Select Value"
-              register={register}
+              setValue={setValue}
             />
           </div>
         )}

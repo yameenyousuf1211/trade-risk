@@ -4,17 +4,31 @@ import { Plus } from "lucide-react";
 import { Period, Transhipment } from "./Step3Helpers";
 import { useQuery } from "@tanstack/react-query";
 import { getBanks } from "@/services/apis/helpers.api";
+import { useEffect, useState } from "react";
 
 export const Step3 = ({ register, setValue, getValues, countries }: any) => {
-  const issuingCountry = getValues("issuingBank.country");
-  // console.log(issuingCountry);
+  const [valueChanged, setValueChanged] = useState(false);
 
-  // const { data: banks, isLoading: banksLoading } = useQuery({
-  //   queryKey: ["banks", issuingCountry],
-  //   queryFn: () => getBanks(issuingCountry),
-  //   enabled: !!issuingCountry,
-  // });
-  // console.log(banks);
+  let issuingCountry = getValues("issuingBank.country");
+  // let advisingCountry = getValues("issuingBank.country");
+  let confirmingCountry = getValues("confirmingBank.country");
+
+  useEffect(() => {
+    issuingCountry = getValues("issuingBank.country");
+    confirmingCountry = getValues("confirmingBank.country");
+  }, [valueChanged]);
+
+  const { data: issuingBanks } = useQuery({
+    queryKey: ["issuing-banks", issuingCountry],
+    queryFn: () => getBanks(issuingCountry),
+    enabled: !!issuingCountry,
+  });
+
+  const { data: confirmingBanks } = useQuery({
+    queryKey: ["confirming-banks", confirmingCountry],
+    queryFn: () => getBanks(confirmingCountry),
+    enabled: !!confirmingCountry,
+  });
 
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
@@ -33,16 +47,22 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
               placeholder="Select a country"
               label="Country"
               id="issuingBank.country"
-              register={register}
               data={countries}
+              setValue={setValue}
+              setValueChanged={setValueChanged}
             />
             <DDInput
               placeholder="Select bank"
               label="Bank"
               id="issuingBank.bank"
-              register={register}
-              // disabled={!banks || !banks?.response || !banks.success}
-              // data={banks?.response}
+              setValue={setValue}
+              setValueChanged={setValueChanged}
+              disabled={
+                !issuingBanks ||
+                !issuingBanks?.response ||
+                !issuingBanks.success
+              }
+              data={issuingBanks?.response}
             />
           </div>
         </div>
@@ -63,15 +83,23 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
               label="Country"
               id="confirmingBank.country"
               placeholder="Select a Country"
-              register={register}
               data={countries}
+              setValue={setValue}
+              setValueChanged={setValueChanged}
             />
           </div>
           <DDInput
             label="Bank"
             id="confirmingBank.bank"
             placeholder="Select bank"
-            register={register}
+            setValue={setValue}
+            setValueChanged={setValueChanged}
+            disabled={
+              !confirmingBanks ||
+              !confirmingBanks?.response ||
+              !confirmingBanks.success
+            }
+            data={confirmingBanks?.response}
           />
         </div>
 
@@ -82,7 +110,7 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
           <p className="text-sm text-lightGray">Add Confirming Bank</p>
         </div>
       </div>
-      <Period register={register} setValue={setValue} />
+      <Period setValue={setValue} getValues={getValues} />
       <Transhipment register={register} setValue={setValue} />
     </div>
   );

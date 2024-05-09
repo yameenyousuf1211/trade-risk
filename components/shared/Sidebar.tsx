@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Check, Dot, X } from "lucide-react";
+import { Check, Dot, User, X } from "lucide-react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -12,6 +12,7 @@ import { formatLeftDate, formatLeftDays } from "@/utils";
 import useLoading from "@/hooks/useLoading";
 import { acceptOrRejectBid, fetchBids } from "@/services/apis/bids.api";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthProvider";
 
 const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   const queryClient = useQueryClient();
@@ -150,13 +151,16 @@ export const Sidebar = ({
   isBank: boolean;
   createMode?: boolean;
 }) => {
+  const { user } = useAuth();
+
   const {
     isLoading,
     data,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["fetch-lcs"],
-      queryFn: () => fetchLcs({ page: 1, limit: 5 }),
+      queryFn: () => fetchLcs({ page: 1, limit: 5, userId: user._id }),
+      enabled: !!user?._id,
     });
 
   return (

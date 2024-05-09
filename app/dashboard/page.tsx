@@ -5,7 +5,7 @@ import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { RequestTable } from "@/components/shared/RequestTable";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { useAuth } from "@/context/AuthProvider";
-import { fetchLcs } from "@/services/apis/lcs.api";
+import { fetchAllLcs } from "@/services/apis/lcs.api";
 import { ApiResponse, ILcs } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
@@ -31,7 +31,7 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["fetch-lcs", page, limit],
-      queryFn: () => fetchLcs({ page, limit }),
+      queryFn: () => fetchAllLcs({ page, limit }),
     });
 
   if (isLoading)

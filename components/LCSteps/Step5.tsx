@@ -1,7 +1,17 @@
 import { DDInput } from "./helpers";
 import { Input } from "@/components/ui/input";
 
-export const Step5 = ({ register, isConfirmation, countries }: any) => {
+export const Step5 = ({
+  register,
+  isConfirmation,
+  countries,
+  setValue,
+}: {
+  register: any;
+  isConfirmation?: boolean;
+  countries: string[];
+  setValue: any;
+}) => {
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -35,22 +45,22 @@ export const Step5 = ({ register, isConfirmation, countries }: any) => {
           id="exporterInfo.countryOfExport"
           label="Country of Export"
           placeholder="Select a country"
-          register={register}
           data={countries}
+          setValue={setValue}
         />
         <DDInput
           id="exporterInfo.beneficiaryCountry"
           label="Beneficiary Country"
-          register={register}
           placeholder="Select a country"
           data={countries}
+          setValue={setValue}
         />
         {isConfirmation && (
           <DDInput
             id="exporterInfo.bank"
             label="Bank"
-            register={register}
             placeholder="Select bank"
+            setValue={setValue}
           />
         )}
       </div>

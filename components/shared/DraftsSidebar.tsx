@@ -4,6 +4,7 @@ import { ApiResponse, ILcs } from "@/types/type";
 import { fetchLcs } from "@/services/apis/lcs.api";
 import { Loader } from "../helpers";
 import { convertDateToYYYYMMDD } from "@/utils";
+import { useAuth } from "@/context/AuthProvider";
 
 const DraftCard = ({
   noBorder,
@@ -45,13 +46,17 @@ const DraftCard = ({
 };
 
 export const DraftsSidebar = () => {
+
+  const {user} = useAuth();
+
   const {
     isLoading,
     data,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["fetch-lcs-drafts"],
-      queryFn: () => fetchLcs({ draft: true }),
+      queryFn: () => fetchLcs({ draft: true, userId: user._id }),
+      enabled: !!user?._id
     });
   return (
     <div className="border border-borderCol bg-white rounded-lg py-4 px-3 min-h-[70vh]">

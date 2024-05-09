@@ -42,19 +42,22 @@ export const DDInput = ({
   id,
   label,
   placeholder,
-  register,
   data,
   disabled,
+  setValueChanged,
+  setValue,
 }: {
   id: string;
   label: string;
   placeholder: string;
-  register: UseFormRegister<any>;
   data?: string[];
   disabled?: boolean;
+  setValue: any;
+  setValueChanged?: any;
 }) => {
   const handleSelectChange = (value: string) => {
-    register(id, { value: value }); // Register the selected value using react-hook-form
+    setValue(id, value);
+    setValueChanged && setValueChanged((prev: boolean) => !prev);
   };
 
   return (

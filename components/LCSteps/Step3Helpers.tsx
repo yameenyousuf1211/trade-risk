@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BgRadioInput, DDInput } from "./helpers";
 import {
   Popover,
@@ -13,7 +13,7 @@ import { format, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { getCountries } from "@/services/apis/helpers.api";
+import { getBanks, getCountries } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 
 export const ValidatingCalendar = ({
@@ -46,11 +46,30 @@ export const ValidatingCalendar = ({
   );
 };
 
-export const Period = ({ register, setValue }: any) => {
+export const Period = ({
+  setValue,
+  getValues,
+}: {
+  setValue: any;
+  getValues: any;
+}) => {
   const { data: countries, isLoading: countriesLoading } = useQuery({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
   });
+
+  const [valueChanged, setValueChanged] = useState(false);
+  let shipmentCountry = getValues("shipmentPort.country");
+
+  useEffect(() => {
+    shipmentCountry = getValues("shipmentPort.country");
+  }, [valueChanged]);
+
+  // const { data: shipmentPorts, isLoading: shipmentPortsLoading } = useQuery({
+  //   queryKey: ["shipmentCountry", shipmentCountry],
+  //   queryFn: () => getBanks(shipmentCountry),
+  //   enabled: !!shipmentCountry,
+  // });
 
   const [lcPeriodDate, setLcPeriodDate] = useState<Date>();
   const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
@@ -160,14 +179,16 @@ export const Period = ({ register, setValue }: any) => {
             id="shipmentPort.country"
             label="Country"
             placeholder="Select a country"
-            register={register}
+            setValue={setValue}
             data={countries?.response}
+            setValueChanged={setValueChanged}
           />
           <DDInput
             label="Select port"
             id="shipmentPort.port"
             placeholder="Select port"
-            register={register}
+            setValue={setValue}
+            setValueChanged={setValueChanged}
           />
         </div>
       </div>
@@ -175,7 +196,15 @@ export const Period = ({ register, setValue }: any) => {
   );
 };
 
-export const Transhipment = ({ register, setValue, isDiscount }: any) => {
+export const Transhipment = ({
+  register,
+  setValue,
+  isDiscount,
+}: {
+  register: any;
+  setValue: any;
+  isDiscount?: boolean;
+}) => {
   const [expectedConfirmationDate, setExpectedConfirmationDate] =
     useState<Date>();
   const [checkedState, setCheckedState] = useState({
@@ -305,7 +334,45 @@ export const Transhipment = ({ register, setValue, isDiscount }: any) => {
   );
 };
 
-export const DiscountBanks = ({ register, countries }: any) => {
+export const DiscountBanks = ({
+  countries,
+  setValue,
+  getValues,
+}: {
+  countries: any;
+  setValue: any;
+  getValues: any;
+}) => {
+  const [valueChanged, setValueChanged] = useState(false);
+
+  let issuingCountry = getValues("issuingBank.country");
+  let advisingCountry = getValues("advisingBank.country");
+  let confirmingCountry = getValues("confirmingBank.country");
+
+  useEffect(() => {
+    issuingCountry = getValues("issuingBank.country");
+    advisingCountry = getValues("advisingBank.country");
+    confirmingCountry = getValues("confirmingBank.country");
+  }, [valueChanged]);
+
+  const { data: issuingBanks } = useQuery({
+    queryKey: ["issuing-banks", issuingCountry],
+    queryFn: () => getBanks(issuingCountry),
+    enabled: !!issuingCountry,
+  });
+
+  const { data: advisingBanks } = useQuery({
+    queryKey: ["advising-banks", advisingCountry],
+    queryFn: () => getBanks(advisingCountry),
+    enabled: !!advisingCountry,
+  });
+
+  const { data: confirmingBanks } = useQuery({
+    queryKey: ["confirming-banks", confirmingCountry],
+    queryFn: () => getBanks(confirmingCountry),
+    enabled: !!confirmingCountry,
+  });
+
   return (
     <div className="flex items-center justify-between w-full mb-3 gap-x-4">
       {/* Issuing Bank */}
@@ -316,14 +383,20 @@ export const DiscountBanks = ({ register, countries }: any) => {
             placeholder="Select a country"
             label="Country"
             id="issuingBank.country"
-            register={register}
             data={countries}
+            setValue={setValue}
+            setValueChanged={setValueChanged}
           />
           <DDInput
             placeholder="Select bank"
             label="Bank"
             id="issuingBank.bank"
-            register={register}
+            setValue={setValue}
+            setValueChanged={setValueChanged}
+            disabled={
+              !issuingBanks || !issuingBanks?.response || !issuingBanks.success
+            }
+            data={issuingBanks?.response}
           />
         </div>
       </div>
@@ -335,14 +408,22 @@ export const DiscountBanks = ({ register, countries }: any) => {
             placeholder="Select a country"
             label="Country"
             id="advisingBank.country"
-            register={register}
             data={countries}
+            setValue={setValue}
+            setValueChanged={setValueChanged}
           />
           <DDInput
             placeholder="Select bank"
             label="Bank"
             id="advisingBank.bank"
-            register={register}
+            setValue={setValue}
+            setValueChanged={setValueChanged}
+            disabled={
+              !advisingBanks ||
+              !advisingBanks?.response ||
+              !advisingBanks.success
+            }
+            data={advisingBanks?.response}
           />
         </div>
       </div>
@@ -369,14 +450,22 @@ export const DiscountBanks = ({ register, countries }: any) => {
             placeholder="Select a country"
             label="Country"
             id="confirmingBank.country"
-            register={register}
             data={countries}
+            setValue={setValue}
+            setValueChanged={setValueChanged}
           />
           <DDInput
             placeholder="Select bank"
             label="Bank"
             id="confirmingBank.bank"
-            register={register}
+            setValue={setValue}
+            setValueChanged={setValueChanged}
+            disabled={
+              !confirmingBanks ||
+              !confirmingBanks?.response ||
+              !confirmingBanks.success
+            }
+            data={confirmingBanks?.response}
           />
         </div>
       </div>

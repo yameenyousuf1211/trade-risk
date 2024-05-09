@@ -10,14 +10,38 @@ export const fetchLcs = async ({
   page,
   limit,
   draft,
+  userId,
 }: {
   page?: number;
   limit?: number;
   draft?: boolean;
+  userId: string;
+}) => {
+  try {
+    if (!userId) return;
+    const { data } = await api.get(
+      `/lcs?limit=${limit || 10}&page=${page || 1}&draft=${
+        draft || false
+      }&createdBy=${userId}`
+    );
+
+    return data.data.data;
+  } catch (error: any) {
+    console.log(error);
+    return error.response?.data?.message || "Something went wrong";
+  }
+};
+
+export const fetchAllLcs = async ({
+  page,
+  limit,
+}: {
+  page?: number;
+  limit?: number;
 }) => {
   try {
     const { data } = await api.get(
-      `/lcs?limit=${limit || 10}&page=${page || 1}&draft=${draft || false}`
+      `/lcs?limit=${limit || 10}&page=${page || 1}&draft=${false}`
     );
 
     return data.data.data;

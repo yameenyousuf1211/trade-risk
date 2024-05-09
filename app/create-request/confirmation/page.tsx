@@ -36,7 +36,7 @@ import { confirmationDiscountSchema } from "@/validation/lc.validation";
 import Loader from "@/components/ui/loader";
 import useLoading from "@/hooks/useLoading";
 import { getCountries } from "@/services/apis/helpers.api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const ConfirmationPage = () => {
   const {
@@ -50,8 +50,11 @@ const ConfirmationPage = () => {
     resolver: zodResolver(confirmationDiscountSchema),
   });
 
+  const queryClient = useQueryClient();
+
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
+  // Show errors
   useEffect(() => {
     if (errors) {
       const showNestedErrors = (errorsObj: any, parentKey = "") => {
@@ -83,7 +86,7 @@ const ConfirmationPage = () => {
       transhipment: data.transhipment === "yes" ? true : false,
       lcType: "LC Confirmation & Discounting",
     };
-    console.log(reqData);
+
     const { response, success } = await onCreateLC(reqData);
     stopLoading();
     if (!success) return toast.error(response);
@@ -91,6 +94,28 @@ const ConfirmationPage = () => {
       toast.success(response?.message);
       reset();
       router.push("/");
+    }
+  };
+
+  const saveAsDraft: SubmitHandler<
+    z.infer<typeof confirmationDiscountSchema>
+  > = async (data: z.infer<typeof confirmationDiscountSchema>) => {
+    startLoading();
+    const reqData = {
+      ...data,
+      transhipment: data.transhipment === "yes" ? true : false,
+      lcType: "LC Confirmation & Discounting",
+      isDraft: "true",
+    };
+    const { response, success } = await onCreateLC(reqData);
+    stopLoading();
+    if (!success) return toast.error(response);
+    else {
+      toast.success("LC saved as draft");
+      reset();
+      queryClient.invalidateQueries({
+        queryKey: ["fetch-lcs-drafts"],
+      });
     }
   };
 
@@ -105,10 +130,7 @@ const ConfirmationPage = () => {
 
   return (
     <CreateLCLayout>
-      <form
-        className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white"
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <form className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white">
         <Step1 register={register} />
         {/* Step 2 */}
         <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
@@ -180,14 +202,28 @@ const ConfirmationPage = () => {
             </p>
             <p className="font-semibold text-lg text-lightGray">LC Details</p>
           </div>
-          <DiscountBanks register={register} countries={countries?.response}/>
+          <DiscountBanks
+            countries={countries?.response}
+            setValue={setValue}
+            getValues={getValues}
+          />
           {/* Period */}
-          <Period register={register} setValue={setValue} />
+          <Period setValue={setValue} getValues={getValues} />
           {/* Transhipment */}
           <Transhipment register={register} setValue={setValue} />
         </div>
-        <Step4 register={register} countries={countries?.response}/>
-        <Step5 register={register} isConfirmation countries={countries?.response}/>
+
+        <Step4
+          register={register}
+          countries={countries?.response}
+          setValue={setValue}
+        />
+        <Step5
+          register={register}
+          isConfirmation
+          countries={countries?.response}
+          setValue={setValue}
+        />
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6
@@ -206,13 +242,21 @@ const ConfirmationPage = () => {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
-          <Button variant="ghost" className="bg-none w-1/3">
-            Save as draft
+          <Button
+            type="button"
+            onClick={handleSubmit(saveAsDraft)}
+            disabled={isLoading}
+            variant="ghost"
+            className="bg-none w-1/3"
+          >
+            {isLoading ? <Loader /> : "Save as draft"}
           </Button>
           <Button
+            type="button"
             disabled={isLoading}
             size="lg"
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
+            onClick={handleSubmit(onSubmit)}
           >
             {isLoading ? <Loader /> : "Submit request"}
           </Button>

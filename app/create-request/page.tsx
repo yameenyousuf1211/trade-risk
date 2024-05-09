@@ -22,7 +22,7 @@ import useLoading from "@/hooks/useLoading";
 import Loader from "../../components/ui/loader";
 import { useRouter } from "next/navigation";
 import { getCountries } from "@/services/apis/helpers.api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const CreateRequestPage = () => {
   const {
@@ -39,6 +39,8 @@ const CreateRequestPage = () => {
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
 
+  const queryClient = useQueryClient();
+  // Show errors
   useEffect(() => {
     if (errors) {
       const showNestedErrors = (errorsObj: any, parentKey = "") => {
@@ -60,6 +62,7 @@ const CreateRequestPage = () => {
       showNestedErrors(errors);
     }
   }, [errors]);
+
   const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data: z.infer<typeof confirmationSchema>
   ) => {
@@ -80,6 +83,29 @@ const CreateRequestPage = () => {
     }
   };
 
+  const saveAsDraft: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
+    data: z.infer<typeof confirmationSchema>
+  ) => {
+    startLoading();
+    const reqData = {
+      ...data,
+      lcType: "LC Confirmation",
+      transhipment: data.transhipment === "yes" ? true : false,
+      isDraft: true,
+    };
+
+    const { response, success } = await onCreateLC(reqData);
+    stopLoading();
+    if (!success) return toast.error(response);
+    else {
+      toast.success("LC saved as draft");
+      reset();
+      queryClient.invalidateQueries({
+        queryKey: ["fetch-lcs-drafts"],
+      });
+    }
+  };
+
   const { data: countries, isLoading: countriesLoading } = useQuery({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
@@ -87,10 +113,7 @@ const CreateRequestPage = () => {
 
   return (
     <CreateLCLayout>
-      <form
-        className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg"
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
         <Step1 register={register} />
         <Step2 register={register} />
         <Step3
@@ -120,13 +143,20 @@ const CreateRequestPage = () => {
         </div>
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
-          <Button type="button" variant="ghost" className="bg-none w-1/3">
+          <Button
+            onClick={handleSubmit(saveAsDraft)}
+            type="button"
+            variant="ghost"
+            className="bg-none w-1/3"
+          >
             Save as draft
           </Button>
           <Button
+            type="button"
             size="lg"
             disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
+            onClick={handleSubmit(onSubmit)}
           >
             {isLoading ? <Loader /> : "Submit request"}
           </Button>

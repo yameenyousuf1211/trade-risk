@@ -196,6 +196,8 @@ export interface ILcs {
   attachments?: string[];
   draft?: boolean;
   status?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IBids {

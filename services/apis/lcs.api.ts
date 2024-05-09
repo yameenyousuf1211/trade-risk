@@ -9,13 +9,15 @@ interface IFetchLcsParams {
 export const fetchLcs = async ({
   page,
   limit,
+  draft,
 }: {
-  page: number;
-  limit: number;
+  page?: number;
+  limit?: number;
+  draft?: boolean;
 }) => {
   try {
     const { data } = await api.get(
-      `/lcs?limit=${limit || 10}&page=${page || 1}`
+      `/lcs?limit=${limit || 10}&page=${page || 1}&draft=${draft || false}`
     );
 
     return data.data.data;
@@ -43,7 +45,7 @@ export const onCreateLC = async (payload: any) => {
 export const getBankLcStatus = async (id: any) => {
   try {
     const response = await api.get(`/lcs/status/check/${id}`);
-    
+
     return { success: true, response: response.data };
   } catch (error) {
     console.error(error);

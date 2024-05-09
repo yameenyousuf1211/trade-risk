@@ -39,7 +39,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
   if (user && user.role !== "corporate") {
     redirect("/dashboard");
   }
-
+  console.log(data?.data[0])
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">

@@ -16,13 +16,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
 import { onRegister } from "@/services/apis";
 import { toast } from "sonner";
-import { getBanks, getCountries } from "@/services/apis/helpers.api";
+import { getBanks, getCities, getCountries } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 
 const SelectedBank = () => {
@@ -71,21 +71,6 @@ const CurrentBankingPage = () => {
     }
   };
 
-  // const countries = [
-  //   {
-  //     value: "pakistan",
-  //     label: "Pakistan",
-  //   },
-  //   {
-  //     value: "dubai",
-  //     label: "dubai",
-  //   },
-  //   {
-  //     value: "saudi-arabia",
-  //     label: "Saudi Arabia",
-  //   },
-  // ];
-
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryVal, setCountryVal] = useState("");
 
@@ -105,6 +90,19 @@ const CurrentBankingPage = () => {
     queryFn: () => getBanks(countryVal),
     enabled: !!countryVal,
   });
+
+  // const [valueChanged, setValueChanged] = useState(false);
+  // let country = getValues("accountCountry");
+
+  // useEffect(() => {
+  //   country = getValues("accountCountry");
+  // }, [valueChanged]);
+
+  // const { data: cities, isLoading } = useQuery({
+  //   queryKey: ["cities", country],
+  //   queryFn: () => getCities(country),
+  //   enabled: !!country,
+  // });
 
   return (
     <CorporateStepLayout

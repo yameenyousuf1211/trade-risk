@@ -24,6 +24,22 @@ export const getBanks = async (country: string) => {
   }
 };
 
+export const getCities = async (country: string) => {
+  try {
+    if (!country) return;
+    const capitalizedCountry =
+      country.charAt(0).toUpperCase() + country.slice(1).toLowerCase();
+    const response = await api.get(
+      `/countries/list/cities?country=${capitalizedCountry}`
+    );
+
+    return { success: true, response: response.data.data };
+  } catch (error) {
+    console.error(error);
+    return { success: false, response: (error as any).response.data.message };
+  }
+};
+
 export const getCurrenncy = async () => {
   try {
     const response = await api.get(`/currencies/list`);

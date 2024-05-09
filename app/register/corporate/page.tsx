@@ -19,6 +19,8 @@ import { companyInfoSchema } from "@/validation";
 import { z } from "zod";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
 import { CountrySelect } from "@/components/helpers";
+import { getCities } from "@/services/apis/helpers.api";
+import { useQuery } from "@tanstack/react-query";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
@@ -27,6 +29,7 @@ const CompanyInfoPage = () => {
   const {
     register,
     setValue,
+    getValues,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<z.infer<typeof companyInfoSchema>>({
@@ -54,6 +57,19 @@ const CompanyInfoPage = () => {
         });
     }
   }, [errors]);
+
+  const [valueChanged, setValueChanged] = useState(false);
+  let country = getValues("accountCountry");
+
+  useEffect(() => {
+    country = getValues("accountCountry");
+  }, [valueChanged]);
+
+  const { data: cities, isLoading } = useQuery({
+    queryKey: ["cities", country],
+    queryFn: () => getCities(country),
+    enabled: !!country,
+  });
 
   return (
     <AuthLayout>
@@ -185,36 +201,32 @@ const CompanyInfoPage = () => {
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
             {/* Country */}
-            {/* <Select
-              onValueChange={(value) =>
-                setValue("accountCountry", value, { shouldValidate: true })
-              }
-            >
-              <SelectTrigger className="w-full py-5 px-4 text-gray-500">
-                <SelectValue placeholder="Account Country" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Pakistan">Pakistan</SelectItem>
-                <SelectItem value="Saudi Arabia">Saudi Arabia</SelectItem>
-                <SelectItem value="United Arab Emirates">
-                  United Arab Emirates
-                </SelectItem>
-              </SelectContent>
-            </Select> */}
-            <CountrySelect setValue={setValue} name="accountCountry" />
+            <CountrySelect
+              setValue={setValue}
+              name="accountCountry"
+              setValueChange={setValueChanged}
+            />
             {/* City */}
             <Select
               onValueChange={(value) =>
                 setValue("accountCity", value, { shouldValidate: true })
               }
             >
-              <SelectTrigger className="w-full py-5 px-4 text-gray-500">
+              <SelectTrigger
+                disabled={!cities || !cities?.response || !cities.success}
+                className="w-full py-5 px-4 text-gray-500"
+              >
                 <SelectValue placeholder="Account City" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="karachi">Karachi</SelectItem>
-                <SelectItem value="peshawar">Peshawar</SelectItem>
-                <SelectItem value="lahore">Lahore</SelectItem>
+                {!isLoading &&
+                  cities &&
+                  cities.response.length > 0 &&
+                  cities?.response.map((city: string, idx: number) => (
+                    <SelectItem value={city} key={`${city}-${idx}`}>
+                      {city}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>

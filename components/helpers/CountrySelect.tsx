@@ -12,9 +12,11 @@ import { useQuery } from "@tanstack/react-query";
 export const CountrySelect = ({
   setValue,
   name,
+  setValueChange,
 }: {
   setValue: any;
   name: string;
+  setValueChange?: any;
 }) => {
   const { data, isLoading } = useQuery({
     queryKey: ["countries"],
@@ -23,7 +25,10 @@ export const CountrySelect = ({
 
   return (
     <Select
-      onValueChange={(value) => setValue(name, value, { shouldValidate: true })}
+      onValueChange={(value) => {
+        setValue(name, value, { shouldValidate: true });
+        setValueChange && setValueChange((prev:boolean) => !prev)
+      }}
     >
       <SelectTrigger className="w-full py-5 px-4 text-gray-500">
         <SelectValue placeholder="Select Countries" />
@@ -37,7 +42,6 @@ export const CountrySelect = ({
               {country}
             </SelectItem>
           ))}
-        <SelectItem value="Pakistan">Pakistan</SelectItem>
       </SelectContent>
     </Select>
   );

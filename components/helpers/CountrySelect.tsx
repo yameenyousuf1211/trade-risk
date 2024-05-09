@@ -37,8 +37,7 @@ export const CountrySelect = ({
               {country}
             </SelectItem>
           ))}
-        <SelectItem value="India">India</SelectItem>
-        <SelectItem value="Saudi Arabia">Saudi Arabia</SelectItem>
+        <SelectItem value="Pakistan">Pakistan</SelectItem>
       </SelectContent>
     </Select>
   );

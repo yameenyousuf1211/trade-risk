@@ -1,5 +1,4 @@
 import { Search, Settings } from "lucide-react";
-import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { LineChart, Line } from "recharts";
@@ -7,10 +6,11 @@ import { LineChart, Line } from "recharts";
 const CountrySearch = () => {
   return (
     <div className="relative">
-      {/* <Input
-        className="placeholder:text-[13px] pr-5 !h-8 max-w-[200px]"
+      <input
+        type="text"
         placeholder="Enter country name"
-      /> */}
+        className="flex w-full rounded-md border border-input placeholder:text-[13px] pr-5 h-8 max-w-[200px] bg-background px-3 py-2 text-sm placeholder:text-muted-foreground"
+      />
       <Search className="size-4 text-para absolute right-2 top-2" />
     </div>
   );
@@ -139,7 +139,9 @@ export const LineCharts = () => {
   return (
     <div className="rounded-lg border border-borderCol py-4 px-5 w-full overflow-x-auto bg-white">
       <div className="w-full flex items-center gap-x-2 justify-between">
-        <h4 className="text-lg font-semibold w-full max-w-[100px]">Risk Price</h4>
+        <h4 className="text-lg font-semibold w-full max-w-[100px]">
+          Risk Price
+        </h4>
         <div className="flex items-center justify-end gap-x-1 w-full">
           <CountrySearch />
           <YearFilter />

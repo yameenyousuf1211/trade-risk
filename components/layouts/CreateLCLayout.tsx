@@ -18,7 +18,7 @@ export default function AuthLayout({
       <main className="bg-bg px-2 relative w-full min-h-[88vh] flex flex-col items-center justify-center py-10">
         <div className="flex w-full 2xl:px-10 px-2 gap-x-2">
           <div className="2xl:w-5/6 w-4/5 p-4">
-            <h2 className="text-4xl font-semibold mb-2">
+            <h2 className="text-3xl font-semibold mb-2">
               Create a new request
             </h2>
             <p className="text-para text-sm mb-7">

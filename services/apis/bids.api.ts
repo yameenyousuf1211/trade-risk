@@ -86,3 +86,13 @@ export const fetchMyBids = async ({
     return error.response?.data?.message || "Something went wrong";
   }
 };
+
+export const getBidsCount = async () => {
+  try {
+    const { data } = await api.get(`/bids/count`);
+    return data.data;
+  } catch (error: any) {
+    console.log(error);
+    return error.response?.data?.message || "Something went wrong";
+  }
+};

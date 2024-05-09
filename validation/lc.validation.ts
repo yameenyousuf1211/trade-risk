@@ -76,6 +76,12 @@ export const confirmationSchema = z.lazy(() =>
             message: "Enter a valid number",
           }),
       }),
+      advisingBank: z.optional(
+        z.object({
+          bank: z.string().optional(),
+          country: z.string().optional(),
+        })
+      ),
     })
   )
 );

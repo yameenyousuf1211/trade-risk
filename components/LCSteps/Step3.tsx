@@ -8,14 +8,16 @@ import { useEffect, useState } from "react";
 
 export const Step3 = ({ register, setValue, getValues, countries }: any) => {
   const [valueChanged, setValueChanged] = useState(false);
+  const [showAdvisingBank, setShowAdvisingBank] = useState(false);
 
   let issuingCountry = getValues("issuingBank.country");
-  // let advisingCountry = getValues("issuingBank.country");
+  let advisingCountry = getValues("advisingBank.country");
   let confirmingCountry = getValues("confirmingBank.country");
 
   useEffect(() => {
     issuingCountry = getValues("issuingBank.country");
     confirmingCountry = getValues("confirmingBank.country");
+    advisingCountry = getValues("advisingBank.country");
   }, [valueChanged]);
 
   const { data: issuingBanks } = useQuery({
@@ -28,6 +30,12 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
     queryKey: ["confirming-banks", confirmingCountry],
     queryFn: () => getBanks(confirmingCountry),
     enabled: !!confirmingCountry,
+  });
+
+  const { data: advisingBanks } = useQuery({
+    queryKey: ["advising-banks", advisingCountry],
+    queryFn: () => getBanks(advisingCountry),
+    enabled: !!advisingCountry,
   });
 
   return (
@@ -66,12 +74,44 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
             />
           </div>
         </div>
-        <div className="center flex-col gap-y-2 border-4 border-borderCol border-dotted rounded-md w-full h-full min-h-40">
-          <div className="center border-2 border-black rounded-full">
-            <Plus />
+        {showAdvisingBank ? (
+          <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
+            <p className="font-semibold mb-2 ml-3">Advising Bank</p>
+            <div className="flex flex-col gap-y-2">
+              <DDInput
+                placeholder="Select a country"
+                label="Country"
+                id="advisingBank.country"
+                data={countries}
+                setValue={setValue}
+                setValueChanged={setValueChanged}
+              />
+              <DDInput
+                placeholder="Select bank"
+                label="Bank"
+                id="advisingBank.bank"
+                setValue={setValue}
+                setValueChanged={setValueChanged}
+                disabled={
+                  !advisingBanks ||
+                  !advisingBanks?.response ||
+                  !advisingBanks.success
+                }
+                data={advisingBanks?.response}
+              />
+            </div>
           </div>
-          <p className="font-semibold">Add an Advising Bank</p>
-        </div>
+        ) : (
+          <div
+            onClick={() => setShowAdvisingBank((prev: boolean) => !prev)}
+            className="cursor-pointer center flex-col gap-y-2 border-4 border-borderCol border-dotted rounded-md w-full h-full min-h-40"
+          >
+            <div className="center border-2 border-black rounded-full">
+              <Plus />
+            </div>
+            <p className="font-semibold">Add an Advising Bank</p>
+          </div>
+        )}
       </div>
       {/* Confirming Bank */}
       <div className="py-3 px-2 rounded-md border border-borderCol bg-[#F5F7F9]">

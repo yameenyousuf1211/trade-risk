@@ -1,3 +1,7 @@
+import { getBidsCount } from "@/services/apis/bids.api";
+import { useQuery } from "@tanstack/react-query";
+import { Loader } from "../helpers";
+
 const Chart = ({
   value,
   bg,
@@ -59,7 +63,17 @@ const Chart = ({
   );
 };
 
+interface Count {
+  _id: string;
+  count: number;
+}
+
 export const ProgressCharts = ({ title }: { title: string }) => {
+  // const { isLoading, error, data } = useQuery({
+  //   queryKey: ["fetch-bids-count"],
+  //   queryFn: () => getBidsCount(),
+  // });
+  // console.log(data);
   const accepted = 10;
   const rejected = 12;
   const expired = 8;
@@ -76,6 +90,22 @@ export const ProgressCharts = ({ title }: { title: string }) => {
       </div>
       {/* Charts */}
       <div className="flex items-center overflow-x-auto">
+        {/* {isLoading ? (
+          <div className="w-full h-full center">
+            <Loader />
+          </div>
+        ) : (
+          data.map((count: Count, idx: number) => (
+            <Chart
+              value={count.count}
+              bg="#E0F2EF"
+              color="#49E2B4"
+              title={count._id}
+              maxValue={maxValue}
+              key={`${count._id}-${idx}`}
+            />
+          ))
+        )} */}
         <Chart
           value={accepted}
           bg="#E0F2EF"

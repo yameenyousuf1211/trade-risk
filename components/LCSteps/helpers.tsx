@@ -70,7 +70,7 @@ export const DDInput = ({
         <SelectTrigger
           disabled={disabled}
           id={id}
-          className="w-fit border-none bg-transparent"
+          className="w-fit border-none bg-transparent text-[#B5B5BE]"
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>

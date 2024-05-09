@@ -22,7 +22,6 @@ import { convertDateToYYYYMMDD } from "@/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { addBidTypes } from "@/validation/bids.validation";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addBid } from "@/services/apis/bids.api";
@@ -73,7 +72,7 @@ export const AddBid = ({
     mutationFn: addBid,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["fetch-lcs"],
+        queryKey: ["fetch-lcs", "bid-status"],
       });
     },
   });

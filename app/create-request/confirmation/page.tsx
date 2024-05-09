@@ -35,7 +35,7 @@ import { useRouter } from "next/navigation";
 import { confirmationDiscountSchema } from "@/validation/lc.validation";
 import Loader from "@/components/ui/loader";
 import useLoading from "@/hooks/useLoading";
-import { getCountries } from "@/services/apis/helpers.api";
+import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const ConfirmationPage = () => {
@@ -119,13 +119,14 @@ const ConfirmationPage = () => {
     }
   };
 
-  const handleSelectChange = (value: string) => {
-    register("currency", { value: value });
-  };
-
   const { data: countries, isLoading: countriesLoading } = useQuery({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
+  });
+
+  const { data: currency } = useQuery({
+    queryKey: ["currency"],
+    queryFn: () => getCurrenncy(),
   });
 
   return (
@@ -142,13 +143,18 @@ const ConfirmationPage = () => {
               <p className="font-semibold text-lg text-lightGray">Amount</p>
             </div>
             <div className="flex items-center gap-x-2">
-              <Select onValueChange={handleSelectChange}>
+              <Select onValueChange={(value) => setValue("currency", value)}>
                 <SelectTrigger className="w-[100px] bg-borderCol/80">
                   <SelectValue placeholder="USD" defaultValue="USD" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="PKR">PKR</SelectItem>
+                  {currency &&
+                    currency.response.length > 0 &&
+                    currency.response.map((curr: string, idx: number) => (
+                      <SelectItem key={`${curr}-${idx}`} value={curr}>
+                        {curr}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
               <Input

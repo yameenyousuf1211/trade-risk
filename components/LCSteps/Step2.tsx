@@ -9,11 +9,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { getCurrenncy } from "@/services/apis/helpers.api";
+import { useQuery } from "@tanstack/react-query";
 
-export const Step2 = ({ register }: any) => {
-  const handleSelectChange = (value: string) => {
-    register("currency", { value: value });
-  };
+export const Step2 = ({
+  register,
+  setValue,
+}: {
+  register: any;
+  setValue: any;
+}) => {
+  const { data: currency } = useQuery({
+    queryKey: ["currency"],
+    queryFn: () => getCurrenncy(),
+  });
+
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -27,17 +37,20 @@ export const Step2 = ({ register }: any) => {
         <div className="flex items-center gap-x-2">
           <Select
             onValueChange={(value) => {
-              handleSelectChange(value);
+              setValue("currency", value);
             }}
           >
             <SelectTrigger className="w-[100px] bg-borderCol/80">
               <SelectValue placeholder="USD" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="USD" defaultChecked>
-                USD
-              </SelectItem>
-              <SelectItem value="PKR">PKR</SelectItem>
+              {currency &&
+                currency.response.length > 0 &&
+                currency.response.map((curr: string, idx: number) => (
+                  <SelectItem key={`${curr}-${idx}`} value={curr}>
+                    {curr}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
           <Input

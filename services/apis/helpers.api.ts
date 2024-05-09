@@ -24,6 +24,16 @@ export const getBanks = async (country: string) => {
   }
 };
 
+export const getCurrenncy = async () => {
+  try {
+    const response = await api.get(`/currencies/list`);
+
+    return { success: true, response: response.data.data };
+  } catch (error) {
+    console.error(error);
+    return { success: false, response: (error as any).response.data.message };
+  }
+};
 
 // export const getPorts = async (country: string) => {
 //   try {

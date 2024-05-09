@@ -26,7 +26,7 @@ import { onCreateLC } from "@/services/apis/lcs.api";
 import { useRouter } from "next/navigation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "@/components/ui/loader";
-import { getCountries } from "@/services/apis/helpers.api";
+import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const CreateDiscountPage = () => {
@@ -120,13 +120,14 @@ const CreateDiscountPage = () => {
     }
   };
 
-  const handleSelectChange = (value: string) => {
-    register("currency", { value: value });
-  };
-
   const { data: countries } = useQuery({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
+  });
+
+  const { data: currency } = useQuery({
+    queryKey: ["currency"],
+    queryFn: () => getCurrenncy(),
   });
 
   return (
@@ -143,13 +144,18 @@ const CreateDiscountPage = () => {
               <p className="font-semibold text-lg text-lightGray">Amount</p>
             </div>
             <div className="flex items-center gap-x-2">
-              <Select onValueChange={handleSelectChange}>
+              <Select onValueChange={(value) => setValue("currency", value)}>
                 <SelectTrigger className="w-[100px] bg-borderCol/80">
                   <SelectValue placeholder="USD" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="PKR">PKR</SelectItem>
+                  {currency &&
+                    currency.response.length > 0 &&
+                    currency.response.map((curr: string, idx: number) => (
+                      <SelectItem key={`${curr}-${idx}`} value={curr}>
+                        {curr}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
               <Input
@@ -288,10 +294,7 @@ const CreateDiscountPage = () => {
             getValues={getValues}
           />
           {/* Period */}
-          <Period
-            setValue={setValue}
-            getValues={getValues}
-          />
+          <Period setValue={setValue} getValues={getValues} />
           {/* Transhipment */}
           <Transhipment register={register} isDiscount setValue={setValue} />
         </div>

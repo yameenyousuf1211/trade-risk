@@ -185,3 +185,17 @@ input[type="number"] {
     opacity: 0;
   }
 }
+
+/* Phone input */
+.country-list,
+.country-list .country {
+  z-index: 100 !important;
+}
+.selected-flag{
+  background: #fff !important;
+  border-radius: 10px !important;
+  -webkit-border-radius: 10px !important;
+  -moz-border-radius: 10px !important;
+  -ms-border-radius: 10px !important;
+  -o-border-radius: 10px !important;
+}

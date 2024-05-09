@@ -1,5 +1,5 @@
 "use client";
-import { CountrySelect } from "@/components/helpers";
+import { CountrySelect, TelephoneInput } from "@/components/helpers";
 import { FloatingInput } from "@/components/helpers/FloatingInput";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { Button } from "@/components/ui/button";
@@ -99,14 +99,6 @@ const BankRegisterPage = () => {
               )}
             </div>
 
-            {/* <Select>
-              <SelectTrigger className="w-full py-5 px-4 text-gray-500">
-                <SelectValue placeholder="Select Country*" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pakistan">Pakistan</SelectItem>
-              </SelectContent>
-            </Select> */}
             <CountrySelect setValue={setValue} name="country" />
 
             <FloatingInput
@@ -136,11 +128,11 @@ const BankRegisterPage = () => {
                 </span>
               )}
             </div>
-            <FloatingInput
-              type="number"
+
+            <TelephoneInput
               name="pocPhone"
               placeholder="POC Telephone"
-              register={register}
+              setValue={setValue}
             />
           </div>
 

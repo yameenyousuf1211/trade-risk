@@ -39,7 +39,6 @@ const CompanyInfoPage = () => {
   const onSubmit: SubmitHandler<z.infer<typeof companyInfoSchema>> = async (
     data: any
   ) => {
-    console.log(data);
     setValues(data);
     router.push("/register/corporate/product-info");
   };
@@ -132,16 +131,16 @@ const CompanyInfoPage = () => {
               )}
             </div>
             <div className="w-full">
-              <FloatingInput
+              {/* <FloatingInput
                 name="phone"
                 placeholder="Telephone"
                 register={register}
-              />
-              {/* <TelephoneInput
+              /> */}
+              <TelephoneInput
                 name="phone"
                 placeholder="Telephone"
                 setValue={setValue}
-              /> */}
+              />
               {errors.phone && (
                 <span className="text-[11px] text-red-500">
                   {errors.phone.message}

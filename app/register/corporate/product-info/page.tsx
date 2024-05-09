@@ -30,9 +30,6 @@ const ProductInfoPage = () => {
     setValues({
       productInfo: data,
     });
-    console.log(getStateValues(useRegisterStore.getState()));
-    console.log(data);
-
     router.push("/register/corporate/point-contact");
   };
 

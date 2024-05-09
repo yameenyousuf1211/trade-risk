@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { RadioInput } from "./helpers";
 import {
   Select,
@@ -11,18 +11,29 @@ import {
 import { Input } from "@/components/ui/input";
 import { getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
+import { amountToWords } from "@/utils";
 
 export const Step2 = ({
   register,
   setValue,
+  getValues,
 }: {
   register: any;
   setValue: any;
+  getValues: any;
 }) => {
   const { data: currency } = useQuery({
     queryKey: ["currency"],
     queryFn: () => getCurrenncy(),
   });
+
+  let amount = getValues("amount");
+  let currencyVal = getValues("currency");
+  const [valueChanged, setValueChanged] = useState(false);
+  useEffect(() => {
+    amount = getValues("amount");
+    currencyVal = getValues("currency");
+  }, [valueChanged]);
 
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
@@ -38,6 +49,7 @@ export const Step2 = ({
           <Select
             onValueChange={(value) => {
               setValue("currency", value);
+              setValueChanged((prev) => !prev);
             }}
           >
             <SelectTrigger className="w-[100px] bg-borderCol/80">
@@ -57,13 +69,16 @@ export const Step2 = ({
             type="text"
             name="amount"
             register={register}
+            onChange={() => setValueChanged((prev) => !prev)}
             className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0"
           />
         </div>
 
         <p className="font-semibold text-sm">
-          Five Million Five Hundred and Twenty Thousand{" "}
-          <span className="text-primaryCol">US Dollars</span>
+          {/* {amountToWords(amount)} */}
+          {amount}
+          {" "}
+          <span className="text-primaryCol uppercase">{currencyVal}</span>
         </p>
       </div>
 

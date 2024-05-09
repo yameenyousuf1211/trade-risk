@@ -25,10 +25,12 @@ const companyInfoSchema = z.object({
   bank: z.string().min(1, "Bank field cannot be empty."),
   swiftCode: z
     .string()
-    .min(5, "Swift code must be at least 5 characters long."),
+    .min(8, "Swift code must be at least 8 characters long.")
+    .max(11, "Swift code must be less than 11 characters."),
   accountNumber: z
     .string()
-    .min(3, "Account number field cannot be empty.")
+    .min(16, "Account number must contain 16 digits")
+    .max(16, "Account number must contain 16 digits")
     .refine((value) => /^\d+(\.\d+)?$/.test(value), {
       message: "Enter a valid number",
     }),
@@ -57,9 +59,24 @@ const pointOfContractSchema = z.object({
 
 const productsInfoSchema = z.object({
   product: z.string().min(1, "Product field cannot be empty."),
-  annualSalary: z.string().min(1, "Annual salary is required."),
-  annualValueExports: z.string().min(1, "Annual value is required"),
-  annualValueImports: z.string().min(1, "Annual value is required"),
+  annualSalary: z
+    .string()
+    .min(1, "Annual salary is required.")
+    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+      message: "Enter a valid number",
+    }),
+  annualValueExports: z
+    .string()
+    .min(1, "Annual value is required")
+    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+      message: "Enter a valid number",
+    }),
+  annualValueImports: z
+    .string()
+    .min(1, "Annual value is required")
+    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+      message: "Enter a valid number",
+    }),
 });
 
 const bankSchema = z.object({
@@ -78,7 +95,10 @@ const bankSchema = z.object({
       message: "Enter a valid number",
     }),
   address: z.string().nonempty("Bank address is required"),
-  swiftCode: z.string().nonempty("SWIFT code is required"),
+  swiftCode: z
+    .string()
+    .min(8, "Swift code must be at least 8 characters long.")
+    .max(11, "Swift code must be less than 11 characters."),
   pocEmail: z
     .string()
     .email("Must be a valid email.")

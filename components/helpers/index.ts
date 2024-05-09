@@ -1,3 +1,4 @@
+import { DashboardCountries } from "./DashboardCountries";
 import { TelephoneInput } from "./TelephoneInput";
 import { TableBidStatus } from "./TableBidStatus";
 import { Loader } from "./Loader";
@@ -28,4 +29,5 @@ export {
   Loader,
   TableBidStatus,
   TelephoneInput,
+  DashboardCountries,
 };

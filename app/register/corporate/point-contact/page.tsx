@@ -12,6 +12,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { pointOfContractSchema } from "@/validation";
 import { z } from "zod";
+import { TelephoneInput } from "@/components/helpers";
 
 const PointContactPage = () => {
   const router = useRouter();
@@ -77,11 +78,16 @@ const PointContactPage = () => {
             )}
           </div>
           <div className="w-full">
-            <FloatingInput
+            {/* <FloatingInput
               type="text"
               name="pocPhone"
               placeholder="pocPhone"
               register={register}
+            /> */}
+            <TelephoneInput
+              name="pocPhone"
+              placeholder="pocPhone"
+              setValue={setValue}
             />
           </div>
         </div>

@@ -10,6 +10,7 @@ import {
 import { ChevronUp, Ellipsis, Eye, Plus } from "lucide-react";
 import {
   CountrySelect,
+  DashboardCountries,
   DateRangePicker,
   Filter,
   Pagination,
@@ -46,7 +47,6 @@ export const RequestTable = ({
   isBank: boolean;
   data: ApiResponse<ILcs> | undefined;
 }) => {
-
   return (
     <div>
       <div className="rounded-md border px-4 py-4 bg-white">
@@ -59,7 +59,7 @@ export const RequestTable = ({
             {isBank && (
               <>
                 <ProductFilter />
-                {/* <CountrySelect/> */}
+                <DashboardCountries />
               </>
             )}
             <DateRangePicker />

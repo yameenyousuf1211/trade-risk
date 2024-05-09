@@ -115,7 +115,7 @@ const CreateRequestPage = () => {
     <CreateLCLayout>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
         <Step1 register={register} />
-        <Step2 register={register} setValue={setValue} />
+        <Step2 register={register} setValue={setValue} getValues={getValues}/>
         <Step3
           register={register}
           setValue={setValue}

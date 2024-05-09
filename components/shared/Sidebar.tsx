@@ -1,11 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Check, Dot, User, X } from "lucide-react";
+import { Check, Dot, X } from "lucide-react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { AddBid } from "./AddBid";
-import { fetchLcs } from "@/services/apis/lcs.api";
+import { fetchAllLcs, fetchLcs } from "@/services/apis/lcs.api";
 import { ApiResponse, IBids, ILcs } from "@/types/type";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatLeftDate, formatLeftDays } from "@/utils";
@@ -153,18 +153,93 @@ export const Sidebar = ({
 }) => {
   const { user } = useAuth();
 
+  const { startLoading, stopLoading, isLoading } = useLoading();
+
   const {
-    isLoading,
+    isLoading: isLcLoading,
     data,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["fetch-lcs"],
-      queryFn: () => fetchLcs({ page: 1, limit: 5, userId: user._id }),
+      queryFn: () => fetchLcs({ userId: user._id }),
       enabled: !!user?._id,
     });
 
+  const getHeaders = (data: any) => {
+    const headers = new Set();
+    const extractHeaders = (obj: any, prefix = "") => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (value && typeof value === "object") {
+          extractHeaders(value, `${prefix}${key}.`);
+        } else {
+          headers.add(`${prefix}${key}`);
+        }
+      });
+    };
+
+    data.forEach((item: any) => extractHeaders(item));
+    return Array.from(headers);
+  };
+
+  const formatValue = (header: any, obj: any) => {
+    const keys = header.split(".");
+    let value = obj;
+
+    for (const key of keys) {
+      value = value?.[key];
+      if (value === undefined || value === null) break;
+    }
+
+    return value === undefined ? "" : JSON.stringify(value);
+  };
+
+  const generateCSV = (data: any) => {
+    const headers = getHeaders(data);
+    const csvRows = [];
+
+    csvRows.push(headers.join(","));
+    data.forEach((item: any) => {
+      const values = headers.map((header) => formatValue(header, item));
+      csvRows.push(values.join(","));
+    });
+
+    const csvContent = csvRows.join("\n");
+    const blob = new Blob([csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "report.csv");
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const generateReport = async () => {
-    console.log(isBank);
+    if (!user) return;
+    if (isBank) {
+      startLoading();
+      const { data } = await fetchAllLcs({ limit: 10000 });
+      if (data.length > 0) {
+        generateCSV(data);
+      } else {
+        toast.error("Not enough data to export data");
+      }
+      stopLoading();
+    } else {
+      startLoading();
+      const { data } = await fetchLcs({ userId: user._id, limit: 1000 });
+
+      if (data.length > 0) {
+        generateCSV(data);
+      } else {
+        toast.error("Not enough data to export data");
+      }
+      stopLoading();
+    }
   };
 
   return (
@@ -195,6 +270,7 @@ export const Sidebar = ({
             onClick={generateReport}
             className="w-full text-primaryCol bg-white hover:bg-white/90 rounded-lg text-[16px]"
             size="lg"
+            disabled={isLoading}
           >
             Generate Report
           </Button>

@@ -1,6 +1,4 @@
 "use client";
-import "react-phone-number-input/style.css";
-import PhoneInput from "react-phone-number-input";
 import { useState } from "react";
 
 export const TelephoneInput = ({
@@ -16,14 +14,7 @@ export const TelephoneInput = ({
   console.log(val);
   return (
     <div>
-      <PhoneInput
-        placeholder={placeholder}
-        value={val}
-        onChange={(val: any) => {
-          setVal(val);
-          setValue(name, val);
-        }}
-      />
+      
     </div>
   );
 };

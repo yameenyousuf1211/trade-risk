@@ -35,13 +35,14 @@ const TableDataCell = ({ data }: { data: string | number }) => {
 };
 
 export const BankTable = ({ data }: { data: ApiResponse<IMyBids> }) => {
+  console.log(data.data[0]);
 
   return (
     <div className="">
       <div className="flex items-center justify-between gap-x-2 mb-2">
         <div className="flex items-center gap-x-2">
           <ProductFilter />
-          <CountrySelect />
+          {/* <CountrySelect /> */}
           <DateRangePicker />
         </div>
         <div className="flex items-center gap-x-2">
@@ -97,7 +98,7 @@ export const BankTable = ({ data }: { data: ApiResponse<IMyBids> }) => {
                         isInfo={item.status !== "Add bid"}
                         isDiscount
                         border
-                        lcData={undefined}
+                        lcId={item.lc}
                       />
                     ) : (
                       <Button

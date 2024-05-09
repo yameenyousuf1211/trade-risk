@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../ui/button";
 import { ApiResponse, ILcs } from "@/types/type";
-import { fetchLcs } from "@/services/apis/lcs.api";
+import { deleteLcDraft, fetchLcs } from "@/services/apis/lcs.api";
 import { Loader } from "../helpers";
 import { convertDateToYYYYMMDD } from "@/utils";
 import { useAuth } from "@/context/AuthProvider";
+import { toast } from "sonner";
 
 const DraftCard = ({
   noBorder,
@@ -13,6 +14,20 @@ const DraftCard = ({
   noBorder?: boolean;
   draft: ILcs;
 }) => {
+  const queryClient = useQueryClient();
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: deleteLcDraft,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["fetch-lcs-drafts"] });
+    },
+  });
+
+  const handleDelete = async (id: string) => {
+    const { success, response } = await mutateAsync(id);
+    if (!success) return toast.error(response);
+    toast.success("Draft deleted");
+  };
+
   return (
     <div className={`${noBorder ? "" : "border-b border-borderCol"} pb-4 py-2`}>
       <div className="flex items-center w-full justify-between gap-x-1">
@@ -37,6 +52,8 @@ const DraftCard = ({
         <Button
           size="sm"
           className="!py-0.5 h-8 px-2 text-sm bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"
+          type="button"
+          onClick={() => handleDelete(draft._id)}
         >
           Delete
         </Button>
@@ -46,8 +63,7 @@ const DraftCard = ({
 };
 
 export const DraftsSidebar = () => {
-
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const {
     isLoading,
@@ -56,7 +72,7 @@ export const DraftsSidebar = () => {
     useQuery({
       queryKey: ["fetch-lcs-drafts"],
       queryFn: () => fetchLcs({ draft: true, userId: user._id }),
-      enabled: !!user?._id
+      enabled: !!user?._id,
     });
   return (
     <div className="border border-borderCol bg-white rounded-lg py-4 px-3 min-h-[70vh]">

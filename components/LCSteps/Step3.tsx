@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 export const Step3 = ({ register, setValue, getValues, countries }: any) => {
   const [valueChanged, setValueChanged] = useState(false);
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
+  const [showConfirmingBank, setShowConfirmingBank] = useState(false);
 
   let issuingCountry = getValues("issuingBank.country");
   let advisingCountry = getValues("advisingBank.country");
@@ -143,12 +144,44 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
           />
         </div>
 
-        <div className="center gap-x-3 border-2 border-dotted border-borderCol py-2 rounded-md mt-2">
-          <div className="center p-1 border border-black rounded-full">
-            <Plus className="size-4" />
+        {showConfirmingBank ? (
+          <div className="flex items-center gap-x-3 w-full mt-3">
+            <div className="flex items-center gap-x-2 w-full">
+              <p className="font-semibold">2.</p>
+              <DDInput
+                label="Country"
+                id="confirmingBank.country"
+                placeholder="Select a Country"
+                data={countries}
+                setValue={setValue}
+                setValueChanged={setValueChanged}
+              />
+            </div>
+            <DDInput
+              label="Bank"
+              id="confirmingBank.bank"
+              placeholder="Select bank"
+              setValue={setValue}
+              setValueChanged={setValueChanged}
+              disabled={
+                !confirmingBanks ||
+                !confirmingBanks?.response ||
+                !confirmingBanks.success
+              }
+              data={confirmingBanks?.response}
+            />
           </div>
-          <p className="text-sm text-lightGray">Add Confirming Bank</p>
-        </div>
+        ) : (
+          <div
+            onClick={() => setShowConfirmingBank((prev: boolean) => !prev)}
+            className="cursor-pointer center gap-x-3 border-2 border-dotted border-borderCol py-2 rounded-md mt-2"
+          >
+            <div className=" center p-1 border border-black rounded-full">
+              <Plus className="size-4" />
+            </div>
+            <p className="text-sm text-lightGray">Add Confirming Bank</p>
+          </div>
+        )}
       </div>
       <Period setValue={setValue} getValues={getValues} />
       <Transhipment register={register} setValue={setValue} />

@@ -18,7 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { companyInfoSchema } from "@/validation";
 import { z } from "zod";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
-import { CountrySelect } from "@/components/helpers";
+import { CountrySelect, TelephoneInput } from "@/components/helpers";
 import { getCities } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -137,6 +137,11 @@ const CompanyInfoPage = () => {
                 placeholder="Telephone"
                 register={register}
               />
+              {/* <TelephoneInput
+                name="phone"
+                placeholder="Telephone"
+                setValue={setValue}
+              /> */}
               {errors.phone && (
                 <span className="text-[11px] text-red-500">
                   {errors.phone.message}

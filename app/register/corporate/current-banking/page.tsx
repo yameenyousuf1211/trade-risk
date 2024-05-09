@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
@@ -25,14 +25,10 @@ import { toast } from "sonner";
 import { getBanks, getCities, getCountries } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 
-const SelectedBank = () => {
-  return (
-    <div className="flex items-center gap-x-2">
-      <X className="size-4 text-red-500 cursor-pointer" />
-      <p className="text-[#44444F] text-sm">Habib Bank Limited</p>
-    </div>
-  );
-};
+interface Bank {
+  country: string;
+  name: string;
+}
 
 const CurrentBankingPage = () => {
   const router = useRouter();
@@ -61,7 +57,6 @@ const CurrentBankingPage = () => {
       pocDesignation: data.pocDesignation,
       currentBanks: data.currentBanks,
     };
-    console.log(reqData);
     const { response, success } = await onRegister(reqData);
     console.log(response);
     if (!success) return toast.error(response);
@@ -91,18 +86,38 @@ const CurrentBankingPage = () => {
     enabled: !!countryVal,
   });
 
-  // const [valueChanged, setValueChanged] = useState(false);
-  // let country = getValues("accountCountry");
+  const { data: cities, isLoading: citiesLoading } = useQuery({
+    queryKey: ["cities", countryVal],
+    queryFn: () => getCities(countryVal),
+    enabled: !!countryVal,
+  });
 
-  // useEffect(() => {
-  //   country = getValues("accountCountry");
-  // }, [valueChanged]);
+  const [allBanks, setAllBanks] = useState<{ [country: string]: Bank[] }>({});
 
-  // const { data: cities, isLoading } = useQuery({
-  //   queryKey: ["cities", country],
-  //   queryFn: () => getCities(country),
-  //   enabled: !!country,
-  // });
+  const handleBankAdd = () => {
+    if (!countryVal) return toast.error("Please select a country");
+    if (!bankVal) return toast.error("Please select a bank");
+
+    const newBank: Bank = {
+      country: countryVal,
+      name: bankVal,
+    };
+    setAllBanks((prevBanks) => ({
+      ...prevBanks,
+      [countryVal]: [...(prevBanks[countryVal] || []), newBank],
+    }));
+
+    setCountryVal("");
+    setBankVal("");
+    setCityVal("");
+  };
+
+  const handleBankDelete = (country: string, index: number) => {
+    setAllBanks((prevBanks) => ({
+      ...prevBanks,
+      [country]: prevBanks[country].filter((_, i) => i !== index),
+    }));
+  };
 
   return (
     <CorporateStepLayout
@@ -123,7 +138,7 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={countryOpen}
-                  className="w-[200px] justify-between"
+                  className="w-[230px] justify-between"
                 >
                   {countryVal
                     ? countries?.response.find(
@@ -179,7 +194,7 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={bankOpen}
-                  className="w-[200px] justify-between truncate"
+                  className="w-[230px] justify-between truncate"
                   disabled={countryVal === ""}
                 >
                   {bankVal
@@ -236,13 +251,13 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={cityOpen}
-                  className="w-[200px] justify-between"
-                  disabled={true}
+                  className="w-[230px] justify-between"
+                  disabled={countryVal === ""}
                 >
                   {countryVal
-                    ? countries?.response.find(
-                        (country: string) =>
-                          country.toLowerCase() === cityVal.toLowerCase()
+                    ? cities?.response.find(
+                        (city: string) =>
+                          city.toLowerCase() === cityVal.toLowerCase()
                       )
                     : "Select city..."}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -253,10 +268,10 @@ const CurrentBankingPage = () => {
                   <CommandInput placeholder="Search city..." />
                   <CommandEmpty>No city found.</CommandEmpty>
                   <CommandGroup>
-                    {!countriesLoading &&
-                      countries &&
-                      countries.success &&
-                      countries?.response.map((city: string) => (
+                    {!citiesLoading &&
+                      cities &&
+                      cities.success &&
+                      cities?.response.map((city: string) => (
                         <CommandItem
                           key={city}
                           value={city}
@@ -286,45 +301,43 @@ const CurrentBankingPage = () => {
               </PopoverContent>
             </Popover>
 
-            <p className="text-center font-semibold text-[16px] mt-4">
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={handleBankAdd}
+              className="text-center font-semibold text-[16px] mt-4"
+            >
               Add Bank
-            </p>
+            </Button>
           </div>
 
           {/* Selected Details */}
           <div className="col-span-2 border border-borderCol rounded-md h-60 overflow-y-auto w-full grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-3">
-            <div>
-              <h3 className="font-normal text-[#44444F] w-full border-b border-b-neutral-400 mb-1">
-                Pakistan
-              </h3>
-              <div className="flex flex-col gap-y-2">
-                <SelectedBank />
-                <SelectedBank />
-                <SelectedBank />
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-normal text-[#44444F] w-full border-b border-b-neutral-400 mb-1">
-                Pakistan
-              </h3>
-              <div className="flex flex-col gap-y-2">
-                <SelectedBank />
-                <SelectedBank />
-                <SelectedBank />
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-normal text-[#44444F] w-full border-b border-b-neutral-400 mb-1">
-                Pakistan
-              </h3>
-              <div className="flex flex-col gap-y-2">
-                <SelectedBank />
-                <SelectedBank />
-                <SelectedBank />
-              </div>
-            </div>
+            {Object.keys(allBanks)
+              .filter((country) => country !== "Pakistan")
+              .map((country) => (
+                <div key={country}>
+                  <h3 className="font-normal text-[#44444F] w-full border-b border-b-neutral-400 mb-1 capitalize">
+                    {country}
+                  </h3>
+                  <div className="flex flex-col gap-y-2">
+                    {allBanks[country].map((bank, idx) => (
+                      <div
+                        key={`${bank}-${idx}`}
+                        className="flex items-start gap-x-2"
+                      >
+                        <X
+                          onClick={() => handleBankDelete(country, idx)}
+                          className="size-4 text-red-500 cursor-pointer"
+                        />
+                        <p className="text-[#44444F] text-sm capitalize">
+                          {bank.name}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
 

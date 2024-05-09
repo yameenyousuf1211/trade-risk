@@ -1,3 +1,4 @@
+import { TelephoneInput } from "./TelephoneInput";
 import { TableBidStatus } from "./TableBidStatus";
 import { Loader } from "./Loader";
 import { Pagination } from "./Pagination";
@@ -26,4 +27,5 @@ export {
   Pagination,
   Loader,
   TableBidStatus,
+  TelephoneInput,
 };

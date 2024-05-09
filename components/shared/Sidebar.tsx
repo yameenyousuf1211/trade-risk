@@ -163,6 +163,10 @@ export const Sidebar = ({
       enabled: !!user?._id,
     });
 
+  const generateReport = async () => {
+    console.log(isBank);
+  };
+
   return (
     <>
       {/* Action Box */}
@@ -188,6 +192,7 @@ export const Sidebar = ({
             Create a quick report of all transaction data
           </p>
           <Button
+            onClick={generateReport}
             className="w-full text-primaryCol bg-white hover:bg-white/90 rounded-lg text-[16px]"
             size="lg"
           >

@@ -1,11 +1,6 @@
 import { STATUS } from "@/utils";
 import api from "../middleware/middleware";
 
-interface IFetchLcsParams {
-  search?: string;
-  page?: number;
-}
-
 export const fetchLcs = async ({
   page,
   limit,
@@ -51,6 +46,17 @@ export const fetchAllLcs = async ({
   }
 };
 
+export const fetchSingleLc = async (id: string) => {
+  try {
+    const { data } = await api.get(`/lcs/${id}`);
+
+    return data.data;
+  } catch (error: any) {
+    console.log(error);
+    return error.response?.data?.message || "Something went wrong";
+  }
+};
+
 export const onCreateLC = async (payload: any) => {
   try {
     const response = await api.post("/lcs/create", payload);
@@ -66,9 +72,20 @@ export const onCreateLC = async (payload: any) => {
   }
 };
 
-export const getBankLcStatus = async (id: any) => {
+export const getBankLcStatus = async (id: string) => {
   try {
     const response = await api.get(`/lcs/status/check/${id}`);
+
+    return { success: true, response: response.data };
+  } catch (error) {
+    console.error(error);
+    return { success: false, response: (error as any).response.data.message };
+  }
+};
+
+export const deleteLcDraft = async (id: string) => {
+  try {
+    const response = await api.delete(`/lcs/${id}`);
 
     return { success: true, response: response.data };
   } catch (error) {

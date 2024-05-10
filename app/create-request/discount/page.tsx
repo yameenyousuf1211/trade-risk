@@ -56,7 +56,7 @@ const CreateDiscountPage = () => {
               errorsObj[key as keyof typeof errorsObj]?.message;
 
             if (errorMessage) {
-              const fieldName = parentKey ? `${parentKey}.${key}` : key;
+              // const fieldName = parentKey ? `${parentKey}.${key}` : key;
               toast.error(`${errorMessage}`);
             } else if (typeof errorsObj[key] === "object") {
               showNestedErrors(errorsObj[key], key);

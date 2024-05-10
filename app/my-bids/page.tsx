@@ -13,11 +13,13 @@ interface SearchParams {
   searchParams: {
     page: number;
     limit: number;
+    filter: string;
+    search:string;
   };
 }
 
 const MyBidsPage = ({ searchParams }: SearchParams) => {
-  const { page, limit } = searchParams;
+  const { page, limit, filter, search } = searchParams;
 
   const pathname = usePathname();
   const { user } = useAuth();
@@ -29,8 +31,8 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
     error: any;
     isLoading: boolean;
   } = useQuery({
-    queryKey: ["fetch-my-bids", page, limit],
-    queryFn: () => fetchMyBids({ page, limit }),
+    queryKey: ["fetch-my-bids", page, limit, filter, search],
+    queryFn: () => fetchMyBids({ page, limit, filter, search }),
   });
 
   if (user && user.role !== "bank") {

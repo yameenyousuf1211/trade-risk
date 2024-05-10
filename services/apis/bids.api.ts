@@ -82,9 +82,13 @@ export const addBid = async ({
 export const fetchMyBids = async ({
   page,
   limit,
+  filter,
+  search,
 }: {
   page: number;
   limit: number;
+  filter?: string;
+  search?: string;
 }) => {
   try {
     const { data } = await api.get(

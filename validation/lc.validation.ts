@@ -21,31 +21,46 @@ export const generalLcSchema = z.object({
     message: "Select a payment term",
   }),
   currency: z.string({ message: "Currency is required" }),
-  issuingBank: z.object({
-    bank: z.string({ message: "Issuing bank name is required" }),
-    country: z.string({ message: "Issuing bank country is required" }),
-  }),
-  confirmingBank: z.object({
-    bank: z.string({ message: "Confirming bank name is required" }),
-    country: z.string({ message: "Confirming bank country is required" }),
-  }),
-  lcPeriod: z.object({
-    startDate: z.date({ message: "Select date" }),
-    endDate: z.date({ message: "Select date" }),
-  }),
-  shipmentPort: z.object({
-    country: z.string({ message: "Select a country" }),
-    port: z.string({ message: "Select port" }),
-  }),
+  issuingBank: z.object(
+    {
+      bank: z.string({ message: "Issuing bank name is required" }),
+      country: z.string({ message: "Issuing bank country is required" }),
+    },
+    { message: "Issuing bank details is required" }
+  ),
+  confirmingBank: z.object(
+    {
+      bank: z.string({ message: "Confirming bank name is required" }),
+      country: z.string({ message: "Confirming bank country is required" }),
+    },
+    { message: "Confirming bank details is required" }
+  ),
+  lcPeriod: z.object(
+    {
+      startDate: z.date({ message: "Select date" }),
+      endDate: z.date({ message: "Select date" }),
+    },
+    { message: "LC Period is required" }
+  ),
+  shipmentPort: z.object(
+    {
+      country: z.string({ message: "Select a country" }),
+      port: z.string({ message: "Select port" }),
+    },
+    { message: "Shipment details is required" }
+  ),
   transhipment: z.enum(["yes", "no"], { message: "Specify transhipment" }),
-  importerInfo: z.object({
-    applicantName: z
-      .string({ message: "Enter applicant name" })
-      .nonempty("Enter applicant name"),
-    countryOfImport: z
-      .string({ message: "Select country of import" })
-      .nonempty("Select country of import"),
-  }),
+  importerInfo: z.object(
+    {
+      applicantName: z
+        .string({ message: "Enter applicant name" })
+        .nonempty("Enter applicant name"),
+      countryOfImport: z
+        .string({ message: "Select country of import" })
+        .nonempty("Select country of import"),
+    },
+    { message: "Importer Info is required" }
+  ),
   productDescription: z
     .string({ message: "Add product description" })
     .min(10, { message: "Description must be greater than 10 characters" })
@@ -109,7 +124,7 @@ export const discountingSchema = z.lazy(() =>
           message: "Specify discount at sight",
         }),
         behalfOf: z.enum(["Exporter", "Importer"], {
-          message: "Select one of above",
+          message: "Select charges on account of",
         }),
         pricePerAnnum: z
           .string({ message: "Enter expected price" })

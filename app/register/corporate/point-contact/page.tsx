@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Paperclip } from "lucide-react";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -27,25 +27,30 @@ const PointContactPage = () => {
     resolver: zodResolver(pointOfContractSchema),
   });
 
+  // Updating the locally saved values
+  const contactData =
+    typeof window !== "undefined" ? localStorage.getItem("contactData") : null;
+
+  useEffect(() => {
+    if (contactData) {
+      const data = JSON.parse(contactData);
+      data && setValues(data);
+      Object.entries(data).forEach(([key, value]) => {
+        // @ts-ignore
+        setValue(key, value);
+      });
+    }
+  }, [contactData]);
+
   const onSubmit: SubmitHandler<z.infer<typeof pointOfContractSchema>> = async (
     data: any
   ) => {
     setValues(data);
-    console.log(getStateValues(useRegisterStore.getState()));
-
+    localStorage.setItem("contactData", JSON.stringify(data));
     router.push("/register/corporate/current-banking");
   };
 
-  useEffect(() => {
-    if (errors) {
-      Object.keys(errors).forEach((fieldName: string) => {
-        const errorMessage = errors[fieldName as keyof typeof errors]?.message;
-        if (errorMessage) {
-          toast.error(`${fieldName}: ${errorMessage}`);
-        }
-      });
-    }
-  }, [errors]);
+  const [pdfFile, setPdfFile] = useState<File | undefined>(undefined);
 
   return (
     <CorporateStepLayout
@@ -57,12 +62,19 @@ const PointContactPage = () => {
         className="max-w-xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <FloatingInput
-          register={register}
-          type="text"
-          name="pocName"
-          placeholder="Authorized Point of Contact"
-        />
+        <div className="w-full">
+          <FloatingInput
+            register={register}
+            type="text"
+            name="pocName"
+            placeholder="Authorized Point of Contact"
+          />
+          {errors.pocName && (
+            <span className="text-[11px] text-red-500">
+              {errors.pocName.message}
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-x-2">
           <div className="w-full">
             <FloatingInput
@@ -78,48 +90,76 @@ const PointContactPage = () => {
             )}
           </div>
           <div className="w-full">
-            {/* <FloatingInput
-              type="text"
-              name="pocPhone"
-              placeholder="pocPhone"
-              register={register}
-            /> */}
             <TelephoneInput
               name="pocPhone"
               placeholder="pocPhone"
               setValue={setValue}
             />
+            {errors.pocPhone && (
+              <span className="text-[11px] text-red-500">
+                {errors.pocPhone.message}
+              </span>
+            )}
           </div>
         </div>
 
         <div className="h-[2px] w-full bg-borderCol" />
 
         <div className="flex items-center gap-x-2">
-          <FloatingInput
-            type="text"
-            name="poc"
-            placeholder="Authorized POC"
-            register={register}
-          />
-          <FloatingInput
-            type="text"
-            name="pocDesignation"
-            placeholder="POC Designation"
-            register={register}
-          />
+          <div className="w-full">
+            <FloatingInput
+              type="text"
+              name="poc"
+              placeholder="Authorized POC"
+              register={register}
+            />
+            {errors.poc && (
+              <span className="text-[11px] text-red-500">
+                {errors.poc.message}
+              </span>
+            )}
+          </div>
+          <div className="w-full">
+            <FloatingInput
+              type="text"
+              name="pocDesignation"
+              placeholder="POC Designation"
+              register={register}
+            />
+            {errors.pocDesignation && (
+              <span className="text-[11px] text-red-500">
+                {errors.pocDesignation.message}
+              </span>
+            )}
+          </div>
         </div>
 
-        <label
-          htmlFor="pdf-file"
-          className="flex items-center justify-between border border-borderCol py-3 rounded-md px-4 cursor-pointer"
-        >
-          <div className="flex items-center gap-x-1">
-            <Paperclip className="text-gray-500 size-4" />
-            <p className="text-sm">Upload authorization letter</p>
-          </div>
-          <p className="text-sm text-[#92929D]">Select PDF file</p>
-        </label>
-        <input type="file" id="pdf-file" accept=".pdf" className="hidden" />
+        <div className="w-full">
+          <label
+            htmlFor="pdf-file"
+            className="flex items-center justify-between border border-borderCol py-3 rounded-md px-4 cursor-pointer"
+          >
+            <div className="flex items-center gap-x-1">
+              <Paperclip className="text-gray-500 size-4" />
+              <p className="text-sm">Upload authorization letter</p>
+            </div>
+            <p className="text-sm text-[#92929D]">
+              {pdfFile ? pdfFile.name.substring(0, 20) : "Select PDF file"}
+            </p>
+          </label>
+          <input
+            type="file"
+            id="pdf-file"
+            accept=".pdf"
+            className="hidden"
+            onChange={(e) => setPdfFile(e.target.files?.[0])}
+          />
+          {Object.entries(errors).length > 0 && !pdfFile && (
+            <span className="text-[11px] text-red-500">
+              Please select a file
+            </span>
+          )}
+        </div>
 
         <div className="flex flex-col gap-y-2">
           <Button

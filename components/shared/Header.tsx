@@ -69,7 +69,7 @@ export const Header = () => {
 
             <div className="relative py-6">
               <Link
-                href="/"
+                href="/risk-assessment"
                 className={`${
                   pathname === "/risk-assessment"
                     ? "text-primaryCol"

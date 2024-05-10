@@ -75,8 +75,8 @@ export const Step2 = ({
         </div>
 
         <p className="font-semibold text-sm">
-          {/* {amountToWords(amount)} */}
-          {amount}
+          {amountToWords(amount)}
+          {/* {amount} */}
           {" "}
           <span className="text-primaryCol uppercase">{currencyVal}</span>
         </p>

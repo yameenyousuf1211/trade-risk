@@ -1,11 +1,10 @@
 "use client";
 import { LineCharts, ProgressCharts } from "@/components/charts";
-import { Loader } from "@/components/helpers";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { RequestTable } from "@/components/shared/RequestTable";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { useAuth } from "@/context/AuthProvider";
-import { fetchLcs } from "@/services/apis/lcs.api";
+import { fetchAllLcs, fetchLcs } from "@/services/apis/lcs.api";
 import { ApiResponse, ILcs } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
@@ -14,28 +13,24 @@ interface SearchParams {
   searchParams: {
     page: number;
     limit: number;
+    search: string;
+    filter: string;
   };
 }
 
 const HomePage = ({ searchParams }: SearchParams) => {
-  const { page, limit } = searchParams;
+  const { page, limit, search, filter } = searchParams;
   const { user } = useAuth();
   const {
     isLoading,
     data,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
-      queryKey: ["fetch-lcs", page, limit],
-      queryFn: () => fetchLcs({ page, limit, userId: user._id }),
+      queryKey: ["fetch-lcs", page, limit, search, filter],
+      queryFn: () =>
+        fetchLcs({ page, limit, search, filter, userId: user._id }),
       enabled: !!user?._id,
     });
-
-  if (isLoading)
-    return (
-      <div className="w-screen h-screen center">
-        <Loader />
-      </div>
-    );
 
   if (user && user.role !== "corporate") {
     redirect("/dashboard");
@@ -53,9 +48,12 @@ const HomePage = ({ searchParams }: SearchParams) => {
             <ProgressCharts title="Total Requests" />
             <LineCharts />
           </div>
-          {data && (
-            <RequestTable isBank={false} data={data} key={"Corperate"} />
-          )}
+          <RequestTable
+            isBank={false}
+            data={data}
+            key={"Corporate"}
+            isLoading={isLoading}
+          />
         </div>
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
           <Sidebar isBank={false} />

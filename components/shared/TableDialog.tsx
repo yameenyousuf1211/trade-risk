@@ -156,10 +156,10 @@ export const TableDialog = ({ id, lcData }: { id: string; lcData: ILcs }) => {
                 {lcData.amount || ""}
               </h2>
               <p className="text-sm text-para">
-                Created at, {convertDateToYYYYMMDD(lcData.lcPeriod.startDate)},
+                Created at, {convertDateToYYYYMMDD(lcData.lcPeriod?.startDate)},
                 by{" "}
                 <span className="text-text">
-                  {lcData.exporterInfo.beneficiaryName || ""}
+                  {lcData.exporterInfo?.beneficiaryName || ""}
                 </span>
               </p>
 
@@ -196,11 +196,11 @@ export const TableDialog = ({ id, lcData }: { id: string; lcData: ILcs }) => {
               <h2 className="text-xl font-semibold">LC Details</h2>
               <LCInfo
                 label="LC Issuance (Expected)"
-                value={convertDateToYYYYMMDD(lcData.lcPeriod.startDate)}
+                value={convertDateToYYYYMMDD(lcData.lcPeriod?.startDate)}
               />
               <LCInfo
                 label="LC Expiry Date"
-                value={convertDateToYYYYMMDD(lcData.lcPeriod.endDate)}
+                value={convertDateToYYYYMMDD(lcData.lcPeriod?.endDate)}
               />
               <LCInfo
                 label="Transhipment"
@@ -208,18 +208,18 @@ export const TableDialog = ({ id, lcData }: { id: string; lcData: ILcs }) => {
               />
               <LCInfo
                 label="Port of Shipment"
-                value={lcData.shipmentPort.port || ""}
+                value={lcData.shipmentPort?.port || ""}
                 noBorder
               />
 
               <h2 className="text-xl font-semibold mt-3">Exporter Info</h2>
               <LCInfo
                 label="Beneficiary"
-                value={lcData.exporterInfo.beneficiaryName || ""}
+                value={lcData.exporterInfo?.beneficiaryName || ""}
               />
               <LCInfo
                 label="Country"
-                value={lcData.exporterInfo.countryOfExport || ""}
+                value={lcData.exporterInfo?.countryOfExport || ""}
               />
               <LCInfo
                 label="Charges on account of"

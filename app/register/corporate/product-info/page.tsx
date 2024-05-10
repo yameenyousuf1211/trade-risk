@@ -24,25 +24,29 @@ const ProductInfoPage = () => {
     resolver: zodResolver(productsInfoSchema),
   });
 
+  const productData =
+    typeof window !== "undefined" ? localStorage.getItem("productData") : null;
+
+  useEffect(() => {
+    if (productData) {
+      const data = JSON.parse(productData);
+      data && setValues({ productInfo: data });
+      Object.entries(data).forEach(([key, value]) => {
+        // @ts-ignore
+        setValue(key, value);
+      });
+    }
+  }, [productData]);
+
   const onSubmit: SubmitHandler<z.infer<typeof productsInfoSchema>> = async (
     data: any
   ) => {
     setValues({
       productInfo: data,
     });
+    localStorage.setItem("productData", JSON.stringify(data));
     router.push("/register/corporate/point-contact");
   };
-
-  useEffect(() => {
-    if (errors) {
-      Object.keys(errors).forEach((fieldName: string) => {
-        const errorMessage = errors[fieldName as keyof typeof errors]?.message;
-        if (errorMessage) {
-          toast.error(`${fieldName}: ${errorMessage}`);
-        }
-      });
-    }
-  }, [errors]);
 
   return (
     <CorporateStepLayout
@@ -54,53 +58,80 @@ const ProductInfoPage = () => {
         className="max-w-xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <FloatingInput
-          register={register}
-          type="text"
-          name="product"
-          placeholder="product"
-        />
-
-        <div className="flex items-center gap-x-2 w-full">
-          <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
-            USD
-          </div>
-          <div className="w-full">
-            <FloatingInput
-              register={register}
-              type="text"
-              name="annualSalary"
-              placeholder="Annual Sales of your Company"
-            />
-          </div>
+        <div className="w-full">
+          <FloatingInput
+            register={register}
+            type="text"
+            name="product"
+            placeholder="Your Product(s)"
+          />
+          {errors.product && (
+            <span className="text-[11px] text-red-500">
+              {errors.product.message}
+            </span>
+          )}
         </div>
 
-        <div className="flex items-center gap-x-2 w-full">
-          <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
-            USD
+        <div className="w-full">
+          <div className="flex items-center gap-x-2 w-full">
+            <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
+              USD
+            </div>
+            <div className="w-full">
+              <FloatingInput
+                register={register}
+                type="text"
+                name="annualSalary"
+                placeholder="Annual Sales of your Company"
+              />
+            </div>
           </div>
-          <div className="w-full">
-            <FloatingInput
-              register={register}
-              type="text"
-              name="annualValueExports"
-              placeholder="Annual Value of Exports"
-            />
-          </div>
+          {errors.annualSalary && (
+            <span className="text-[11px] text-red-500">
+              {errors.annualSalary.message}
+            </span>
+          )}
         </div>
 
-        <div className="flex items-center gap-x-2 w-full">
-          <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
-            USD
+        <div className="w-full">
+          <div className="flex items-center gap-x-2 w-full">
+            <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
+              USD
+            </div>
+            <div className="w-full">
+              <FloatingInput
+                register={register}
+                type="text"
+                name="annualValueExports"
+                placeholder="Annual Value of Exports"
+              />
+            </div>
           </div>
-          <div className="w-full">
-            <FloatingInput
-              register={register}
-              type="text"
-              name="annualValueImports"
-              placeholder="Annual Value of Imports"
-            />
+          {errors.annualValueExports && (
+            <span className="text-[11px] text-red-500">
+              {errors.annualValueExports.message}
+            </span>
+          )}
+        </div>
+        <div className="w-full">
+          <div className="flex items-center gap-x-2 w-full">
+            <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
+              USD
+            </div>
+            <div className="w-full">
+              <FloatingInput
+                register={register}
+                type="text"
+                name="annualValueImports"
+                placeholder="Annual Value of Imports"
+              />
+            </div>
           </div>
+          {errors.annualValueImports && (
+            <span className="text-[11px] text-red-500">
+              {errors.annualValueImports.message}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-y-2">

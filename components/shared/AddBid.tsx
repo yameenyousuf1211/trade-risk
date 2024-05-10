@@ -17,14 +17,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
-import { ILcs } from "@/types/type";
 import { convertDateToYYYYMMDD } from "@/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { addBidTypes } from "@/validation/bids.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addBid } from "@/services/apis/bids.api";
+import { addBid, fetchSingleBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
 import { ChangeEvent, useState } from "react";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
@@ -76,11 +75,6 @@ export const AddBid = ({
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: addBid,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["fetch-lcs", "bid-status"],
-      });
-    },
   });
 
   const {
@@ -105,16 +99,34 @@ export const AddBid = ({
       lc: lcData._id,
       type: lcData.lcType!,
       validity: data.validity,
+      // ...(isDiscount && {
+      //   discountMargin: discountMargin,
+      //   discountBaseRate: discountBaseRate,
+      // }),
       ...(isDiscount && {
         discountingPrice: (
           Number(discountBaseRate) + Number(discountMargin)
         ).toString(),
       }),
+      // discountingPrice: 10,
     });
 
     if (!success) return toast.error("Something went wrong");
-    else toast.success("Bid added");
+    else {
+      queryClient.invalidateQueries({
+        queryKey: ["fetch-lcs", `bid-status-${response._id}`],
+      });
+      let closeBtn = document.getElementById("submit-button-close");
+      // @ts-ignore
+      closeBtn.click();
+      toast.success("Bid added");
+    }
   };
+
+  // const { isLoading: isInfoLoading, data } = useQuery({
+  //   queryKey: ["single-bid-", id],
+  //   queryFn: () => fetchSingleBid(id),
+  // });
 
   return (
     <Dialog>
@@ -360,6 +372,14 @@ export const AddBid = ({
                       Bid Validity
                     </label>
                     <DatePicker setValue={setValue} />
+                    {/* <Input
+                      type="string"
+                      name="validity"
+                      register={register}
+                      placeholder="DD/MM/YYYY"
+                      id="validity"
+                      className="uppercase"
+                    /> */}
                   </div>
                   {errors.validity && (
                     <span className="text-red-500 text-[12px]">
@@ -376,7 +396,7 @@ export const AddBid = ({
                     Confirmation Pricing
                   </label>
                   <Input
-                    type="string"
+                    type="number"
                     name="confirmationPrice"
                     register={register}
                     placeholder="Enter your pricing (%)"
@@ -398,7 +418,7 @@ export const AddBid = ({
                       Discount Pricing
                     </label>
                     <div className="flex flex-col gap-y-3 items-center w-full">
-                      <Select
+                      {/* <Select
                         onValueChange={(val: string) =>
                           setDiscountBaseRate(val)
                         }
@@ -411,7 +431,23 @@ export const AddBid = ({
                           <SelectItem value="300">300</SelectItem>
                           <SelectItem value="400">400</SelectItem>
                         </SelectContent>
-                      </Select>
+                      </Select> */}
+                      <label
+                        id="base-rate"
+                        className="border border-borderCol py-2.5 px-3 rounded-md w-full flex items-center justify-between"
+                      >
+                        <p className="text-sm w-full text-muted-foreground">
+                          Select Base Rate
+                        </p>
+                        <input
+                          type="number"
+                          id="base-rate"
+                          value={discountBaseRate}
+                          onChange={(e) => setDiscountBaseRate(e.target.value)}
+                          className="max-w-[120px] text-sm block bg-none border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+                          placeholder="0"
+                        />
+                      </label>
                       <Plus strokeWidth={4.5} className="size-4" />
                       <input
                         type="text"
@@ -428,6 +464,10 @@ export const AddBid = ({
                 )}
 
                 <div className="flex items-center gap-x-2 mt-2">
+                  <DialogClose
+                    id="submit-button-close"
+                    className="hidden"
+                  ></DialogClose>
                   <Button
                     className="bg-[#29C084] hover:bg-[#29C084]/90 text-white hover:text-white w-full"
                     size="lg"
@@ -436,14 +476,16 @@ export const AddBid = ({
                   >
                     Submit
                   </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="lg"
-                    className="bg-borderCol hover:bg-borderCol/90 text-para hover:text-para w-full"
-                  >
-                    Cancel
-                  </Button>
+                  <DialogClose className="w-full">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="lg"
+                      className="bg-borderCol hover:bg-borderCol/90 text-para hover:text-para w-full"
+                    >
+                      Cancel
+                    </Button>
+                  </DialogClose>
                 </div>
               </form>
             )}

@@ -16,7 +16,6 @@ export const TableBidStatus = ({
     queryKey: [`bid-status-${id}`, "fetch-lcs"],
     queryFn: () => getBankLcStatus(id),
   });
-
   return (
     <>
       {data && data.response.data !== "Pending" ? (

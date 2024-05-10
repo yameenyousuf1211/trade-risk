@@ -1,6 +1,5 @@
 "use client";
 import { LineCharts, ProgressCharts } from "@/components/charts";
-import { Loader } from "@/components/helpers";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { RequestTable } from "@/components/shared/RequestTable";
 import { Sidebar } from "@/components/shared/Sidebar";
@@ -14,11 +13,13 @@ interface SearchParams {
   searchParams: {
     page: number;
     limit: number;
+    search: string;
+    filter: string;
   };
 }
 
 const DashboardPage = ({ searchParams }: SearchParams) => {
-  const { page, limit } = searchParams;
+  const { page, limit, search, filter } = searchParams;
 
   const { user } = useAuth();
   if (user && user.role !== "bank") {
@@ -30,16 +31,9 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
     data,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
-      queryKey: ["fetch-lcs", page, limit],
-      queryFn: () => fetchAllLcs({ page, limit }),
+      queryKey: ["fetch-lcs", page, limit, search, filter],
+      queryFn: () => fetchAllLcs({ page, limit, search, filter }),
     });
-
-  if (isLoading)
-    return (
-      <div className="w-screen h-screen center">
-        <Loader />
-      </div>
-    );
 
   return (
     <DashboardLayout>
@@ -54,7 +48,12 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
             <LineCharts />
           </div>
           {/* Data Table */}
-          <RequestTable isBank={true} data={data} key={"Bank"} />
+          <RequestTable
+            isBank={true}
+            data={data}
+            key={"Bank"}
+            isLoading={isLoading}
+          />
         </div>
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
           <Sidebar isBank={true} />

@@ -51,15 +51,15 @@ export const getCurrenncy = async () => {
   }
 };
 
-// export const getPorts = async (country: string) => {
-//   try {
-//     const capitalizedCountry =
-//       country.charAt(0).toUpperCase() + country.slice(1).toLowerCase();
-//     const response = await api.get(`/banks/${capitalizedCountry}`);
+export const getPorts = async (country: string) => {
+  try {
+    const capitalizedCountry =
+      country.charAt(0).toUpperCase() + country.slice(1).toLowerCase();
+    const response = await api.get(`/ports/details?country=${capitalizedCountry}`);
 
-//     return { success: true, response: response.data.data };
-//   } catch (error) {
-//     console.error(error);
-//     return { success: false, response: (error as any).response.data.message };
-//   }
-// };
+    return { success: true, response: response.data.data };
+  } catch (error) {
+    console.error(error);
+    return { success: false, response: (error as any).response.data.message };
+  }
+};

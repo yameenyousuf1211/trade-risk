@@ -7,11 +7,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronUp, Ellipsis, Plus } from "lucide-react";
+import { ChevronUp, Ellipsis } from "lucide-react";
 import {
   CountrySelect,
   DateRangePicker,
   Filter,
+  Loader,
   Pagination,
   ProductFilter,
   SearchBar,
@@ -34,9 +35,13 @@ const TableDataCell = ({ data }: { data: string | number }) => {
   );
 };
 
-export const BankTable = ({ data }: { data: ApiResponse<IMyBids> }) => {
-  console.log(data.data[0]);
-
+export const BankTable = ({
+  data,
+  isLoading,
+}: {
+  data: ApiResponse<IMyBids> | undefined;
+  isLoading: boolean;
+}) => {
   return (
     <div className="">
       <div className="flex items-center justify-between gap-x-2 mb-2">
@@ -67,8 +72,12 @@ export const BankTable = ({ data }: { data: ApiResponse<IMyBids> }) => {
               ))}
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {data.data &&
+          <TableBody className="relative">
+            {isLoading ? (
+              <div className="w-full h-full center">{/* <Loader /> */}</div>
+            ) : (
+              data &&
+              data.data &&
               data.data.map((item, index) => (
                 <TableRow key={index} className="border-none ">
                   <TableDataCell data={convertDateToYYYYMMDD(item.createdAt)} />
@@ -110,11 +119,12 @@ export const BankTable = ({ data }: { data: ApiResponse<IMyBids> }) => {
                     )}
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
-      {data && (
+      {data && data.pagination && (
         <div className="mt-5">
           <Pagination data={data?.pagination} />
         </div>

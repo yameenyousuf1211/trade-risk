@@ -45,29 +45,16 @@ const BankRegisterPage = () => {
   });
 
   const onSubmit: SubmitHandler<z.infer<typeof bankSchema>> = async (
-    data: any
+    data: z.infer<typeof bankSchema>
   ) => {
     const { response, success } = await onRegister(data);
     if (!success) return toast.error(response);
+    console.log(response);
     if (success) {
       toast.success("Account Register successfully");
       router.push("/register/complete");
     }
   };
-
-  useEffect(() => {
-    if (errors) {
-      Object.keys(errors)
-        .reverse()
-        .forEach((fieldName: string) => {
-          const errorMessage =
-            errors[fieldName as keyof typeof errors]?.message;
-          if (errorMessage) {
-            toast.error(`${fieldName}: ${errorMessage}`);
-          }
-        });
-    }
-  }, [errors]);
 
   return (
     <AuthLayout>
@@ -81,11 +68,18 @@ const BankRegisterPage = () => {
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="flex items-center gap-x-2 w-full max-sm:flex-col max-sm:gap-y-3">
-            <FloatingInput
-              name="name"
-              placeholder="Bank Name"
-              register={register}
-            />
+            <div className="w-full">
+              <FloatingInput
+                name="name"
+                placeholder="Bank Name"
+                register={register}
+              />
+              {errors.name && (
+                <span className="text-[11px] text-red-500">
+                  {errors.name.message}
+                </span>
+              )}
+            </div>
             <div className="w-full">
               <FloatingInput
                 name="email"
@@ -99,20 +93,39 @@ const BankRegisterPage = () => {
               )}
             </div>
 
-            <CountrySelect setValue={setValue} name="country" />
-
+            <div className="w-full">
+              <CountrySelect setValue={setValue} name="accountCountry" />
+              {errors.accountCountry && (
+                <span className="text-[11px] text-red-500">
+                  {errors.accountCountry.message}
+                </span>
+              )}
+            </div>
+            <div className="w-full">
+              <FloatingInput
+                name="swiftCode"
+                placeholder="Swift"
+                register={register}
+              />
+              {errors.swiftCode && (
+                <span className="text-[11px] text-red-500">
+                  {errors.swiftCode.message}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="w-full">
             <FloatingInput
-              name="swiftCode"
-              placeholder="Swift"
+              name="address"
+              placeholder="Registered Address"
               register={register}
             />
+            {errors.address && (
+              <span className="text-[11px] text-red-500">
+                {errors.address.message}
+              </span>
+            )}
           </div>
-
-          <FloatingInput
-            name="address"
-            placeholder="Registered Address"
-            register={register}
-          />
 
           <div className="flex items-center gap-x-2 w-full">
             <div className="w-full">
@@ -129,11 +142,18 @@ const BankRegisterPage = () => {
               )}
             </div>
 
-            <TelephoneInput
-              name="pocPhone"
-              placeholder="POC Telephone"
-              setValue={setValue}
-            />
+            <div className="w-full">
+              <TelephoneInput
+                name="pocPhone"
+                placeholder="POC Telephone"
+                setValue={setValue}
+              />
+              {errors.pocPhone && (
+                <span className="text-[11px] text-red-500">
+                  {errors.pocPhone.message}
+                </span>
+              )}
+            </div>
           </div>
 
           <p className="text-[16px] font-semibold">

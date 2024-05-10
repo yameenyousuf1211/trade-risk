@@ -42,13 +42,14 @@ const Chart = ({
             {/* Inner circle */}
             <circle
               className="progress-ring__circle progress-ring__circle--animated"
-              stroke={color}
+              // stroke={color}
+              stroke="transparent"
               strokeWidth="12" // Increased stroke width
               strokeLinecap="round" // Added stroke-linecap
-              strokeDasharray={`${circumference} ${circumference}`}
-              strokeDashoffset={
-                circumference - (progress / 100) * circumference
-              }
+              // strokeDasharray={`${circumference} ${circumference}`}
+              // strokeDashoffset={
+              //   circumference - (progress / 100) * circumference
+              // }
               fill="transparent"
               r="40" // Increased radius
               cx="60"
@@ -74,10 +75,10 @@ export const ProgressCharts = ({ title }: { title: string }) => {
   //   queryFn: () => getBidsCount(),
   // });
   // console.log(data);
-  const accepted = 10;
-  const rejected = 12;
-  const expired = 8;
-  const pending = 9;
+  const accepted = 0;
+  const rejected = 0;
+  const expired = 0;
+  const pending = 0;
   const maxValue = accepted + rejected + expired + pending;
 
   return (
@@ -85,7 +86,7 @@ export const ProgressCharts = ({ title }: { title: string }) => {
       <div className="flex items-center gap-x-2 justify-between mb-3 w-full">
         <h4 className="text-lg font-semibold">{title}</h4>
         <p className="w-10 h-8 center bg-[#eeecec] rounded-md px-4 text-lg font-semibold">
-          39
+          {maxValue}
         </p>
       </div>
       {/* Charts */}

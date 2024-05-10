@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { discountingSchema } from "@/validation/lc.validation";
@@ -57,7 +57,7 @@ const CreateDiscountPage = () => {
 
             if (errorMessage) {
               const fieldName = parentKey ? `${parentKey}.${key}` : key;
-              toast.error(`${fieldName}: ${errorMessage}`);
+              toast.error(`${errorMessage}`);
             } else if (typeof errorsObj[key] === "object") {
               showNestedErrors(errorsObj[key], key);
             }
@@ -93,10 +93,12 @@ const CreateDiscountPage = () => {
     }
   };
 
+  const [loader, setLoader] = useState(false);
+
   const saveAsDraft: SubmitHandler<z.infer<typeof discountingSchema>> = async (
     data: z.infer<typeof discountingSchema>
   ) => {
-    startLoading();
+    setLoader(true);
     const reqData = {
       ...data,
       transhipment: data.transhipment === "yes" ? true : false,
@@ -109,7 +111,7 @@ const CreateDiscountPage = () => {
       isDraft: "true",
     };
     const { response, success } = await onCreateLC(reqData);
-    stopLoading();
+    setLoader(false);
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");
@@ -208,10 +210,16 @@ const CreateDiscountPage = () => {
                   className="border-none focus-visible:ring-0 focus-visible:ring-offset-0 max-w-[150px]"
                 />
                 <div className="flex items-center gap-x-1">
-                  <button className="rounded-sm border border-para size-6 center">
+                  <button
+                    type="button"
+                    className="rounded-sm border border-para size-6 center"
+                  >
                     +
                   </button>
-                  <button className="rounded-sm border border-para size-6 center">
+                  <button
+                    type="button"
+                    className="rounded-sm border border-para size-6 center"
+                  >
                     -
                   </button>
                 </div>
@@ -328,9 +336,9 @@ const CreateDiscountPage = () => {
             type="button"
             variant="ghost"
             className="bg-[#F5F7F9] w-1/3"
-            disabled={isLoading}
+            disabled={loader}
           >
-            {isLoading ? <Loader /> : "Save as draft"}
+            {loader ? <Loader /> : "Save as draft"}
           </Button>
           <Button
             type="button"

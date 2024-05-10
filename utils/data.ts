@@ -222,7 +222,7 @@ export const bankTableData = [
 ];
 
 export const bankColumnHeaders = [
-  "Deals Received",
+  "Deal Received",
   "Expires",
   "Product Type",
   "LC Issuing Bank",

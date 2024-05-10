@@ -46,7 +46,7 @@ export const Step6 = ({
 
   const handleIncrement = () => {
     const currentValue = isDiscount
-      ? getValues("discountingInfo.pricePerAnnum")
+      ? getValues("discountingInfo.pricePerAnnum") || "0"
       : getValues("confirmationInfo.pricePerAnnum") || "0";
     const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
     isDiscount
@@ -56,7 +56,7 @@ export const Step6 = ({
 
   const handleDecrement = () => {
     const currentValue = isDiscount
-      ? getValues("discountingInfo.pricePerAnnum")
+      ? getValues("discountingInfo.pricePerAnnum") || "0"
       : getValues("confirmationInfo.pricePerAnnum") || "0";
     let newValue = parseFloat(currentValue) - 0.5;
 
@@ -137,12 +137,20 @@ export const Step6 = ({
         <p className="font-semibold ml-3 mb-2">Expected pricing</p>
         {isDiscount && (
           <div className="mb-3">
-            <DDInput
+            <label
               id="select-base-rate"
-              label="Select base rate"
-              placeholder="Select Value"
-              setValue={setValue}
-            />
+              className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
+            >
+              <p className="w-full text-lightGray">Select base rate</p>
+              <Input
+                id="select-base-rate"
+                type="text"
+                name="select-base-rate"
+                register={register}
+                className="block bg-none border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+                placeholder="Select Value"
+              />
+            </label>
           </div>
         )}
         <label

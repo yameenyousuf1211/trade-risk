@@ -13,8 +13,15 @@ import { format, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { getBanks, getCountries } from "@/services/apis/helpers.api";
+import { getBanks, getCountries, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const ValidatingCalendar = ({
   initialDate,
@@ -65,20 +72,29 @@ export const Period = ({
     shipmentCountry = getValues("shipmentPort.country");
   }, [valueChanged]);
 
-  // const { data: shipmentPorts, isLoading: shipmentPortsLoading } = useQuery({
-  //   queryKey: ["shipmentCountry", shipmentCountry],
-  //   queryFn: () => getBanks(shipmentCountry),
-  //   enabled: !!shipmentCountry,
-  // });
+  const { data: shipmentPorts, isLoading: shipmentPortsLoading } = useQuery({
+    queryKey: ["shipmentPorts", shipmentCountry],
+    queryFn: () => getPorts(shipmentCountry),
+    enabled: !!shipmentCountry,
+  });
 
   const [lcPeriodDate, setLcPeriodDate] = useState<Date>();
   const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+  const [lcIssueType, setLcIssueType] = useState("");
 
+  const handleRadioChange = (e: any) => {
+    setLcIssueType(e.target.value);
+  };
   // Function to update value in React Hook Form
   const updateValue = (name: string, value: any) => {
     setValue(name, value);
+  };
+
+  const handleSelectChange = (value: string) => {
+    setValue("shipmentPort.port", value);
+    setValueChanged((prev: boolean) => !prev);
   };
 
   return (
@@ -93,6 +109,8 @@ export const Period = ({
               value="date-lc-issued"
               className="accent-primaryCol size-4"
               name="lcPeriodType"
+              checked={lcIssueType === "date-lc-issued"}
+              onChange={handleRadioChange}
             />
             <label htmlFor="date-lc-issued">Date LC Issued</label>
           </div>
@@ -103,6 +121,8 @@ export const Period = ({
               value="expected-date"
               className="accent-primaryCol size-4"
               name="lcPeriodType"
+              checked={lcIssueType === "expected-date"}
+              onChange={handleRadioChange}
             />
             <label htmlFor="expected-date">Expected date of LC issuance</label>
           </div>
@@ -123,16 +143,27 @@ export const Period = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={lcPeriodDate}
-                onSelect={(date) => {
-                  setLcPeriodDate(date);
-                  updateValue("lcPeriod.startDate", date);
-                  setDatePopoverOpen(false);
-                }}
-                initialFocus
-              />
+              {lcIssueType === "date-lc-issued" ? (
+                <Calendar
+                  mode="single"
+                  selected={lcPeriodDate}
+                  onSelect={(date) => {
+                    setLcPeriodDate(date);
+                    updateValue("lcPeriod.startDate", date);
+                    setDatePopoverOpen(false);
+                  }}
+                  initialFocus
+                />
+              ) : (
+                <ValidatingCalendar
+                  initialDate={lcPeriodDate}
+                  onChange={(date) => {
+                    setLcPeriodDate(date);
+                    updateValue("lcPeriod.startDate", date);
+                  }}
+                  onClose={() => setDatePopoverOpen(false)}
+                />
+              )}
             </PopoverContent>
           </Popover>
         </div>
@@ -183,13 +214,38 @@ export const Period = ({
             data={countries?.response}
             setValueChanged={setValueChanged}
           />
-          <DDInput
-            label="Select port"
+          <label
             id="shipmentPort.port"
-            placeholder="Select port"
-            setValue={setValue}
-            setValueChanged={setValueChanged}
-          />
+            className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+          >
+            <p className="text-lightGray">Select port</p>
+            <Select onValueChange={handleSelectChange}>
+              <SelectTrigger
+                disabled={
+                  !shipmentPorts ||
+                  !shipmentPorts?.response ||
+                  !shipmentPorts.success
+                }
+                id="shipmentPort.port"
+                className="w-fit border-none bg-transparent text-[#B5B5BE]"
+              >
+                <SelectValue placeholder="Select port" />
+              </SelectTrigger>
+              <SelectContent>
+                {shipmentPorts &&
+                  shipmentPorts.response &&
+                  shipmentPorts.response.length > 0 &&
+                  shipmentPorts.response?.map((val: any, idx: number) => (
+                    <SelectItem
+                      value={val.port_name}
+                      key={`${val.port_name}-${idx}`}
+                    >
+                      {val.port_name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </label>
         </div>
       </div>
     </div>
@@ -298,7 +354,12 @@ export const Transhipment = ({
           <Button
             type="button"
             className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
-            onClick={() => setExpectedConfirmationDate(tomorrowDate)}
+            onClick={() => {
+              setExpectedConfirmationDate(tomorrowDate);
+              isDiscount
+                ? setValue("expectedDiscountingDate", tomorrowDate)
+                : setValue("expectedConfirmationDate", tomorrowDate);
+            }}
           >
             <p className="text-white">Tomorrow</p>
             <p className="text-sm text-white/80 font-thin">
@@ -309,7 +370,12 @@ export const Transhipment = ({
           <Button
             type="button"
             className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
-            onClick={() => setExpectedConfirmationDate(nextWeekDate)}
+            onClick={() => {
+              setExpectedConfirmationDate(nextWeekDate);
+              isDiscount
+                ? setValue("expectedDiscountingDate", nextWeekDate)
+                : setValue("expectedConfirmationDate", nextWeekDate);
+            }}
           >
             <p className="text-white">Next week</p>
             <p className="text-sm text-white/80 font-thin">
@@ -372,6 +438,17 @@ export const DiscountBanks = ({
     queryFn: () => getBanks(confirmingCountry),
     enabled: !!confirmingCountry,
   });
+
+  const handleSameAsAdvisingBank = () => {
+    const advisingCountry = getValues("advisingBank.country");
+    const advisingBank = getValues("advisingBank.bank");
+    const confirmingBank = getValues("confirmingBank.bank");
+    if (!advisingBank || !advisingCountry)
+      return toast.error("Please select advising bank first");
+    setValue("confirmingBank.country", advisingCountry);
+    setValue("confirmingBank.bank", advisingBank);
+    console.log(confirmingBank);
+  };
 
   return (
     <div className="flex items-center justify-between w-full mb-3 gap-x-4">
@@ -436,6 +513,7 @@ export const DiscountBanks = ({
               type="checkbox"
               id="same-as-advising"
               className="accent-primaryCol"
+              onChange={handleSameAsAdvisingBank}
             />
             <label
               htmlFor="same-as-advising"

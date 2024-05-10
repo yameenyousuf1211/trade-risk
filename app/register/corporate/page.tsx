@@ -26,6 +26,11 @@ const CompanyInfoPage = () => {
   const router = useRouter();
   const setValues = useRegisterStore((state) => state.setValues);
 
+  const corporateData =
+    typeof window !== "undefined"
+      ? localStorage.getItem("corporateData")
+      : null;
+
   const {
     register,
     setValue,
@@ -36,26 +41,24 @@ const CompanyInfoPage = () => {
     resolver: zodResolver(companyInfoSchema),
   });
 
+  useEffect(() => {
+    if (corporateData) {
+      const data = JSON.parse(corporateData);
+      data && setValues(data);
+      Object.entries(data).forEach(([key, value]) => {
+        // @ts-ignore
+        setValue(key, value);
+      });
+    }
+  }, [corporateData]);
+
   const onSubmit: SubmitHandler<z.infer<typeof companyInfoSchema>> = async (
     data: any
   ) => {
     setValues(data);
+    localStorage.setItem("corporateData", JSON.stringify(data));
     router.push("/register/corporate/product-info");
   };
-
-  useEffect(() => {
-    if (errors) {
-      Object.keys(errors)
-        .reverse()
-        .forEach((fieldName: string) => {
-          const errorMessage =
-            errors[fieldName as keyof typeof errors]?.message;
-          if (errorMessage) {
-            toast.error(`${fieldName}: ${errorMessage}`);
-          }
-        });
-    }
-  }, [errors]);
 
   const [valueChanged, setValueChanged] = useState(false);
   let country = getValues("accountCountry");
@@ -83,39 +86,59 @@ const CompanyInfoPage = () => {
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <FloatingInput
-              name="name"
-              placeholder="Company Name"
-              register={register}
-            />
-            {/* Company Constitution */}
-            <Select
-              onValueChange={(value) =>
-                setValue("constitution", value, { shouldValidate: true })
-              }
-            >
-              <SelectTrigger className="w-full py-5 px-4 text-gray-500">
-                <SelectValue placeholder="Company Constitution" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="individual_proprietorship_co">
-                  Individual/Proprietorship Co.
-                </SelectItem>
-                <SelectItem value="limited_liability_co">
-                  Limited Liability Co
-                </SelectItem>
-                <SelectItem value="public_limited_co">
-                  Public Limited Co.
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="w-full">
+              <FloatingInput
+                name="name"
+                placeholder="Company Name"
+                register={register}
+              />
+              {errors.name && (
+                <span className="text-[11px] text-red-500">
+                  {errors.name.message}
+                </span>
+              )}
+            </div>
+            <div className="w-full">
+              <Select
+                onValueChange={(value) =>
+                  setValue("constitution", value, { shouldValidate: true })
+                }
+              >
+                <SelectTrigger className="w-full py-5 px-4 text-gray-500">
+                  <SelectValue placeholder="Company Constitution" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="individual_proprietorship_co">
+                    Individual/Proprietorship Co.
+                  </SelectItem>
+                  <SelectItem value="limited_liability_co">
+                    Limited Liability Co
+                  </SelectItem>
+                  <SelectItem value="public_limited_co">
+                    Public Limited Co.
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.constitution && (
+                <span className="text-[11px] text-red-500">
+                  {errors.constitution.message}
+                </span>
+              )}
+            </div>
           </div>
 
-          <FloatingInput
-            name="address"
-            placeholder="Company Address"
-            register={register}
-          />
+          <div className="w-full">
+            <FloatingInput
+              name="address"
+              placeholder="Company Address"
+              register={register}
+            />
+            {errors.address && (
+              <span className="text-[11px] text-red-500">
+                {errors.address.message}
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-x-2 max-sm:flex-col max-xs:gap-y-3">
             <div className="w-full">
               <FloatingInput
@@ -131,11 +154,6 @@ const CompanyInfoPage = () => {
               )}
             </div>
             <div className="w-full">
-              {/* <FloatingInput
-                name="phone"
-                placeholder="Telephone"
-                register={register}
-              /> */}
               <TelephoneInput
                 name="phone"
                 placeholder="Telephone"
@@ -157,82 +175,131 @@ const CompanyInfoPage = () => {
                 placeholder="Nature of Business"
                 register={register}
               />
-              {/* {errors.businessNature && <p className="text-red-500 text-sm">{errors.businessNature.message}</p>} */}
+              {errors.businessNature && (
+                <span className="text-[11px] text-red-500">
+                  {errors.businessNature.message}
+                </span>
+              )}
             </div>
-            <Select
-              onValueChange={(value) =>
-                setValue("businessType", value, { shouldValidate: true })
-              }
-            >
-              <SelectTrigger className="w-full py-5 px-4 text-gray-500">
-                <SelectValue placeholder="Business Sector" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Automotive">Automotive</SelectItem>
-              </SelectContent>
-            </Select>{" "}
-            {/* Company Constitution */}
+            <div className="w-full">
+              <Select
+                onValueChange={(value) =>
+                  setValue("businessType", value, { shouldValidate: true })
+                }
+              >
+                <SelectTrigger className="w-full py-5 px-4 text-gray-500">
+                  <SelectValue placeholder="Business Sector" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Automotive">Automotive</SelectItem>
+                </SelectContent>
+              </Select>{" "}
+              {errors.businessType && (
+                <span className="text-[11px] text-red-500">
+                  {errors.businessType.message}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="h-[2px] w-full bg-borderCol" />
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <FloatingInput
-              name="bank"
-              placeholder="Bank Name"
-              register={register}
-            />
-
-            <FloatingInput
-              name="accountNumber"
-              placeholder="Account Number"
-              register={register}
-            />
+            <div className="w-full">
+              <FloatingInput
+                name="bank"
+                placeholder="Bank Name"
+                register={register}
+              />
+              {errors.bank && (
+                <span className="text-[11px] text-red-500">
+                  {errors.bank.message}
+                </span>
+              )}
+            </div>
+            <div className="w-full">
+              <FloatingInput
+                name="accountNumber"
+                placeholder="Account Number"
+                register={register}
+              />
+              {errors.accountNumber && (
+                <span className="text-[11px] text-red-500">
+                  {errors.accountNumber.message}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <FloatingInput
-              name="swiftCode"
-              placeholder="SWIFT Code"
-              register={register}
-            />
-            <FloatingInput
-              name="accountHolderName"
-              placeholder="Account holder name"
-              register={register}
-            />
+            <div className="w-full">
+              <FloatingInput
+                name="swiftCode"
+                placeholder="SWIFT Code"
+                register={register}
+              />
+              {errors.swiftCode && (
+                <span className="text-[11px] text-red-500">
+                  {errors.swiftCode.message}
+                </span>
+              )}
+            </div>
+            <div className="w-full">
+              <FloatingInput
+                name="accountHolderName"
+                placeholder="Account holder name"
+                register={register}
+              />
+              {errors.accountHolderName && (
+                <span className="text-[11px] text-red-500">
+                  {errors.accountHolderName.message}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            {/* Country */}
-            <CountrySelect
-              setValue={setValue}
-              name="accountCountry"
-              setValueChange={setValueChanged}
-            />
-            {/* City */}
-            <Select
-              onValueChange={(value) =>
-                setValue("accountCity", value, { shouldValidate: true })
-              }
-            >
-              <SelectTrigger
-                disabled={!cities || !cities?.response || !cities.success}
-                className="w-full py-5 px-4 text-gray-500"
+            <div className="w-full">
+              <CountrySelect
+                setValue={setValue}
+                name="accountCountry"
+                setValueChange={setValueChanged}
+              />
+              {errors.accountCountry && (
+                <span className="text-[11px] text-red-500">
+                  {errors.accountCountry.message}
+                </span>
+              )}
+            </div>
+            <div className="w-full">
+              <Select
+                onValueChange={(value) =>
+                  setValue("accountCity", value, { shouldValidate: true })
+                }
               >
-                <SelectValue placeholder="Account City" />
-              </SelectTrigger>
-              <SelectContent>
-                {!isLoading &&
-                  cities &&
-                  cities.response.length > 0 &&
-                  cities?.response.map((city: string, idx: number) => (
-                    <SelectItem value={city} key={`${city}-${idx}`}>
-                      {city}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+                <SelectTrigger
+                  disabled={!cities || !cities?.response || !cities.success}
+                  className="w-full py-5 px-4 text-gray-500"
+                >
+                  <SelectValue placeholder="Account City" />
+                </SelectTrigger>
+                <SelectContent>
+                  {!isLoading &&
+                    cities &&
+                    cities.response.length > 0 &&
+                    cities?.response.map((city: string, idx: number) => (
+                      <SelectItem value={city} key={`${city}-${idx}`}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              {errors.accountCity && (
+                <span className="text-[11px] text-red-500">
+                  {errors.accountCity.message}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center space-x-2 my-2">

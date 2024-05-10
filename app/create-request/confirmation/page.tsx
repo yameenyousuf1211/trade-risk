@@ -27,7 +27,7 @@ import {
 } from "@/components/LCSteps/Step3Helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { onCreateLC } from "@/services/apis/lcs.api";
@@ -45,7 +45,7 @@ const ConfirmationPage = () => {
     getValues,
     reset,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<z.infer<typeof confirmationDiscountSchema>>({
     resolver: zodResolver(confirmationDiscountSchema),
   });
@@ -66,7 +66,7 @@ const ConfirmationPage = () => {
 
             if (errorMessage) {
               const fieldName = parentKey ? `${parentKey}.${key}` : key;
-              toast.error(`${fieldName}: ${errorMessage}`);
+              toast.error(`${errorMessage}`);
             } else if (typeof errorsObj[key] === "object") {
               showNestedErrors(errorsObj[key], key);
             }
@@ -97,10 +97,12 @@ const ConfirmationPage = () => {
     }
   };
 
+  const [loader, setLoader] = useState(false);
+
   const saveAsDraft: SubmitHandler<
     z.infer<typeof confirmationDiscountSchema>
   > = async (data: z.infer<typeof confirmationDiscountSchema>) => {
-    startLoading();
+    setLoader(true);
     const reqData = {
       ...data,
       transhipment: data.transhipment === "yes" ? true : false,
@@ -108,7 +110,7 @@ const ConfirmationPage = () => {
       isDraft: "true",
     };
     const { response, success } = await onCreateLC(reqData);
-    stopLoading();
+    setLoader(false);
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");
@@ -251,11 +253,11 @@ const ConfirmationPage = () => {
           <Button
             type="button"
             onClick={handleSubmit(saveAsDraft)}
-            disabled={isLoading}
+            disabled={loader}
             variant="ghost"
             className="bg-none w-1/3"
           >
-            {isLoading ? <Loader /> : "Save as draft"}
+            {loader ? <Loader /> : "Save as draft"}
           </Button>
           <Button
             type="button"

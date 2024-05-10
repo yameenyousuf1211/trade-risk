@@ -5,11 +5,15 @@ export const fetchLcs = async ({
   page,
   limit,
   draft,
+  search,
+  filter,
   userId,
 }: {
   page?: number;
   limit?: number;
   draft?: boolean;
+  search?: string;
+  filter?: string;
   userId: string;
 }) => {
   try {
@@ -17,7 +21,7 @@ export const fetchLcs = async ({
     const { data } = await api.get(
       `/lcs?limit=${limit || 10}&page=${page || 1}&draft=${
         draft || false
-      }&createdBy=${userId}`
+      }&search=${search || ""}&filter=${filter || ""}&createdBy=${userId}`
     );
 
     return data.data.data;
@@ -30,13 +34,19 @@ export const fetchLcs = async ({
 export const fetchAllLcs = async ({
   page,
   limit,
+  search,
+  filter,
 }: {
   page?: number;
   limit?: number;
+  search?: string;
+  filter?: string;
 }) => {
   try {
     const { data } = await api.get(
-      `/lcs?limit=${limit || 10}&page=${page || 1}&draft=${false}`
+      `/lcs?limit=${limit || 10}&page=${page || 1}&draft=${false}&search=${
+        search || ""
+      }&filter=${filter || ""}`
     );
 
     return data.data.data;

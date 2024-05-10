@@ -1,6 +1,7 @@
 "use client";
 import { Check } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export const RegisterStepnav = ({ step }: { step: number }) => {
@@ -12,7 +13,7 @@ export const RegisterStepnav = ({ step }: { step: number }) => {
   return (
     <header className="relative flex items-center justify-between py-4 md:px-10 px-4 bg-white">
       {/* Logo */}
-      <div className="flex items-center justify-center gap-2">
+      <Link href="/login" className="flex items-center justify-center gap-2">
         <Image
           src="/images/logo.png"
           alt="logo"
@@ -23,7 +24,7 @@ export const RegisterStepnav = ({ step }: { step: number }) => {
         <h1 className="font-normal text-2xl">
           <span className="font-semibold">Trade</span>Risk
         </h1>
-      </div>
+      </Link>
       {/* Nav */}
       <nav className="flex items-center gap-x-16">
         <div className="flex items-center gap-x-2">
@@ -68,7 +69,10 @@ export const RegisterStepnav = ({ step }: { step: number }) => {
       </nav>
       {/* Extra space */}
       <div></div>
-      <div className="h-0.5 absolute bottom-0 left-0 bg-primaryCol transition-all duration-150" style={{width: step === 1 ? "45%": step === 2 ? "70%": "100%"}}/>
+      <div
+        className="h-0.5 absolute bottom-0 left-0 bg-primaryCol transition-all duration-150"
+        style={{ width: step === 1 ? "45%" : step === 2 ? "70%" : "100%" }}
+      />
     </header>
   );
 };

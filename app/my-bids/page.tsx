@@ -1,11 +1,10 @@
 "use client";
-import { Loader } from "@/components/helpers";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { BankTable } from "@/components/shared/BankTable";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { useAuth } from "@/context/AuthProvider";
 import { fetchMyBids } from "@/services/apis/bids.api";
-import { ApiResponse, ILcs, IMyBids } from "@/types/type";
+import { ApiResponse, IMyBids } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
@@ -24,7 +23,6 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
   const { user } = useAuth();
   const {
     isLoading,
-    error,
     data,
   }: {
     data: ApiResponse<IMyBids> | undefined;
@@ -34,13 +32,6 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
     queryKey: ["fetch-my-bids", page, limit],
     queryFn: () => fetchMyBids({ page, limit }),
   });
-
-  if (isLoading)
-    return (
-      <div className="w-screen h-screen center">
-        <Loader />
-      </div>
-    );
 
   if (user && user.role !== "bank") {
     redirect("/");
@@ -76,7 +67,7 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
                 )}
               </div>
             </div>
-            {data && <BankTable data={data} />}
+            <BankTable data={data} isLoading={isLoading} />
           </div>
         </div>
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">

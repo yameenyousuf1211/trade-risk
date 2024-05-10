@@ -37,10 +37,10 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
         {lcData.currency} {lcData.amount}
       </p>
       <p className="text-para font-medium mt-2">
-        {lcData.confirmingBank.country}
+        {lcData.confirmingBank?.country || ""}
       </p>
       <p className="text-para text-sm font-light">
-        {lcData.confirmingBank.bank}
+        {lcData.confirmingBank?.bank || ""}
       </p>
       <div className="flex items-center gap-x-2 mt-2">
         <Button

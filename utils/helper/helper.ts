@@ -62,6 +62,7 @@ export const formatFileSize = (size: number): string => {
 
 export const amountToWords = (number: number): string => {
   // Define dictionaries for one-digit, two-digit, and tens multiples
+  if (!number) return "";
   const ones: { [key: number]: string } = {
     1: "One",
     2: "Two",

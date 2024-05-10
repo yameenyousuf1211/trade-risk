@@ -6,6 +6,7 @@ import { Loader } from "../helpers";
 import { convertDateToYYYYMMDD } from "@/utils";
 import { useAuth } from "@/context/AuthProvider";
 import { toast } from "sonner";
+import { usePathname } from "next/navigation";
 
 const DraftCard = ({
   noBorder,
@@ -53,6 +54,7 @@ const DraftCard = ({
           size="sm"
           className="!py-0.5 h-8 px-2 text-sm bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"
           type="button"
+          disabled={isPending}
           onClick={() => handleDelete(draft._id)}
         >
           Delete
@@ -64,6 +66,10 @@ const DraftCard = ({
 
 export const DraftsSidebar = () => {
   const { user } = useAuth();
+  const pathname = usePathname();
+  const isConfirmation = pathname === "/create-request";
+  const isDiscounting = pathname === "/create-request/discount";
+  const isConfirmationDiscounting = pathname === "/create-request/confirmation";
 
   const {
     isLoading,
@@ -74,6 +80,22 @@ export const DraftsSidebar = () => {
       queryFn: () => fetchLcs({ draft: true, userId: user._id }),
       enabled: !!user?._id,
     });
+
+  const filteredData =
+    data &&
+    data.data.length > 0 &&
+    data?.data.filter((draft) => {
+      if (isConfirmation) {
+        return draft.lcType === "LC Confirmation";
+      } else if (isDiscounting) {
+        return draft.lcType === "LC Discounting";
+      } else if (isConfirmationDiscounting) {
+        return draft.lcType === "LC Confirmation & Discounting";
+      } else {
+        return true;
+      }
+    });
+
   return (
     <div className="border border-borderCol bg-white rounded-lg py-4 px-3 min-h-[70vh]">
       {isLoading ? (
@@ -84,12 +106,13 @@ export const DraftsSidebar = () => {
         data && (
           <>
             <h4 className="text-lg font-medium mb-3">
-              Drafts ({data.data.length})
+              Drafts ({(filteredData && filteredData.length) || 0})
             </h4>
 
             <div className="flex flex-col gap-y-2">
               {data.data.length > 0 &&
-                data.data.map((draft, idx) => (
+                filteredData &&
+                filteredData.map((draft, idx) => (
                   <DraftCard
                     key={draft._id}
                     noBorder={idx === data.data.length - 1}

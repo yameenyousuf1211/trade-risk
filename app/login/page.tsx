@@ -12,9 +12,12 @@ import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/context/AuthProvider";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 export default function LoginPage() {
   const router = useRouter();
   const { setUser } = useAuth();
+  const [showPass, setShowPass] = useState(false);
 
   const { mutateAsync, status } = useMutation({
     mutationFn: onLogin,
@@ -35,7 +38,7 @@ export default function LoginPage() {
     if (success == true) {
       setUser(response.data.user);
       toast.success("Login successfull");
-      router.push(response.data.user.role === "corporate" ? "/": "/dashboard");
+      router.push(response.data.user.role === "corporate" ? "/" : "/dashboard");
     }
   };
 
@@ -59,13 +62,33 @@ export default function LoginPage() {
           {errors.email && (
             <p className="text-red-500 text-sm">{errors.email.message}</p>
           )}
-          <FloatingInput
-            {...register("password")}
-            placeholder="Password"
-            type="password"
-            name="password"
-            register={register}
-          />
+
+          <div className="relative w-full">
+            <input
+              type={showPass ? "text" : "password"}
+              id="password"
+              className="block px-2.5 pb-2.5 pt-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
+              placeholder=""
+              {...register("password")}
+            />
+            <label
+              htmlFor="password"
+              className="absolute text-sm text-gray-500  duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white  px-2 peer-focus:px-2 peer-focus:text-text peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
+            >
+              Password
+            </label>
+            <button
+              type="button"
+              className="absolute right-3 top-3"
+              onClick={() => setShowPass((prev) => !prev)}
+            >
+              {showPass ? (
+                <Eye className="size-5 text-gray-500" />
+              ) : (
+                <EyeOff className="size-5 text-gray-500" />
+              )}
+            </button>
+          </div>
           {errors.password && (
             <p className="text-red-500 text-sm">{errors.password.message}</p>
           )}
@@ -79,7 +102,7 @@ export default function LoginPage() {
                 Remember Me
               </label>
             </div>
-            <Link href="/forgot-password" className="text-text text-sm">
+            <Link href="/login/forgot-password" className="text-text text-sm">
               Forgot Password
             </Link>
           </div>
@@ -88,6 +111,7 @@ export default function LoginPage() {
             role="submit"
             className="bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
+            disabled={isSubmitting}
           >
             Login
           </Button>

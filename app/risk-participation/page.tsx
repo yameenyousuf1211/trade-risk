@@ -16,7 +16,7 @@ const RiskParticipationPage = () => {
           </div>
         </div>
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
-          <Sidebar isBank={true} createMode/>
+          <Sidebar isBank={true} createMode />
         </div>
       </div>
     </DashboardLayout>

@@ -14,7 +14,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { onCreateLC } from "@/services/apis/lcs.api";
 import { confirmationSchema } from "@/validation/lc.validation";
@@ -26,7 +26,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const CreateRequestPage = () => {
   const {
-    control,
     register,
     setValue,
     getValues,
@@ -52,7 +51,7 @@ const CreateRequestPage = () => {
 
             if (errorMessage) {
               const fieldName = parentKey ? `${parentKey}.${key}` : key;
-              toast.error(`${fieldName}: ${errorMessage}`);
+              toast.error(`${errorMessage}`);
             } else if (typeof errorsObj[key] === "object") {
               showNestedErrors(errorsObj[key], key);
             }
@@ -83,10 +82,12 @@ const CreateRequestPage = () => {
     }
   };
 
+  const [loader, setLoader] = useState(false);
+
   const saveAsDraft: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data: z.infer<typeof confirmationSchema>
   ) => {
-    startLoading();
+    setLoader(true);
     const reqData = {
       ...data,
       lcType: "LC Confirmation",
@@ -95,7 +96,7 @@ const CreateRequestPage = () => {
     };
 
     const { response, success } = await onCreateLC(reqData);
-    stopLoading();
+    setLoader(false);
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");
@@ -115,7 +116,7 @@ const CreateRequestPage = () => {
     <CreateLCLayout>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
         <Step1 register={register} />
-        <Step2 register={register} setValue={setValue} getValues={getValues}/>
+        <Step2 register={register} setValue={setValue} getValues={getValues} />
         <Step3
           register={register}
           setValue={setValue}
@@ -148,9 +149,9 @@ const CreateRequestPage = () => {
             type="button"
             variant="ghost"
             className="bg-none w-1/3"
-            disabled={isLoading}
+            disabled={loader}
           >
-            {isLoading ? <Loader /> : "Save as draft"}
+            {loader ? <Loader /> : "Save as draft"}
           </Button>
           <Button
             type="button"

@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
@@ -24,48 +24,39 @@ import { onRegister } from "@/services/apis";
 import { toast } from "sonner";
 import { getBanks, getCities, getCountries } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
+import useLoading from "@/hooks/useLoading";
 
 interface Bank {
   country: string;
   name: string;
+  city: string;
 }
 
 const CurrentBankingPage = () => {
   const router = useRouter();
-  const navigate = async () => {
-    const data = getStateValues(useRegisterStore.getState());
-    const reqData = {
-      role: "corporate",
-      businessNature: data.businessNature,
-      name: data.name,
-      email: data.email,
-      address: data.address,
-      constitution: data.constitution,
-      businessType: data.businessType,
-      phone: data.phone,
-      bank: data.bank,
-      swiftCode: data.swiftCode,
-      accountNumber: data.accountNumber,
-      accountHolderName: data.accountHolderName,
-      accountCountry: data.accountCountry,
-      accountCity: data.accountCity,
-      productInfo: data.productInfo,
-      pocEmail: data.pocEmail,
-      pocPhone: data.pocPhone,
-      pocName: data.pocName,
-      poc: data.poc,
-      pocDesignation: data.pocDesignation,
-      currentBanks: data.currentBanks,
-    };
-    const { response, success } = await onRegister(reqData);
-    console.log(response);
-    if (!success) return toast.error(response);
-    else {
-      toast.success("Account Register successfully");
-      router.push("/register/complete");
-    }
-  };
+  const setValues = useRegisterStore((state) => state.setValues);
 
+  const corporateData =
+    typeof window !== "undefined"
+      ? localStorage.getItem("corporateData")
+      : null;
+  const productData =
+    typeof window !== "undefined" ? localStorage.getItem("productData") : null;
+  const contactData =
+    typeof window !== "undefined" ? localStorage.getItem("contactData") : null;
+
+  useEffect(() => {
+    if (corporateData && productData && contactData) {
+      const corporate = JSON.parse(corporateData);
+      const product = JSON.parse(productData);
+      const contact = JSON.parse(contactData);
+      corporate && setValues(corporate);
+      corporate && setValues({ productInfo: product });
+      contact && setValues(contact);
+    }
+  }, [corporateData, productData, contactData]);
+
+  const { startLoading, stopLoading, isLoading } = useLoading();
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryVal, setCountryVal] = useState("");
 
@@ -97,10 +88,12 @@ const CurrentBankingPage = () => {
   const handleBankAdd = () => {
     if (!countryVal) return toast.error("Please select a country");
     if (!bankVal) return toast.error("Please select a bank");
+    if (!cityVal) return toast.error("Please select a city");
 
     const newBank: Bank = {
       country: countryVal,
       name: bankVal,
+      city: cityVal,
     };
     setAllBanks((prevBanks) => ({
       ...prevBanks,
@@ -117,6 +110,50 @@ const CurrentBankingPage = () => {
       ...prevBanks,
       [country]: prevBanks[country].filter((_, i) => i !== index),
     }));
+  };
+
+  const handleSubmit = async () => {
+    if (Object.keys(allBanks).length === 0) {
+      return toast.error("Please add at least one bank");
+    }
+    startLoading();
+    const formattedBanks = Object.entries(allBanks).flatMap(
+      ([country, banks]) =>
+        banks.map((bank) => ({
+          country,
+          name: bank.name,
+          city: bank.city,
+        }))
+    );
+    // Submit the form
+    const allData = getStateValues(useRegisterStore.getState());
+    // Exclude unnecessary data
+    const {
+      confirmationLcs,
+      discountingLcs,
+      guaranteesCounterGuarantees,
+      discountingAvalizedBills,
+      avalizationExportBills,
+      riskParticipation,
+      ...data
+    } = allData;
+
+    const reqData = {
+      ...data,
+      role: "corporate",
+      currentBanks: formattedBanks,
+    };
+    const { response, success } = await onRegister(reqData);
+    console.log(response);
+    stopLoading();
+    if (!success) return toast.error(response);
+    else {
+      toast.success("Account Register successfully");
+      router.push("/register/complete");
+      localStorage.removeItem("corporateData");
+      localStorage.removeItem("productData");
+      localStorage.removeItem("contactData");
+    }
   };
 
   return (
@@ -346,8 +383,8 @@ const CurrentBankingPage = () => {
             type="button"
             className="disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
-            disabled={false}
-            onClick={navigate}
+            disabled={isLoading}
+            onClick={handleSubmit}
           >
             Submit
           </Button>

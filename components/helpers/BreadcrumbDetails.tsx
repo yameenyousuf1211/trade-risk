@@ -1,13 +1,17 @@
+"use client";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthProvider";
+import { usePathname } from "next/navigation";
+import { ApiResponse, ILcs } from "@/types/type";
+import { useQuery } from "@tanstack/react-query";
+import { fetchLcs } from "@/services/apis/lcs.api";
 
 const Separator = () => {
   return (
@@ -34,6 +38,37 @@ export const BreadcrumbDetails = () => {
     "Attachments",
   ];
 
+  const { user } = useAuth();
+  const pathname = usePathname();
+  const isConfirmation = pathname === "/create-request";
+  const isDiscounting = pathname === "/create-request/discount";
+  const isConfirmationDiscounting = pathname === "/create-request/confirmation";
+
+  const {
+    isLoading,
+    data,
+  }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
+    useQuery({
+      queryKey: ["fetch-lcs-drafts"],
+      queryFn: () => fetchLcs({ draft: true, userId: user._id }),
+      enabled: !!user?._id,
+    });
+
+  const filteredData =
+    data &&
+    data.data.length > 0 &&
+    data?.data.filter((draft) => {
+      if (isConfirmation) {
+        return draft.lcType === "LC Confirmation";
+      } else if (isDiscounting) {
+        return draft.lcType === "LC Discounting";
+      } else if (isConfirmationDiscounting) {
+        return draft.lcType === "LC Confirmation & Discounting";
+      } else {
+        return true;
+      }
+    });
+
   return (
     <div className="flex items-center justify-between gap-x-2">
       <Breadcrumb>
@@ -50,7 +85,7 @@ export const BreadcrumbDetails = () => {
       </Breadcrumb>
 
       <Button className="bg-transparent text-para hover:bg-para hover:text-white rounded-lg py-1 border border-para">
-        Drafts (3)
+        Drafts ({(filteredData && filteredData.length) || 0})
       </Button>
     </div>
   );

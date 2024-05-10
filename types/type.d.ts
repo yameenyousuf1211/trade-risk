@@ -170,6 +170,7 @@ export interface ILcs {
     country: string;
     port: string;
   };
+  bidsCount: number;
   transhipment: boolean;
   expectedConfirmationDate: Date;
   expectedDiscountingDate: Date;

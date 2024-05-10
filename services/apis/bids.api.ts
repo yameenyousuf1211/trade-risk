@@ -11,6 +11,16 @@ export const fetchBids = async ({ id }: { id: string }) => {
   }
 };
 
+export const fetchSingleBid = async (id: string) => {
+  try {
+    const { data } = await api.get(`/bids/${id}`);
+    return data.data;
+  } catch (error: any) {
+    console.log(error);
+    return error.response?.data?.message || "Something went wrong";
+  }
+};
+
 export const acceptOrRejectBid = async (status: string, id: string) => {
   try {
     const { data } = await api.put(`/bids?status=${status}`, {

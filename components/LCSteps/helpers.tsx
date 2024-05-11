@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useEffect } from "react";
 import { UseFormRegister } from "react-hook-form";
 
 export const RadioInput = ({
@@ -43,6 +44,7 @@ export const DDInput = ({
   label,
   placeholder,
   data,
+  value,
   disabled,
   setValueChanged,
   setValue,
@@ -50,6 +52,7 @@ export const DDInput = ({
   id: string;
   label: string;
   placeholder: string;
+  value?:string
   data?: string[];
   disabled?: boolean;
   setValue: any;
@@ -59,6 +62,8 @@ export const DDInput = ({
     setValue(id, value);
     setValueChanged && setValueChanged((prev: boolean) => !prev);
   };
+
+
 
   return (
     <label
@@ -72,7 +77,7 @@ export const DDInput = ({
           id={id}
           className="w-fit border-none bg-transparent text-[#B5B5BE]"
         >
-          <SelectValue placeholder={placeholder} />
+          <SelectValue placeholder={value ? value: placeholder} />
         </SelectTrigger>
         <SelectContent>
           {data?.map((val, idx) => (

@@ -67,6 +67,7 @@ export const AddBid = ({
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
+
   // Get LC
   const { data: lcData, isLoading } = useQuery({
     queryKey: [`single-lc-${lcId}`],
@@ -114,13 +115,14 @@ export const AddBid = ({
     if (!success) return toast.error("Something went wrong");
     else {
       queryClient.invalidateQueries({
-        queryKey: ["fetch-lcs", `bid-status-${response._id}`],
+        queryKey: ["fetch-lcs", `bid-status-${response?._id}`],
       });
       let closeBtn = document.getElementById("submit-button-close");
       // @ts-ignore
       closeBtn.click();
       toast.success("Bid added");
     }
+    
   };
 
   // const { isLoading: isInfoLoading, data } = useQuery({
@@ -371,15 +373,15 @@ export const AddBid = ({
                     >
                       Bid Validity
                     </label>
-                    <DatePicker setValue={setValue} />
-                    {/* <Input
+                    {/* <DatePicker setValue={setValue} /> */}
+                    <Input
                       type="string"
                       name="validity"
                       register={register}
                       placeholder="DD/MM/YYYY"
                       id="validity"
                       className="uppercase"
-                    /> */}
+                    />
                   </div>
                   {errors.validity && (
                     <span className="text-red-500 text-[12px]">

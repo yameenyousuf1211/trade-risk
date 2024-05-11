@@ -11,7 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
-import { amountToWords } from "@/utils";
+import { amountToWords, numberToWords } from "@/utils";
+const numberToText = require('number-to-text')
+require('number-to-text/converters/en-us'); // load converter
+
+
 
 export const Step2 = ({
   register,
@@ -29,11 +33,13 @@ export const Step2 = ({
 
   let amount = getValues("amount");
   let currencyVal = getValues("currency");
+  console.log(currencyVal,"curr")
   const [valueChanged, setValueChanged] = useState(false);
+  const [currencyValue,setCurrencyValue] = useState<number |null>(null)
   useEffect(() => {
     amount = getValues("amount");
     currencyVal = getValues("currency");
-  }, [valueChanged]);
+  }, [register]);
 
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
@@ -59,26 +65,27 @@ export const Step2 = ({
               {currency &&
                 currency.response.length > 0 &&
                 currency.response.map((curr: string, idx: number) => (
-                  <SelectItem key={`${curr}-${idx}`} value={curr}>
+                  <SelectItem defaultValue="USD" key={`${curr}-${idx}`} value={curr}>
                     {curr}
                   </SelectItem>
                 ))}
             </SelectContent>
           </Select>
           <Input
-            type="text"
+            type="number"
+            inputMode="numeric"
             name="amount"
             register={register}
-            onChange={() => setValueChanged((prev) => !prev)}
+            onChange={(e) => setCurrencyValue(e.target.value)}
             className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0"
           />
         </div>
 
         <p className="font-semibold text-sm">
-          {amountToWords(amount)}
+          {currencyValue && numberToText.convertToText(currencyValue.toString())  }
           {/* {amount} */}
           {" "}
-          <span className="text-primaryCol uppercase">{currencyVal}</span>
+          <span className="text-primaryCol uppercase">{currencyVal ? currencyVal: 'USD'}</span>
         </p>
       </div>
 

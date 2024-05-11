@@ -122,7 +122,6 @@ export const AddBid = ({
 
     if (!success) return toast.error("Something went wrong");
     else {
-      console.log(response._id);
       queryClient.invalidateQueries({
         queryKey: [`bid-status`, "fetch-lcs", response._id],
       });
@@ -131,7 +130,6 @@ export const AddBid = ({
       closeBtn.click();
       toast.success("Bid added");
     }
-    
   };
 
   // const { isLoading: isInfoLoading, data } = useQuery({
@@ -145,8 +143,6 @@ export const AddBid = ({
   // useCallback(() => {
 
   // })
-
-  console.log(isPopoverOpen);
   return (
     <Dialog>
       <DialogTrigger
@@ -391,50 +387,6 @@ export const AddBid = ({
                       Bid Validity
                     </label>
                     <DatePicker setValue={setValue} />
-                    {/* <Popover
-                      open={isPopoverOpen}
-                      onOpenChange={(val) => {
-                        console.log(val)
-                        setIsPopoverOpen(prev => !prev);
-                      }}
-                    >
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-full justify-start text-left font-normal border-none",
-                            !validityDate &&
-                              "text-muted-foreground flex items-center justify-between w-fit"
-                          )}
-                          id="validity"
-                        >
-                          {validityDate ? (
-                            format(validityDate, "PPP")
-                          ) : (
-                            <span>DD/MM/YYYY</span>
-                          )}
-                          <CalendarIcon className="ml-2 h-4 w-4" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <ValidatingCalendar
-                          initialDate={validityDate}
-                          onChange={(date) => {
-                            setValidityDate(date);
-                            setValue("validity", date);
-                          }}
-                          onClose={() => setIsPopoverOpen(false)}
-                        />
-                      </PopoverContent>
-                    </Popover> */}
-                    {/* <Input
-                      type="string"
-                      name="validity"
-                      register={register}
-                      placeholder="DD/MM/YYYY"
-                      id="validity"
-                      className="uppercase"
-                    />
                   </div>
                   {errors.validity && (
                     <span className="text-red-500 text-[12px]">
@@ -473,20 +425,6 @@ export const AddBid = ({
                       Discount Pricing
                     </label>
                     <div className="flex flex-col gap-y-3 items-center w-full">
-                      {/* <Select
-                        onValueChange={(val: string) =>
-                          setDiscountBaseRate(val)
-                        }
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select Base Rate" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="200">200</SelectItem>
-                          <SelectItem value="300">300</SelectItem>
-                          <SelectItem value="400">400</SelectItem>
-                        </SelectContent>
-                      </Select> */}
                       <label
                         id="base-rate"
                         className="border border-borderCol py-2.5 px-3 rounded-md w-full flex items-center justify-between"

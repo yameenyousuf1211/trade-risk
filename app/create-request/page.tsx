@@ -43,7 +43,7 @@ const CreateRequestPage = () => {
   const queryClient = useQueryClient();
 
   const editData = getStateValues(useConfirmationStore.getState());
-  console.log(editData)
+  // console.log(editData)
   useEffect(() => {
     if (editData && editData._id) {
       Object.entries(editData).forEach(([key, value]) => {
@@ -120,7 +120,7 @@ const CreateRequestPage = () => {
     //   reset();
     //   router.push("/");
     // }
-    toast.success("lc updated")
+    toast.success("lc updated");
   };
 
   const [loader, setLoader] = useState(false);
@@ -161,18 +161,18 @@ const CreateRequestPage = () => {
         <Step3
           register={register}
           setValue={setValue}
-          countries={countries?.response}
+          countries={countries?.success && countries?.response}
           getValues={getValues}
         />
         <Step4
           register={register}
           setValue={setValue}
-          countries={countries?.response}
+          countries={countries?.success && countries?.response}
         />
         <Step5
           register={register}
           setValue={setValue}
-          countries={countries?.response}
+          countries={countries?.success && countries?.response}
         />
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6

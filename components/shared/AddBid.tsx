@@ -5,7 +5,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Plus, X } from "lucide-react";
+import { CalendarIcon, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker, Loader } from "../helpers";
 import { Input } from "../ui/input";
@@ -25,8 +25,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addBid, fetchSingleBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 const LCInfo = ({
   label,
@@ -99,23 +107,24 @@ export const AddBid = ({
       confirmationPrice: data.confirmationPrice,
       lc: lcData._id,
       type: lcData.lcType!,
-      validity: data.validity,
-      // ...(isDiscount && {
-      //   discountMargin: discountMargin,
-      //   discountBaseRate: discountBaseRate,
-      // }),
+      validity: new Date(),
       ...(isDiscount && {
-        discountingPrice: (
-          Number(discountBaseRate) + Number(discountMargin)
-        ).toString(),
+        discountMargin: discountMargin,
+        discountBaseRate: discountBaseRate,
       }),
+      // ...(isDiscount && {
+      //   discountingPrice: (
+      //     Number(discountBaseRate) + Number(discountMargin)
+      //   ).toString(),
+      // }),
       // discountingPrice: 10,
     });
 
     if (!success) return toast.error("Something went wrong");
     else {
+      console.log(response._id);
       queryClient.invalidateQueries({
-        queryKey: ["fetch-lcs", `bid-status-${response?._id}`],
+        queryKey: [`bid-status`, "fetch-lcs", response._id],
       });
       let closeBtn = document.getElementById("submit-button-close");
       // @ts-ignore
@@ -130,6 +139,14 @@ export const AddBid = ({
   //   queryFn: () => fetchSingleBid(id),
   // });
 
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [validityDate, setValidityDate] = useState();
+
+  // useCallback(() => {
+
+  // })
+
+  console.log(isPopoverOpen);
   return (
     <Dialog>
       <DialogTrigger
@@ -373,8 +390,44 @@ export const AddBid = ({
                     >
                       Bid Validity
                     </label>
-                    {/* <DatePicker setValue={setValue} /> */}
-                    <Input
+                    <DatePicker setValue={setValue} />
+                    {/* <Popover
+                      open={isPopoverOpen}
+                      onOpenChange={(val) => {
+                        console.log(val)
+                        setIsPopoverOpen(prev => !prev);
+                      }}
+                    >
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full justify-start text-left font-normal border-none",
+                            !validityDate &&
+                              "text-muted-foreground flex items-center justify-between w-fit"
+                          )}
+                          id="validity"
+                        >
+                          {validityDate ? (
+                            format(validityDate, "PPP")
+                          ) : (
+                            <span>DD/MM/YYYY</span>
+                          )}
+                          <CalendarIcon className="ml-2 h-4 w-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <ValidatingCalendar
+                          initialDate={validityDate}
+                          onChange={(date) => {
+                            setValidityDate(date);
+                            setValue("validity", date);
+                          }}
+                          onClose={() => setIsPopoverOpen(false)}
+                        />
+                      </PopoverContent>
+                    </Popover> */}
+                    {/* <Input
                       type="string"
                       name="validity"
                       register={register}

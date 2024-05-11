@@ -27,7 +27,7 @@ export const CountrySelect = ({
     <Select
       onValueChange={(value) => {
         setValue(name, value, { shouldValidate: true });
-        setValueChange && setValueChange((prev:boolean) => !prev)
+        setValueChange && setValueChange((prev: boolean) => !prev);
       }}
     >
       <SelectTrigger className="w-full py-5 px-4 text-gray-500">
@@ -36,6 +36,7 @@ export const CountrySelect = ({
       <SelectContent>
         {!isLoading &&
           data &&
+          data.success &&
           data.response.length > 0 &&
           data?.response.map((country: string, idx: number) => (
             <SelectItem value={country} key={`${country}-${idx}`}>

@@ -68,10 +68,11 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
               setValueChanged={setValueChanged}
               disabled={
                 !issuingBanks ||
+                !issuingBanks?.success ||
                 !issuingBanks?.response ||
                 !issuingBanks.success
               }
-              data={issuingBanks?.response}
+              data={issuingBanks?.success && issuingBanks?.response}
             />
           </div>
         </div>
@@ -95,10 +96,11 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
                 setValueChanged={setValueChanged}
                 disabled={
                   !advisingBanks ||
+                  !advisingBanks?.success ||
                   !advisingBanks?.response ||
                   !advisingBanks.success
                 }
-                data={advisingBanks?.response}
+                data={advisingBanks?.success && advisingBanks?.response}
               />
             </div>
           </div>
@@ -165,10 +167,11 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
               setValueChanged={setValueChanged}
               disabled={
                 !confirmingBanks ||
+                !confirmingBanks.success ||
                 !confirmingBanks?.response ||
                 !confirmingBanks.success
               }
-              data={confirmingBanks?.response}
+              data={confirmingBanks?.success && confirmingBanks?.response}
             />
           </div>
         ) : (

@@ -211,7 +211,7 @@ export const Period = ({
             label="Country"
             placeholder="Select a country"
             setValue={setValue}
-            data={countries?.response}
+            data={countries?.success && countries?.response}
             setValueChanged={setValueChanged}
           />
           <label
@@ -223,6 +223,7 @@ export const Period = ({
               <SelectTrigger
                 disabled={
                   !shipmentPorts ||
+                  !shipmentPorts.success ||
                   !shipmentPorts?.response ||
                   !shipmentPorts.success
                 }
@@ -416,8 +417,7 @@ export const DiscountBanks = ({
   let confirmingCountry = getValues("confirmingBank.country");
   let confirmingBank = getValues("confirmingBank.bank");
 
-  const [confirmingBankValue,setConfirmingBankValue] = useState<string>('')
-
+  const [confirmingBankValue, setConfirmingBankValue] = useState<string>("");
 
   useEffect(() => {
     issuingCountry = getValues("issuingBank.country");
@@ -457,14 +457,9 @@ export const DiscountBanks = ({
     } else {
       setValue("confirmingBank.country", advisingCountry);
       setValue("confirmingBank.bank", advisingBank);
-
-
     }
-    setValueChanged(!valueChanged)
-
+    setValueChanged(!valueChanged);
   };
-
-
 
   return (
     <div className="flex items-center justify-between w-full mb-3 gap-x-4">

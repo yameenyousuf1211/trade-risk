@@ -33,7 +33,7 @@ const DraftCard = ({
   const setValues = useConfirmationStore((state) => state.setValues);
   const handleEditLC = () => {
     // @ts-ignore
-    setValues(draft);
+    // setValues(draft);
   };
 
   return (

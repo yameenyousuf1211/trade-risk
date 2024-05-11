@@ -80,7 +80,8 @@ const ProductInfoPage = () => {
             <div className="w-full">
               <FloatingInput
                 register={register}
-                type="text"
+                type="number"
+                inputMode="numeric"
                 name="annualSalary"
                 placeholder="Annual Sales of your Company"
               />
@@ -101,7 +102,8 @@ const ProductInfoPage = () => {
             <div className="w-full">
               <FloatingInput
                 register={register}
-                type="text"
+                type="number"
+                inputMode="numeric"
                 name="annualValueExports"
                 placeholder="Annual Value of Exports"
               />
@@ -121,7 +123,8 @@ const ProductInfoPage = () => {
             <div className="w-full">
               <FloatingInput
                 register={register}
-                type="text"
+                type="number"
+                inputMode="numeric"
                 name="annualValueImports"
                 placeholder="Annual Value of Imports"
               />

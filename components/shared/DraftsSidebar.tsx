@@ -7,6 +7,7 @@ import { convertDateToYYYYMMDD } from "@/utils";
 import { useAuth } from "@/context/AuthProvider";
 import { toast } from "sonner";
 import { usePathname } from "next/navigation";
+import useConfirmationStore from "@/store/lc.store";
 
 const DraftCard = ({
   noBorder,
@@ -29,6 +30,12 @@ const DraftCard = ({
     toast.success("Draft deleted");
   };
 
+  const setValues = useConfirmationStore((state) => state.setValues);
+  const handleEditLC = () => {
+    // @ts-ignore
+    setValues(draft);
+  };
+
   return (
     <div className={`${noBorder ? "" : "border-b border-borderCol"} pb-4 py-2`}>
       <div className="flex items-center w-full justify-between gap-x-1">
@@ -36,6 +43,7 @@ const DraftCard = ({
         <Button
           size="sm"
           className="!py-0.5 h-8 px-2 text-sm bg-transparent hover:bg-[#44444F] hover:text-white border border-[#44444F] text-[#44444F]"
+          onClick={handleEditLC}
         >
           Edit request
         </Button>

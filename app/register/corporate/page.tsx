@@ -220,6 +220,8 @@ const CompanyInfoPage = () => {
             <div className="w-full">
               <FloatingInput
                 name="accountNumber"
+                type="number"
+                inputMode="numeric"
                 placeholder="Account Number"
                 register={register}
               />
@@ -321,6 +323,7 @@ const CompanyInfoPage = () => {
                 type="button"
                 variant="ghost"
                 className="text-para text-[16px]"
+                onClick={() => localStorage.removeItem("corporateData")}
               >
                 Go back to login
               </Button>

@@ -82,6 +82,27 @@ export const onCreateLC = async (payload: any) => {
   }
 };
 
+export const onUpdateLC = async ({
+  id,
+  payload,
+}: {
+  payload: any;
+  id: string;
+}) => {
+  try {
+    const response = await api.put(`/lcs/${id}`, payload);
+    if (response.status === STATUS.UNPROCESSABLE_ENTITY)
+      return { success: false, response: response.data.message };
+    if (response.status === STATUS.BAD_REQUEST)
+      return { success: false, response: response.data.message };
+
+    return { success: true, response: response.data };
+  } catch (error) {
+    console.error(error);
+    return { success: false, response: (error as any).response.data.message };
+  }
+};
+
 export const getBankLcStatus = async (id: string) => {
   try {
     const response = await api.get(`/lcs/status/check/${id}`);

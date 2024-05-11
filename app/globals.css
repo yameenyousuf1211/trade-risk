@@ -189,7 +189,7 @@ input[type="number"] {
 /* Phone input */
 .country-list,
 .country-list .country {
-  z-index: 100 !important;
+  z-index: 1000000 !important;
 }
 .selected-flag{
   background: #fff !important;

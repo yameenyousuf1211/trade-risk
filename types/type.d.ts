@@ -283,3 +283,61 @@ export interface IMyBids {
   lc: string;
   status: string;
 }
+
+interface IssuingBank {
+  bank: string;
+  country: string;
+}
+
+interface ConfirmingBank {
+  bank: string;
+  country: string;
+}
+
+interface LcPeriod {
+  startDate: any;
+  endDate: any;
+}
+
+interface ShipmentPort {
+  country: string;
+  port: string;
+}
+
+interface ImporterInfo {
+  applicantName: string;
+  countryOfImport: string;
+}
+
+type TransactionData = {
+  participantRole: "exporter" | "importer";
+  amount: string;
+  paymentTerms: "sight-lc" | "usance-lc" | "deferred-lc" | "upas-lc";
+  currency: string;
+  issuingBank: IssuingBank;
+  confirmingBank: ConfirmingBank;
+  lcPeriod: LcPeriod;
+  shipmentPort: ShipmentPort;
+  transhipment: "yes" | "no";
+  importerInfo: ImporterInfo;
+  productDescription: string;
+};
+
+interface LcConfirmation extends TransactionData {
+  _id: string;
+  expectedConfirmationDate: any;
+  exporterInfo: {
+    beneficiaryName: string;
+    countryOfExport: string;
+    beneficiaryCountry: string;
+  };
+  confirmationInfo: {
+    behalfOf: string;
+    pricePerAnnum: string;
+    advisingBank: string;
+  };
+}
+
+export type UseConfirmationStore = LcConfirmation & {
+  setValues: (values: Partial<LcConfirmation>) => void;
+};

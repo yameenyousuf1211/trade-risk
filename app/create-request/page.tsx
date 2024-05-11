@@ -16,13 +16,15 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { onCreateLC } from "@/services/apis/lcs.api";
+import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { confirmationSchema } from "@/validation/lc.validation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "../../components/ui/loader";
 import { useRouter } from "next/navigation";
 import { getCountries } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+import useConfirmationStore, { getStateValues } from "@/store/lc.store";
 
 const CreateRequestPage = () => {
   const {
@@ -39,6 +41,20 @@ const CreateRequestPage = () => {
   const router = useRouter();
 
   const queryClient = useQueryClient();
+
+  const editData = getStateValues(useConfirmationStore.getState());
+  console.log(editData)
+  useEffect(() => {
+    if (editData && editData._id) {
+      Object.entries(editData).forEach(([key, value]) => {
+        // @ts-ignore
+        setValue(key, value);
+      });
+      console.log("running in data ");
+    }
+    console.log("running ");
+  }, [editData, setValue]);
+
   // Show errors
   useEffect(() => {
     if (errors) {
@@ -80,6 +96,31 @@ const CreateRequestPage = () => {
       reset();
       router.push("/");
     }
+  };
+
+  const updateLC: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
+    data: z.infer<typeof confirmationSchema>
+  ) => {
+    startLoading();
+    const reqData = {
+      ...data,
+      lcType: "LC Confirmation",
+      transhipment: data.transhipment === "yes" ? true : false,
+      isDraft: "false",
+    };
+
+    // const { response, success } = await onUpdateLC({
+    //   payload: reqData,
+    //   id: "as",
+    // });
+    stopLoading();
+    // if (!success) return toast.error(response);
+    // else {
+    //   toast.success(response?.message);
+    //   reset();
+    //   router.push("/");
+    // }
+    toast.success("lc updated")
   };
 
   const [loader, setLoader] = useState(false);
@@ -158,7 +199,11 @@ const CreateRequestPage = () => {
             size="lg"
             disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
-            onClick={handleSubmit(onSubmit)}
+            onClick={
+              editData && editData._id
+                ? handleSubmit(updateLC)
+                : handleSubmit(onSubmit)
+            }
           >
             {isLoading ? <Loader /> : "Submit request"}
           </Button>

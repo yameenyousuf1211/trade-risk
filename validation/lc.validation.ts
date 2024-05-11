@@ -37,15 +37,15 @@ export const generalLcSchema = z.object({
   ),
   lcPeriod: z.object(
     {
-      startDate: z.date({ message: "Select date" }),
-      endDate: z.date({ message: "Select date" }),
+      startDate: z.date({ message: "Select issuance date" }),
+      endDate: z.date({ message: "Select expiry date" }),
     },
     { message: "LC Period is required" }
   ),
   shipmentPort: z.object(
     {
-      country: z.string({ message: "Select a country" }),
-      port: z.string({ message: "Select port" }),
+      country: z.string({ message: "Select shipment country" }),
+      port: z.string({ message: "Select shipment port" }),
     },
     { message: "Shipment details is required" }
   ),
@@ -53,7 +53,7 @@ export const generalLcSchema = z.object({
   importerInfo: z.object(
     {
       applicantName: z
-        .string({ message: "Enter applicant name" })
+        .string({ message: "Enter importer applicant name" })
         .nonempty("Enter applicant name"),
       countryOfImport: z
         .string({ message: "Select country of import" })
@@ -70,22 +70,22 @@ export const generalLcSchema = z.object({
 export const confirmationSchema = z.lazy(() =>
   generalLcSchema.merge(
     z.object({
-      expectedConfirmationDate: z.date({ message: "select date" }),
+      expectedConfirmationDate: z.date({ message: "select expected confirmation date" }),
       exporterInfo: z.object({
         beneficiaryName: z
-          .string({ message: "Enter beneficiary name" })
+          .string({ message: "Enter exporter beneficiary name" })
           .nonempty("Enter beneficiary name"),
         countryOfExport: z.string({ message: "Select country of export" }),
         beneficiaryCountry: z.string({
-          message: "Select beneficiary country",
+          message: "Select exporter beneficiary country",
         }),
       }),
       confirmationInfo: z.object({
         behalfOf: z.enum(["Exporter", "Importer"], {
-          message: "Select one of above",
+          message: "Select confirmation info",
         }),
         pricePerAnnum: z
-          .string({ message: "Enter expected price" })
+          .string({ message: "Enter expected price per annum" })
           .nonempty("Enter expected price")
           .refine((value) => /^\d+(\.\d+)?$/.test(value), {
             message: "Enter a valid number",

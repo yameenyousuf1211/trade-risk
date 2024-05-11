@@ -414,6 +414,10 @@ export const DiscountBanks = ({
   let issuingCountry = getValues("issuingBank.country");
   let advisingCountry = getValues("advisingBank.country");
   let confirmingCountry = getValues("confirmingBank.country");
+  let confirmingBank = getValues("confirmingBank.bank");
+
+  const [confirmingBankValue,setConfirmingBankValue] = useState<string>('')
+
 
   useEffect(() => {
     issuingCountry = getValues("issuingBank.country");
@@ -443,12 +447,24 @@ export const DiscountBanks = ({
     const advisingCountry = getValues("advisingBank.country");
     const advisingBank = getValues("advisingBank.bank");
     const confirmingBank = getValues("confirmingBank.bank");
+    const confirmingCountry = getValues("confirmingBank.country");
+
     if (!advisingBank || !advisingCountry)
       return toast.error("Please select advising bank first");
-    setValue("confirmingBank.country", advisingCountry);
-    setValue("confirmingBank.bank", advisingBank);
-    console.log(confirmingBank);
+    if (confirmingBank && confirmingCountry) {
+      setValue("confirmingBank.country", undefined);
+      setValue("confirmingBank.bank", undefined);
+    } else {
+      setValue("confirmingBank.country", advisingCountry);
+      setValue("confirmingBank.bank", advisingBank);
+
+
+    }
+    setValueChanged(!valueChanged)
+
   };
+
+
 
   return (
     <div className="flex items-center justify-between w-full mb-3 gap-x-4">
@@ -527,6 +543,7 @@ export const DiscountBanks = ({
           <DDInput
             placeholder="Select a country"
             label="Country"
+            value={confirmingCountry}
             id="confirmingBank.country"
             data={countries}
             setValue={setValue}
@@ -536,6 +553,7 @@ export const DiscountBanks = ({
             placeholder="Select bank"
             label="Bank"
             id="confirmingBank.bank"
+            value={confirmingBank}
             setValue={setValue}
             setValueChanged={setValueChanged}
             disabled={

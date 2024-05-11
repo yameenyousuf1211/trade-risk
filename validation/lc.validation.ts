@@ -20,7 +20,7 @@ export const generalLcSchema = z.object({
   paymentTerms: z.enum(["sight-lc", "usance-lc", "deferred-lc", "upas-lc"], {
     message: "Select a payment term",
   }),
-  currency: z.string({ message: "Currency is required" }),
+  currency: z.string({ message: "Currency is required" }).default('USD'),
   issuingBank: z.object(
     {
       bank: z.string({ message: "Issuing bank name is required" }),

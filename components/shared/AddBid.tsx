@@ -75,6 +75,7 @@ export const AddBid = ({
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
+
   // Get LC
   const { data: lcData, isLoading } = useQuery({
     queryKey: [`single-lc-${lcId}`],
@@ -130,6 +131,7 @@ export const AddBid = ({
       closeBtn.click();
       toast.success("Bid added");
     }
+    
   };
 
   // const { isLoading: isInfoLoading, data } = useQuery({
@@ -432,7 +434,7 @@ export const AddBid = ({
                       placeholder="DD/MM/YYYY"
                       id="validity"
                       className="uppercase"
-                    /> */}
+                    />
                   </div>
                   {errors.validity && (
                     <span className="text-red-500 text-[12px]">

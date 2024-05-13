@@ -190,7 +190,7 @@ const CurrentBankingPage = () => {
                 <Command>
                   <CommandInput placeholder="Search country..." />
                   <CommandEmpty>No country found.</CommandEmpty>
-                  <CommandGroup>
+                  <CommandGroup className="max-h-[300px] overflow-y-auto">
                     {!countriesLoading &&
                       countries &&
                       countries.success &&
@@ -243,11 +243,11 @@ const CurrentBankingPage = () => {
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
+              <PopoverContent className="w-[230px] p-0">
                 <Command>
                   <CommandInput placeholder="Search bank..." />
                   <CommandEmpty>No bank found.</CommandEmpty>
-                  <CommandGroup>
+                  <CommandGroup className="max-h-[300px] overflow-y-auto">
                     {!banksLoading &&
                       banks &&
                       banks.success &&
@@ -300,11 +300,11 @@ const CurrentBankingPage = () => {
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
+              <PopoverContent className="w-[230px] p-0">
                 <Command>
                   <CommandInput placeholder="Search city..." />
                   <CommandEmpty>No city found.</CommandEmpty>
-                  <CommandGroup>
+                  <CommandGroup className="max-h-[300px] overflow-y-auto">
                     {!citiesLoading &&
                       cities &&
                       cities.success &&

@@ -42,18 +42,18 @@ const CreateRequestPage = () => {
 
   const queryClient = useQueryClient();
 
-  const editData = getStateValues(useConfirmationStore.getState());
-  // console.log(editData)
-  useEffect(() => {
-    if (editData && editData._id) {
-      Object.entries(editData).forEach(([key, value]) => {
-        // @ts-ignore
-        setValue(key, value);
-      });
-      console.log("running in data ");
-    }
-    console.log("running ");
-  }, [editData, setValue]);
+  // const editData = getStateValues(useConfirmationStore.getState());
+  // // console.log(editData)
+  // useEffect(() => {
+  //   if (editData && editData._id) {
+  //     Object.entries(editData).forEach(([key, value]) => {
+  //       // @ts-ignore
+  //       setValue(key, value);
+  //     });
+  //     console.log("running in data ");
+  //   }
+  //   console.log("running ");
+  // }, [editData, setValue]);
 
   // Show errors
   useEffect(() => {
@@ -153,8 +153,17 @@ const CreateRequestPage = () => {
     queryFn: () => getCountries(),
   });
 
+  const handleEditData = (editData: any) => {
+    Object.entries(editData).forEach(([key, value]) => {
+      // console.log(key, value);
+      // @ts-ignore
+      setValue(key, value);
+      console.log(getValues())
+    });
+  };
+
   return (
-    <CreateLCLayout>
+    <CreateLCLayout onEditData={handleEditData}>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
         <Step1 register={register} />
         <Step2 register={register} setValue={setValue} getValues={getValues} />
@@ -200,9 +209,10 @@ const CreateRequestPage = () => {
             disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
             onClick={
-              editData && editData._id
-                ? handleSubmit(updateLC)
-                : handleSubmit(onSubmit)
+              // editData && editData._id
+              //   ? handleSubmit(updateLC)
+              //   : handleSubmit(onSubmit)
+              handleSubmit(onSubmit)
             }
           >
             {isLoading ? <Loader /> : "Submit request"}

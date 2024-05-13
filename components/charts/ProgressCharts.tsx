@@ -1,6 +1,7 @@
 import { getBidsCount } from "@/services/apis/bids.api";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "../helpers";
+import { useEffect, useState } from "react";
 
 const Chart = ({
   value,
@@ -15,14 +16,15 @@ const Chart = ({
   title: string;
   maxValue: number;
 }) => {
-  // const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(0);
 
-  // useEffect(() => {
-  //   setProgress((value / maxValue) * 100);
-  // }, [value, maxValue]);
-  const progress = (value / maxValue) * 100;
+  useEffect(() => {
+    setProgress((value / maxValue) * 100);
+  }, [value, maxValue]);
 
-  const circumference = 2 * Math.PI * 25;
+  const radius = 40;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDasharray = circumference;
   return (
     <div className="hover:shadow-xl rounded-lg pb-2">
       <div className="flex flex-col items-center justify-center">
@@ -32,26 +34,25 @@ const Chart = ({
             <circle
               className="progress-ring__circle"
               stroke={bg}
-              strokeWidth="12" // Increased stroke width
-              strokeLinecap="round" // Added stroke-linecap
+              strokeWidth="12"
+              strokeLinecap="round"
               fill="transparent"
-              r="40" // Increased radius
+              r={radius}
               cx="60"
               cy="60"
             />
             {/* Inner circle */}
             <circle
               className="progress-ring__circle progress-ring__circle--animated"
-              // stroke={color}
-              stroke="transparent"
-              strokeWidth="12" // Increased stroke width
-              strokeLinecap="round" // Added stroke-linecap
-              // strokeDasharray={`${circumference} ${circumference}`}
-              // strokeDashoffset={
-              //   circumference - (progress / 100) * circumference
-              // }
+              stroke={color}
+              strokeWidth="12"
+              strokeLinecap="round"
+              strokeDasharray={strokeDasharray}
+              strokeDashoffset={
+                circumference - (progress / 100) * circumference
+              }
               fill="transparent"
-              r="40" // Increased radius
+              r={radius}
               cx="60"
               cy="60"
             />
@@ -69,17 +70,51 @@ interface Count {
   count: number;
 }
 
+interface Count {
+  _id: string;
+  count: number;
+}
+
 export const ProgressCharts = ({ title }: { title: string }) => {
-  // const { isLoading, error, data } = useQuery({
-  //   queryKey: ["fetch-bids-count"],
-  //   queryFn: () => getBidsCount(),
-  // });
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["fetch-bids-count"],
+    queryFn: () => getBidsCount(),
+  });
   // console.log(data);
-  const accepted = 0;
-  const rejected = 0;
-  const expired = 0;
-  const pending = 0;
-  const maxValue = accepted + rejected + expired + pending;
+  const [accepted, setAccepted] = useState(0);
+  const [rejected, setRejected] = useState(0);
+  const [expired, setExpired] = useState(0);
+  const [pending, setPending] = useState(0);
+  const [maxValue, setMaxValue] = useState(0);
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      const statusCounts = {
+        Accepted: 0,
+        Rejected: 0,
+        Expired: 0,
+        Pending: 0,
+      };
+
+      data.forEach((item: Count) => {
+        // @ts-ignore
+        statusCounts[item._id] = item.count;
+      });
+
+      setAccepted(statusCounts.Accepted);
+      setRejected(statusCounts.Rejected);
+      setExpired(statusCounts.Expired);
+      setPending(statusCounts.Pending);
+
+      // Calculate the maximum value
+      const totalCount =
+        statusCounts.Accepted +
+        statusCounts.Rejected +
+        statusCounts.Expired +
+        statusCounts.Pending;
+      setMaxValue(totalCount);
+    }
+  }, [data]);
 
   return (
     <div className="bg-white rounded-lg border border-borderCol py-4 px-5 xl:max-w-[525px] w-full h-full">
@@ -91,50 +126,42 @@ export const ProgressCharts = ({ title }: { title: string }) => {
       </div>
       {/* Charts */}
       <div className="flex items-center overflow-x-auto">
-        {/* {isLoading ? (
+        {isLoading ? (
           <div className="w-full h-full center">
             <Loader />
           </div>
         ) : (
-          data.map((count: Count, idx: number) => (
+          <>
             <Chart
-              value={count.count}
+              value={accepted}
               bg="#E0F2EF"
               color="#49E2B4"
-              title={count._id}
+              title="accepted"
               maxValue={maxValue}
-              key={`${count._id}-${idx}`}
             />
-          ))
-        )} */}
-        <Chart
-          value={accepted}
-          bg="#E0F2EF"
-          color="#49E2B4"
-          title="accepted"
-          maxValue={maxValue}
-        />
-        <Chart
-          value={rejected}
-          bg="#FFE6E6"
-          color="#FF0000"
-          title="rejected"
-          maxValue={maxValue}
-        />
-        <Chart
-          value={expired}
-          bg="#F6EBE7"
-          color="#FF7939"
-          title="expired"
-          maxValue={maxValue}
-        />
-        <Chart
-          value={pending}
-          bg="#DDE9FA"
-          color="#0062FF"
-          title="pending"
-          maxValue={maxValue}
-        />
+            <Chart
+              value={rejected}
+              bg="#FFE6E6"
+              color="#FF0000"
+              title="rejected"
+              maxValue={maxValue}
+            />
+            <Chart
+              value={expired}
+              bg="#F6EBE7"
+              color="#FF7939"
+              title="expired"
+              maxValue={maxValue}
+            />
+            <Chart
+              value={pending}
+              bg="#DDE9FA"
+              color="#0062FF"
+              title="pending"
+              maxValue={maxValue}
+            />
+          </>
+        )}
       </div>
     </div>
   );

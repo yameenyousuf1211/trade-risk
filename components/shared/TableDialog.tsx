@@ -29,6 +29,9 @@ const BidCard = ({ data }: { data: IBids }) => {
       queryClient.invalidateQueries({
         queryKey: ["single-lcs-bids", "fetch-lcs"],
       });
+      let closeBtn = document.getElementById("close-button");
+      // @ts-ignore
+      closeBtn.click();
       toast.success(`Bid ${status}`);
     }
   };
@@ -80,7 +83,7 @@ const BidCard = ({ data }: { data: IBids }) => {
           {convertDateToYYYYMMDD(data.createdAt)}
         </p>
       </div>
-
+      <DialogClose id="close-button" className="hidden"></DialogClose>
       <Button
         size="lg"
         className="mt-2 bg-[#29C084] hover:bg-[#29C084]/90"

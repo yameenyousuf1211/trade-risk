@@ -107,17 +107,12 @@ export const AddBid = ({
       confirmationPrice: data.confirmationPrice,
       lc: lcData._id,
       type: lcData.lcType!,
-      validity: new Date(),
+      // validity: new Date(),
+      validity: data.validity,
       ...(isDiscount && {
         discountMargin: discountMargin,
         discountBaseRate: discountBaseRate,
       }),
-      // ...(isDiscount && {
-      //   discountingPrice: (
-      //     Number(discountBaseRate) + Number(discountMargin)
-      //   ).toString(),
-      // }),
-      // discountingPrice: 10,
     });
 
     if (!success) return toast.error("Something went wrong");

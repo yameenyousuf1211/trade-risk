@@ -52,6 +52,16 @@ const CompanyInfoPage = () => {
     }
   }, [corporateData]);
 
+  // const allValues = getValues();
+  // const [isFilled, setIsFilled] = useState(false);
+
+  // useEffect(() => {
+  //   setIsFilled(Object.values(allValues).every((value) => value.trim() !== ""));
+  //   console.log(allValues);
+  //   console.log("Useeffect working...")
+  // }, [getValues(), isFilled, register, allValues]);
+  // console.log(isFilled);
+
   const onSubmit: SubmitHandler<z.infer<typeof companyInfoSchema>> = async (
     data: any
   ) => {

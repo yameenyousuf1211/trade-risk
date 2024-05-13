@@ -103,7 +103,7 @@ export const fetchMyBids = async ({
 
 export const getBidsCount = async () => {
   try {
-    const { data } = await api.get(`/bids/count`);
+    const { data } = await api.get(`/bids/count/list`);
     return data.data;
   } catch (error: any) {
     console.log(error);

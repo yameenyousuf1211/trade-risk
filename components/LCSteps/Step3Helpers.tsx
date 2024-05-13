@@ -27,16 +27,21 @@ export const ValidatingCalendar = ({
   initialDate,
   onChange,
   onClose,
+  isPast,
 }: {
   initialDate: Date | undefined;
   onChange: (date: Date) => void;
   onClose: any;
+  isPast?: boolean;
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
   const handleDateSelect = (date: Date) => {
     const today = new Date();
-    if (date < today) return toast.error("Please don't select a past date ");
+    if (isPast && date > today)
+      return toast.error("Please dont select a date from future");
+    if (!isPast && date < today)
+      return toast.error("Please don't select a past date ");
 
     setSelectedDate(date);
     onChange(date);
@@ -86,6 +91,7 @@ export const Period = ({
 
   const handleRadioChange = (e: any) => {
     setLcIssueType(e.target.value);
+    setValue("lcPeriod.startDate", "");
   };
   // Function to update value in React Hook Form
   const updateValue = (name: string, value: any) => {
@@ -144,15 +150,24 @@ export const Period = ({
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               {lcIssueType === "date-lc-issued" ? (
-                <Calendar
-                  mode="single"
-                  selected={lcPeriodDate}
-                  onSelect={(date) => {
+                // <Calendar
+                //   mode="single"
+                //   selected={lcPeriodDate}
+                //   onSelect={(date) => {
+                //     setLcPeriodDate(date);
+                //     updateValue("lcPeriod.startDate", date);
+                //     setDatePopoverOpen(false);
+                //   }}
+                //   initialFocus
+                // />
+                <ValidatingCalendar
+                  initialDate={lcPeriodDate}
+                  onChange={(date) => {
                     setLcPeriodDate(date);
                     updateValue("lcPeriod.startDate", date);
-                    setDatePopoverOpen(false);
                   }}
-                  initialFocus
+                  onClose={() => setDatePopoverOpen(false)}
+                  isPast
                 />
               ) : (
                 <ValidatingCalendar
@@ -416,8 +431,6 @@ export const DiscountBanks = ({
   let advisingCountry = getValues("advisingBank.country");
   let confirmingCountry = getValues("confirmingBank.country");
   let confirmingBank = getValues("confirmingBank.bank");
-
-  const [confirmingBankValue, setConfirmingBankValue] = useState<string>("");
 
   useEffect(() => {
     issuingCountry = getValues("issuingBank.country");

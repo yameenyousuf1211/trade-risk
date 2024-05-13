@@ -11,11 +11,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
-import { amountToWords, numberToWords } from "@/utils";
-const numberToText = require('number-to-text')
-require('number-to-text/converters/en-us'); // load converter
-
-
+const numberToText = require("number-to-text");
+require("number-to-text/converters/en-us");
 
 export const Step2 = ({
   register,
@@ -33,9 +30,9 @@ export const Step2 = ({
 
   let amount = getValues("amount");
   let currencyVal = getValues("currency");
-  console.log(currencyVal,"curr")
+
   const [valueChanged, setValueChanged] = useState(false);
-  const [currencyValue,setCurrencyValue] = useState<number |null>(null)
+  const [currencyValue, setCurrencyValue] = useState<number | null>(null);
   useEffect(() => {
     amount = getValues("amount");
     currencyVal = getValues("currency");
@@ -65,7 +62,11 @@ export const Step2 = ({
               {currency &&
                 currency.response.length > 0 &&
                 currency.response.map((curr: string, idx: number) => (
-                  <SelectItem defaultValue="USD" key={`${curr}-${idx}`} value={curr}>
+                  <SelectItem
+                    defaultValue="USD"
+                    key={`${curr}-${idx}`}
+                    value={curr}
+                  >
                     {curr}
                   </SelectItem>
                 ))}
@@ -82,10 +83,12 @@ export const Step2 = ({
         </div>
 
         <p className="font-semibold text-sm">
-          {currencyValue && numberToText.convertToText(currencyValue.toString())  }
-          {/* {amount} */}
-          {" "}
-          <span className="text-primaryCol uppercase">{currencyVal ? currencyVal: 'USD'}</span>
+          {currencyValue &&
+            numberToText.convertToText(currencyValue.toString())}
+          {/* {amount} */}{" "}
+          <span className="text-primaryCol uppercase">
+            {currencyVal ? currencyVal : "USD"}
+          </span>
         </p>
       </div>
 

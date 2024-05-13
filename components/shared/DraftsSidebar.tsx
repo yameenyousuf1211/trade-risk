@@ -12,9 +12,11 @@ import useConfirmationStore from "@/store/lc.store";
 const DraftCard = ({
   noBorder,
   draft,
+  onEditData,
 }: {
   noBorder?: boolean;
   draft: ILcs;
+  onEditData: any;
 }) => {
   const queryClient = useQueryClient();
   const { mutateAsync, isPending } = useMutation({
@@ -34,6 +36,7 @@ const DraftCard = ({
   const handleEditLC = () => {
     // @ts-ignore
     // setValues(draft);
+    onEditData(draft);
   };
 
   return (
@@ -72,7 +75,7 @@ const DraftCard = ({
   );
 };
 
-export const DraftsSidebar = () => {
+export const DraftsSidebar = ({ onEditData }: { onEditData: any }) => {
   const { user } = useAuth();
   const pathname = usePathname();
   const isConfirmation = pathname === "/create-request";
@@ -125,6 +128,7 @@ export const DraftsSidebar = () => {
                     key={draft._id}
                     noBorder={idx === data.data.length - 1}
                     draft={draft}
+                    onEditData={onEditData}
                   />
                 ))}
             </div>

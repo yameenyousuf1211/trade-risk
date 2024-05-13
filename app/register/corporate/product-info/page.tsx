@@ -17,6 +17,7 @@ const ProductInfoPage = () => {
   const setValues = useRegisterStore((state) => state.setValues);
   const {
     register,
+    getValues,
     setValue,
     handleSubmit,
     formState: { errors },
@@ -37,15 +38,16 @@ const ProductInfoPage = () => {
       });
     }
   }, [productData]);
-
+  
   const onSubmit: SubmitHandler<z.infer<typeof productsInfoSchema>> = async (
     data: any
   ) => {
-    setValues({
-      productInfo: data,
-    });
-    localStorage.setItem("productData", JSON.stringify(data));
-    router.push("/register/corporate/point-contact");
+    console.log(data);
+    // setValues({
+    //   productInfo: data,
+    // });
+    // localStorage.setItem("productData", JSON.stringify(data));
+    // router.push("/register/corporate/point-contact");
   };
 
   return (

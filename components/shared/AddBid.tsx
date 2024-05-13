@@ -118,7 +118,7 @@ export const AddBid = ({
     if (!success) return toast.error("Something went wrong");
     else {
       queryClient.invalidateQueries({
-        queryKey: [`bid-status`, "fetch-lcs", response._id],
+        queryKey: [`bid-status`, "fetch-lcs", "fetch-bids-count", response._id],
       });
       let closeBtn = document.getElementById("submit-button-close");
       // @ts-ignore

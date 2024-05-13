@@ -199,51 +199,20 @@ export interface ILcs {
   status?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  bids: IBids[];
 }
 
 export interface IBids {
   _id: string;
   status: string;
   bidType: string;
-  discountingPrice: number;
+  discountingPrice?: number;
   confirmationPrice: number;
+  bidValidity?: Date;
   bidBy: {
     _id?: string;
     name?: string;
-    email: string;
-    role: string;
     country?: string;
-    phone?: string;
-    address?: string;
-    constitution?: string;
-    password?: string;
-    bank?: string;
-    accountNumber?: number;
-    swiftCode?: string;
-    accountHolderName?: string;
-    accountCountry?: string;
-    accountCity?: string;
-    businessType?: string;
-    productInfo?: {
-      product: string;
-      annualSalary: number;
-      annualValueExports: number;
-      annualValueImports: number;
-    };
-    pocName?: string;
-    pocEmail?: string;
-    pocPhone?: string;
-    poc?: string;
-    pocDesignation?: string;
-    currentBanks?: string[];
-    authorizationPocLetter?: string;
-    confirmationLcs?: boolean;
-    discountingLcs?: boolean;
-    guaranteesCounterGuarantees?: boolean;
-    discountingAvalizedBills?: boolean;
-    avalizationExportBills?: boolean;
-    riskParticipation: boolean;
-    isDeleted?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
   };

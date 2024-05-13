@@ -1,15 +1,15 @@
 import { STATUS } from "@/utils";
 import api from "../middleware/middleware";
 
-export const fetchBids = async ({ id }: { id: string }) => {
-  try {
-    const { data } = await api.get(`/bids?lc=${id}`);
-    return data.data;
-  } catch (error: any) {
-    console.log(error);
-    return error.response?.data?.message || "Something went wrong";
-  }
-};
+// export const fetchBids = async ({ id }: { id: string }) => {
+//   try {
+//     const { data } = await api.get(`/bids?lc=${id}`);
+//     return data.data;
+//   } catch (error: any) {
+//     console.log(error);
+//     return error.response?.data?.message || "Something went wrong";
+//   }
+// };
 
 export const fetchSingleBid = async (id: string) => {
   try {

@@ -9,11 +9,9 @@ import {
 } from "@/components/ui/table";
 import { ChevronUp, Ellipsis, Eye, Plus } from "lucide-react";
 import {
-  CountrySelect,
   DashboardCountries,
   DateRangePicker,
   Filter,
-  Loader,
   Pagination,
   ProductFilter,
   SearchBar,
@@ -23,7 +21,6 @@ import { Button } from "../ui/button";
 import { TableDialog } from "./TableDialog";
 import Image from "next/image";
 import { columnHeaders, bankColumnHeaders } from "@/utils/data";
-import { AddBid } from "./AddBid";
 import { ApiResponse, ILcs } from "@/types/type";
 import { convertDateToYYYYMMDD } from "@/utils";
 
@@ -111,9 +108,7 @@ export const RequestTable = ({
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <div className="w-full h-full center">
-                  {/* <Loader /> */}
-                </div>
+                <div className="w-full h-full center">{/* <Loader /> */}</div>
               ) : isBank ? (
                 data &&
                 data.data &&
@@ -192,7 +187,7 @@ export const RequestTable = ({
                       </Button>
                     </TableCell>
                     <TableCell className="px-1 py-1 max-w-[200px]">
-                      <TableDialog id={item._id} lcData={item} />
+                      <TableDialog lcData={item} bids={item.bids} />
                     </TableCell>
                   </TableRow>
                 ))

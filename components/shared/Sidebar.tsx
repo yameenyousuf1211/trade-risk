@@ -10,7 +10,7 @@ import { ApiResponse, IBids, ILcs } from "@/types/type";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatLeftDate, formatLeftDays } from "@/utils";
 import useLoading from "@/hooks/useLoading";
-import { acceptOrRejectBid, fetchBids } from "@/services/apis/bids.api";
+import { acceptOrRejectBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthProvider";
 
@@ -25,7 +25,7 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
     if (!success) return toast.error(response as string);
     else {
       queryClient.invalidateQueries({
-        queryKey: ["single-lcs-bids", "fetch-lcs"],
+        queryKey: ["fetch-lcs"],
       });
       toast.success(`Bid ${status}`);
     }
@@ -63,27 +63,13 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
 };
 
 const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
-  // Fetching all bids
-  const {
-    isLoading: isBidsLoading,
-    error,
-    data: bids,
-  }: {
-    data: ApiResponse<IBids> | undefined;
-    error: any;
-    isLoading: boolean;
-  } = useQuery({
-    queryKey: ["single-lcs-bids", data._id],
-    queryFn: () => fetchBids({ id: data._id }),
-  });
-
   return (
     <>
-      {bids && bids.data.length > 0 ? (
+      {data.bids.length > 0 ? (
         <div className="flex flex-col gap-y-5 bg-[#F5F7F9] rounded-md">
           {/* Data */}
           <div className="px-3 pt-2">
-            <p>Request #{data._id.substring(0, 5)}</p>
+            <p>Request #{data.refId}</p>
             {isBank && <p className="text-lg font-semibold my-1">Aramco</p>}
 
             <p className="text-sm flex items-center flex-wrap">
@@ -108,12 +94,10 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
             </h3>
             {!isBank ? (
               <div className="flex items-center justify-between gap-x-2">
-                {bids && (
-                  <p className="text-gray-500 text-sm">
-                    {bids.data.length} bid
-                    {bids.data.length > 1 ? "s" : ""}
-                  </p>
-                )}
+                <p className="text-gray-500 text-sm">
+                  {data.bids.length} bid
+                  {data.bids.length > 1 ? "s" : ""}
+                </p>
                 <Link
                   href="#"
                   className="text-sm text-primaryCol font-light underline"
@@ -130,7 +114,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
           {!isBank && (
             <div className="w-full">
               <Swiper slidesPerView={1.2} spaceBetween={10}>
-                {bids.data.map((info: IBids) => (
+                {data.bids.map((info: IBids) => (
                   <SwiperSlide key={info._id}>
                     <SliderCard info={info} lcData={data} key={info._id} />
                   </SwiperSlide>
@@ -152,7 +136,6 @@ export const Sidebar = ({
   createMode?: boolean;
 }) => {
   const { user } = useAuth();
-
   const { startLoading, stopLoading, isLoading } = useLoading();
 
   const {

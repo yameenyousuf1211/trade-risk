@@ -7,11 +7,10 @@ import {
 } from "@/components/ui/dialog";
 import { ArrowUpNarrowWide, Eye, ListFilter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ApiResponse, IBids, ILcs } from "@/types/type";
-import { acceptOrRejectBid, fetchBids } from "@/services/apis/bids.api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { IBids, ILcs } from "@/types/type";
+import { acceptOrRejectBid } from "@/services/apis/bids.api";
+import { useQueryClient } from "@tanstack/react-query";
 import { convertDateToYYYYMMDD } from "@/utils";
-import { Loader } from "../helpers";
 import useLoading from "@/hooks/useLoading";
 import { toast } from "sonner";
 
@@ -44,8 +43,8 @@ const BidCard = ({ data }: { data: IBids }) => {
       </div>
 
       <div>
-        <p className="text-lg font-semibold mb-1">{data.bidBy.name}</p>
-        <p className="text-sm text-para">{data.bidBy.country}</p>
+        <p className="text-lg font-semibold mb-1">{data.bidBy?.name || ""}</p>
+        <p className="text-sm text-para">{data.bidBy?.country || ""}</p>
       </div>
 
       <div>
@@ -57,12 +56,20 @@ const BidCard = ({ data }: { data: IBids }) => {
 
       <div>
         <p className="text-sm text-para mb-1">Discount Rate</p>
-        <p className="text-lg font-semibold ">Not applicable</p>
+        <p className="text-lg font-semibold ">
+          {data.bidType.includes("Discounting")
+            ? "Applicable"
+            : "Not Applicable"}
+        </p>
       </div>
 
       <div>
         <p className="text-sm text-para mb-1">Discount Margin</p>
-        <p className="text-lg font-semibold ">Not applicable</p>
+        <p className="text-lg font-semibold ">
+          {data.bidType.includes("Discounting")
+            ? "Applicable"
+            : "Not Applicable"}
+        </p>
       </div>
 
       <div>
@@ -80,7 +87,7 @@ const BidCard = ({ data }: { data: IBids }) => {
       <div>
         <p className="text-sm text-para mb-1">Bid Expiry</p>
         <p className="font-semibold text-lg">
-          {convertDateToYYYYMMDD(data.createdAt)}
+          {convertDateToYYYYMMDD(data.bidValidity)}
         </p>
       </div>
       <DialogClose id="close-button" className="hidden"></DialogClose>
@@ -126,17 +133,13 @@ const LCInfo = ({
   );
 };
 
-export const TableDialog = ({ id, lcData }: { id: string; lcData: ILcs }) => {
-  const {
-    isLoading,
-    error,
-    data,
-  }: { data: ApiResponse<IBids> | undefined; error: any; isLoading: boolean } =
-    useQuery({
-      queryKey: ["single-lcs-bids", id],
-      queryFn: () => fetchBids({ id }),
-    });
-
+export const TableDialog = ({
+  lcData,
+  bids,
+}: {
+  lcData: ILcs;
+  bids: IBids[];
+}) => {
   return (
     <Dialog>
       <DialogTrigger className="center border border-borderCol rounded-md w-full px-1 py-2">
@@ -238,7 +241,7 @@ export const TableDialog = ({ id, lcData }: { id: string; lcData: ILcs }) => {
             <div className="flex items-center justify-between w-full pt-5">
               <div className="flex items-center gap-x-2">
                 <p className="bg-primaryCol text-white font-semibold text-lg rounded-xl py-1 px-3">
-                  {data && data.data.length}
+                  {bids.length}
                 </p>
                 <p className="text-xl font-semibold">Bids recieved</p>
               </div>
@@ -256,8 +259,9 @@ export const TableDialog = ({ id, lcData }: { id: string; lcData: ILcs }) => {
             </div>
             {/* Bids */}
             <div className="flex flex-col gap-y-4 max-h-[65vh] overflow-y-auto overflow-x-hidden mt-5">
-              {data &&
-                data.data.map((data) => <BidCard data={data} key={data._id} />)}
+              {bids &&
+                bids.length > 0 &&
+                bids.map((data: any) => <BidCard data={data} key={data._id} />)}
             </div>
           </div>
         </div>

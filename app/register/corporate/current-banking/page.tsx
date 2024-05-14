@@ -106,10 +106,20 @@ const CurrentBankingPage = () => {
   };
 
   const handleBankDelete = (country: string, index: number) => {
-    setAllBanks((prevBanks) => ({
-      ...prevBanks,
-      [country]: prevBanks[country].filter((_, i) => i !== index),
-    }));
+    setAllBanks((prevBanks) => {
+      const updatedCountryBanks = prevBanks[country].filter(
+        (_, i) => i !== index
+      );
+      if (updatedCountryBanks.length === 0) {
+        const { [country]: _, ...restOfCountries } = prevBanks;
+        return restOfCountries;
+      }
+
+      return {
+        ...prevBanks,
+        [country]: updatedCountryBanks,
+      };
+    });
   };
 
   const handleSubmit = async () => {

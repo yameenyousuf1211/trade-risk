@@ -2,15 +2,15 @@
 import { FloatingInput } from "@/components/helpers/FloatingInput";
 import CorporateStepLayout from "@/components/layouts/CorporateStepLayout";
 import { Button } from "@/components/ui/button";
-import useRegisterStore, { getStateValues } from "@/store/register.store";
-import { companyInfoSchema, productsInfoSchema } from "@/validation";
+import useRegisterStore from "@/store/register.store";
+import { productsInfoSchema } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
+import { TagsInput } from "react-tag-input-component";
 
 const ProductInfoPage = () => {
   const router = useRouter();
@@ -38,17 +38,18 @@ const ProductInfoPage = () => {
       });
     }
   }, [productData]);
-  
+
   const onSubmit: SubmitHandler<z.infer<typeof productsInfoSchema>> = async (
     data: any
   ) => {
-    console.log(data);
-    // setValues({
-    //   productInfo: data,
-    // });
-    // localStorage.setItem("productData", JSON.stringify(data));
-    // router.push("/register/corporate/point-contact");
+    setValues({
+      productInfo: data,
+    });
+    localStorage.setItem("productData", JSON.stringify(data));
+    router.push("/register/corporate/point-contact");
   };
+
+  const [products, setProducts] = useState([]);
 
   return (
     <CorporateStepLayout
@@ -61,11 +62,20 @@ const ProductInfoPage = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="w-full">
-          <FloatingInput
+          {/* <FloatingInput
             register={register}
             type="text"
             name="product"
             placeholder="Your Product(s)"
+          /> */}
+          <TagsInput
+            value={products}
+            onChange={(val) => {
+              setProducts(val);
+              setValue("product", val.join(", "));
+            }}
+            name="product"
+            placeHolder="Products"
           />
           {errors.product && (
             <span className="text-[11px] text-red-500">

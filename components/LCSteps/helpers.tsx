@@ -63,8 +63,6 @@ export const DDInput = ({
     setValueChanged && setValueChanged((prev: boolean) => !prev);
   };
 
-
-
   return (
     <label
       id={id}
@@ -75,7 +73,7 @@ export const DDInput = ({
         <SelectTrigger
           disabled={disabled}
           id={id}
-          className="w-fit border-none bg-transparent text-[#B5B5BE]"
+          className="w-fit border-none bg-transparent text-[#444]"
         >
           <SelectValue placeholder={value ? value: placeholder} />
         </SelectTrigger>

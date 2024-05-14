@@ -20,7 +20,6 @@ interface SearchParams {
 
 const DashboardPage = ({ searchParams }: SearchParams) => {
   const { page, limit, search, filter } = searchParams;
-
   const { user } = useAuth();
   if (user && user.role !== "bank") {
     redirect("/");

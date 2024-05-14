@@ -92,7 +92,9 @@ export const fetchMyBids = async ({
 }) => {
   try {
     const { data } = await api.get(
-      `/bids?bidBy=true&limit=${limit || 10}&page=${page || 1}`
+      `/bids?bidBy=true&limit=${limit || 10}&page=${page || 1}&filter=${
+        filter || ""
+      }`
     );
     return data.data;
   } catch (error: any) {

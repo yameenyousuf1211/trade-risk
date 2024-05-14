@@ -13,6 +13,8 @@ import useLoading from "@/hooks/useLoading";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthProvider";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   const queryClient = useQueryClient();
@@ -201,6 +203,47 @@ export const Sidebar = ({
     document.body.removeChild(link);
   };
 
+  // const generatePDF = async (data: any) => {
+  //   const doc = new jsPDF();
+  //   // const headers = getHeaders(data);
+
+  //   // const pdfRow = [];
+
+  //   // data.forEach((item: any) => {
+  //   //   const values = headers.map((header) => formatValue(header, item));
+  //   //   pdfRow.push(values.join(","));
+  //   // });
+
+  //   const tableRows = data.map((item) => item.toString().split("|"));
+  //   const headers = tableRows[0];
+  //   const columns = headers.map((header, index) => ({
+  //     header,
+  //     dataKey: index,
+  //   }));
+
+  //   tableRows.shift();
+
+  //   doc.autoTable({
+  //     startY: 20,
+  //     head: [headers],
+  //     body: tableRows,
+  //     columns,
+  //     styles: { fontSize: 8 },
+  //     columnStyles: { text: { fontSize: 8 } },
+  //     margin: { top: 10 },
+  //   });
+
+  //   const pdfBlob = doc.output("blob");
+  //   const pdfUrl = URL.createObjectURL(pdfBlob);
+
+  //   const link = document.createElement("a");
+  //   link.href = pdfUrl;
+  //   link.download = "report.pdf";
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
+
   const generateReport = async () => {
     if (!user) return;
     if (isBank) {
@@ -209,7 +252,7 @@ export const Sidebar = ({
       if (data.length > 0) {
         generateCSV(data);
       } else {
-        toast.error("Not enough data to export data");
+        toast.error("Not enough data to export");
       }
       stopLoading();
     } else {
@@ -219,7 +262,7 @@ export const Sidebar = ({
       if (data.length > 0) {
         generateCSV(data);
       } else {
-        toast.error("Not enough data to export data");
+        toast.error("Not enough data to export");
       }
       stopLoading();
     }

@@ -311,11 +311,13 @@ const CreateDiscountPage = () => {
           register={register}
           setValue={setValue}
           countries={countries?.response}
+          getValues={getValues}
         />
         <Step5
           register={register}
           countries={countries?.response}
           setValue={setValue}
+          getValues={getValues}
         />
 
         <div className="flex items-start gap-x-4 h-full w-full relative">

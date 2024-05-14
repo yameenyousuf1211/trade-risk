@@ -17,7 +17,7 @@ export const ProductFilter = () => {
     const queryParams = new URLSearchParams(searchParams);
     queryParams.set("filter", lcType.toString());
     queryParams.set("page", "1");
-
+    
     const queryString = queryParams.toString();
     router.push(`${pathname}?${queryString}`, { scroll: false });
   };

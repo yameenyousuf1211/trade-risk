@@ -171,6 +171,8 @@ export const Step6 = ({
               placeholder="Value (%)"
               type="number"
               inputMode="numeric"
+              required
+              max={100}
               name={
                 isDiscount
                   ? "discountingInfo.pricePerAnnum"
@@ -179,7 +181,7 @@ export const Step6 = ({
               register={register}
               className="border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
             />
-            
+
             <Button
               type="button"
               variant="ghost"

@@ -117,7 +117,7 @@ export const ProgressCharts = ({ title }: { title: string }) => {
   }, [data]);
 
   return (
-    <div className="bg-white rounded-lg border border-borderCol py-4 px-5 xl:max-w-[525px] w-full h-full">
+    <div className="bg-white rounded-lg border border-borderCol py-4 px-5 xl:max-w-[525px] w-full max-h-[550px] h-full">
       <div className="flex items-center gap-x-2 justify-between mb-3 w-full">
         <h4 className="text-lg font-semibold">{title}</h4>
         <p className="w-10 h-8 center bg-[#eeecec] rounded-md px-4 text-lg font-semibold">

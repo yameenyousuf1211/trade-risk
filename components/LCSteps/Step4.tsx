@@ -1,16 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { DDInput } from "./helpers";
+import { useAuth } from "@/context/AuthProvider";
 
 export const Step4 = ({
   register,
   countries,
   setValue,
+  getValues,
 }: {
   register: any;
   countries: string[];
   setValue: any;
+  getValues: any;
 }) => {
+  const { user } = useAuth();
+  let isImporter = getValues("participantRole") === "importer";
+
+  useEffect(() => {
+    isImporter = getValues("participantRole") === "importer";
+  }, [getValues, user]);
+  // console.log(isImporter);
+
+  isImporter && setValue("importerInfo.applicantName", user.name);
+
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">

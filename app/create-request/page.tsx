@@ -42,18 +42,19 @@ const CreateRequestPage = () => {
 
   const queryClient = useQueryClient();
 
-  // const editData = getStateValues(useConfirmationStore.getState());
+  const editData2 = getStateValues(useConfirmationStore.getState());
+  // console.log("State Data: ", editData2)
   // // console.log(editData)
-  // useEffect(() => {
-  //   if (editData && editData._id) {
-  //     Object.entries(editData).forEach(([key, value]) => {
-  //       // @ts-ignore
-  //       setValue(key, value);
-  //     });
-  //     console.log("running in data ");
-  //   }
-  //   console.log("running ");
-  // }, [editData, setValue]);
+  useEffect(() => {
+    if (editData2 && editData2._id) {
+      Object.entries(editData2).forEach(([key, value]) => {
+        // @ts-ignore
+        setValue(key, value);
+      });
+      console.log("running in data ");
+    }
+    console.log("running ");
+  }, [editData2, setValue]);
 
   // Show errors
   useEffect(() => {
@@ -153,11 +154,17 @@ const CreateRequestPage = () => {
     queryFn: () => getCountries(),
   });
 
+  // useEffect(() => {
+
+  // }, [editData])
+
   const handleEditData = (editData: any) => {
+    console.log("API DATA: ", editData)
     Object.entries(editData).forEach(([key, value]) => {
-      // console.log(key, value);
+      console.log(key, value);
       // @ts-ignore
       setValue(key, value);
+      // console.log(key, value)
       console.log(getValues())
     });
   };
@@ -177,11 +184,13 @@ const CreateRequestPage = () => {
           register={register}
           setValue={setValue}
           countries={countries?.success && countries?.response}
+          getValues={getValues}
         />
         <Step5
           register={register}
           setValue={setValue}
           countries={countries?.success && countries?.response}
+          getValues={getValues}
         />
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6

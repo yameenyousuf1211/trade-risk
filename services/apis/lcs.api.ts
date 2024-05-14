@@ -42,6 +42,7 @@ export const fetchAllLcs = async ({
   search?: string;
   filter?: string;
 }) => {
+  console.log(filter);
   try {
     const { data } = await api.get(
       `/lcs?limit=${limit || 10}&page=${page || 1}&draft=${false}&search=${

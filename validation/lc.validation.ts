@@ -20,7 +20,7 @@ export const generalLcSchema = z.object({
   paymentTerms: z.enum(["sight-lc", "usance-lc", "deferred-lc", "upas-lc"], {
     message: "Select a payment term",
   }),
-  currency: z.string({ message: "Currency is required" }).default('USD'),
+  currency: z.string({ message: "Currency is required" }).default("USD"),
   issuingBank: z.object(
     {
       bank: z.string({ message: "Issuing bank name is required" }),
@@ -70,7 +70,9 @@ export const generalLcSchema = z.object({
 export const confirmationSchema = z.lazy(() =>
   generalLcSchema.merge(
     z.object({
-      expectedConfirmationDate: z.date({ message: "select expected confirmation date" }),
+      expectedConfirmationDate: z.date({
+        message: "select expected confirmation date",
+      }),
       exporterInfo: z.object({
         beneficiaryName: z
           .string({ message: "Enter exporter beneficiary name" })
@@ -89,6 +91,9 @@ export const confirmationSchema = z.lazy(() =>
           .nonempty("Enter expected price")
           .refine((value) => /^\d+(\.\d+)?$/.test(value), {
             message: "Enter a valid number",
+          })
+          .refine((value) => parseFloat(value) <= 100, {
+            message: "Price per annum must be less than 100",
           }),
       }),
       advisingBank: z.optional(
@@ -131,6 +136,9 @@ export const discountingSchema = z.lazy(() =>
           .nonempty("Enter expected price")
           .refine((value) => /^\d+(\.\d+)?$/.test(value), {
             message: "Enter a valid number",
+          })
+          .refine((value) => parseFloat(value) <= 100, {
+            message: "Price per annum must be less than 100",
           }),
       }),
     })
@@ -179,6 +187,9 @@ export const confirmationDiscountSchema = z.lazy(() =>
           .nonempty("Enter expected price")
           .refine((value) => /^\d+(\.\d+)?$/.test(value), {
             message: "Enter a valid number",
+          })
+          .refine((value) => parseFloat(value) <= 100, {
+            message: "Price per annum must be less than 100",
           }),
       }),
     })

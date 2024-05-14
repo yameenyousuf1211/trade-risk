@@ -150,16 +150,6 @@ export const Period = ({
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               {lcIssueType === "date-lc-issued" ? (
-                // <Calendar
-                //   mode="single"
-                //   selected={lcPeriodDate}
-                //   onSelect={(date) => {
-                //     setLcPeriodDate(date);
-                //     updateValue("lcPeriod.startDate", date);
-                //     setDatePopoverOpen(false);
-                //   }}
-                //   initialFocus
-                // />
                 <ValidatingCalendar
                   initialDate={lcPeriodDate}
                   onChange={(date) => {
@@ -218,7 +208,7 @@ export const Period = ({
         </label>
       </div>
       {/* Port of Shipment */}
-      <div className="border border-borderCol py-3 px-2 rounded-md w-1/3 h-full min-h-44 bg-[#F5F7F9]">
+      <div className="border border-borderCol py-3 px-2 rounded-md w-1/3 h-[185px] min-h-44 bg-[#F5F7F9]">
         <p className="font-semibold ml-3">Port of Shipment</p>
         <div className="flex flex-col gap-y-2 mt-2">
           <DDInput
@@ -294,8 +284,8 @@ export const Transhipment = ({
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const currentDate = new Date();
-  const tomorrowDate = addDays(currentDate, 1);
   const nextWeekDate = addDays(currentDate, 7);
+  const twoWeeksDate = addDays(currentDate, 14);
 
   return (
     <div className="w-full flex items-start gap-x-4 justify-between mt-4">
@@ -367,22 +357,7 @@ export const Transhipment = ({
         </label>
 
         <div className="flex items-center mt-2 gap-x-2 justify-between w-full">
-          <Button
-            type="button"
-            className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
-            onClick={() => {
-              setExpectedConfirmationDate(tomorrowDate);
-              isDiscount
-                ? setValue("expectedDiscountingDate", tomorrowDate)
-                : setValue("expectedConfirmationDate", tomorrowDate);
-            }}
-          >
-            <p className="text-white">Tomorrow</p>
-            <p className="text-sm text-white/80 font-thin">
-              {" "}
-              {format(tomorrowDate, "d MMMM")}
-            </p>
-          </Button>
+          {/* Next week */}
           <Button
             type="button"
             className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
@@ -397,6 +372,23 @@ export const Transhipment = ({
             <p className="text-sm text-white/80 font-thin">
               {" "}
               {format(nextWeekDate, "d MMMM")}
+            </p>
+          </Button>
+          {/* 2 weeks */}
+          <Button
+            type="button"
+            className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
+            onClick={() => {
+              setExpectedConfirmationDate(twoWeeksDate);
+              isDiscount
+                ? setValue("expectedDiscountingDate", twoWeeksDate)
+                : setValue("expectedConfirmationDate", twoWeeksDate);
+            }}
+          >
+            <p className="text-white">Two Weeks</p>
+            <p className="text-sm text-white/80 font-thin">
+              {" "}
+              {format(twoWeeksDate, "d MMMM")}
             </p>
           </Button>
         </div>

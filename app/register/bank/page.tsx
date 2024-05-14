@@ -1,5 +1,9 @@
 "use client";
-import { CountrySelect, TelephoneInput } from "@/components/helpers";
+import {
+  CountrySelect,
+  DisclaimerDialog,
+  TelephoneInput,
+} from "@/components/helpers";
 import { FloatingInput } from "@/components/helpers/FloatingInput";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { Button } from "@/components/ui/button";
@@ -64,71 +68,71 @@ const BankRegisterPage = () => {
           Please fill in the form below to register your bank
         </p>
         <form
-          className="max-w-[800px] mx-auto w-full shadow-md bg-white rounded-xl xs:p-8 max-xs:py-8 max-xs:px-4 z-10 mt-5 flex flex-col sm:gap-y-5 gap-y-3"
+          className="max-w-[800px] mx-auto w-full shadow-md bg-white rounded-xl xs:p-8 max-xs:py-8 max-xs:px-4 z-10 mt-5 flex flex-col sm:gap-y-6 gap-y-3"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="flex items-center gap-x-2 w-full max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full">
+            <div className="w-full relative">
               <FloatingInput
                 name="name"
                 placeholder="Bank Name"
                 register={register}
               />
               {errors.name && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.name.message}
                 </span>
               )}
             </div>
-            <div className="w-full">
+            <div className="w-full relative">
               <FloatingInput
                 name="email"
                 placeholder="email"
                 register={register}
               />
               {errors.email && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.email.message}
                 </span>
               )}
             </div>
 
-            <div className="w-full">
+            <div className="w-full relative">
               <CountrySelect setValue={setValue} name="accountCountry" />
               {errors.accountCountry && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.accountCountry.message}
                 </span>
               )}
             </div>
-            <div className="w-full">
+            <div className="w-full relative">
               <FloatingInput
                 name="swiftCode"
                 placeholder="Swift"
                 register={register}
               />
               {errors.swiftCode && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.swiftCode.message}
                 </span>
               )}
             </div>
           </div>
-          <div className="w-full">
+          <div className="w-full relative">
             <FloatingInput
               name="address"
               placeholder="Registered Address"
               register={register}
             />
             {errors.address && (
-              <span className="text-[11px] text-red-500">
+              <span className="mt-1 absolute text-[11px] text-red-500">
                 {errors.address.message}
               </span>
             )}
           </div>
 
           <div className="flex items-center gap-x-2 w-full">
-            <div className="w-full">
+            <div className="w-full relative">
               <FloatingInput
                 register={register}
                 name="pocEmail"
@@ -136,20 +140,20 @@ const BankRegisterPage = () => {
                 type="email"
               />
               {errors.pocEmail && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.pocEmail.message}
                 </span>
               )}
             </div>
 
-            <div className="w-full">
+            <div className="w-full relative">
               <TelephoneInput
                 name="pocPhone"
                 placeholder="POC Telephone"
                 setValue={setValue}
               />
               {errors.pocPhone && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.pocPhone.message}
                 </span>
               )}
@@ -196,9 +200,12 @@ const BankRegisterPage = () => {
                 className="size-8"
               />
             </Button>
-            <Link href="#" className="text-[#50B5FF] underline text-sm">
-              Click to view and sign the agreement
-            </Link>
+            <span className="text-[#50B5FF] underline text-sm">
+              <DisclaimerDialog
+                title="Click to view and sign the agreement"
+                className="underline"
+              />
+            </span>
           </div>
 
           <p className="text-para text-sm">

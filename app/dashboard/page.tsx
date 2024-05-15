@@ -43,7 +43,7 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
           </h2>
           {/* Charts */}
           <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 h-fit">
-            <ProgressCharts title="Deals Overview" />
+            <ProgressCharts title="Deals Overview" isBank />
             <LineCharts />
           </div>
           {/* Data Table */}

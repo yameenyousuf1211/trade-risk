@@ -26,7 +26,7 @@ export const DisclaimerDialog = ({
 
   return (
     <Dialog>
-      <DialogTrigger className={className}>
+      <DialogTrigger className={className} id="open-disclaimer">
         {/* <Eye className="size-5" /> */}
         {title}
       </DialogTrigger>
@@ -103,8 +103,8 @@ export const DisclaimerDialog = ({
         <DialogClose className="hidden" id="close-disclaimer"></DialogClose>
         <Button
           variant="ghost"
-          className="text-lightGray text-lg w-full mb-4 cursor-pointer"
-          disabled={true}
+          className="text-lightGray text-lg w-full py-7 cursor-pointer"
+          disabled={false}
           onClick={handleProceed}
         >
           Accept Terms and Conditions

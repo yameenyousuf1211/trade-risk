@@ -38,6 +38,7 @@ import useLoading from "@/hooks/useLoading";
 import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Country } from "@/types/type";
+import { DisclaimerDialog } from "@/components/helpers";
 
 const ConfirmationPage = () => {
   const {
@@ -77,24 +78,31 @@ const ConfirmationPage = () => {
       showNestedErrors(errors);
     }
   }, [errors]);
+  const [proceed, setProceed] = useState(false);
 
   const onSubmit: SubmitHandler<
     z.infer<typeof confirmationDiscountSchema>
   > = async (data: z.infer<typeof confirmationDiscountSchema>) => {
-    startLoading();
-    const reqData = {
-      ...data,
-      transhipment: data.transhipment === "yes" ? true : false,
-      lcType: "LC Confirmation & Discounting",
-    };
+    if (proceed) {
+      startLoading();
+      const reqData = {
+        ...data,
+        transhipment: data.transhipment === "yes" ? true : false,
+        lcType: "LC Confirmation & Discounting",
+      };
 
-    const { response, success } = await onCreateLC(reqData);
-    stopLoading();
-    if (!success) return toast.error(response);
-    else {
-      toast.success(response?.message);
-      reset();
-      router.push("/");
+      const { response, success } = await onCreateLC(reqData);
+      stopLoading();
+      if (!success) return toast.error(response);
+      else {
+        toast.success(response?.message);
+        reset();
+        router.push("/");
+      }
+    } else {
+      let openDisclaimerBtn = document.getElementById("open-disclaimer");
+      // @ts-ignore
+      openDisclaimerBtn.click();
     }
   };
 
@@ -330,7 +338,11 @@ const ConfirmationPage = () => {
             {isLoading ? <Loader /> : "Submit request"}
           </Button>
         </div>
-        {/* <DisclaimerDialog /> */}
+        <DisclaimerDialog
+          title="Submit Request"
+          className="hidden"
+          setProceed={setProceed}
+        />
       </form>
     </CreateLCLayout>
   );

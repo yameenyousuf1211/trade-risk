@@ -216,6 +216,11 @@ export interface IBids {
     createdAt?: Date;
     updatedAt?: Date;
   };
+  userInfo: {
+    name: string;
+    _id: string;
+    country: string;
+  };
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;

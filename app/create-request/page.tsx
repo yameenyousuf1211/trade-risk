@@ -78,23 +78,31 @@ const CreateRequestPage = () => {
     }
   }, [errors]);
 
+  const [proceed, setProceed] = useState(false);
+  
   const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data: z.infer<typeof confirmationSchema>
   ) => {
-    startLoading();
-    const reqData = {
-      ...data,
-      lcType: "LC Confirmation",
-      transhipment: data.transhipment === "yes" ? true : false,
-    };
+    if (proceed) {
+      startLoading();
+      const reqData = {
+        ...data,
+        lcType: "LC Confirmation",
+        transhipment: data.transhipment === "yes" ? true : false,
+      };
 
-    const { response, success } = await onCreateLC(reqData);
-    stopLoading();
-    if (!success) return toast.error(response);
-    else {
-      toast.success(response?.message);
-      reset();
-      router.push("/");
+      const { response, success } = await onCreateLC(reqData);
+      stopLoading();
+      if (!success) return toast.error(response);
+      else {
+        toast.success(response?.message);
+        reset();
+        router.push("/");
+      }
+    } else {
+      let openDisclaimerBtn = document.getElementById("open-disclaimer");
+      // @ts-ignore
+      openDisclaimerBtn.click();
     }
   };
 
@@ -250,7 +258,11 @@ const CreateRequestPage = () => {
             {isLoading ? <Loader /> : "Submit request"}
           </Button>
         </div>
-        {/* <DisclaimerDialog /> */}
+        <DisclaimerDialog
+          title="Submit Request"
+          className="hidden"
+          setProceed={setProceed}
+        />
       </form>
     </CreateLCLayout>
   );

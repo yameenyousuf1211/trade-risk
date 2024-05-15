@@ -2,6 +2,7 @@ import { getBidsCount } from "@/services/apis/bids.api";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "../helpers";
 import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const Chart = ({
   value,
@@ -25,8 +26,35 @@ const Chart = ({
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
   const strokeDasharray = circumference;
+
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const handleFilter = () => {
+    const filter =
+      title === "accepted"
+        ? "Accepted"
+        : title === "rejected"
+        ? "Rejected"
+        : title === "expired" || title === "bids"
+        ? "Expired"
+        : title === "pending"
+        ? "Pending"
+        : "";
+    const queryParams = new URLSearchParams(searchParams);
+    queryParams.set("search", filter.toString());
+    queryParams.set("page", "1");
+
+    const queryString = queryParams.toString();
+    router.push(`${pathname}?${queryString}`, { scroll: false });
+  };
+
   return (
-    <div className="hover:shadow-xl rounded-lg pb-2">
+    <div
+      className="hover:shadow-xl rounded-lg pb-2 cursor-pointer"
+      onClick={handleFilter}
+    >
       <div className="flex flex-col items-center justify-center">
         <div className="relative">
           <svg className="progress-ring" width="120" height="120">
@@ -75,7 +103,13 @@ interface Count {
   count: number;
 }
 
-export const ProgressCharts = ({ title }: { title: string }) => {
+export const ProgressCharts = ({
+  title,
+  isBank,
+}: {
+  title: string;
+  isBank?: boolean;
+}) => {
   const { isLoading, error, data } = useQuery({
     queryKey: ["fetch-bids-count"],
     queryFn: () => getBidsCount(),
@@ -117,13 +151,23 @@ export const ProgressCharts = ({ title }: { title: string }) => {
   }, [data]);
 
   return (
-    <div className="bg-white rounded-lg border border-borderCol py-4 px-5 
-    xl:max-w-[525px] w-full max-h-[550px]">
+    <div
+      className="bg-white rounded-lg border border-borderCol py-4 px-5 
+    xl:max-w-[525px] w-full max-h-[550px]"
+    >
       <div className="flex items-center gap-x-2 justify-between mb-3 w-full">
-        <h4 className="text-lg font-semibold">{title}</h4>
-        <p className="w-10 h-8 center bg-[#eeecec] rounded-md px-4 text-lg font-semibold">
-          {maxValue}
-        </p>
+        <div className="flex items-center gap-x-2">
+          <h4 className="text-lg font-semibold">{title}</h4>
+          <div className="size-4 rounded-full bg-[#B5B5BE] text-white text-[10px] center">
+            i
+          </div>
+          {/* <Image src="/images/info.png" alt="info" width={20} height={20} /> */}
+        </div>
+        {!isBank && (
+          <p className="w-10 h-8 center bg-[#eeecec] rounded-md px-4 text-lg font-semibold">
+            {maxValue}
+          </p>
+        )}
       </div>
       {/* Charts */}
       <div className="flex items-center overflow-x-auto">
@@ -151,7 +195,7 @@ export const ProgressCharts = ({ title }: { title: string }) => {
               value={expired}
               bg="#F6EBE7"
               color="#FF7939"
-              title="expired"
+              title={isBank ? "bids" : "expired"}
               maxValue={maxValue}
             />
             <Chart

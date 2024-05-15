@@ -36,78 +36,111 @@ const BidCard = ({ data }: { data: IBids }) => {
   };
 
   return (
-    <div className="border border-borderCol py-5 px-3 rounded-lg grid grid-cols-2 gap-y-1.5">
-      <div>
-        <p className="text-sm text-para mb-1">Bid Number</p>
-        <p className="font-semibold text-lg">{data._id.slice(1, 6)}</p>
-      </div>
+    <div className="border border-borderCol py-5 px-3 rounded-lg">
+      <div className="grid grid-cols-2 gap-y-1.5">
+        <div>
+          <p className="text-sm text-para mb-1">Bid Number</p>
+          <p className="font-semibold text-lg">{data._id.slice(1, 6)}</p>
+        </div>
 
-      <div>
-        <p className="text-lg font-semibold mb-1">{data.bidBy?.name || ""}</p>
-        <p className="text-sm text-para">{data.bidBy?.country || ""}</p>
-      </div>
+        <div>
+          <p className="text-lg font-semibold mb-1">
+            {data.userInfo?.name || ""}
+          </p>
+          <p className="text-sm text-para">{data.userInfo?.country || ""}</p>
+        </div>
 
-      <div>
-        <p className="text-sm text-para mb-1">Confirmation Rate</p>
-        <p className="text-lg font-semibold text-text">
-          {data.confirmationPrice}% per annum
-        </p>
-      </div>
+        <div>
+          <p className="text-sm text-para mb-1">Confirmation Rate</p>
+          <p className="text-lg font-semibold text-text">
+            {data.confirmationPrice}% per annum
+          </p>
+        </div>
 
-      <div>
-        <p className="text-sm text-para mb-1">Discount Rate</p>
-        <p className="text-lg font-semibold ">
-          {data.bidType.includes("Discounting")
-            ? "Applicable"
-            : "Not Applicable"}
-        </p>
-      </div>
+        <div>
+          <p className="text-sm text-para mb-1">Discount Rate</p>
+          <p className="text-lg font-semibold ">
+            {data.bidType.includes("Discounting")
+              ? "Applicable"
+              : "Not Applicable"}
+          </p>
+        </div>
 
-      <div>
-        <p className="text-sm text-para mb-1">Discount Margin</p>
-        <p className="text-lg font-semibold ">
-          {data.bidType.includes("Discounting")
-            ? "Applicable"
-            : "Not Applicable"}
-        </p>
-      </div>
+        <div>
+          <p className="text-sm text-para mb-1">Discount Margin</p>
+          <p className="text-lg font-semibold ">
+            {data.bidType.includes("Discounting")
+              ? "Applicable"
+              : "Not Applicable"}
+          </p>
+        </div>
 
-      <div>
-        <p className="text-sm text-para mb-1">Minimum Charges</p>
-        <p className="text-lg font-semibold text-text">AED 30,000.00</p>
-      </div>
+        <div>
+          <p className="text-sm text-para mb-1">Minimum Charges</p>
+          <p className="text-lg font-semibold text-text">AED 30,000.00</p>
+        </div>
 
-      <div>
-        <p className="text-sm text-para mb-1">Bid Recieved</p>
-        <p className="font-semibold text-lg">
-          {convertDateToYYYYMMDD(data.createdAt)}
-        </p>
-      </div>
+        <div>
+          <p className="text-sm text-para mb-1">Bid Recieved</p>
+          <p className="font-semibold text-lg">
+            {convertDateToYYYYMMDD(data.createdAt)}
+          </p>
+        </div>
 
-      <div>
-        <p className="text-sm text-para mb-1">Bid Expiry</p>
-        <p className="font-semibold text-lg">
-          {convertDateToYYYYMMDD(data.bidValidity)}
-        </p>
+        <div>
+          <p className="text-sm text-para mb-1">Bid Expiry</p>
+          <p className="font-semibold text-lg">
+            {convertDateToYYYYMMDD(data.bidValidity)}
+          </p>
+        </div>
+        {data.status === "Pending" && (
+          <>
+            <DialogClose id="close-button" className="hidden"></DialogClose>
+            <Button
+              size="lg"
+              className="mt-2 bg-[#29C084] hover:bg-[#29C084]/90"
+              onClick={() => handleSubmit("Accepted", data._id)}
+              disabled={isLoading}
+            >
+              Accept
+            </Button>
+            <Button
+              size="lg"
+              className="mt-2 text-para"
+              variant="ghost"
+              onClick={() => handleSubmit("Rejected", data._id)}
+              disabled={isLoading}
+            >
+              Reject
+            </Button>
+          </>
+        )}
       </div>
-      <DialogClose id="close-button" className="hidden"></DialogClose>
-      <Button
-        size="lg"
-        className="mt-2 bg-[#29C084] hover:bg-[#29C084]/90"
-        onClick={() => handleSubmit("Accepted", data._id)}
-        disabled={isLoading}
-      >
-        Accept
-      </Button>
-      <Button
-        size="lg"
-        className="mt-2 text-para"
-        variant="ghost"
-        onClick={() => handleSubmit("Rejected", data._id)}
-        disabled={isLoading}
-      >
-        Reject
-      </Button>
+      {data.status !== "Pending" && (
+        <Button
+          className={`${
+            data.status === "Accepted"
+              ? "bg-[#29C08433] hover:bg-[#29C08433]"
+              : data.status === "Rejected"
+              ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
+              : data.status === "Expired"
+              ? "bg-[#97979733] hover:bg-[#97979733]"
+              : data.status === "Submitted"
+              ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
+              : ""
+          } mt-2 text-black w-full cursor-default`}
+        >
+          {data.status === "Accepted"
+            ? "Bid Accepted"
+            : data.status === "Rejected"
+            ? "Bid Rejected"
+            : data.status === "Expired"
+            ? "Request Expired"
+            : data.status === "Submitted"
+            ? "Bid Submitted"
+            : ""}
+        </Button>
+      )}
     </div>
   );
 };
@@ -140,6 +173,7 @@ export const TableDialog = ({
   lcData: ILcs;
   bids: IBids[];
 }) => {
+  console.log(lcData);
   return (
     <Dialog>
       <DialogTrigger className="center border border-borderCol rounded-md w-full px-1 py-2">

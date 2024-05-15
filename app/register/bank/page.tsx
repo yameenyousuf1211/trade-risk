@@ -17,6 +17,7 @@ import {
 import { onRegister } from "@/services/apis";
 import { bankSchema } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -61,6 +62,7 @@ const BankRegisterPage = () => {
   };
 
   const [isoCode, setIsoCode] = useState("");
+  const [procceed, setProceed] = useState(false);
 
   return (
     <AuthLayout>
@@ -196,22 +198,26 @@ const BankRegisterPage = () => {
           </div>
 
           {/* PDF */}
-          <div className="flex items-center gap-x-2 border border-borderCol p-2 rounded-lg">
-            <Button type="button" className="bg-red-200 p-1 hover:bg-red-300">
-              <Image
-                src="/images/pdf.png"
-                alt="pdf"
-                width={500}
-                height={500}
-                className="size-8"
-              />
-            </Button>
-            <span className="text-[#50B5FF] underline text-sm">
-              <DisclaimerDialog
-                title="Click to view and sign the agreement"
-                className="underline"
-              />
-            </span>
+          <div className="flex items-center justify-between gap-x-2 border border-borderCol p-2 rounded-lg">
+            <div className="flex items-center gap-x-2 ">
+              <Button type="button" className="bg-red-200 p-1 hover:bg-red-300">
+                <Image
+                  src="/images/pdf.png"
+                  alt="pdf"
+                  width={500}
+                  height={500}
+                  className="size-8"
+                />
+              </Button>
+              <span className="text-[#50B5FF] underline text-sm">
+                <DisclaimerDialog
+                  title="Click to view and sign the agreement"
+                  className="underline"
+                  setProceed={setProceed}
+                />
+              </span>
+            </div>
+            {procceed && <Check className="text-[#29C084]" strokeWidth={3} />}
           </div>
 
           <p className="text-para text-sm">

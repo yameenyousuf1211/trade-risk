@@ -26,7 +26,7 @@ export const Step5 = ({
   }, [getValues, user]);
   // console.log(isExporter);
 
-  isExporter && setValue("exporterInfo.beneficiaryName", user.name);
+  isExporter && setValue("exporterInfo.beneficiaryName", user ? user.name : "");
 
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">

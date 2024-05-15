@@ -29,6 +29,7 @@ import Loader from "@/components/ui/loader";
 import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Country } from "@/types/type";
+import { DisclaimerDialog } from "@/components/helpers";
 
 const CreateDiscountPage = () => {
   const {
@@ -69,28 +70,36 @@ const CreateDiscountPage = () => {
     }
   }, [errors]);
 
+  const [proceed, setProceed] = useState(false);
+
   const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async (
     data: z.infer<typeof discountingSchema>
   ) => {
-    startLoading();
-    const reqData = {
-      ...data,
-      transhipment: data.transhipment === "yes" ? true : false,
-      lcType: "LC Discounting",
-      extraInfo: {
-        dats: new Date("2024-04-28"),
-        other: "nothing",
-      },
-      expectedDiscountingDate: new Date("2024-04-28"),
-    };
+    if (proceed) {
+      startLoading();
+      const reqData = {
+        ...data,
+        transhipment: data.transhipment === "yes" ? true : false,
+        lcType: "LC Discounting",
+        extraInfo: {
+          dats: new Date("2024-04-28"),
+          other: "nothing",
+        },
+        expectedDiscountingDate: new Date("2024-04-28"),
+      };
 
-    const { response, success } = await onCreateLC(reqData);
-    stopLoading();
-    if (!success) return toast.error(response);
-    else {
-      toast.success(response?.message);
-      reset();
-      router.push("/");
+      const { response, success } = await onCreateLC(reqData);
+      stopLoading();
+      if (!success) return toast.error(response);
+      else {
+        toast.success(response?.message);
+        reset();
+        router.push("/");
+      }
+    } else {
+      let openDisclaimerBtn = document.getElementById("open-disclaimer");
+      // @ts-ignore
+      openDisclaimerBtn.click();
     }
   };
 
@@ -411,6 +420,11 @@ const CreateDiscountPage = () => {
             {isLoading ? <Loader /> : "Submit request"}
           </Button>
         </div>
+        <DisclaimerDialog
+          title="Submit Request"
+          className="hidden"
+          setProceed={setProceed}
+        />
       </form>
     </CreateLCLayout>
   );

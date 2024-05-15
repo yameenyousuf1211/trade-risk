@@ -127,17 +127,9 @@ export const AddBid = ({
     }
   };
 
-  // const { isLoading: isInfoLoading, data } = useQuery({
-  //   queryKey: ["single-bid-", id],
-  //   queryFn: () => fetchSingleBid(id),
-  // });
-
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [validityDate, setValidityDate] = useState();
 
-  // useCallback(() => {
-
-  // })
   return (
     <Dialog>
       <DialogTrigger

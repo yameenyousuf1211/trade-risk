@@ -84,7 +84,7 @@ const CompanyInfoPage = () => {
   }, [citiesData, isoCode]);
 
   const [procceed, setProceed] = useState(false);
-  console.log(procceed);
+  
   return (
     <AuthLayout>
       <section className="max-w-2xl mx-auto w-full max-xs:px-1 z-10 ">

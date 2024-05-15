@@ -24,7 +24,7 @@ export const Step4 = ({
   }, [getValues, user]);
   // console.log(isImporter);
 
-  isImporter && setValue("importerInfo.applicantName", user.name);
+  isImporter && setValue("importerInfo.applicantName", user ? user.name : "");
 
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">

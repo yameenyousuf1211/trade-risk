@@ -78,10 +78,10 @@ export const AddBid = ({
 
   // Get LC
   const { data: lcData, isLoading } = useQuery({
-    queryKey: [`single-lc-${lcId}`],
+    queryKey: [`single-lc`, lcId],
     queryFn: () => fetchSingleLc(lcId),
   });
-
+  
   const { mutateAsync, isPending } = useMutation({
     mutationFn: addBid,
   });

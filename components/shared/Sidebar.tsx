@@ -149,10 +149,8 @@ export const Sidebar = ({
 }) => {
   const { user } = useAuth();
   const { startLoading, stopLoading, isLoading } = useLoading();
-  const listRef = useRef();
 
   const {
-    isLoading: isLcLoading,
     data,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
@@ -213,82 +211,51 @@ export const Sidebar = ({
     link.click();
     document.body.removeChild(link);
   };
-// const generatePDF = async (data) => {
-//   const doc = new jsPDF();
-  
-//   // Extract all keys from the data
-//   const keys = Object.keys(data[0]);
 
-//   // Define initial y position for the table
-//   let y = 10;
+  const generatePDF = (data: any) => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3, or A4
+    const orientation = "portrait"; // portrait or landscape
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
 
-//   // Add header row to the table
-//   doc.setFont('helvetica', 'bold');
-//   keys.forEach((key, index) => {
-//     doc.text(key, 10 + (index * 40), y);
-//   });
+    doc.setFontSize(15);
 
-//   // Adjust y position for the next row
-//   y += 10;
+    const title = "Trade Risk";
+    const headers = [Object.keys(data[0])];
 
-//   // Add data rows to the table
-//   doc.setFont('helvetica', 'normal');
-//   data.forEach((item) => {
-//     keys.forEach((key, index) => {
-//       doc.text(String(item[key]), 10 + (index * 40), y);
-//     });
-//     y += 10; // Adjust y position for the next row
-//   });
+    let startY = 50;
 
-//   doc.save('table_data.pdf');
-// };
+    const chunkSize = 4; // Number of columns per chunk
+    const numChunks = Math.ceil(headers[0].length / chunkSize);
 
-const generatePDF = (data) => {
-  const unit = "pt";
-  const size = "A4"; // Use A1, A2, A3, or A4
-  const orientation = "portrait"; // portrait or landscape
-  const marginLeft = 40;
-  const doc = new jsPDF(orientation, unit, size);
+    for (let i = 0; i < numChunks; i++) {
+      const startIdx = i * chunkSize;
+      const endIdx = Math.min(startIdx + chunkSize, headers[0].length);
+      const chunkHeaders = [headers[0].slice(startIdx, endIdx)];
+      const chunkData = data.map((obj: any) =>
+        Object.values(obj).slice(startIdx, endIdx)
+      );
 
-  doc.setFontSize(15);
+      const content = {
+        startY,
+        head: chunkHeaders,
+        body: chunkData,
+        pageBreak: "auto",
+      };
 
-  const title = "Trade Risk";
-  const headers = [Object.keys(data[0])];
+      doc.text(title, marginLeft, 40);
+      // @ts-ignore
+      doc.autoTable(content);
 
-  let startY = 50;
-
-  const chunkSize = 4; // Number of columns per chunk
-  const numChunks = Math.ceil(headers[0].length / chunkSize);
-
-  for (let i = 0; i < numChunks; i++) {
-    const startIdx = i * chunkSize;
-    const endIdx = Math.min(startIdx + chunkSize, headers[0].length);
-    const chunkHeaders = [headers[0].slice(startIdx, endIdx)];
-    const chunkData = data.map(obj => Object.values(obj).slice(startIdx, endIdx));
-
-    const content = {
-      startY,
-      head: chunkHeaders,
-      body: chunkData,
-      pageBreak: "auto"
-    };
-
-    doc.text(title, marginLeft, 40);
-    doc.autoTable(content);
-
-    if (i !== numChunks - 1) {
-      doc.addPage();
-      startY = 50; // Reset startY for the next table
+      if (i !== numChunks - 1) {
+        doc.addPage();
+        startY = 50; // Reset startY for the next table
+      }
     }
-  }
 
-  doc.save("report.pdf");
-};
-
-
-
-  
-
+    doc.save("report.pdf");
+  };
 
   const generateReport = async (type: string) => {
     if (!user) return;
@@ -301,6 +268,8 @@ const generatePDF = (data) => {
       const { data } = await fetchAllLcs({ limit: 10000 });
       if (data.length > 0) {
         isCSV && generateCSV(data);
+        isPDF && generatePDF(data);
+        isExcel && generateCSV(data);
       } else {
         toast.error("Not enough data to export");
       }
@@ -311,6 +280,7 @@ const generatePDF = (data) => {
       if (data.length > 0) {
         isCSV && generateCSV(data);
         isPDF && generatePDF(data);
+        isExcel && generateCSV(data);
       } else {
         toast.error("Not enough data to export");
       }

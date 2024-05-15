@@ -10,12 +10,14 @@ const Chart = ({
   color,
   title,
   maxValue,
+  isBank,
 }: {
   value: number;
   color: string;
   bg: string;
   title: string;
   maxValue: number;
+  isBank?: boolean;
 }) => {
   const [progress, setProgress] = useState(0);
 
@@ -43,11 +45,11 @@ const Chart = ({
         ? "Pending"
         : "";
     const queryParams = new URLSearchParams(searchParams);
-    queryParams.set("search", filter.toString());
+    queryParams.set("filter", filter.toString());
     queryParams.set("page", "1");
 
     const queryString = queryParams.toString();
-    router.push(`${pathname}?${queryString}`, { scroll: false });
+    router.push(`${isBank ? "my-bids" : ""}?${queryString}`, { scroll: false });
   };
 
   return (
@@ -183,6 +185,7 @@ export const ProgressCharts = ({
               color="#49E2B4"
               title="accepted"
               maxValue={maxValue}
+              isBank={isBank}
             />
             <Chart
               value={rejected}
@@ -190,6 +193,7 @@ export const ProgressCharts = ({
               color="#FF0000"
               title="rejected"
               maxValue={maxValue}
+              isBank={isBank}
             />
             <Chart
               value={expired}
@@ -197,6 +201,7 @@ export const ProgressCharts = ({
               color="#FF7939"
               title={isBank ? "bids" : "expired"}
               maxValue={maxValue}
+              isBank={isBank}
             />
             <Chart
               value={pending}
@@ -204,6 +209,7 @@ export const ProgressCharts = ({
               color="#0062FF"
               title="pending"
               maxValue={maxValue}
+              isBank={isBank}
             />
           </>
         )}

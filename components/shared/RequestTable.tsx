@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronUp, Ellipsis, Eye, Plus } from "lucide-react";
+import { ChevronUp, Ellipsis, Eye, ListFilter, Plus } from "lucide-react";
 import {
   DashboardCountries,
   DateRangePicker,
@@ -64,7 +64,10 @@ export const RequestTable = ({
             )}
             <DateRangePicker />
             <SearchBar />
-            <Filter />
+            <div className="flex items-center gap-x-2">
+              <ListFilter />
+              <p>Filter</p>
+            </div>
             <Ellipsis className="mx-3" />
           </div>
         </div>

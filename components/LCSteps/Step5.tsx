@@ -9,12 +9,14 @@ export const Step5 = ({
   countries,
   setValue,
   getValues,
+  flags,
 }: {
   register: any;
   isConfirmation?: boolean;
   countries: string[];
   setValue: any;
   getValues: any;
+  flags: string[];
 }) => {
   const { user } = useAuth();
   let isExporter = getValues("participantRole") === "exporter";
@@ -61,6 +63,7 @@ export const Step5 = ({
           placeholder="Select a country"
           data={countries}
           setValue={setValue}
+          flags={flags}
         />
         <DDInput
           id="exporterInfo.beneficiaryCountry"
@@ -68,6 +71,7 @@ export const Step5 = ({
           placeholder="Select a country"
           data={countries}
           setValue={setValue}
+          flags={flags}
         />
         {isConfirmation && (
           <DDInput

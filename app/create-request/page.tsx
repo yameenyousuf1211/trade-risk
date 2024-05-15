@@ -25,6 +25,7 @@ import { getCountries } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import useConfirmationStore, { getStateValues } from "@/store/lc.store";
+import { Country } from "@/types/type";
 
 const CreateRequestPage = () => {
   const {
@@ -44,16 +45,14 @@ const CreateRequestPage = () => {
 
   const editData2 = getStateValues(useConfirmationStore.getState());
   // console.log("State Data: ", editData2)
-  // // console.log(editData)
+
   useEffect(() => {
     if (editData2 && editData2._id) {
       Object.entries(editData2).forEach(([key, value]) => {
         // @ts-ignore
         setValue(key, value);
       });
-      console.log("running in data ");
     }
-    console.log("running ");
   }, [editData2, setValue]);
 
   // Show errors
@@ -149,23 +148,44 @@ const CreateRequestPage = () => {
     }
   };
 
-  const { data: countries } = useQuery({
+  const [allCountries, setAllCountries] = useState<Country[]>([]);
+  const [countries, setCountries] = useState([]);
+  const [flags, setFlags] = useState([]);
+
+  const { data: countriesData } = useQuery({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
   });
 
-  // useEffect(() => {
-
-  // }, [editData])
+  useEffect(() => {
+    if (
+      countriesData &&
+      countriesData.success &&
+      countriesData.response &&
+      countriesData.response.length > 0
+    ) {
+      setAllCountries(countriesData.response);
+      const fetchedCountries = countriesData.response.map(
+        (country: Country) => {
+          return country.name;
+        }
+      );
+      setCountries(fetchedCountries);
+      const fetchedFlags = countriesData.response.map((country: Country) => {
+        return country.flag;
+      });
+      setFlags(fetchedFlags);
+    }
+  }, [countriesData]);
 
   const handleEditData = (editData: any) => {
-    console.log("API DATA: ", editData)
+    console.log("API DATA: ", editData);
     Object.entries(editData).forEach(([key, value]) => {
       console.log(key, value);
       // @ts-ignore
       setValue(key, value);
       // console.log(key, value)
-      console.log(getValues())
+      console.log(getValues());
     });
   };
 
@@ -177,20 +197,23 @@ const CreateRequestPage = () => {
         <Step3
           register={register}
           setValue={setValue}
-          countries={countries?.success && countries?.response}
+          countries={countries}
           getValues={getValues}
+          flags={flags}
         />
         <Step4
           register={register}
           setValue={setValue}
-          countries={countries?.success && countries?.response}
+          countries={countries}
           getValues={getValues}
+          flags={flags}
         />
         <Step5
           register={register}
           setValue={setValue}
-          countries={countries?.success && countries?.response}
+          countries={countries}
           getValues={getValues}
+          flags={flags}
         />
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6

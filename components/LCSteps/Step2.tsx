@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { RadioInput } from "./helpers";
+import { BgRadioInput } from "./helpers";
 import {
   Select,
   SelectContent,
@@ -38,6 +38,23 @@ export const Step2 = ({
     currencyVal = getValues("currency");
   }, [register]);
 
+  const [checkedState, setCheckedState] = useState({
+    "payment-sight": false,
+    "payment-usance": false,
+    "payment-deferred": false,
+    "payment-upas": false,
+  });
+
+  const handleCheckChange = (id: string) => {
+    setCheckedState((prevState) => ({
+      ...prevState,
+      "payment-sight": id === "payment-sight",
+      "payment-usance": id === "payment-usance",
+      "payment-deferred": id === "payment-deferred",
+      "payment-upas": id === "payment-upas",
+    }));
+  };
+
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -59,17 +76,17 @@ export const Step2 = ({
               <SelectValue placeholder="USD" />
             </SelectTrigger>
             <SelectContent>
-              {currency &&
+              {/* {currency &&
                 currency.response.length > 0 &&
                 currency.response.map((curr: string, idx: number) => (
                   <SelectItem
                     defaultValue="USD"
-                    key={`${curr}-${idx}`}
+                    key={`${curr}-${idx + 1}`}
                     value={curr}
                   >
                     {curr}
                   </SelectItem>
-                ))}
+                ))} */}
             </SelectContent>
           </Select>
           <Input
@@ -77,7 +94,7 @@ export const Step2 = ({
             inputMode="numeric"
             name="amount"
             register={register}
-            onChange={(e) => setCurrencyValue(e.target.value)}
+            onChange={(e: any) => setCurrencyValue(e.target.value)}
             className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0"
           />
         </div>
@@ -95,33 +112,41 @@ export const Step2 = ({
       <div className="border border-borderCol px-2 py-3 rounded-md bg-[#F5F7F9]">
         <h5 className="font-semibold ml-3">Payment Terms</h5>
         <div className="flex items-center gap-x-3 w-full mt-2">
-          <RadioInput
+          <BgRadioInput
             id="payment-sight"
             label="Sight LC"
             name="paymentTerms"
-            register={register}
             value="sight-lc"
+            register={register}
+            checked={checkedState["payment-sight"]}
+            handleCheckChange={handleCheckChange}
           />
-          <RadioInput
+          <BgRadioInput
             id="payment-usance"
             label="Usance LC"
             name="paymentTerms"
             value="usance-lc"
             register={register}
+            checked={checkedState["payment-usance"]}
+            handleCheckChange={handleCheckChange}
           />
-          <RadioInput
+          <BgRadioInput
             id="payment-deferred"
             label="Deferred LC"
             name="paymentTerms"
             value="deferred-lc"
             register={register}
+            checked={checkedState["payment-deferred"]}
+            handleCheckChange={handleCheckChange}
           />
-          <RadioInput
+          <BgRadioInput
             id="payment-upas"
             label="UPAS LC (Usance payment at sight)"
             name="paymentTerms"
             value="upas-lc"
             register={register}
+            checked={checkedState["payment-upas"]}
+            handleCheckChange={handleCheckChange}
           />
         </div>
       </div>

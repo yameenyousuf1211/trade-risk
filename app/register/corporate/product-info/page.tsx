@@ -20,7 +20,7 @@ const ProductInfoPage = () => {
     getValues,
     setValue,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<z.infer<typeof productsInfoSchema>>({
     resolver: zodResolver(productsInfoSchema),
   });
@@ -70,7 +70,7 @@ const ProductInfoPage = () => {
           /> */}
           <TagsInput
             value={products}
-            onChange={(val) => {
+            onChange={(val: any) => {
               setProducts(val);
               setValue("product", val.join(", "));
             }}
@@ -153,7 +153,7 @@ const ProductInfoPage = () => {
           <Button
             className="disabled:bg-[#E2E2EA] disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
-            disabled={false}
+            disabled={!isValid}
             type="submit"
           >
             Continue

@@ -61,15 +61,14 @@ export const ValidatingCalendar = ({
 export const Period = ({
   setValue,
   getValues,
+  countries,
+  flags,
 }: {
   setValue: any;
   getValues: any;
+  countries: string[];
+  flags: string[];
 }) => {
-  const { data: countries, isLoading: countriesLoading } = useQuery({
-    queryKey: ["countries"],
-    queryFn: () => getCountries(),
-  });
-
   const [valueChanged, setValueChanged] = useState(false);
   let shipmentCountry = getValues("shipmentPort.country");
 
@@ -77,7 +76,7 @@ export const Period = ({
     shipmentCountry = getValues("shipmentPort.country");
   }, [valueChanged]);
 
-  const { data: shipmentPorts, isLoading: shipmentPortsLoading } = useQuery({
+  const { data: shipmentPorts } = useQuery({
     queryKey: ["shipmentPorts", shipmentCountry],
     queryFn: () => getPorts(shipmentCountry),
     enabled: !!shipmentCountry,
@@ -216,7 +215,8 @@ export const Period = ({
             label="Country"
             placeholder="Select a country"
             setValue={setValue}
-            data={countries?.success && countries?.response}
+            data={countries}
+            flags={flags}
             setValueChanged={setValueChanged}
           />
           <label
@@ -226,19 +226,19 @@ export const Period = ({
             <p className="text-lightGray">Select port</p>
             <Select onValueChange={handleSelectChange}>
               <SelectTrigger
-                disabled={
-                  !shipmentPorts ||
-                  !shipmentPorts.success ||
-                  !shipmentPorts?.response ||
-                  !shipmentPorts.success
-                }
+                // disabled={
+                //   !shipmentPorts ||
+                //   !shipmentPorts.success ||
+                //   !shipmentPorts?.response ||
+                //   !shipmentPorts.success
+                // }
                 id="shipmentPort.port"
                 className="w-fit border-none bg-transparent text-[#B5B5BE]"
               >
                 <SelectValue placeholder="Select port" />
               </SelectTrigger>
               <SelectContent>
-                {shipmentPorts &&
+                {/* {shipmentPorts &&
                   shipmentPorts.response &&
                   shipmentPorts.response.length > 0 &&
                   shipmentPorts.response?.map((val: any, idx: number) => (
@@ -248,7 +248,7 @@ export const Period = ({
                     >
                       {val.port_name}
                     </SelectItem>
-                  ))}
+                  ))} */}
               </SelectContent>
             </Select>
           </label>
@@ -412,8 +412,10 @@ export const DiscountBanks = ({
   countries,
   setValue,
   getValues,
+  flags,
 }: {
-  countries: any;
+  countries: string[];
+  flags: string[];
   setValue: any;
   getValues: any;
 }) => {
@@ -477,6 +479,7 @@ export const DiscountBanks = ({
             label="Country"
             id="issuingBank.country"
             data={countries}
+            flags={flags}
             setValue={setValue}
             setValueChanged={setValueChanged}
           />
@@ -489,7 +492,9 @@ export const DiscountBanks = ({
             disabled={
               !issuingBanks || !issuingBanks?.response || !issuingBanks.success
             }
-            data={issuingBanks?.response}
+            data={
+              issuingBanks && issuingBanks.success && issuingBanks?.response
+            }
           />
         </div>
       </div>
@@ -502,6 +507,7 @@ export const DiscountBanks = ({
             label="Country"
             id="advisingBank.country"
             data={countries}
+            flags={flags}
             setValue={setValue}
             setValueChanged={setValueChanged}
           />
@@ -516,7 +522,9 @@ export const DiscountBanks = ({
               !advisingBanks?.response ||
               !advisingBanks.success
             }
-            data={advisingBanks?.response}
+            data={
+              advisingBanks && advisingBanks.success && advisingBanks.response
+            }
           />
         </div>
       </div>
@@ -546,6 +554,7 @@ export const DiscountBanks = ({
             value={confirmingCountry}
             id="confirmingBank.country"
             data={countries}
+            flags={flags}
             setValue={setValue}
             setValueChanged={setValueChanged}
           />
@@ -561,7 +570,11 @@ export const DiscountBanks = ({
               !confirmingBanks?.response ||
               !confirmingBanks.success
             }
-            data={confirmingBanks?.response}
+            data={
+              confirmingBanks &&
+              confirmingBanks.success &&
+              confirmingBanks.response
+            }
           />
         </div>
       </div>

@@ -20,7 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -60,6 +60,8 @@ const BankRegisterPage = () => {
     }
   };
 
+  const [isoCode, setIsoCode] = useState("");
+
   return (
     <AuthLayout>
       <section className="max-w-[800px] mx-auto w-full max-xs:px-1 z-10">
@@ -98,7 +100,11 @@ const BankRegisterPage = () => {
             </div>
 
             <div className="w-full relative">
-              <CountrySelect setValue={setValue} name="accountCountry" />
+              <CountrySelect
+                setIsoCode={setIsoCode}
+                setValue={setValue}
+                name="accountCountry"
+              />
               {errors.accountCountry && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.accountCountry.message}

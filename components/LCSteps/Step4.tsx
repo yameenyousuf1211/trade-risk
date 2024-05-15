@@ -8,9 +8,11 @@ export const Step4 = ({
   countries,
   setValue,
   getValues,
+  flags,
 }: {
   register: any;
   countries: string[];
+  flags: string[];
   setValue: any;
   getValues: any;
 }) => {
@@ -52,6 +54,7 @@ export const Step4 = ({
         id="importerInfo.countryOfImport"
         data={countries}
         setValue={setValue}
+        flags={flags}
       />
     </div>
   );

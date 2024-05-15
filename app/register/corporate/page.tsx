@@ -25,6 +25,7 @@ import {
 } from "@/components/helpers";
 import { getCities } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
+import { Country } from "@/types/type";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
@@ -40,7 +41,7 @@ const CompanyInfoPage = () => {
     setValue,
     getValues,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isValid, isDirty },
   } = useForm<z.infer<typeof companyInfoSchema>>({
     resolver: zodResolver(companyInfoSchema),
   });
@@ -74,18 +75,23 @@ const CompanyInfoPage = () => {
     router.push("/register/corporate/product-info");
   };
 
-  const [valueChanged, setValueChanged] = useState(false);
-  let country = getValues("accountCountry");
+  const [isoCode, setIsoCode] = useState("");
+  const [cities, setCities] = useState([]);
+
+  const { data: citiesData, isLoading } = useQuery({
+    queryKey: ["cities", isoCode],
+    queryFn: () => getCities(isoCode),
+    enabled: !!isoCode,
+  });
 
   useEffect(() => {
-    country = getValues("accountCountry");
-  }, [valueChanged]);
-
-  const { data: cities, isLoading } = useQuery({
-    queryKey: ["cities", country],
-    queryFn: () => getCities(country),
-    enabled: !!country,
-  });
+    if (citiesData && citiesData.response && citiesData.response.length > 0) {
+      const fetchedCitites = citiesData?.response?.map((city: any) => {
+        return city.name;
+      });
+      setCities(fetchedCitites);
+    }
+  }, [citiesData, isoCode]);
 
   return (
     <AuthLayout>
@@ -277,9 +283,9 @@ const CompanyInfoPage = () => {
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
             <div className="w-full relative">
               <CountrySelect
+                setIsoCode={setIsoCode}
                 setValue={setValue}
                 name="accountCountry"
-                setValueChange={setValueChanged}
               />
               {errors.accountCountry && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
@@ -294,16 +300,15 @@ const CompanyInfoPage = () => {
                 }
               >
                 <SelectTrigger
-                  disabled={!cities || !cities?.response || !cities.success}
+                  disabled={!cities || cities.length <= 0}
                   className="w-full py-5 px-4 text-gray-500"
                 >
                   <SelectValue placeholder="Account City" />
                 </SelectTrigger>
                 <SelectContent>
-                  {!isLoading &&
-                    cities &&
-                    cities.response.length > 0 &&
-                    cities?.response.map((city: string, idx: number) => (
+                  {cities &&
+                    cities.length > 0 &&
+                    cities.map((city: string, idx: number) => (
                       <SelectItem value={city} key={`${city}-${idx}`}>
                         {city}
                       </SelectItem>
@@ -346,7 +351,7 @@ const CompanyInfoPage = () => {
               type="submit"
               className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
-              // disabled={false}
+              // disabled={isDirty}
             >
               Get Started
             </Button>

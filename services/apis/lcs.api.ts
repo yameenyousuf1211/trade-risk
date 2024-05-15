@@ -24,7 +24,7 @@ export const fetchLcs = async ({
       }&search=${search || ""}&filter=${filter || ""}&createdBy=${userId}`
     );
 
-    return data.data.data;
+    return data.data.updatedData;
   } catch (error: any) {
     console.log(error);
     return error.response?.data?.message || "Something went wrong";
@@ -42,15 +42,13 @@ export const fetchAllLcs = async ({
   search?: string;
   filter?: string;
 }) => {
-  console.log(filter);
   try {
     const { data } = await api.get(
       `/lcs?limit=${limit || 10}&page=${page || 1}&draft=${false}&search=${
         search || ""
       }&filter=${filter || ""}`
     );
-
-    return data.data.data;
+    return data.data.updatedData;
   } catch (error: any) {
     console.log(error);
     return error.response?.data?.message || "Something went wrong";

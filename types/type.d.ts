@@ -310,3 +310,9 @@ interface LcConfirmation extends TransactionData {
 export type UseConfirmationStore = LcConfirmation & {
   setValues: (values: Partial<LcConfirmation>) => void;
 };
+
+export interface Country {
+  name: "";
+  flag: "";
+  isoCode: "";
+}

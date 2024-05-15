@@ -6,7 +6,19 @@ import { useQuery } from "@tanstack/react-query";
 import { getBanks } from "@/services/apis/helpers.api";
 import { useEffect, useState } from "react";
 
-export const Step3 = ({ register, setValue, getValues, countries }: any) => {
+export const Step3 = ({
+  register,
+  setValue,
+  getValues,
+  countries,
+  flags,
+}: {
+  register: any;
+  setValue: any;
+  getValues: any;
+  countries: string[];
+  flags: string[];
+}) => {
   const [valueChanged, setValueChanged] = useState(false);
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
@@ -59,6 +71,7 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
               data={countries}
               setValue={setValue}
               setValueChanged={setValueChanged}
+              flags={flags}
             />
             <DDInput
               placeholder="Select bank"
@@ -87,6 +100,7 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
                 data={countries}
                 setValue={setValue}
                 setValueChanged={setValueChanged}
+                flags={flags}
               />
               <DDInput
                 placeholder="Select bank"
@@ -129,6 +143,7 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
               data={countries}
               setValue={setValue}
               setValueChanged={setValueChanged}
+              flags={flags}
             />
           </div>
           <DDInput
@@ -157,6 +172,7 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
                 data={countries}
                 setValue={setValue}
                 setValueChanged={setValueChanged}
+                flags={flags}
               />
             </div>
             <DDInput
@@ -186,7 +202,12 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
           </div>
         )}
       </div>
-      <Period setValue={setValue} getValues={getValues} />
+      <Period
+        setValue={setValue}
+        getValues={getValues}
+        countries={countries}
+        flags={flags}
+      />
       <Transhipment register={register} setValue={setValue} />
     </div>
   );

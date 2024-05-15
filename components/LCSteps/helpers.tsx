@@ -48,12 +48,14 @@ export const DDInput = ({
   disabled,
   setValueChanged,
   setValue,
+  flags,
 }: {
   id: string;
   label: string;
   placeholder: string;
-  value?:string
+  value?: string;
   data?: string[];
+  flags?: string[];
   disabled?: boolean;
   setValue: any;
   setValueChanged?: any;
@@ -75,14 +77,17 @@ export const DDInput = ({
           id={id}
           className="w-fit border-none bg-transparent text-[#444]"
         >
-          <SelectValue placeholder={value ? value: placeholder} />
+          <SelectValue placeholder={value ? value : placeholder} />
         </SelectTrigger>
         <SelectContent>
-          {data?.map((val, idx) => (
-            <SelectItem value={val} key={`${val}-${idx}`}>
-              {val}
-            </SelectItem>
-          ))}
+          {data &&
+            data.length > 0 &&
+            data?.map((val, idx) => (
+              <SelectItem value={val} key={`${val}-${idx}`}>
+                {flags && <span className="mr-2">{flags[idx]}</span>}
+                {val}
+              </SelectItem>
+            ))}
           {!data && (
             <>
               <SelectItem value="Pakistan">Pakistan</SelectItem>

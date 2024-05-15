@@ -15,7 +15,8 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthProvider";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { useState } from "react";
+import { useReactToPrint } from "react-to-print";
+import { useRef, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -23,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { list } from "postcss";
 
 const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   const queryClient = useQueryClient();
@@ -147,6 +149,7 @@ export const Sidebar = ({
 }) => {
   const { user } = useAuth();
   const { startLoading, stopLoading, isLoading } = useLoading();
+  const listRef = useRef();
 
   const {
     isLoading: isLcLoading,
@@ -210,47 +213,82 @@ export const Sidebar = ({
     link.click();
     document.body.removeChild(link);
   };
+// const generatePDF = async (data) => {
+//   const doc = new jsPDF();
+  
+//   // Extract all keys from the data
+//   const keys = Object.keys(data[0]);
 
-  // const generatePDF = async (data: any) => {
-  //   const doc = new jsPDF();
-  //   // const headers = getHeaders(data);
+//   // Define initial y position for the table
+//   let y = 10;
 
-  //   // const pdfRow = [];
+//   // Add header row to the table
+//   doc.setFont('helvetica', 'bold');
+//   keys.forEach((key, index) => {
+//     doc.text(key, 10 + (index * 40), y);
+//   });
 
-  //   // data.forEach((item: any) => {
-  //   //   const values = headers.map((header) => formatValue(header, item));
-  //   //   pdfRow.push(values.join(","));
-  //   // });
+//   // Adjust y position for the next row
+//   y += 10;
 
-  //   const tableRows = data.map((item) => item.toString().split("|"));
-  //   const headers = tableRows[0];
-  //   const columns = headers.map((header, index) => ({
-  //     header,
-  //     dataKey: index,
-  //   }));
+//   // Add data rows to the table
+//   doc.setFont('helvetica', 'normal');
+//   data.forEach((item) => {
+//     keys.forEach((key, index) => {
+//       doc.text(String(item[key]), 10 + (index * 40), y);
+//     });
+//     y += 10; // Adjust y position for the next row
+//   });
 
-  //   tableRows.shift();
+//   doc.save('table_data.pdf');
+// };
 
-  //   doc.autoTable({
-  //     startY: 20,
-  //     head: [headers],
-  //     body: tableRows,
-  //     columns,
-  //     styles: { fontSize: 8 },
-  //     columnStyles: { text: { fontSize: 8 } },
-  //     margin: { top: 10 },
-  //   });
+const generatePDF = (data) => {
+  const unit = "pt";
+  const size = "A4"; // Use A1, A2, A3, or A4
+  const orientation = "portrait"; // portrait or landscape
+  const marginLeft = 40;
+  const doc = new jsPDF(orientation, unit, size);
 
-  //   const pdfBlob = doc.output("blob");
-  //   const pdfUrl = URL.createObjectURL(pdfBlob);
+  doc.setFontSize(15);
 
-  //   const link = document.createElement("a");
-  //   link.href = pdfUrl;
-  //   link.download = "report.pdf";
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // };
+  const title = "Trade Risk";
+  const headers = [Object.keys(data[0])];
+
+  let startY = 50;
+
+  const chunkSize = 4; // Number of columns per chunk
+  const numChunks = Math.ceil(headers[0].length / chunkSize);
+
+  for (let i = 0; i < numChunks; i++) {
+    const startIdx = i * chunkSize;
+    const endIdx = Math.min(startIdx + chunkSize, headers[0].length);
+    const chunkHeaders = [headers[0].slice(startIdx, endIdx)];
+    const chunkData = data.map(obj => Object.values(obj).slice(startIdx, endIdx));
+
+    const content = {
+      startY,
+      head: chunkHeaders,
+      body: chunkData,
+      pageBreak: "auto"
+    };
+
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content);
+
+    if (i !== numChunks - 1) {
+      doc.addPage();
+      startY = 50; // Reset startY for the next table
+    }
+  }
+
+  doc.save("report.pdf");
+};
+
+
+
+  
+
 
   const generateReport = async (type: string) => {
     if (!user) return;
@@ -270,9 +308,9 @@ export const Sidebar = ({
     } else {
       startLoading();
       const { data } = await fetchLcs({ userId: user._id, limit: 1000 });
-
       if (data.length > 0) {
         isCSV && generateCSV(data);
+        isPDF && generatePDF(data);
       } else {
         toast.error("Not enough data to export");
       }

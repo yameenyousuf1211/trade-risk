@@ -57,16 +57,6 @@ const CompanyInfoPage = () => {
     }
   }, [corporateData]);
 
-  // const allValues = getValues();
-  // const [isFilled, setIsFilled] = useState(false);
-
-  // useEffect(() => {
-  //   setIsFilled(Object.values(allValues).every((value) => value.trim() !== ""));
-  //   console.log(allValues);
-  //   console.log("Useeffect working...")
-  // }, [getValues(), isFilled, register, allValues]);
-  // console.log(isFilled);
-
   const onSubmit: SubmitHandler<z.infer<typeof companyInfoSchema>> = async (
     data: any
   ) => {
@@ -93,6 +83,8 @@ const CompanyInfoPage = () => {
     }
   }, [citiesData, isoCode]);
 
+  const [procceed, setProceed] = useState(false);
+  console.log(procceed);
   return (
     <AuthLayout>
       <section className="max-w-2xl mx-auto w-full max-xs:px-1 z-10 ">
@@ -331,7 +323,10 @@ const CompanyInfoPage = () => {
             >
               I agree to TradeRisk&apos;s{" "}
               <span className="text-text">
-                <DisclaimerDialog title="Privacy Policy" />
+                <DisclaimerDialog
+                  title="Privacy Policy"
+                  setProceed={setProceed}
+                />
               </span>
             </label>
           </div>

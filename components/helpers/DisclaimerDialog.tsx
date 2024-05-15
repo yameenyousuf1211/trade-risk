@@ -11,10 +11,19 @@ import { Button } from "@/components/ui/button";
 export const DisclaimerDialog = ({
   title,
   className,
+  setProceed,
 }: {
   title: string;
   className?: string;
+  setProceed?: any;
 }) => {
+  const handleProceed = () => {
+    setProceed(true);
+    let closeBtn = document.getElementById("close-disclaimer");
+    // @ts-ignore
+    closeBtn.click();
+  };
+
   return (
     <Dialog>
       <DialogTrigger className={className}>
@@ -91,15 +100,15 @@ export const DisclaimerDialog = ({
           </p>
         </div>
 
-        <DialogClose>
-          <Button
-            variant="ghost"
-            className="text-lightGray text-lg w-full mb-4"
-            disabled={true}
-          >
-            Accept Terms and Conditions
-          </Button>
-        </DialogClose>
+        <DialogClose className="hidden" id="close-disclaimer"></DialogClose>
+        <Button
+          variant="ghost"
+          className="text-lightGray text-lg w-full mb-4 cursor-pointer"
+          disabled={true}
+          onClick={handleProceed}
+        >
+          Accept Terms and Conditions
+        </Button>
       </DialogContent>
     </Dialog>
   );

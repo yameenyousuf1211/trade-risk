@@ -15,6 +15,14 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthProvider";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   const queryClient = useQueryClient();
@@ -244,13 +252,17 @@ export const Sidebar = ({
   //   document.body.removeChild(link);
   // };
 
-  const generateReport = async () => {
+  const generateReport = async (type: string) => {
     if (!user) return;
+    const isCSV = type === "csv";
+    const isPDF = type === "pdf";
+    const isExcel = type === "excel";
+
     if (isBank) {
       startLoading();
       const { data } = await fetchAllLcs({ limit: 10000 });
       if (data.length > 0) {
-        generateCSV(data);
+        isCSV && generateCSV(data);
       } else {
         toast.error("Not enough data to export");
       }
@@ -260,13 +272,15 @@ export const Sidebar = ({
       const { data } = await fetchLcs({ userId: user._id, limit: 1000 });
 
       if (data.length > 0) {
-        generateCSV(data);
+        isCSV && generateCSV(data);
       } else {
         toast.error("Not enough data to export");
       }
       stopLoading();
     }
   };
+
+  const [generateType, setGenerateType] = useState("csv");
 
   return (
     <>
@@ -288,12 +302,23 @@ export const Sidebar = ({
         </div>
       ) : (
         <div className="bg-primaryCol rounded-lg py-4 px-4 flex flex-col gap-y-4 items-center justify-center">
-          <p className="text-white text-sm font-normal">Export CSV</p>
+          {/* <p className="text-white text-sm font-normal">Export CSV</p> */}
+          <Select onValueChange={(val: string) => setGenerateType(val)}>
+            <SelectTrigger className="max-w-36 w-full mx-auto text-center bg-transparent border-none text-white text-sm ring-0 flex items-center justify-between">
+              <p className="text-sm">Export</p>
+              <SelectValue placeholder="CSV" className="text-sm" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="csv">CSV</SelectItem>
+              <SelectItem value="pdf">PDF</SelectItem>
+              <SelectItem value="excel">Excel</SelectItem>
+            </SelectContent>
+          </Select>
           <p className="text-white text-center font-semibold">
             Create a quick report of all transaction data
           </p>
           <Button
-            onClick={generateReport}
+            onClick={() => generateReport(generateType)}
             className="w-full text-primaryCol bg-white hover:bg-white/90 rounded-lg text-[16px]"
             size="lg"
             disabled={isLoading}

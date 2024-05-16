@@ -9,25 +9,24 @@ import { ArrowUpNarrowWide, Eye, ListFilter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IBids, ILcs } from "@/types/type";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { convertDateToYYYYMMDD } from "@/utils";
-import useLoading from "@/hooks/useLoading";
 import { toast } from "sonner";
 
 const BidCard = ({ data }: { data: IBids }) => {
   const queryClient = useQueryClient();
 
-  const { startLoading, stopLoading, isLoading } = useLoading();
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: acceptOrRejectBid,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`fetch-lcs`] });
+    },
+  });
 
   const handleSubmit = async (status: string, id: string) => {
-    startLoading();
-    const { success, response } = await acceptOrRejectBid(status, id);
-    stopLoading();
+    const { success, response } = await mutateAsync({ status, id });
     if (!success) return toast.error(response as string);
     else {
-      queryClient.invalidateQueries({
-        queryKey: ["single-lcs-bids", "fetch-lcs"],
-      });
       let closeBtn = document.getElementById("close-button");
       // @ts-ignore
       closeBtn.click();
@@ -100,7 +99,7 @@ const BidCard = ({ data }: { data: IBids }) => {
               size="lg"
               className="mt-2 bg-[#29C084] hover:bg-[#29C084]/90"
               onClick={() => handleSubmit("Accepted", data._id)}
-              disabled={isLoading}
+              disabled={isPending}
             >
               Accept
             </Button>
@@ -109,7 +108,7 @@ const BidCard = ({ data }: { data: IBids }) => {
               className="mt-2 text-para"
               variant="ghost"
               onClick={() => handleSubmit("Rejected", data._id)}
-              disabled={isLoading}
+              disabled={isPending}
             >
               Reject
             </Button>

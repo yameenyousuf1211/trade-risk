@@ -13,9 +13,7 @@ export const getCountries = async () => {
 
 export const getBanks = async (country: string) => {
   try {
-    const capitalizedCountry =
-      country.charAt(0).toUpperCase() + country.slice(1).toLowerCase();
-    const response = await api.get(`/country/banks/${capitalizedCountry}`);
+    const response = await api.get(`/country/banks/${country.toLowerCase()}`);
 
     return { success: true, response: response.data.data };
   } catch (error) {
@@ -27,9 +25,9 @@ export const getBanks = async (country: string) => {
 export const getCities = async (country: string) => {
   try {
     if (!country) return;
-    // const capitalizedCountry =
-    //   country.charAt(0).toUpperCase() + country.slice(1).toLowerCase();
-    const response = await api.get(`/country/list/cities?country=${country}`);
+    const response = await api.get(
+      `/country/list/cities?country=${country.toLowerCase()}`
+    );
 
     return { success: true, response: response.data.data };
   } catch (error) {
@@ -51,10 +49,8 @@ export const getCurrenncy = async () => {
 
 export const getPorts = async (country: string) => {
   try {
-    const capitalizedCountry =
-      country.charAt(0).toUpperCase() + country.slice(1).toLowerCase();
     const response = await api.get(
-      `/ports/details?country=${capitalizedCountry}`
+      `/ports/details?country=${country.toLowerCase()}`
     );
 
     return { success: true, response: response.data.data };

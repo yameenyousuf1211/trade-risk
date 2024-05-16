@@ -30,6 +30,7 @@ export const Step2 = ({
 
   let amount = getValues("amount");
   let currencyVal = getValues("currency");
+  let paymentTerms = getValues("paymentTerms")
 
   const [valueChanged, setValueChanged] = useState(false);
   const [currencyValue, setCurrencyValue] = useState<number | null>(null);

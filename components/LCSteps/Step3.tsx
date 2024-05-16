@@ -24,8 +24,12 @@ export const Step3 = ({
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
 
   let issuingCountry = getValues("issuingBank.country");
+  let issuingBank = getValues("issuingBank.bank");
   let advisingCountry = getValues("advisingBank.country");
+  let advisingBank = getValues("advisingBank.bank");
   let confirmingCountry = getValues("confirmingBank.country");
+  let confirmingBank = getValues("confirmingBank.bank");
+
 
   useEffect(() => {
     issuingCountry = getValues("issuingBank.country");
@@ -67,6 +71,7 @@ export const Step3 = ({
             <DDInput
               placeholder="Select a country"
               label="Country"
+              value={issuingCountry}
               id="issuingBank.country"
               data={countries}
               setValue={setValue}
@@ -76,6 +81,7 @@ export const Step3 = ({
             <DDInput
               placeholder="Select bank"
               label="Bank"
+              value={issuingBank}
               id="issuingBank.bank"
               setValue={setValue}
               setValueChanged={setValueChanged}
@@ -96,6 +102,7 @@ export const Step3 = ({
               <DDInput
                 placeholder="Select a country"
                 label="Country"
+                value={advisingCountry}
                 id="advisingBank.country"
                 data={countries}
                 setValue={setValue}
@@ -105,6 +112,7 @@ export const Step3 = ({
               <DDInput
                 placeholder="Select bank"
                 label="Bank"
+                value={advisingBank}
                 id="advisingBank.bank"
                 setValue={setValue}
                 setValueChanged={setValueChanged}
@@ -140,6 +148,7 @@ export const Step3 = ({
               label="Country"
               id="confirmingBank.country"
               placeholder="Select a Country"
+              value={confirmingBank}
               data={countries}
               setValue={setValue}
               setValueChanged={setValueChanged}
@@ -150,6 +159,7 @@ export const Step3 = ({
             label="Bank"
             id="confirmingBank.bank"
             placeholder="Select bank"
+            value={confirmingCountry}
             setValue={setValue}
             setValueChanged={setValueChanged}
             disabled={

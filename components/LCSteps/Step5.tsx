@@ -20,6 +20,13 @@ export const Step5 = ({
 }) => {
   const { user } = useAuth();
   let isExporter = getValues("participantRole") === "exporter";
+  let countryOfExport = getValues("exporterInfo.countryOfExport");
+  let beneficiaryCountry = getValues("exporterInfo.beneficiaryCountry");
+  let beneficiaryBank = getValues("exporterInfo.bank");
+
+
+
+  
 
   useEffect(() => {
     isExporter = getValues("participantRole") === "exporter";
@@ -60,6 +67,7 @@ export const Step5 = ({
         <DDInput
           id="exporterInfo.countryOfExport"
           label="Country of Export"
+          value={countryOfExport}
           placeholder="Select a country"
           data={countries}
           setValue={setValue}
@@ -68,6 +76,7 @@ export const Step5 = ({
         <DDInput
           id="exporterInfo.beneficiaryCountry"
           label="Beneficiary Country"
+          value={beneficiaryCountry}
           placeholder="Select a country"
           data={countries}
           setValue={setValue}
@@ -77,6 +86,7 @@ export const Step5 = ({
           <DDInput
             id="exporterInfo.bank"
             label="Bank"
+            value={beneficiaryBank}
             placeholder="Select bank"
             setValue={setValue}
           />

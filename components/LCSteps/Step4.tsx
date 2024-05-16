@@ -18,6 +18,8 @@ export const Step4 = ({
 }) => {
   const { user } = useAuth();
   let isImporter = getValues("participantRole") === "importer";
+  let importerCountry = getValues("importerInfo.countryOfImport");
+
 
   useEffect(() => {
     isImporter = getValues("participantRole") === "importer";
@@ -53,6 +55,7 @@ export const Step4 = ({
         label="Country of Import"
         id="importerInfo.countryOfImport"
         data={countries}
+        value={importerCountry}
         setValue={setValue}
         flags={flags}
       />

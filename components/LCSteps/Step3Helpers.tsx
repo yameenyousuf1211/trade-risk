@@ -71,6 +71,9 @@ export const Period = ({
 }) => {
   const [valueChanged, setValueChanged] = useState(false);
   let shipmentCountry = getValues("shipmentPort.country");
+  let lcStartDate = getValues("lcPeriod.startDate");
+  let lcEndDate = getValues("lcPeriod.endDate");
+
 
   useEffect(() => {
     shipmentCountry = getValues("shipmentPort.country");
@@ -87,6 +90,11 @@ export const Period = ({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   const [lcIssueType, setLcIssueType] = useState("");
+
+  useEffect(() => {
+    setLcPeriodDate(lcStartDate)
+    setLcExpiryDate(lcEndDate)
+  },[lcStartDate,lcEndDate])
 
   const handleRadioChange = (e: any) => {
     setLcIssueType(e.target.value);
@@ -213,6 +221,7 @@ export const Period = ({
           <DDInput
             id="shipmentPort.country"
             label="Country"
+            value={shipmentCountry}
             placeholder="Select a country"
             setValue={setValue}
             data={countries}
@@ -267,6 +276,8 @@ export const Transhipment = ({
   setValue: any;
   isDiscount?: boolean;
 }) => {
+  let lcStartDate = getValues("lcPeriod.startDate");
+
   const [expectedConfirmationDate, setExpectedConfirmationDate] =
     useState<Date>();
   const [checkedState, setCheckedState] = useState({

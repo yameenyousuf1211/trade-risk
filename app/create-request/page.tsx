@@ -42,18 +42,19 @@ const CreateRequestPage = () => {
   const router = useRouter();
 
   const queryClient = useQueryClient();
+  
 
-  const editData2 = getStateValues(useConfirmationStore.getState());
-  // console.log("State Data: ", editData2)
+  const confirmationData = useConfirmationStore((state) => state); // Optional: to access current state
+  
 
   useEffect(() => {
-    if (editData2 && editData2._id) {
-      Object.entries(editData2).forEach(([key, value]) => {
+    if (confirmationData && confirmationData?._id) {
+      Object.entries(confirmationData).forEach(([key, value]) => {
         // @ts-ignore
         setValue(key, value);
       });
     }
-  }, [editData2, setValue]);
+  }, [confirmationData]);
 
   // Show errors
   useEffect(() => {
@@ -89,6 +90,8 @@ const CreateRequestPage = () => {
         ...data,
         lcType: "LC Confirmation",
         transhipment: data.transhipment === "yes" ? true : false,
+        
+
       };
 
       const { response, success } = await onCreateLC(reqData);
@@ -186,19 +189,9 @@ const CreateRequestPage = () => {
     }
   }, [countriesData]);
 
-  const handleEditData = (editData: any) => {
-    console.log("API DATA: ", editData);
-    Object.entries(editData).forEach(([key, value]) => {
-      console.log(key, value);
-      // @ts-ignore
-      setValue(key, value);
-      // console.log(key, value)
-      console.log(getValues());
-    });
-  };
 
   return (
-    <CreateLCLayout onEditData={handleEditData}>
+    <CreateLCLayout>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
         <Step1 register={register} />
         <Step2 register={register} setValue={setValue} getValues={getValues} />

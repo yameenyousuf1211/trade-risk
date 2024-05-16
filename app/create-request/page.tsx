@@ -89,6 +89,9 @@ const CreateRequestPage = () => {
         ...data,
         lcType: "LC Confirmation",
         transhipment: data.transhipment === "yes" ? true : false,
+        shipmentPort: {
+          port: 'xyz'
+        }
       };
 
       const { response, success } = await onCreateLC(reqData);
@@ -142,6 +145,14 @@ const CreateRequestPage = () => {
       lcType: "LC Confirmation",
       transhipment: data.transhipment === "yes" ? true : false,
       isDraft: "true",
+      shipmentPort: {
+        ...data.shipmentPort,
+        port: 'xyz'
+      },
+      lcPeriod: {
+        ...data.lcPeriod,
+        expectedDate: false
+      }
     };
 
     const { response, success } = await onCreateLC(reqData);
@@ -193,7 +204,7 @@ const CreateRequestPage = () => {
       // @ts-ignore
       setValue(key, value);
       // console.log(key, value)
-      console.log(getValues());
+      console.log(getValues(),"gettting values");
     });
   };
 

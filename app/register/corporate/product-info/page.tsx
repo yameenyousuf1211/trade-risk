@@ -39,17 +39,22 @@ const ProductInfoPage = () => {
     }
   }, [productData]);
 
+  const [products, setProducts] = useState([]);
+
   const onSubmit: SubmitHandler<z.infer<typeof productsInfoSchema>> = async (
     data: any
   ) => {
+    const { product, ...rest } = data;
+    const values = {
+      ...rest,
+      products,
+    };
     setValues({
-      productInfo: data,
+      productInfo: values,
     });
-    localStorage.setItem("productData", JSON.stringify(data));
+    localStorage.setItem("productData", JSON.stringify(values));
     router.push("/register/corporate/point-contact");
   };
-
-  const [products, setProducts] = useState([]);
 
   return (
     <CorporateStepLayout

@@ -1,4 +1,4 @@
-import { getBidsCount } from "@/services/apis/bids.api";
+import { getBidsCount, getTotalRequests } from "@/services/apis/bids.api";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "../helpers";
 import { useEffect, useState } from "react";
@@ -29,7 +29,6 @@ const Chart = ({
   const circumference = 2 * Math.PI * radius;
   const strokeDasharray = circumference;
 
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -49,7 +48,9 @@ const Chart = ({
     queryParams.set("page", "1");
 
     const queryString = queryParams.toString();
-    router.push(`${isBank ? "my-bids" : ""}?${queryString}`, { scroll: false });
+    router.push(`${isBank ? "my-bids" : "corporate-bids"}?${queryString}`, {
+      scroll: false,
+    });
   };
 
   return (
@@ -96,13 +97,9 @@ const Chart = ({
 };
 
 interface Count {
-  _id: string;
+  _id?: string;
   count: number;
-}
-
-interface Count {
-  _id: string;
-  count: number;
+  status?: string;
 }
 
 export const ProgressCharts = ({
@@ -112,11 +109,11 @@ export const ProgressCharts = ({
   title: string;
   isBank?: boolean;
 }) => {
-  const { isLoading, error, data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["fetch-bids-count"],
-    queryFn: () => getBidsCount(),
+    queryFn: () => (isBank ? getBidsCount() : getTotalRequests()),
   });
-  // console.log(data);
+
   const [accepted, setAccepted] = useState(0);
   const [rejected, setRejected] = useState(0);
   const [expired, setExpired] = useState(0);
@@ -134,7 +131,8 @@ export const ProgressCharts = ({
 
       data.forEach((item: Count) => {
         // @ts-ignore
-        statusCounts[item._id] = item.count;
+        if (isBank) statusCounts[item._id] = item.count;
+        else statusCounts[item.status] = item.count;
       });
 
       setAccepted(statusCounts.Accepted);

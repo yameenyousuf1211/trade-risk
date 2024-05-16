@@ -131,11 +131,6 @@ const bankSchema = z.object({
   accountCountry: z
     .string({ message: "*Select a country" })
     .nonempty("*Select a country"),
-  // accountCountry: z.object({
-  //   name: z.string({ message: "*Select a country" }).min(1, "Select a country"),
-  //   flag: z.string(),
-  //   isoCode: z.string(),
-  // }),
   pocPhone: z
     .string({ message: "*POC Phone number is required" })
     .min(7, "*Provide a valid phone number")

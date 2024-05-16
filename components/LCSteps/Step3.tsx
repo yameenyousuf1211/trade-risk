@@ -91,7 +91,9 @@ export const Step3 = ({
                 !issuingBanks?.response ||
                 !issuingBanks.success
               }
-              data={issuingBanks?.success && issuingBanks?.response}
+              data={
+                issuingBanks && issuingBanks.success && issuingBanks.response
+              }
             />
           </div>
         </div>
@@ -122,7 +124,11 @@ export const Step3 = ({
                   !advisingBanks?.response ||
                   !advisingBanks.success
                 }
-                data={advisingBanks?.success && advisingBanks?.response}
+                data={
+                  advisingBanks &&
+                  advisingBanks.success &&
+                  advisingBanks.response
+                }
               />
             </div>
           </div>
@@ -167,7 +173,11 @@ export const Step3 = ({
               !confirmingBanks?.response ||
               !confirmingBanks.success
             }
-            data={confirmingBanks?.response}
+            data={
+              confirmingBanks &&
+              confirmingBanks.success &&
+              confirmingBanks.response
+            }
           />
         </div>
 
@@ -197,7 +207,11 @@ export const Step3 = ({
                 !confirmingBanks?.response ||
                 !confirmingBanks.success
               }
-              data={confirmingBanks?.success && confirmingBanks?.response}
+              data={
+                confirmingBanks &&
+                confirmingBanks.success &&
+                confirmingBanks.response
+              }
             />
           </div>
         ) : (

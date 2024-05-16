@@ -42,15 +42,16 @@ const PointContactPage = () => {
     }
   }, [contactData]);
 
+  const [pdfFile, setPdfFile] = useState<File | undefined>(undefined);
+
   const onSubmit: SubmitHandler<z.infer<typeof pointOfContractSchema>> = async (
     data: any
   ) => {
+    if (!pdfFile) return;
     setValues(data);
     localStorage.setItem("contactData", JSON.stringify(data));
     router.push("/register/corporate/current-banking");
   };
-
-  const [pdfFile, setPdfFile] = useState<File | undefined>(undefined);
 
   return (
     <CorporateStepLayout
@@ -146,7 +147,10 @@ const PointContactPage = () => {
             <p className="relative text-sm text-[#333]">
               {pdfFile ? pdfFile.name.substring(0, 20) : "Select PDF file"}
               {pdfFile && (
-                <div className="bg-red-500 text-white size-4 rounded-full center absolute text-[12px] -top-3 -right-2 z-20" onClick={() => setPdfFile(undefined)}>
+                <div
+                  className="bg-red-500 text-white size-4 rounded-full center absolute text-[12px] -top-3 -right-2 z-20"
+                  onClick={() => setPdfFile(undefined)}
+                >
                   <X />
                 </div>
               )}
@@ -159,7 +163,7 @@ const PointContactPage = () => {
             className="hidden"
             onChange={(e) => setPdfFile(e.target.files?.[0])}
           />
-          {Object.entries(errors).length > 0 && !pdfFile && (
+          {!pdfFile && (
             <span className="text-[11px] text-red-500">
               Please select a file
             </span>

@@ -69,11 +69,11 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
                 )}
               </div>
             </div>
-            <BankTable data={data} isLoading={isLoading} search={search} />
+            <BankTable data={data} isLoading={isLoading} />
           </div>
         </div>
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
-          {/* <Sidebar isBank={true} /> */}
+          <Sidebar isBank={true} />
         </div>
       </div>
     </DashboardLayout>

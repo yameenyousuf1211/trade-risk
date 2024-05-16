@@ -6,8 +6,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
 import { UseFormRegister } from "react-hook-form";
+import { Check, ChevronDown } from "lucide-react";
+import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
 
 export const RadioInput = ({
   id,
@@ -60,6 +75,9 @@ export const DDInput = ({
   setValue: any;
   setValueChanged?: any;
 }) => {
+  const [ddOpen, setDdOpen] = useState(false);
+  const [ddVal, setDdVal] = useState("");
+
   const handleSelectChange = (value: string) => {
     setValue(id, value);
     setValueChanged && setValueChanged((prev: boolean) => !prev);
@@ -71,32 +89,65 @@ export const DDInput = ({
       className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
     >
       <p className="text-lightGray">{label}</p>
-      <Select onValueChange={handleSelectChange}>
-        <SelectTrigger
-          disabled={disabled}
-          id={id}
-          className="w-fit border-none bg-transparent text-[#444]"
-        >
-          <SelectValue placeholder={value ? value : placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          {data &&
-            data.length > 0 &&
-            data?.map((val, idx) => (
-              <SelectItem value={val} key={`${val}-${idx}`}>
-                {flags && <span className="mr-2">{flags[idx]}</span>}
-                {val}
-              </SelectItem>
-            ))}
-          {!data && (
-            <>
-              <SelectItem value="Pakistan">Pakistan</SelectItem>
-              <SelectItem value="Saudia">Saudia</SelectItem>
-              <SelectItem value="Dubai">Dubai</SelectItem>
-            </>
-          )}
-        </SelectContent>
-      </Select>
+      <Popover open={ddOpen} onOpenChange={setDdOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={ddOpen}
+            className="w-fit border-none justify-between font-normal text-sm text-gray-500"
+            disabled={disabled}
+          >
+            {ddVal
+              ? data?.find(
+                  (country: string) =>
+                    country.toLowerCase() === ddVal.toLowerCase()
+                )
+              : value
+              ? value
+              : placeholder}
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-fit p-0">
+          <Command>
+            <CommandInput placeholder={placeholder} />
+            <CommandEmpty>No country found.</CommandEmpty>
+            <CommandGroup className="max-h-[300px] overflow-y-auto">
+              {data &&
+                data.length > 0 &&
+                data?.map((country: string, idx: number) => (
+                  <CommandItem
+                    key={`${country}-${idx}`}
+                    value={country}
+                    onSelect={(currentValue) => {
+                      setDdVal(
+                        currentValue.toLowerCase() === ddVal.toLowerCase()
+                          ? ""
+                          : currentValue
+                      );
+                      setDdOpen(false);
+                      setValue(id, currentValue, { shouldValidate: true });
+                      setValueChanged &&
+                        setValueChanged((prev: boolean) => !prev);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        country.toLowerCase() === ddVal.toLowerCase()
+                          ? "opacity-100"
+                          : "opacity-0"
+                      )}
+                    />
+                    {flags && <span className="mr-2">{flags[idx]}</span>}
+                    {country}
+                  </CommandItem>
+                ))}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </label>
   );
 };

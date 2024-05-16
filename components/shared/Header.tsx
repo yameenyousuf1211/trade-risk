@@ -33,7 +33,7 @@ export const Header = () => {
       setUser(data.response);
     }
   }, [data]);
-  
+
   return (
     <header className="relative 2xl:px-20 px-10 flex items-center justify-between gap-x-2 ">
       <div className="flex items-center gap-x-2 py-4">
@@ -129,6 +129,21 @@ export const Header = () => {
                 My Requests
               </Link>
               {pathname === "/" && (
+                <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />
+              )}
+            </div>
+            <div className="relative py-6">
+              <Link
+                href="/corporate-bids"
+                className={`${
+                  pathname === "/my-bids"
+                    ? "text-primaryCol"
+                    : "hover:text-primaryCol transition-colors duration-150"
+                }  font-medium`}
+              >
+                My Bids
+              </Link>
+              {pathname === "/corporate-bids" && (
                 <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />
               )}
             </div>

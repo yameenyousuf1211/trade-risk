@@ -11,7 +11,7 @@ import {
   Step7,
   Step7Disounting,
 } from "@/components/LCSteps";
-import { RadioInput } from "@/components/LCSteps/helpers";
+import { BgRadioInput, RadioInput } from "@/components/LCSteps/helpers";
 import {
   Select,
   SelectContent,
@@ -37,6 +37,8 @@ import Loader from "@/components/ui/loader";
 import useLoading from "@/hooks/useLoading";
 import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Country } from "@/types/type";
+import { DisclaimerDialog } from "@/components/helpers";
 
 const ConfirmationPage = () => {
   const {
@@ -54,6 +56,7 @@ const ConfirmationPage = () => {
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
+  const [valueChanged, setValueChanged] = useState<boolean>(false);
   // Show errors
   useEffect(() => {
     if (errors) {
@@ -76,24 +79,39 @@ const ConfirmationPage = () => {
       showNestedErrors(errors);
     }
   }, [errors]);
+  const [proceed, setProceed] = useState(false);
 
   const onSubmit: SubmitHandler<
     z.infer<typeof confirmationDiscountSchema>
   > = async (data: z.infer<typeof confirmationDiscountSchema>) => {
-    startLoading();
-    const reqData = {
-      ...data,
-      transhipment: data.transhipment === "yes" ? true : false,
-      lcType: "LC Confirmation & Discounting",
-    };
+    if (proceed) {
+      startLoading();
+      const reqData = {
+        ...data,
+        transhipment: data.transhipment === "yes" ? true : false,
+        lcType: "LC Confirmation & Discounting",
+        shipmentPort: {
+          ...data?.shipmentPort,
+          port: "xyz",
+        },
+        lcPeriod: {
+          ...data.lcPeriod,
+          expectedDate: false,
+        },
+      };
 
-    const { response, success } = await onCreateLC(reqData);
-    stopLoading();
-    if (!success) return toast.error(response);
-    else {
-      toast.success(response?.message);
-      reset();
-      router.push("/");
+      const { response, success } = await onCreateLC(reqData);
+      stopLoading();
+      if (!success) return toast.error(response);
+      else {
+        toast.success(response?.message);
+        reset();
+        router.push("/");
+      }
+    } else {
+      let openDisclaimerBtn = document.getElementById("open-disclaimer");
+      // @ts-ignore
+      openDisclaimerBtn.click();
     }
   };
 
@@ -108,6 +126,14 @@ const ConfirmationPage = () => {
       transhipment: data.transhipment === "yes" ? true : false,
       lcType: "LC Confirmation & Discounting",
       isDraft: "true",
+      shipmentPort: {
+        ...data?.shipmentPort,
+        port: "xyz",
+      },
+      lcPeriod: {
+        ...data.lcPeriod,
+        expectedDate: false,
+      },
     };
     const { response, success } = await onCreateLC(reqData);
     setLoader(false);
@@ -121,15 +147,57 @@ const ConfirmationPage = () => {
     }
   };
 
-  const { data: countries, isLoading: countriesLoading } = useQuery({
+  const [allCountries, setAllCountries] = useState<Country[]>([]);
+  const [countries, setCountries] = useState([]);
+  const [flags, setFlags] = useState([]);
+
+  const { data: countriesData } = useQuery({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
   });
+
+  useEffect(() => {
+    if (
+      countriesData &&
+      countriesData.success &&
+      countriesData.response &&
+      countriesData.response.length > 0
+    ) {
+      setAllCountries(countriesData.response);
+      const fetchedCountries = countriesData.response.map(
+        (country: Country) => {
+          return country.name;
+        }
+      );
+      setCountries(fetchedCountries);
+      const fetchedFlags = countriesData.response.map((country: Country) => {
+        return country.flag;
+      });
+      setFlags(fetchedFlags);
+    }
+  }, [countriesData]);
 
   const { data: currency } = useQuery({
     queryKey: ["currency"],
     queryFn: () => getCurrenncy(),
   });
+
+  const [checkedState, setCheckedState] = useState({
+    "payment-sight": false,
+    "payment-usance": false,
+    "payment-deferred": false,
+    "payment-upas": false,
+  });
+
+  const handleCheckChange = (id: string) => {
+    setCheckedState((prevState) => ({
+      ...prevState,
+      "payment-sight": id === "payment-sight",
+      "payment-usance": id === "payment-usance",
+      "payment-deferred": id === "payment-deferred",
+      "payment-upas": id === "payment-upas",
+    }));
+  };
 
   return (
     <CreateLCLayout>
@@ -171,33 +239,41 @@ const ConfirmationPage = () => {
           <div className="border border-borderCol px-2 py-3 rounded-md bg-[#F5F7F9]">
             <h5 className="font-semibold ml-3">LC Payment Terms</h5>
             <div className="flex items-center gap-x-3 w-full mt-2">
-              <RadioInput
+              <BgRadioInput
                 id="payment-sight"
                 label="Sight LC"
                 name="paymentTerms"
-                register={register}
                 value="sight-lc"
+                register={register}
+                checked={checkedState["payment-sight"]}
+                handleCheckChange={handleCheckChange}
               />
-              <RadioInput
+              <BgRadioInput
                 id="payment-usance"
                 label="Usance LC"
                 name="paymentTerms"
                 value="usance-lc"
                 register={register}
+                checked={checkedState["payment-usance"]}
+                handleCheckChange={handleCheckChange}
               />
-              <RadioInput
+              <BgRadioInput
                 id="payment-deferred"
                 label="Deferred LC"
                 name="paymentTerms"
                 value="deferred-lc"
                 register={register}
+                checked={checkedState["payment-deferred"]}
+                handleCheckChange={handleCheckChange}
               />
-              <RadioInput
+              <BgRadioInput
                 id="payment-upas"
                 label="UPAS LC (Usance payment at sight)"
                 name="paymentTerms"
                 value="upas-lc"
                 register={register}
+                checked={checkedState["payment-upas"]}
+                handleCheckChange={handleCheckChange}
               />
             </div>
           </div>
@@ -211,26 +287,40 @@ const ConfirmationPage = () => {
             <p className="font-semibold text-lg text-lightGray">LC Details</p>
           </div>
           <DiscountBanks
-            countries={countries?.response}
+            countries={countries}
+            flags={flags}
             setValue={setValue}
             getValues={getValues}
           />
           {/* Period */}
-          <Period setValue={setValue} getValues={getValues} />
+          <Period
+            setValue={setValue}
+            getValues={getValues}
+            countries={countries}
+            flags={flags}
+          />
           {/* Transhipment */}
-          <Transhipment register={register} setValue={setValue} />
+          <Transhipment
+            getValues={getValues}
+            register={register}
+            setValue={setValue}
+          />
         </div>
 
         <Step4
           register={register}
-          countries={countries?.response}
+          countries={countries}
           setValue={setValue}
+          getValues={getValues}
+          flags={flags}
         />
         <Step5
           register={register}
           isConfirmation
-          countries={countries?.response}
+          countries={countries}
+          flags={flags}
           setValue={setValue}
+          getValues={getValues}
         />
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
@@ -269,7 +359,11 @@ const ConfirmationPage = () => {
             {isLoading ? <Loader /> : "Submit request"}
           </Button>
         </div>
-        {/* <DisclaimerDialog /> */}
+        <DisclaimerDialog
+          title="Submit Request"
+          className="hidden"
+          setProceed={setProceed}
+        />
       </form>
     </CreateLCLayout>
   );

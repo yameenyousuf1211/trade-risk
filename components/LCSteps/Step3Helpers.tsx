@@ -27,16 +27,21 @@ export const ValidatingCalendar = ({
   initialDate,
   onChange,
   onClose,
+  isPast,
 }: {
   initialDate: Date | undefined;
   onChange: (date: Date) => void;
   onClose: any;
+  isPast?: boolean;
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
   const handleDateSelect = (date: Date) => {
     const today = new Date();
-    if (date < today) return toast.error("Please don't select a past date ");
+    if (isPast && date > today)
+      return toast.error("Please dont select a date from future");
+    if (!isPast && date < today)
+      return toast.error("Please don't select a past date ");
 
     setSelectedDate(date);
     onChange(date);
@@ -56,23 +61,34 @@ export const ValidatingCalendar = ({
 export const Period = ({
   setValue,
   getValues,
+  countries,
+  flags,
+  valueChanged,
+  setValueChanged,
 }: {
   setValue: any;
   getValues: any;
+  countries: string[];
+  flags: string[];
+  valueChanged?: boolean;
+  setValueChanged?: any;
 }) => {
-  const { data: countries, isLoading: countriesLoading } = useQuery({
-    queryKey: ["countries"],
-    queryFn: () => getCountries(),
-  });
-
-  const [valueChanged, setValueChanged] = useState(false);
   let shipmentCountry = getValues("shipmentPort.country");
+  let lcStartDate = getValues("lcPeriod.startDate");
+  let lcEndDate = getValues("lcPeriod.endDate");
 
   useEffect(() => {
     shipmentCountry = getValues("shipmentPort.country");
+    setLcPeriodDate(lcStartDate);
+    setLcExpiryDate(lcEndDate);
+    if (lcStartDate && lcEndDate) {
+      setValue("lcPeriod.startDate", new Date(lcStartDate));
+      setValue("lcPeriod.endDate", new Date(lcEndDate));
+      setValue("expectedConfirmationDate", new Date(lcEndDate));
+    }
   }, [valueChanged]);
 
-  const { data: shipmentPorts, isLoading: shipmentPortsLoading } = useQuery({
+  const { data: shipmentPorts } = useQuery({
     queryKey: ["shipmentPorts", shipmentCountry],
     queryFn: () => getPorts(shipmentCountry),
     enabled: !!shipmentCountry,
@@ -86,6 +102,7 @@ export const Period = ({
 
   const handleRadioChange = (e: any) => {
     setLcIssueType(e.target.value);
+    setValue("lcPeriod.startDate", "");
   };
   // Function to update value in React Hook Form
   const updateValue = (name: string, value: any) => {
@@ -144,15 +161,14 @@ export const Period = ({
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               {lcIssueType === "date-lc-issued" ? (
-                <Calendar
-                  mode="single"
-                  selected={lcPeriodDate}
-                  onSelect={(date) => {
+                <ValidatingCalendar
+                  initialDate={lcPeriodDate}
+                  onChange={(date) => {
                     setLcPeriodDate(date);
                     updateValue("lcPeriod.startDate", date);
-                    setDatePopoverOpen(false);
                   }}
-                  initialFocus
+                  onClose={() => setDatePopoverOpen(false)}
+                  isPast
                 />
               ) : (
                 <ValidatingCalendar
@@ -203,15 +219,17 @@ export const Period = ({
         </label>
       </div>
       {/* Port of Shipment */}
-      <div className="border border-borderCol py-3 px-2 rounded-md w-1/3 h-full min-h-44 bg-[#F5F7F9]">
+      <div className="border border-borderCol py-3 px-2 rounded-md w-1/3 h-[185px] min-h-44 bg-[#F5F7F9]">
         <p className="font-semibold ml-3">Port of Shipment</p>
         <div className="flex flex-col gap-y-2 mt-2">
           <DDInput
             id="shipmentPort.country"
             label="Country"
+            value={shipmentCountry}
             placeholder="Select a country"
             setValue={setValue}
-            data={countries?.success && countries?.response}
+            data={countries}
+            flags={flags}
             setValueChanged={setValueChanged}
           />
           <label
@@ -221,19 +239,19 @@ export const Period = ({
             <p className="text-lightGray">Select port</p>
             <Select onValueChange={handleSelectChange}>
               <SelectTrigger
-                disabled={
-                  !shipmentPorts ||
-                  !shipmentPorts.success ||
-                  !shipmentPorts?.response ||
-                  !shipmentPorts.success
-                }
+                // disabled={
+                //   !shipmentPorts ||
+                //   !shipmentPorts.success ||
+                //   !shipmentPorts?.response ||
+                //   !shipmentPorts.success
+                // }
                 id="shipmentPort.port"
                 className="w-fit border-none bg-transparent text-[#B5B5BE]"
               >
                 <SelectValue placeholder="Select port" />
               </SelectTrigger>
               <SelectContent>
-                {shipmentPorts &&
+                {/* {shipmentPorts &&
                   shipmentPorts.response &&
                   shipmentPorts.response.length > 0 &&
                   shipmentPorts.response?.map((val: any, idx: number) => (
@@ -243,7 +261,7 @@ export const Period = ({
                     >
                       {val.port_name}
                     </SelectItem>
-                  ))}
+                  ))} */}
               </SelectContent>
             </Select>
           </label>
@@ -257,13 +275,27 @@ export const Transhipment = ({
   register,
   setValue,
   isDiscount,
+  getValues,
+  valueChanged,
+  setValueChanged,
 }: {
   register: any;
   setValue: any;
   isDiscount?: boolean;
+  getValues?: any;
+  valueChanged?: boolean;
+  setValueChanged?: any;
 }) => {
   const [expectedConfirmationDate, setExpectedConfirmationDate] =
     useState<Date>();
+  let lcEndDate = getValues("lcPeriod.endDate");
+  useEffect(() => {
+    setExpectedConfirmationDate(lcEndDate);
+
+    if (lcEndDate) {
+      setValue("expectedConfirmationDate", new Date(lcEndDate));
+    }
+  }, [valueChanged]);
   const [checkedState, setCheckedState] = useState({
     "transhipment-allowed-yes": false,
     "transhipment-allowed-no": false,
@@ -279,8 +311,8 @@ export const Transhipment = ({
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const currentDate = new Date();
-  const tomorrowDate = addDays(currentDate, 1);
   const nextWeekDate = addDays(currentDate, 7);
+  const twoWeeksDate = addDays(currentDate, 14);
 
   return (
     <div className="w-full flex items-start gap-x-4 justify-between mt-4">
@@ -352,22 +384,7 @@ export const Transhipment = ({
         </label>
 
         <div className="flex items-center mt-2 gap-x-2 justify-between w-full">
-          <Button
-            type="button"
-            className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
-            onClick={() => {
-              setExpectedConfirmationDate(tomorrowDate);
-              isDiscount
-                ? setValue("expectedDiscountingDate", tomorrowDate)
-                : setValue("expectedConfirmationDate", tomorrowDate);
-            }}
-          >
-            <p className="text-white">Tomorrow</p>
-            <p className="text-sm text-white/80 font-thin">
-              {" "}
-              {format(tomorrowDate, "d MMMM")}
-            </p>
-          </Button>
+          {/* Next week */}
           <Button
             type="button"
             className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
@@ -382,6 +399,23 @@ export const Transhipment = ({
             <p className="text-sm text-white/80 font-thin">
               {" "}
               {format(nextWeekDate, "d MMMM")}
+            </p>
+          </Button>
+          {/* 2 weeks */}
+          <Button
+            type="button"
+            className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
+            onClick={() => {
+              setExpectedConfirmationDate(twoWeeksDate);
+              isDiscount
+                ? setValue("expectedDiscountingDate", twoWeeksDate)
+                : setValue("expectedConfirmationDate", twoWeeksDate);
+            }}
+          >
+            <p className="text-white">Two Weeks</p>
+            <p className="text-sm text-white/80 font-thin">
+              {" "}
+              {format(twoWeeksDate, "d MMMM")}
             </p>
           </Button>
         </div>
@@ -405,8 +439,10 @@ export const DiscountBanks = ({
   countries,
   setValue,
   getValues,
+  flags,
 }: {
-  countries: any;
+  countries: string[];
+  flags: string[];
   setValue: any;
   getValues: any;
 }) => {
@@ -416,8 +452,6 @@ export const DiscountBanks = ({
   let advisingCountry = getValues("advisingBank.country");
   let confirmingCountry = getValues("confirmingBank.country");
   let confirmingBank = getValues("confirmingBank.bank");
-
-  const [confirmingBankValue, setConfirmingBankValue] = useState<string>("");
 
   useEffect(() => {
     issuingCountry = getValues("issuingBank.country");
@@ -472,6 +506,7 @@ export const DiscountBanks = ({
             label="Country"
             id="issuingBank.country"
             data={countries}
+            flags={flags}
             setValue={setValue}
             setValueChanged={setValueChanged}
           />
@@ -484,7 +519,9 @@ export const DiscountBanks = ({
             disabled={
               !issuingBanks || !issuingBanks?.response || !issuingBanks.success
             }
-            data={issuingBanks?.response}
+            data={
+              issuingBanks && issuingBanks.success && issuingBanks?.response
+            }
           />
         </div>
       </div>
@@ -497,6 +534,7 @@ export const DiscountBanks = ({
             label="Country"
             id="advisingBank.country"
             data={countries}
+            flags={flags}
             setValue={setValue}
             setValueChanged={setValueChanged}
           />
@@ -511,7 +549,9 @@ export const DiscountBanks = ({
               !advisingBanks?.response ||
               !advisingBanks.success
             }
-            data={advisingBanks?.response}
+            data={
+              advisingBanks && advisingBanks.success && advisingBanks.response
+            }
           />
         </div>
       </div>
@@ -541,6 +581,7 @@ export const DiscountBanks = ({
             value={confirmingCountry}
             id="confirmingBank.country"
             data={countries}
+            flags={flags}
             setValue={setValue}
             setValueChanged={setValueChanged}
           />
@@ -556,7 +597,11 @@ export const DiscountBanks = ({
               !confirmingBanks?.response ||
               !confirmingBanks.success
             }
-            data={confirmingBanks?.response}
+            data={
+              confirmingBanks &&
+              confirmingBanks.success &&
+              confirmingBanks.response
+            }
           />
         </div>
       </div>

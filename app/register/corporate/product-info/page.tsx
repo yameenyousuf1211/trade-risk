@@ -2,24 +2,25 @@
 import { FloatingInput } from "@/components/helpers/FloatingInput";
 import CorporateStepLayout from "@/components/layouts/CorporateStepLayout";
 import { Button } from "@/components/ui/button";
-import useRegisterStore, { getStateValues } from "@/store/register.store";
-import { companyInfoSchema, productsInfoSchema } from "@/validation";
+import useRegisterStore from "@/store/register.store";
+import { productsInfoSchema } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
+import { TagsInput } from "react-tag-input-component";
 
 const ProductInfoPage = () => {
   const router = useRouter();
   const setValues = useRegisterStore((state) => state.setValues);
   const {
     register,
+    getValues,
     setValue,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<z.infer<typeof productsInfoSchema>>({
     resolver: zodResolver(productsInfoSchema),
   });
@@ -38,13 +39,20 @@ const ProductInfoPage = () => {
     }
   }, [productData]);
 
+  const [products, setProducts] = useState([]);
+
   const onSubmit: SubmitHandler<z.infer<typeof productsInfoSchema>> = async (
     data: any
   ) => {
+    const { product, ...rest } = data;
+    const values = {
+      ...rest,
+      products,
+    };
     setValues({
-      productInfo: data,
+      productInfo: values,
     });
-    localStorage.setItem("productData", JSON.stringify(data));
+    localStorage.setItem("productData", JSON.stringify(values));
     router.push("/register/corporate/point-contact");
   };
 
@@ -59,11 +67,20 @@ const ProductInfoPage = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="w-full">
-          <FloatingInput
+          {/* <FloatingInput
             register={register}
             type="text"
             name="product"
             placeholder="Your Product(s)"
+          /> */}
+          <TagsInput
+            value={products}
+            onChange={(val: any) => {
+              setProducts(val);
+              setValue("product", val.join(", "));
+            }}
+            name="product"
+            placeHolder="Products"
           />
           {errors.product && (
             <span className="text-[11px] text-red-500">
@@ -141,7 +158,7 @@ const ProductInfoPage = () => {
           <Button
             className="disabled:bg-[#E2E2EA] disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
-            disabled={false}
+            disabled={!isValid}
             type="submit"
           >
             Continue

@@ -191,11 +191,22 @@ input[type="number"] {
 .country-list .country {
   z-index: 1000000 !important;
 }
-.selected-flag{
+.selected-flag {
   background: #fff !important;
   border-radius: 10px !important;
   -webkit-border-radius: 10px !important;
   -moz-border-radius: 10px !important;
   -ms-border-radius: 10px !important;
   -o-border-radius: 10px !important;
+}
+
+/* Products tag input */
+.rti--container {
+}
+.rti--tag {
+  font-size: 12px !important;
+}
+.rti--input {
+  font-size: 14px !important;
+  max-width: 150px !important;
 }

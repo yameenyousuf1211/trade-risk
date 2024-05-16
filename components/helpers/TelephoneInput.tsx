@@ -21,7 +21,7 @@ export const TelephoneInput = ({
   return (
     <div className="w-full">
       <PhoneInput
-        country={"pk"}
+        country={"sa"}
         value={val}
         placeholder={placeholder}
         onChange={handleChange}

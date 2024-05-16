@@ -6,14 +6,32 @@ import { useQuery } from "@tanstack/react-query";
 import { getBanks } from "@/services/apis/helpers.api";
 import { useEffect, useState } from "react";
 
-export const Step3 = ({ register, setValue, getValues, countries }: any) => {
-  const [valueChanged, setValueChanged] = useState(false);
+export const Step3 = ({
+  register,
+  setValue,
+  getValues,
+  countries,
+  flags,
+  valueChanged,
+  setValueChanged,
+}: {
+  register: any;
+  setValue: any;
+  getValues: any;
+  countries: string[];
+  flags: string[];
+  valueChanged?: boolean;
+  setValueChanged?: any;
+}) => {
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
 
   let issuingCountry = getValues("issuingBank.country");
+  let issuingBank = getValues("issuingBank.bank");
   let advisingCountry = getValues("advisingBank.country");
+  let advisingBank = getValues("advisingBank.bank");
   let confirmingCountry = getValues("confirmingBank.country");
+  let confirmingBank = getValues("confirmingBank.bank");
 
   useEffect(() => {
     issuingCountry = getValues("issuingBank.country");
@@ -55,14 +73,17 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
             <DDInput
               placeholder="Select a country"
               label="Country"
+              value={issuingCountry}
               id="issuingBank.country"
               data={countries}
               setValue={setValue}
               setValueChanged={setValueChanged}
+              flags={flags}
             />
             <DDInput
               placeholder="Select bank"
               label="Bank"
+              value={issuingBank}
               id="issuingBank.bank"
               setValue={setValue}
               setValueChanged={setValueChanged}
@@ -72,7 +93,9 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
                 !issuingBanks?.response ||
                 !issuingBanks.success
               }
-              data={issuingBanks?.success && issuingBanks?.response}
+              data={
+                issuingBanks && issuingBanks.success && issuingBanks.response
+              }
             />
           </div>
         </div>
@@ -83,14 +106,17 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
               <DDInput
                 placeholder="Select a country"
                 label="Country"
+                value={advisingCountry}
                 id="advisingBank.country"
                 data={countries}
                 setValue={setValue}
                 setValueChanged={setValueChanged}
+                flags={flags}
               />
               <DDInput
                 placeholder="Select bank"
                 label="Bank"
+                value={advisingBank}
                 id="advisingBank.bank"
                 setValue={setValue}
                 setValueChanged={setValueChanged}
@@ -100,7 +126,11 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
                   !advisingBanks?.response ||
                   !advisingBanks.success
                 }
-                data={advisingBanks?.success && advisingBanks?.response}
+                data={
+                  advisingBanks &&
+                  advisingBanks.success &&
+                  advisingBanks.response
+                }
               />
             </div>
           </div>
@@ -126,15 +156,18 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
               label="Country"
               id="confirmingBank.country"
               placeholder="Select a Country"
+              value={confirmingCountry}
               data={countries}
               setValue={setValue}
               setValueChanged={setValueChanged}
+              flags={flags}
             />
           </div>
           <DDInput
             label="Bank"
             id="confirmingBank.bank"
             placeholder="Select bank"
+            value={confirmingBank}
             setValue={setValue}
             setValueChanged={setValueChanged}
             disabled={
@@ -142,7 +175,11 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
               !confirmingBanks?.response ||
               !confirmingBanks.success
             }
-            data={confirmingBanks?.response}
+            data={
+              confirmingBanks &&
+              confirmingBanks.success &&
+              confirmingBanks.response
+            }
           />
         </div>
 
@@ -157,6 +194,7 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
                 data={countries}
                 setValue={setValue}
                 setValueChanged={setValueChanged}
+                flags={flags}
               />
             </div>
             <DDInput
@@ -171,7 +209,11 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
                 !confirmingBanks?.response ||
                 !confirmingBanks.success
               }
-              data={confirmingBanks?.success && confirmingBanks?.response}
+              data={
+                confirmingBanks &&
+                confirmingBanks.success &&
+                confirmingBanks.response
+              }
             />
           </div>
         ) : (
@@ -186,8 +228,21 @@ export const Step3 = ({ register, setValue, getValues, countries }: any) => {
           </div>
         )}
       </div>
-      <Period setValue={setValue} getValues={getValues} />
-      <Transhipment register={register} setValue={setValue} />
+      <Period
+        setValue={setValue}
+        getValues={getValues}
+        countries={countries}
+        flags={flags}
+        valueChanged={valueChanged}
+        setValueChanged={setValueChanged}
+      />
+      <Transhipment
+        getValues={getValues}
+        register={register}
+        setValue={setValue}
+        valueChanged={valueChanged}
+        setValueChanged={setValueChanged}
+      />
     </div>
   );
 };

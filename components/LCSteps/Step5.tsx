@@ -1,17 +1,40 @@
+import { useAuth } from "@/context/AuthProvider";
 import { DDInput } from "./helpers";
 import { Input } from "@/components/ui/input";
+import { useEffect } from "react";
 
 export const Step5 = ({
   register,
   isConfirmation,
   countries,
   setValue,
+  getValues,
+  flags,
 }: {
   register: any;
   isConfirmation?: boolean;
   countries: string[];
   setValue: any;
+  getValues: any;
+  flags: string[];
 }) => {
+  const { user } = useAuth();
+  let isExporter = getValues("participantRole") === "exporter";
+  let countryOfExport = getValues("exporterInfo.countryOfExport");
+  let beneficiaryCountry = getValues("exporterInfo.beneficiaryCountry");
+  let beneficiaryBank = getValues("exporterInfo.bank");
+
+
+
+  
+
+  useEffect(() => {
+    isExporter = getValues("participantRole") === "exporter";
+  }, [getValues, user]);
+  // console.log(isExporter);
+
+  isExporter && setValue("exporterInfo.beneficiaryName", user ? user.name : "");
+
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -44,21 +67,26 @@ export const Step5 = ({
         <DDInput
           id="exporterInfo.countryOfExport"
           label="Country of Export"
+          value={countryOfExport}
           placeholder="Select a country"
           data={countries}
           setValue={setValue}
+          flags={flags}
         />
         <DDInput
           id="exporterInfo.beneficiaryCountry"
           label="Beneficiary Country"
+          value={beneficiaryCountry}
           placeholder="Select a country"
           data={countries}
           setValue={setValue}
+          flags={flags}
         />
         {isConfirmation && (
           <DDInput
             id="exporterInfo.bank"
             label="Bank"
+            value={beneficiaryBank}
             placeholder="Select bank"
             setValue={setValue}
           />

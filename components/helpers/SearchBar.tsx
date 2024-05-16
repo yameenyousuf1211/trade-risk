@@ -3,8 +3,8 @@ import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@uidotdev/usehooks";
 
-export const SearchBar = () => {
-  const [value, setValue] = useState("");
+export const SearchBar = ({ initialValue }: { initialValue?: string }) => {
+  const [value, setValue] = useState(initialValue || "");
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -23,7 +23,6 @@ export const SearchBar = () => {
 
   useEffect(() => {
     const currentQuery = searchParams.get("search") || "";
-
     // Reset page to 1 only when the search query changes
     if (query !== currentQuery) {
       router.push(`${pathname}?${createQueryString("search", query)}`);

@@ -20,11 +20,12 @@ import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { confirmationSchema } from "@/validation/lc.validation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "../../components/ui/loader";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getCountries } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import useConfirmationStore, { getStateValues } from "@/store/lc.store";
+import { Country } from "@/types/type";
 
 const CreateRequestPage = () => {
   const {
@@ -39,21 +40,24 @@ const CreateRequestPage = () => {
   });
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
+  const [valueChanged, setValueChanged] = useState<boolean>(false);
 
   const queryClient = useQueryClient();
+  const setValues = useConfirmationStore((state) => state.setValues);
+  const confirmationData = useConfirmationStore((state) => state); // Optional: to access current state
 
-  const editData = getStateValues(useConfirmationStore.getState());
-  // console.log(editData)
   useEffect(() => {
-    if (editData && editData._id) {
-      Object.entries(editData).forEach(([key, value]) => {
+    if (confirmationData && confirmationData?._id) {
+      Object.entries(confirmationData).forEach(([key, value]) => {
         // @ts-ignore
         setValue(key, value);
+        if (key === "transhipment") {
+          setValue(key, value === true ? "yes" : "no");
+        }
       });
-      console.log("running in data ");
     }
-    console.log("running ");
-  }, [editData, setValue]);
+    setValueChanged(!valueChanged);
+  }, [confirmationData]);
 
   // Show errors
   useEffect(() => {
@@ -78,49 +82,45 @@ const CreateRequestPage = () => {
     }
   }, [errors]);
 
+  const [proceed, setProceed] = useState(false);
+
   const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data: z.infer<typeof confirmationSchema>
   ) => {
-    startLoading();
-    const reqData = {
-      ...data,
-      lcType: "LC Confirmation",
-      transhipment: data.transhipment === "yes" ? true : false,
-    };
-
-    const { response, success } = await onCreateLC(reqData);
-    stopLoading();
-    if (!success) return toast.error(response);
-    else {
-      toast.success(response?.message);
-      reset();
-      router.push("/");
+    if (proceed) {
+      startLoading();
+      const reqData = {
+        ...data,
+        lcType: "LC Confirmation",
+        transhipment: data.transhipment === "yes" ? true : false,
+        shipmentPort: {
+          ...data?.shipmentPort,
+          port: "xyz",
+        },
+        lcPeriod: {
+          ...data.lcPeriod,
+          expectedDate: false,
+        },
+      };
+      const { response, success } = confirmationData?._id
+        ? await onUpdateLC({
+            payload: reqData,
+            id: confirmationData?._id,
+          })
+        : await onCreateLC(reqData);
+      stopLoading();
+      if (!success) return toast.error(response);
+      else {
+        setValues(null as any);
+        toast.success(response?.message);
+        reset();
+        router.push("/");
+      }
+    } else {
+      let openDisclaimerBtn = document.getElementById("open-disclaimer");
+      // @ts-ignore
+      openDisclaimerBtn.click();
     }
-  };
-
-  const updateLC: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
-    data: z.infer<typeof confirmationSchema>
-  ) => {
-    startLoading();
-    const reqData = {
-      ...data,
-      lcType: "LC Confirmation",
-      transhipment: data.transhipment === "yes" ? true : false,
-      isDraft: "false",
-    };
-
-    // const { response, success } = await onUpdateLC({
-    //   payload: reqData,
-    //   id: "as",
-    // });
-    stopLoading();
-    // if (!success) return toast.error(response);
-    // else {
-    //   toast.success(response?.message);
-    //   reset();
-    //   router.push("/");
-    // }
-    toast.success("lc updated");
   };
 
   const [loader, setLoader] = useState(false);
@@ -132,47 +132,100 @@ const CreateRequestPage = () => {
     const reqData = {
       ...data,
       lcType: "LC Confirmation",
-      transhipment: data.transhipment === "yes" ? true : false,
       isDraft: "true",
+      transhipment: data.transhipment === "yes" ? true : false,
+      shipmentPort: {
+        ...data.shipmentPort,
+        port: "xyz",
+      },
+      lcPeriod: {
+        ...data.lcPeriod,
+        expectedDate: false,
+      },
     };
 
-    const { response, success } = await onCreateLC(reqData);
+    const { response, success } = confirmationData?._id
+      ? await onUpdateLC({
+          payload: reqData,
+          id: confirmationData?._id,
+        })
+      : await onCreateLC(reqData);
     setLoader(false);
+
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");
       reset();
+      setValues(null as any);
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
       });
     }
   };
 
-  const { data: countries } = useQuery({
+  const [allCountries, setAllCountries] = useState<Country[]>([]);
+  const [countries, setCountries] = useState([]);
+  const [flags, setFlags] = useState([]);
+
+  const { data: countriesData } = useQuery({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
   });
+
+  useEffect(() => {
+    if (
+      countriesData &&
+      countriesData.success &&
+      countriesData.response &&
+      countriesData.response.length > 0
+    ) {
+      setAllCountries(countriesData.response);
+      const fetchedCountries = countriesData.response.map(
+        (country: Country) => {
+          return country.name;
+        }
+      );
+      setCountries(fetchedCountries);
+      const fetchedFlags = countriesData.response.map((country: Country) => {
+        return country.flag;
+      });
+      setFlags(fetchedFlags);
+    }
+  }, [countriesData]);
 
   return (
     <CreateLCLayout>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
         <Step1 register={register} />
-        <Step2 register={register} setValue={setValue} getValues={getValues} />
+        <Step2
+          register={register}
+          setValue={setValue}
+          getValues={getValues}
+          valueChanged={valueChanged}
+          setValueChanged={setValueChanged}
+        />
         <Step3
           register={register}
           setValue={setValue}
-          countries={countries?.success && countries?.response}
+          countries={countries}
           getValues={getValues}
+          flags={flags}
+          valueChanged={valueChanged}
+          setValueChanged={setValueChanged}
         />
         <Step4
           register={register}
           setValue={setValue}
-          countries={countries?.success && countries?.response}
+          countries={countries}
+          getValues={getValues}
+          flags={flags}
         />
         <Step5
           register={register}
           setValue={setValue}
-          countries={countries?.success && countries?.response}
+          countries={countries}
+          getValues={getValues}
+          flags={flags}
         />
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6
@@ -180,6 +233,7 @@ const CreateRequestPage = () => {
             setValue={setValue}
             getValues={getValues}
             title="Confirmation Charges"
+            valueChanged={valueChanged}
           />
           <Step7 register={register} step={7} />
         </div>
@@ -200,15 +254,20 @@ const CreateRequestPage = () => {
             disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
             onClick={
-              editData && editData._id
-                ? handleSubmit(updateLC)
-                : handleSubmit(onSubmit)
+              // editData && editData._id
+              //   ? handleSubmit(updateLC)
+              //   : handleSubmit(onSubmit)
+              handleSubmit(onSubmit)
             }
           >
             {isLoading ? <Loader /> : "Submit request"}
           </Button>
         </div>
-        {/* <DisclaimerDialog /> */}
+        <DisclaimerDialog
+          title="Submit Request"
+          className="hidden"
+          setProceed={setProceed}
+        />
       </form>
     </CreateLCLayout>
   );

@@ -12,8 +12,8 @@ export const TableBidStatus = ({
   id: string;
   lcData: ILcs;
 }) => {
-  const { data, isLoading } = useQuery({
-    queryKey: [`bid-status`, "fetch-lcs", id],
+  const { data } = useQuery({
+    queryKey: ["bid-status", "fetch-lcs", id],
     queryFn: () => getBankLcStatus(id),
   });
   return (

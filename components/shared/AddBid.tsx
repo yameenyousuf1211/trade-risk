@@ -5,17 +5,10 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { CalendarIcon, Plus, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker, Loader } from "../helpers";
 import { Input } from "../ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Image from "next/image";
 import { convertDateToYYYYMMDD } from "@/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -25,16 +18,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addBid, fetchSingleBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 
 const LCInfo = ({
   label,
@@ -78,12 +63,17 @@ export const AddBid = ({
 
   // Get LC
   const { data: lcData, isLoading } = useQuery({
-    queryKey: [`single-lc-${lcId}`],
+    queryKey: [`single-lc`, lcId],
     queryFn: () => fetchSingleLc(lcId),
   });
 
-  const { mutateAsync, isPending } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: addBid,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["bid-status", "fetch-lcs"],
+      });
+    },
   });
 
   const {
@@ -107,24 +97,16 @@ export const AddBid = ({
       confirmationPrice: data.confirmationPrice,
       lc: lcData._id,
       type: lcData.lcType!,
-      validity: new Date(),
+      // validity: new Date(),
+      validity: data.validity,
       ...(isDiscount && {
         discountMargin: discountMargin,
         discountBaseRate: discountBaseRate,
       }),
-      // ...(isDiscount && {
-      //   discountingPrice: (
-      //     Number(discountBaseRate) + Number(discountMargin)
-      //   ).toString(),
-      // }),
-      // discountingPrice: 10,
     });
 
-    if (!success) return toast.error("Something went wrong");
+    if (!success) return toast.error(response);
     else {
-      queryClient.invalidateQueries({
-        queryKey: [`bid-status`, "fetch-lcs", response._id],
-      });
       let closeBtn = document.getElementById("submit-button-close");
       // @ts-ignore
       closeBtn.click();
@@ -132,17 +114,6 @@ export const AddBid = ({
     }
   };
 
-  // const { isLoading: isInfoLoading, data } = useQuery({
-  //   queryKey: ["single-bid-", id],
-  //   queryFn: () => fetchSingleBid(id),
-  // });
-
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [validityDate, setValidityDate] = useState();
-
-  // useCallback(() => {
-
-  // })
   return (
     <Dialog>
       <DialogTrigger
@@ -362,7 +333,7 @@ export const AddBid = ({
                   </Button>
                 </div>
 
-                {status === "Rejected" && (
+                {/* {status === "Rejected" && (
                   <AddBid
                     triggerTitle={"Submit a new bid"}
                     status={"Add bid"}
@@ -370,7 +341,7 @@ export const AddBid = ({
                     isDiscount={lcData?.lcType.includes("Discount")}
                     lcId={lcData?._id}
                   />
-                )}
+                )} */}
               </>
             ) : (
               // Add Bids

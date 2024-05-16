@@ -50,20 +50,24 @@ export default function LoginPage() {
           Sign in using your registered credentials to start trading
         </p>
         <form
-          className="bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5"
+          className="bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-7"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <FloatingInput
-            placeholder="Company Email"
-            type="email"
-            name="email"
-            register={register}
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
-          )}
+          <div className="relative">
+            <FloatingInput
+              placeholder="Company Email"
+              type="email"
+              name="email"
+              register={register}
+            />
+            {errors.email && (
+              <span className="mt-1 absolute text-red-500 text-[12px]">
+                {errors.email.message}
+              </span>
+            )}
+          </div>
 
-          <div className="relative w-full">
+          <div className="relative w-full mb-2">
             <input
               type={showPass ? "text" : "password"}
               id="password"
@@ -88,10 +92,13 @@ export default function LoginPage() {
                 <EyeOff className="size-5 text-gray-500" />
               )}
             </button>
+            {errors.password && (
+              <span className="mt-1 absolute text-red-500 text-[12px]">
+                {errors.password.message}
+              </span>
+            )}
           </div>
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password.message}</p>
-          )}
+
           <div className="flex items-center justify-between gap-x-2">
             <div className="flex items-center space-x-2">
               <input type="checkbox" id="remember" />

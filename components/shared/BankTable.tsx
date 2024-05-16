@@ -9,18 +9,15 @@ import {
 } from "@/components/ui/table";
 import { ChevronUp, Ellipsis } from "lucide-react";
 import {
-  CountrySelect,
   DateRangePicker,
   Filter,
-  Loader,
   Pagination,
   ProductFilter,
   SearchBar,
 } from "../helpers";
 import { Button } from "../ui/button";
-import { TableDialog } from "./TableDialog";
 import Image from "next/image";
-import { myBidsData, myBidsColumnHeaders } from "@/utils/data";
+import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
 import { ApiResponse, IMyBids } from "@/types/type";
 import { convertDateToYYYYMMDD } from "@/utils";
@@ -107,7 +104,7 @@ export const BankTable = ({
                         isInfo={item.status !== "Add bid"}
                         isDiscount
                         border
-                        lcId={item.lc}
+                        lcId={item.lc[0]}
                       />
                     ) : (
                       <Button

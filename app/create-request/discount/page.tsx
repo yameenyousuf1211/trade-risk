@@ -7,7 +7,7 @@ import {
   Period,
   Transhipment,
 } from "@/components/LCSteps/Step3Helpers";
-import { RadioInput } from "@/components/LCSteps/helpers";
+import { BgRadioInput, RadioInput } from "@/components/LCSteps/helpers";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -28,6 +28,8 @@ import useLoading from "@/hooks/useLoading";
 import Loader from "@/components/ui/loader";
 import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Country } from "@/types/type";
+import { DisclaimerDialog } from "@/components/helpers";
 
 const CreateDiscountPage = () => {
   const {
@@ -68,28 +70,44 @@ const CreateDiscountPage = () => {
     }
   }, [errors]);
 
+  const [proceed, setProceed] = useState(false);
+
   const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async (
     data: z.infer<typeof discountingSchema>
   ) => {
-    startLoading();
-    const reqData = {
-      ...data,
-      transhipment: data.transhipment === "yes" ? true : false,
-      lcType: "LC Discounting",
-      extraInfo: {
-        dats: new Date("2024-04-28"),
-        other: "nothing",
-      },
-      expectedDiscountingDate: new Date("2024-04-28"),
-    };
+    if (proceed) {
+      startLoading();
+      const reqData = {
+        ...data,
+        transhipment: data.transhipment === "yes" ? true : false,
+        lcType: "LC Discounting",
+        extraInfo: {
+          dats: new Date("2024-04-28"),
+          other: "nothing",
+        },
+        shipmentPort: {
+          ...data?.shipmentPort,
+          port: "xyz",
+        },
+        lcPeriod: {
+          ...data.lcPeriod,
+          expectedDate: false,
+        },
+        expectedDiscountingDate: new Date("2024-04-28"),
+      };
 
-    const { response, success } = await onCreateLC(reqData);
-    stopLoading();
-    if (!success) return toast.error(response);
-    else {
-      toast.success(response?.message);
-      reset();
-      router.push("/");
+      const { response, success } = await onCreateLC(reqData);
+      stopLoading();
+      if (!success) return toast.error(response);
+      else {
+        toast.success(response?.message);
+        reset();
+        router.push("/");
+      }
+    } else {
+      let openDisclaimerBtn = document.getElementById("open-disclaimer");
+      // @ts-ignore
+      openDisclaimerBtn.click();
     }
   };
 
@@ -107,6 +125,14 @@ const CreateDiscountPage = () => {
         dats: new Date("2024-04-28"),
         other: "nothing",
       },
+      shipmentPort: {
+        ...data?.shipmentPort,
+        port: "xyz",
+      },
+      lcPeriod: {
+        ...data.lcPeriod,
+        expectedDate: false,
+      },
       expectedDiscountingDate: new Date("2024-04-28"),
       isDraft: "true",
     };
@@ -122,15 +148,57 @@ const CreateDiscountPage = () => {
     }
   };
 
-  const { data: countries } = useQuery({
+  const [allCountries, setAllCountries] = useState<Country[]>([]);
+  const [countries, setCountries] = useState([]);
+  const [flags, setFlags] = useState([]);
+
+  const { data: countriesData } = useQuery({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
   });
+
+  useEffect(() => {
+    if (
+      countriesData &&
+      countriesData.success &&
+      countriesData.response &&
+      countriesData.response.length > 0
+    ) {
+      setAllCountries(countriesData.response);
+      const fetchedCountries = countriesData.response.map(
+        (country: Country) => {
+          return country.name;
+        }
+      );
+      setCountries(fetchedCountries);
+      const fetchedFlags = countriesData.response.map((country: Country) => {
+        return country.flag;
+      });
+      setFlags(fetchedFlags);
+    }
+  }, [countriesData]);
 
   const { data: currency } = useQuery({
     queryKey: ["currency"],
     queryFn: () => getCurrenncy(),
   });
+
+  const [checkedState, setCheckedState] = useState({
+    "payment-sight": false,
+    "payment-usance": false,
+    "payment-deferred": false,
+    "payment-upas": false,
+  });
+
+  const handleCheckChange = (id: string) => {
+    setCheckedState((prevState) => ({
+      ...prevState,
+      "payment-sight": id === "payment-sight",
+      "payment-usance": id === "payment-usance",
+      "payment-deferred": id === "payment-deferred",
+      "payment-upas": id === "payment-upas",
+    }));
+  };
 
   return (
     <CreateLCLayout>
@@ -171,33 +239,41 @@ const CreateDiscountPage = () => {
           <div className="border border-borderCol px-2 py-3 rounded-md bg-[#F5F7F9]">
             <h5 className="font-semibold ml-3">LC Payment Terms</h5>
             <div className="flex items-center gap-x-3 w-full mt-2">
-              <RadioInput
+              <BgRadioInput
                 id="payment-sight"
                 label="Sight LC"
                 name="paymentTerms"
-                register={register}
                 value="sight-lc"
+                register={register}
+                checked={checkedState["payment-sight"]}
+                handleCheckChange={handleCheckChange}
               />
-              <RadioInput
+              <BgRadioInput
                 id="payment-usance"
                 label="Usance LC"
                 name="paymentTerms"
                 value="usance-lc"
                 register={register}
+                checked={checkedState["payment-usance"]}
+                handleCheckChange={handleCheckChange}
               />
-              <RadioInput
+              <BgRadioInput
                 id="payment-deferred"
                 label="Deferred LC"
                 name="paymentTerms"
                 value="deferred-lc"
                 register={register}
+                checked={checkedState["payment-deferred"]}
+                handleCheckChange={handleCheckChange}
               />
-              <RadioInput
+              <BgRadioInput
                 id="payment-upas"
                 label="UPAS LC (Usance payment at sight)"
                 name="paymentTerms"
                 value="upas-lc"
                 register={register}
+                checked={checkedState["payment-upas"]}
+                handleCheckChange={handleCheckChange}
               />
             </div>
             {/* Days input */}
@@ -298,24 +374,39 @@ const CreateDiscountPage = () => {
           </div>
           <DiscountBanks
             setValue={setValue}
-            countries={countries?.response}
+            countries={countries}
+            flags={flags}
             getValues={getValues}
           />
           {/* Period */}
-          <Period setValue={setValue} getValues={getValues} />
+          <Period
+            setValue={setValue}
+            getValues={getValues}
+            countries={countries}
+            flags={flags}
+          />
           {/* Transhipment */}
-          <Transhipment register={register} isDiscount setValue={setValue} />
+          <Transhipment
+            getValues={getValues}
+            register={register}
+            isDiscount
+            setValue={setValue}
+          />
         </div>
 
         <Step4
           register={register}
           setValue={setValue}
-          countries={countries?.response}
+          countries={countries}
+          getValues={getValues}
+          flags={flags}
         />
         <Step5
           register={register}
-          countries={countries?.response}
+          countries={countries}
+          flags={flags}
           setValue={setValue}
+          getValues={getValues}
         />
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
@@ -350,6 +441,11 @@ const CreateDiscountPage = () => {
             {isLoading ? <Loader /> : "Submit request"}
           </Button>
         </div>
+        <DisclaimerDialog
+          title="Submit Request"
+          className="hidden"
+          setProceed={setProceed}
+        />
       </form>
     </CreateLCLayout>
   );

@@ -4,7 +4,7 @@ import { FloatingInput } from "@/components/helpers/FloatingInput";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Paperclip } from "lucide-react";
+import { Paperclip, X } from "lucide-react";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,15 +42,16 @@ const PointContactPage = () => {
     }
   }, [contactData]);
 
+  const [pdfFile, setPdfFile] = useState<File | undefined>(undefined);
+  const [pdfError, setPdfError] = useState(false);
   const onSubmit: SubmitHandler<z.infer<typeof pointOfContractSchema>> = async (
     data: any
   ) => {
+    if (!pdfFile) return setPdfError(true);
     setValues(data);
     localStorage.setItem("contactData", JSON.stringify(data));
     router.push("/register/corporate/current-banking");
   };
-
-  const [pdfFile, setPdfFile] = useState<File | undefined>(undefined);
 
   return (
     <CorporateStepLayout
@@ -59,10 +60,10 @@ const PointContactPage = () => {
       text="Give us the details of the POC our sales team should get in touch with after verification"
     >
       <form
-        className="max-w-xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5"
+        className="max-w-xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-6"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="w-full">
+        <div className="w-full relative">
           <FloatingInput
             register={register}
             type="text"
@@ -70,13 +71,13 @@ const PointContactPage = () => {
             placeholder="Authorized Point of Contact"
           />
           {errors.pocName && (
-            <span className="text-[11px] text-red-500">
+            <span className="mt-1 absolute text-[11px] text-red-500">
               {errors.pocName.message}
             </span>
           )}
         </div>
         <div className="flex items-center gap-x-2">
-          <div className="w-full">
+          <div className="w-full relative">
             <FloatingInput
               register={register}
               name="pocEmail"
@@ -84,19 +85,19 @@ const PointContactPage = () => {
               type="email"
             />
             {errors.pocEmail && (
-              <span className="text-[11px] text-red-500">
+              <span className="mt-1 absolute text-[11px] text-red-500">
                 {errors.pocEmail.message}
               </span>
             )}
           </div>
-          <div className="w-full">
+          <div className="w-full relative">
             <TelephoneInput
               name="pocPhone"
               placeholder="pocPhone"
               setValue={setValue}
             />
             {errors.pocPhone && (
-              <span className="text-[11px] text-red-500">
+              <span className="mt-1 absolute text-[11px] text-red-500">
                 {errors.pocPhone.message}
               </span>
             )}
@@ -106,7 +107,7 @@ const PointContactPage = () => {
         <div className="h-[2px] w-full bg-borderCol" />
 
         <div className="flex items-center gap-x-2">
-          <div className="w-full">
+          <div className="w-full relative">
             <FloatingInput
               type="text"
               name="poc"
@@ -114,12 +115,12 @@ const PointContactPage = () => {
               register={register}
             />
             {errors.poc && (
-              <span className="text-[11px] text-red-500">
+              <span className="mt-1 absolute text-[11px] text-red-500">
                 {errors.poc.message}
               </span>
             )}
           </div>
-          <div className="w-full">
+          <div className="w-full relative">
             <FloatingInput
               type="text"
               name="pocDesignation"
@@ -127,7 +128,7 @@ const PointContactPage = () => {
               register={register}
             />
             {errors.pocDesignation && (
-              <span className="text-[11px] text-red-500">
+              <span className="mt-1 absolute text-[11px] text-red-500">
                 {errors.pocDesignation.message}
               </span>
             )}
@@ -143,8 +144,16 @@ const PointContactPage = () => {
               <Paperclip className="text-gray-500 size-4" />
               <p className="text-sm">Upload authorization letter</p>
             </div>
-            <p className="text-sm text-[#92929D]">
+            <p className="relative text-sm text-[#333]">
               {pdfFile ? pdfFile.name.substring(0, 20) : "Select PDF file"}
+              {pdfFile && (
+                <div
+                  className="bg-red-500 text-white size-4 rounded-full center absolute text-[12px] -top-3 -right-2 z-20"
+                  onClick={() => setPdfFile(undefined)}
+                >
+                  <X />
+                </div>
+              )}
             </p>
           </label>
           <input
@@ -154,7 +163,7 @@ const PointContactPage = () => {
             className="hidden"
             onChange={(e) => setPdfFile(e.target.files?.[0])}
           />
-          {Object.entries(errors).length > 0 && !pdfFile && (
+          {(Object.keys(errors).length > 0 || pdfError) && !pdfFile && (
             <span className="text-[11px] text-red-500">
               Please select a file
             </span>

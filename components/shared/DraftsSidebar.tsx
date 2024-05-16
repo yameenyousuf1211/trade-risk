@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../ui/button";
 import { ApiResponse, ILcs } from "@/types/type";
-import { deleteLcDraft, fetchLcs } from "@/services/apis/lcs.api";
+import { deleteLcDraft, fetchLcs, fetchSingleLc } from "@/services/apis/lcs.api";
 import { Loader } from "../helpers";
 import { convertDateToYYYYMMDD } from "@/utils";
 import { useAuth } from "@/context/AuthProvider";
@@ -31,9 +31,15 @@ const DraftCard = ({
   };
 
   const setValues = useConfirmationStore((state) => state.setValues);
-  const handleEditLC = () => {
+  const handleEditLC = async () => {
     // @ts-ignore
-    // setValues(draft);
+    try {
+      const response = await fetchSingleLc(draft?._id);
+      console.log(response)
+      setValues(response);
+    } catch (error) {
+      
+    }
   };
 
   return (

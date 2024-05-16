@@ -1,16 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { DDInput } from "./helpers";
+import { useAuth } from "@/context/AuthProvider";
 
 export const Step4 = ({
   register,
   countries,
   setValue,
+  getValues,
+  flags,
 }: {
   register: any;
   countries: string[];
+  flags: string[];
   setValue: any;
+  getValues: any;
 }) => {
+  const { user } = useAuth();
+  let isImporter = getValues("participantRole") === "importer";
+  let importerCountry = getValues("importerInfo.countryOfImport");
+
+
+  useEffect(() => {
+    isImporter = getValues("participantRole") === "importer";
+  }, [getValues, user]);
+  // console.log(isImporter);
+
+  isImporter && setValue("importerInfo.applicantName", user ? user.name : "");
+
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -38,7 +55,9 @@ export const Step4 = ({
         label="Country of Import"
         id="importerInfo.countryOfImport"
         data={countries}
+        value={importerCountry}
         setValue={setValue}
+        flags={flags}
       />
     </div>
   );

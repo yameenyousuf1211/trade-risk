@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import { getBanks, getCities, getCountries } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import useLoading from "@/hooks/useLoading";
+import { Country } from "@/types/type";
 
 interface Bank {
   country: string;
@@ -36,6 +37,7 @@ const CurrentBankingPage = () => {
   const router = useRouter();
   const setValues = useRegisterStore((state) => state.setValues);
 
+  // Retreiving data from localstorage
   const corporateData =
     typeof window !== "undefined"
       ? localStorage.getItem("corporateData")
@@ -66,10 +68,37 @@ const CurrentBankingPage = () => {
   const [bankOpen, setBankOpen] = useState(false);
   const [bankVal, setBankVal] = useState("");
 
-  const { data: countries, isLoading: countriesLoading } = useQuery({
-    queryKey: ["countries"],
-    queryFn: () => getCountries(),
-  });
+  const [allCountries, setAllCountries] = useState<Country[]>([]);
+  const [countries, setCountries] = useState([]);
+  const [flags, setFlags] = useState([]);
+  const [isoCode, setIsoCode] = useState("");
+  const [cities, setCities] = useState([]);
+
+  // Fetch the countries and sort them
+  useEffect(() => {
+    const fetchCountries = async () => {
+      const { response } = await getCountries();
+      setAllCountries(response);
+      const fetchedCountries = response?.map((country: Country) => {
+        return country.name;
+      });
+      setCountries(fetchedCountries);
+      const fetchedFlags = response?.map((country: Country) => {
+        return country.flag;
+      });
+      setFlags(fetchedFlags);
+    };
+
+    fetchCountries();
+  }, []);
+
+  const setCountryCode = (selectedCountry: string) => {
+    const country = allCountries.filter(
+      (country: any) =>
+        country.name.toLowerCase() == selectedCountry.toLowerCase()
+    );
+    setIsoCode(country[0].isoCode);
+  };
 
   const { data: banks, isLoading: banksLoading } = useQuery({
     queryKey: ["banks", countryVal],
@@ -77,11 +106,20 @@ const CurrentBankingPage = () => {
     enabled: !!countryVal,
   });
 
-  const { data: cities, isLoading: citiesLoading } = useQuery({
-    queryKey: ["cities", countryVal],
-    queryFn: () => getCities(countryVal),
-    enabled: !!countryVal,
+  const { data: citiesData } = useQuery({
+    queryKey: ["cities", isoCode],
+    queryFn: () => getCities(isoCode),
+    enabled: !!isoCode,
   });
+
+  useEffect(() => {
+    if (citiesData && citiesData.response && citiesData.response.length > 0) {
+      const fetchedCitites = citiesData?.response?.map((city: any) => {
+        return city.name;
+      });
+      setCities(fetchedCitites);
+    }
+  }, [citiesData, isoCode]);
 
   const [allBanks, setAllBanks] = useState<{ [country: string]: Bank[] }>({});
 
@@ -106,10 +144,20 @@ const CurrentBankingPage = () => {
   };
 
   const handleBankDelete = (country: string, index: number) => {
-    setAllBanks((prevBanks) => ({
-      ...prevBanks,
-      [country]: prevBanks[country].filter((_, i) => i !== index),
-    }));
+    setAllBanks((prevBanks) => {
+      const updatedCountryBanks = prevBanks[country].filter(
+        (_, i) => i !== index
+      );
+      if (updatedCountryBanks.length === 0) {
+        const { [country]: _, ...restOfCountries } = prevBanks;
+        return restOfCountries;
+      }
+
+      return {
+        ...prevBanks,
+        [country]: updatedCountryBanks,
+      };
+    });
   };
 
   const handleSubmit = async () => {
@@ -178,7 +226,7 @@ const CurrentBankingPage = () => {
                   className="w-[230px] justify-between"
                 >
                   {countryVal
-                    ? countries?.response.find(
+                    ? countries?.find(
                         (country: string) =>
                           country.toLowerCase() === countryVal.toLowerCase()
                       )
@@ -186,15 +234,14 @@ const CurrentBankingPage = () => {
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
+              <PopoverContent className="w-[230px] p-0">
                 <Command>
                   <CommandInput placeholder="Search country..." />
                   <CommandEmpty>No country found.</CommandEmpty>
-                  <CommandGroup>
-                    {!countriesLoading &&
-                      countries &&
-                      countries.success &&
-                      countries?.response.map((country: string) => (
+                  <CommandGroup className="max-h-[300px] overflow-y-auto">
+                    {countries &&
+                      countries.length > 0 &&
+                      countries.map((country: string, idx: number) => (
                         <CommandItem
                           key={country}
                           value={country}
@@ -205,6 +252,7 @@ const CurrentBankingPage = () => {
                                 ? ""
                                 : currentValue
                             );
+                            setCountryCode(currentValue);
                             setCountryOpen(false);
                           }}
                         >
@@ -216,6 +264,7 @@ const CurrentBankingPage = () => {
                                 : "opacity-0"
                             )}
                           />
+                          <span className="mr-2">{flags[idx]}</span>
                           {country}
                         </CommandItem>
                       ))}
@@ -243,11 +292,11 @@ const CurrentBankingPage = () => {
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
+              <PopoverContent className="w-[230px] p-0">
                 <Command>
                   <CommandInput placeholder="Search bank..." />
                   <CommandEmpty>No bank found.</CommandEmpty>
-                  <CommandGroup>
+                  <CommandGroup className="max-h-[300px] overflow-y-auto">
                     {!banksLoading &&
                       banks &&
                       banks.success &&
@@ -292,7 +341,7 @@ const CurrentBankingPage = () => {
                   disabled={countryVal === ""}
                 >
                   {countryVal
-                    ? cities?.response.find(
+                    ? cities?.find(
                         (city: string) =>
                           city.toLowerCase() === cityVal.toLowerCase()
                       )
@@ -300,15 +349,14 @@ const CurrentBankingPage = () => {
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
+              <PopoverContent className="w-[230px] p-0">
                 <Command>
                   <CommandInput placeholder="Search city..." />
                   <CommandEmpty>No city found.</CommandEmpty>
-                  <CommandGroup>
-                    {!citiesLoading &&
-                      cities &&
-                      cities.success &&
-                      cities?.response.map((city: string) => (
+                  <CommandGroup className="max-h-[300px] overflow-y-auto">
+                    {cities &&
+                      cities.length > 0 &&
+                      cities.map((city: string) => (
                         <CommandItem
                           key={city}
                           value={city}

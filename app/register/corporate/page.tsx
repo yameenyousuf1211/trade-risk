@@ -18,9 +18,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { companyInfoSchema } from "@/validation";
 import { z } from "zod";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
-import { CountrySelect, TelephoneInput } from "@/components/helpers";
+import {
+  CountrySelect,
+  DisclaimerDialog,
+  TelephoneInput,
+} from "@/components/helpers";
 import { getCities } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
+import { Country } from "@/types/type";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
@@ -36,7 +41,7 @@ const CompanyInfoPage = () => {
     setValue,
     getValues,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isValid, isDirty },
   } = useForm<z.infer<typeof companyInfoSchema>>({
     resolver: zodResolver(companyInfoSchema),
   });
@@ -60,19 +65,26 @@ const CompanyInfoPage = () => {
     router.push("/register/corporate/product-info");
   };
 
-  const [valueChanged, setValueChanged] = useState(false);
-  let country = getValues("accountCountry");
+  const [isoCode, setIsoCode] = useState("");
+  const [cities, setCities] = useState([]);
 
-  useEffect(() => {
-    country = getValues("accountCountry");
-  }, [valueChanged]);
-
-  const { data: cities, isLoading } = useQuery({
-    queryKey: ["cities", country],
-    queryFn: () => getCities(country),
-    enabled: !!country,
+  const { data: citiesData, isLoading } = useQuery({
+    queryKey: ["cities", isoCode],
+    queryFn: () => getCities(isoCode),
+    enabled: !!isoCode,
   });
 
+  useEffect(() => {
+    if (citiesData && citiesData.response && citiesData.response.length > 0) {
+      const fetchedCitites = citiesData?.response?.map((city: any) => {
+        return city.name;
+      });
+      setCities(fetchedCitites);
+    }
+  }, [citiesData, isoCode]);
+
+  const [procceed, setProceed] = useState(false);
+  
   return (
     <AuthLayout>
       <section className="max-w-2xl mx-auto w-full max-xs:px-1 z-10 ">
@@ -82,23 +94,23 @@ const CompanyInfoPage = () => {
           later.
         </p>
         <form
-          className="max-w-2xl mx-auto w-full shadow-md bg-white rounded-xl xs:p-8 max-xs:py-8 max-xs:px-4 z-10 mt-5 flex flex-col sm:gap-y-5 gap-y-3"
+          className="max-w-2xl mx-auto w-full shadow-md bg-white rounded-xl xs:p-8 max-xs:py-8 max-xs:px-4 z-10 mt-5 flex flex-col sm:gap-y-6 gap-y-3"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full">
+            <div className="w-full relative">
               <FloatingInput
                 name="name"
                 placeholder="Company Name"
                 register={register}
               />
               {errors.name && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.name.message}
                 </span>
               )}
             </div>
-            <div className="w-full">
+            <div className="w-full relative">
               <Select
                 onValueChange={(value) =>
                   setValue("constitution", value, { shouldValidate: true })
@@ -120,27 +132,27 @@ const CompanyInfoPage = () => {
                 </SelectContent>
               </Select>
               {errors.constitution && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.constitution.message}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="w-full">
+          <div className="w-full relative">
             <FloatingInput
               name="address"
               placeholder="Company Address"
               register={register}
             />
             {errors.address && (
-              <span className="text-[11px] text-red-500">
+              <span className="mt-1 absolute text-[11px] text-red-500">
                 {errors.address.message}
               </span>
             )}
           </div>
           <div className="flex items-center gap-x-2 max-sm:flex-col max-xs:gap-y-3">
-            <div className="w-full">
+            <div className="w-full relative">
               <FloatingInput
                 name="email"
                 placeholder="Company Email"
@@ -148,19 +160,19 @@ const CompanyInfoPage = () => {
                 register={register}
               />
               {errors.email && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.email.message}
                 </span>
               )}
             </div>
-            <div className="w-full">
+            <div className="w-full relative">
               <TelephoneInput
                 name="phone"
                 placeholder="Telephone"
                 setValue={setValue}
               />
               {errors.phone && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.phone.message}
                 </span>
               )}
@@ -168,7 +180,7 @@ const CompanyInfoPage = () => {
           </div>
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full">
+            <div className="w-full relative">
               <FloatingInput
                 type="text"
                 name="businessNature"
@@ -176,12 +188,12 @@ const CompanyInfoPage = () => {
                 register={register}
               />
               {errors.businessNature && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.businessNature.message}
                 </span>
               )}
             </div>
-            <div className="w-full">
+            <div className="w-full relative">
               <Select
                 onValueChange={(value) =>
                   setValue("businessType", value, { shouldValidate: true })
@@ -195,7 +207,7 @@ const CompanyInfoPage = () => {
                 </SelectContent>
               </Select>{" "}
               {errors.businessType && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.businessType.message}
                 </span>
               )}
@@ -205,19 +217,19 @@ const CompanyInfoPage = () => {
           <div className="h-[2px] w-full bg-borderCol" />
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full">
+            <div className="w-full relative">
               <FloatingInput
                 name="bank"
                 placeholder="Bank Name"
                 register={register}
               />
               {errors.bank && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.bank.message}
                 </span>
               )}
             </div>
-            <div className="w-full">
+            <div className="w-full relative">
               <FloatingInput
                 name="accountNumber"
                 type="number"
@@ -226,7 +238,7 @@ const CompanyInfoPage = () => {
                 register={register}
               />
               {errors.accountNumber && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.accountNumber.message}
                 </span>
               )}
@@ -234,26 +246,26 @@ const CompanyInfoPage = () => {
           </div>
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full">
+            <div className="w-full relative">
               <FloatingInput
                 name="swiftCode"
                 placeholder="SWIFT Code"
                 register={register}
               />
               {errors.swiftCode && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.swiftCode.message}
                 </span>
               )}
             </div>
-            <div className="w-full">
+            <div className="w-full relative">
               <FloatingInput
                 name="accountHolderName"
                 placeholder="Account holder name"
                 register={register}
               />
               {errors.accountHolderName && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.accountHolderName.message}
                 </span>
               )}
@@ -261,35 +273,34 @@ const CompanyInfoPage = () => {
           </div>
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full">
+            <div className="w-full relative">
               <CountrySelect
+                setIsoCode={setIsoCode}
                 setValue={setValue}
                 name="accountCountry"
-                setValueChange={setValueChanged}
               />
               {errors.accountCountry && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.accountCountry.message}
                 </span>
               )}
             </div>
-            <div className="w-full">
+            <div className="w-full relative">
               <Select
                 onValueChange={(value) =>
                   setValue("accountCity", value, { shouldValidate: true })
                 }
               >
                 <SelectTrigger
-                  disabled={!cities || !cities?.response || !cities.success}
+                  disabled={!cities || cities.length <= 0}
                   className="w-full py-5 px-4 text-gray-500"
                 >
                   <SelectValue placeholder="Account City" />
                 </SelectTrigger>
                 <SelectContent>
-                  {!isLoading &&
-                    cities &&
-                    cities.response.length > 0 &&
-                    cities?.response.map((city: string, idx: number) => (
+                  {cities &&
+                    cities.length > 0 &&
+                    cities.map((city: string, idx: number) => (
                       <SelectItem value={city} key={`${city}-${idx}`}>
                         {city}
                       </SelectItem>
@@ -297,7 +308,7 @@ const CompanyInfoPage = () => {
                 </SelectContent>
               </Select>
               {errors.accountCity && (
-                <span className="text-[11px] text-red-500">
+                <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.accountCity.message}
                 </span>
               )}
@@ -311,9 +322,12 @@ const CompanyInfoPage = () => {
               className="text-sm text-[#44444F] leading-none"
             >
               I agree to TradeRisk&apos;s{" "}
-              <Link href="#" className="text-text">
-                Privacy Policy
-              </Link>
+              <span className="text-text">
+                <DisclaimerDialog
+                  title="Privacy Policy"
+                  setProceed={setProceed}
+                />
+              </span>
             </label>
           </div>
           {/* Action Buttons */}
@@ -332,7 +346,7 @@ const CompanyInfoPage = () => {
               type="submit"
               className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
-              // disabled={false}
+              // disabled={isDirty}
             >
               Get Started
             </Button>

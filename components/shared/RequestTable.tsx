@@ -7,13 +7,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronUp, Ellipsis, Eye, Plus } from "lucide-react";
+import { ChevronUp, Ellipsis, Eye, ListFilter, Plus } from "lucide-react";
 import {
-  CountrySelect,
   DashboardCountries,
   DateRangePicker,
   Filter,
-  Loader,
   Pagination,
   ProductFilter,
   SearchBar,
@@ -23,7 +21,6 @@ import { Button } from "../ui/button";
 import { TableDialog } from "./TableDialog";
 import Image from "next/image";
 import { columnHeaders, bankColumnHeaders } from "@/utils/data";
-import { AddBid } from "./AddBid";
 import { ApiResponse, ILcs } from "@/types/type";
 import { convertDateToYYYYMMDD } from "@/utils";
 
@@ -67,7 +64,10 @@ export const RequestTable = ({
             )}
             <DateRangePicker />
             <SearchBar />
-            <Filter />
+            <div className="flex items-center gap-x-2">
+              <ListFilter />
+              <p>Filter</p>
+            </div>
             <Ellipsis className="mx-3" />
           </div>
         </div>
@@ -111,9 +111,7 @@ export const RequestTable = ({
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <div className="w-full h-full center">
-                  {/* <Loader /> */}
-                </div>
+                <div className="w-full h-full center">{/* <Loader /> */}</div>
               ) : isBank ? (
                 data &&
                 data.data &&
@@ -141,7 +139,9 @@ export const RequestTable = ({
                     </TableCell>
                     <TableDataCell data={item.exporterInfo.beneficiaryName} />
                     <TableDataCell data={item.importerInfo.applicantName} />
-                    <TableDataCell data={item.amount} />
+                    <TableDataCell
+                      data={item.amount?.toLocaleString() + ".00"}
+                    />
                     <TableCell className="px-1 py-1 max-w-[200px]">
                       <TableBidStatus id={item._id} lcData={item} />
                     </TableCell>
@@ -181,7 +181,9 @@ export const RequestTable = ({
                     </TableCell>
                     <TableDataCell data={item.exporterInfo.beneficiaryName} />
                     <TableDataCell data={item.importerInfo.applicantName} />
-                    <TableDataCell data={item.amount} />
+                    <TableDataCell
+                      data={item.amount?.toLocaleString() + ".00"}
+                    />
 
                     <TableCell className="px-1 py-1 max-w-[200px]">
                       <Button
@@ -192,7 +194,7 @@ export const RequestTable = ({
                       </Button>
                     </TableCell>
                     <TableCell className="px-1 py-1 max-w-[200px]">
-                      <TableDialog id={item._id} lcData={item} />
+                      <TableDialog lcData={item} bids={item.bids} />
                     </TableCell>
                   </TableRow>
                 ))

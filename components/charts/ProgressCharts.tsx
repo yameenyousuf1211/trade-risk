@@ -1,6 +1,8 @@
-import { getBidsCount } from "@/services/apis/bids.api";
+import { getBidsCount, getTotalRequests } from "@/services/apis/bids.api";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "../helpers";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const Chart = ({
   value,
@@ -8,23 +10,54 @@ const Chart = ({
   color,
   title,
   maxValue,
+  isBank,
 }: {
   value: number;
   color: string;
   bg: string;
   title: string;
   maxValue: number;
+  isBank?: boolean;
 }) => {
-  // const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(0);
 
-  // useEffect(() => {
-  //   setProgress((value / maxValue) * 100);
-  // }, [value, maxValue]);
-  const progress = (value / maxValue) * 100;
+  useEffect(() => {
+    setProgress((value / maxValue) * 100);
+  }, [value, maxValue]);
 
-  const circumference = 2 * Math.PI * 25;
+  const radius = 40;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDasharray = circumference;
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const handleFilter = () => {
+    const filter =
+      title === "accepted"
+        ? "Accepted"
+        : title === "rejected"
+        ? "Rejected"
+        : title === "expired" || title === "bids"
+        ? "Expired"
+        : title === "pending"
+        ? "Pending"
+        : "";
+    const queryParams = new URLSearchParams(searchParams);
+    queryParams.set("filter", filter.toString());
+    queryParams.set("page", "1");
+
+    const queryString = queryParams.toString();
+    router.push(`${isBank ? "my-bids" : "corporate-bids"}?${queryString}`, {
+      scroll: false,
+    });
+  };
+
   return (
-    <div className="hover:shadow-xl rounded-lg pb-2">
+    <div
+      className="hover:shadow-xl rounded-lg pb-2 cursor-pointer"
+      onClick={handleFilter}
+    >
       <div className="flex flex-col items-center justify-center">
         <div className="relative">
           <svg className="progress-ring" width="120" height="120">
@@ -32,26 +65,25 @@ const Chart = ({
             <circle
               className="progress-ring__circle"
               stroke={bg}
-              strokeWidth="12" // Increased stroke width
-              strokeLinecap="round" // Added stroke-linecap
+              strokeWidth="12"
+              strokeLinecap="round"
               fill="transparent"
-              r="40" // Increased radius
+              r={radius}
               cx="60"
               cy="60"
             />
             {/* Inner circle */}
             <circle
               className="progress-ring__circle progress-ring__circle--animated"
-              // stroke={color}
-              stroke="transparent"
-              strokeWidth="12" // Increased stroke width
-              strokeLinecap="round" // Added stroke-linecap
-              // strokeDasharray={`${circumference} ${circumference}`}
-              // strokeDashoffset={
-              //   circumference - (progress / 100) * circumference
-              // }
+              stroke={color}
+              strokeWidth="12"
+              strokeLinecap="round"
+              strokeDasharray={strokeDasharray}
+              strokeDashoffset={
+                circumference - (progress / 100) * circumference
+              }
               fill="transparent"
-              r="40" // Increased radius
+              r={radius}
               cx="60"
               cy="60"
             />
@@ -65,76 +97,121 @@ const Chart = ({
 };
 
 interface Count {
-  _id: string;
+  _id?: string;
   count: number;
+  status?: string;
 }
 
-export const ProgressCharts = ({ title }: { title: string }) => {
-  // const { isLoading, error, data } = useQuery({
-  //   queryKey: ["fetch-bids-count"],
-  //   queryFn: () => getBidsCount(),
-  // });
-  // console.log(data);
-  const accepted = 0;
-  const rejected = 0;
-  const expired = 0;
-  const pending = 0;
-  const maxValue = accepted + rejected + expired + pending;
+export const ProgressCharts = ({
+  title,
+  isBank,
+}: {
+  title: string;
+  isBank?: boolean;
+}) => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["fetch-bids-count"],
+    queryFn: () => (isBank ? getBidsCount() : getTotalRequests()),
+  });
+
+  const [accepted, setAccepted] = useState(0);
+  const [rejected, setRejected] = useState(0);
+  const [expired, setExpired] = useState(0);
+  const [pending, setPending] = useState(0);
+  const [maxValue, setMaxValue] = useState(0);
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      const statusCounts = {
+        Accepted: 0,
+        Rejected: 0,
+        Expired: 0,
+        Pending: 0,
+      };
+
+      data.forEach((item: Count) => {
+        // @ts-ignore
+        if (isBank) statusCounts[item._id] = item.count;
+        // @ts-ignore
+        else statusCounts[item.status] = item.count;
+      });
+
+      setAccepted(statusCounts.Accepted);
+      setRejected(statusCounts.Rejected);
+      setExpired(statusCounts.Expired);
+      setPending(statusCounts.Pending);
+
+      // Calculate the maximum value
+      const totalCount =
+        statusCounts.Accepted +
+        statusCounts.Rejected +
+        statusCounts.Expired +
+        statusCounts.Pending;
+      setMaxValue(totalCount);
+    }
+  }, [data]);
 
   return (
-    <div className="bg-white rounded-lg border border-borderCol py-4 px-5 xl:max-w-[525px] w-full h-full">
+    <div
+      className="bg-white rounded-lg border border-borderCol py-4 px-5 
+    xl:max-w-[525px] w-full max-h-[550px]"
+    >
       <div className="flex items-center gap-x-2 justify-between mb-3 w-full">
-        <h4 className="text-lg font-semibold">{title}</h4>
-        <p className="w-10 h-8 center bg-[#eeecec] rounded-md px-4 text-lg font-semibold">
-          {maxValue}
-        </p>
+        <div className="flex items-center gap-x-2">
+          <h4 className="text-lg font-semibold">{title}</h4>
+          <div className="size-4 rounded-full bg-[#B5B5BE] text-white text-[10px] center">
+            i
+          </div>
+          {/* <Image src="/images/info.png" alt="info" width={20} height={20} /> */}
+        </div>
+        {!isBank && (
+          <p className="w-10 h-8 center bg-[#eeecec] rounded-md px-4 text-lg font-semibold">
+            {maxValue}
+          </p>
+        )}
       </div>
       {/* Charts */}
       <div className="flex items-center overflow-x-auto">
-        {/* {isLoading ? (
+        {isLoading ? (
           <div className="w-full h-full center">
             <Loader />
           </div>
         ) : (
-          data.map((count: Count, idx: number) => (
+          <>
             <Chart
-              value={count.count}
+              value={accepted}
               bg="#E0F2EF"
               color="#49E2B4"
-              title={count._id}
+              title="accepted"
               maxValue={maxValue}
-              key={`${count._id}-${idx}`}
+              isBank={isBank}
             />
-          ))
-        )} */}
-        <Chart
-          value={accepted}
-          bg="#E0F2EF"
-          color="#49E2B4"
-          title="accepted"
-          maxValue={maxValue}
-        />
-        <Chart
-          value={rejected}
-          bg="#FFE6E6"
-          color="#FF0000"
-          title="rejected"
-          maxValue={maxValue}
-        />
-        <Chart
-          value={expired}
-          bg="#F6EBE7"
-          color="#FF7939"
-          title="expired"
-          maxValue={maxValue}
-        />
-        <Chart
-          value={pending}
-          bg="#DDE9FA"
-          color="#0062FF"
-          title="pending"
-          maxValue={maxValue}
-        />
+            <Chart
+              value={rejected}
+              bg="#FFE6E6"
+              color="#FF0000"
+              title="rejected"
+              maxValue={maxValue}
+              isBank={isBank}
+            />
+            <Chart
+              value={expired}
+              bg="#F6EBE7"
+              color="#FF7939"
+              title={isBank ? "bids" : "expired"}
+              maxValue={maxValue}
+              isBank={isBank}
+            />
+            <Chart
+              value={pending}
+              bg="#DDE9FA"
+              color="#0062FF"
+              title="pending"
+              maxValue={maxValue}
+              isBank={isBank}
+            />
+          </>
+        )}
       </div>
     </div>
   );

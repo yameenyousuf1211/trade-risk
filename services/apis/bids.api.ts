@@ -1,16 +1,6 @@
 import { STATUS } from "@/utils";
 import api from "../middleware/middleware";
 
-export const fetchBids = async ({ id }: { id: string }) => {
-  try {
-    const { data } = await api.get(`/bids?lc=${id}`);
-    return data.data;
-  } catch (error: any) {
-    console.log(error);
-    return error.response?.data?.message || "Something went wrong";
-  }
-};
-
 export const fetchSingleBid = async (id: string) => {
   try {
     const { data } = await api.get(`/bids/${id}`);
@@ -21,7 +11,13 @@ export const fetchSingleBid = async (id: string) => {
   }
 };
 
-export const acceptOrRejectBid = async (status: string, id: string) => {
+export const acceptOrRejectBid = async ({
+  status,
+  id,
+}: {
+  status: string;
+  id: string;
+}) => {
   try {
     const { data } = await api.put(`/bids?status=${status}`, {
       id,
@@ -92,7 +88,35 @@ export const fetchMyBids = async ({
 }) => {
   try {
     const { data } = await api.get(
-      `/bids?bidBy=true&limit=${limit || 10}&page=${page || 1}`
+      `/bids?bidBy=true&limit=${limit || 10}&page=${page || 1}&filter=${
+        filter || ""
+      }&search=${search || ""}`
+    );
+    return data.data;
+  } catch (error: any) {
+    console.log(error);
+    return error.response?.data?.message || "Something went wrong";
+  }
+};
+
+export const fetchCorporateBids = async ({
+  page,
+  limit,
+  filter,
+  search,
+  userId,
+}: {
+  page: number;
+  limit: number;
+  filter?: string;
+  search?: string;
+  userId: string;
+}) => {
+  try {
+    const { data } = await api.get(
+      `/bids?limit=${limit || 10}&page=${page || 1}&filter=${
+        filter || ""
+      }&search=${search || ""}&lcOwner=${userId}`
     );
     return data.data;
   } catch (error: any) {
@@ -103,8 +127,18 @@ export const fetchMyBids = async ({
 
 export const getBidsCount = async () => {
   try {
-    const { data } = await api.get(`/bids/count`);
+    const { data } = await api.get(`/bids/count/list`);
     return data.data;
+  } catch (error: any) {
+    console.log(error);
+    return error.response?.data?.message || "Something went wrong";
+  }
+};
+
+export const getTotalRequests = async () => {
+  try {
+    const { data } = await api.get(`/lcs/total-request/list`);
+    return data.data.data;
   } catch (error: any) {
     console.log(error);
     return error.response?.data?.message || "Something went wrong";

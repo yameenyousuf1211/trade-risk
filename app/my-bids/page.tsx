@@ -14,7 +14,7 @@ interface SearchParams {
     page: number;
     limit: number;
     filter: string;
-    search:string;
+    search: string;
   };
 }
 
@@ -50,7 +50,10 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
             {/* Tabs */}
             <div className="flex items-center gap-x-5 mb-2">
               <div className="relative py-3">
-                <Link href="/" className="text-neutral-700 font-semibold">
+                <Link
+                  href="/my-bids"
+                  className="text-neutral-700 font-semibold"
+                >
                   Confirmation & Discounting Bids
                 </Link>
                 {pathname === "/my-bids" && (
@@ -58,10 +61,7 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
                 )}
               </div>
               <div className="relative py-3">
-                <Link
-                  href="/avalization"
-                  className="text-neutral-700 font-semibold"
-                >
+                <Link href="#" className="text-neutral-700 font-semibold">
                   Avalization & Bill Discounting Bids
                 </Link>
                 {pathname === "/avalization" && (

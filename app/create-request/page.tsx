@@ -20,7 +20,7 @@ import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { confirmationSchema } from "@/validation/lc.validation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "../../components/ui/loader";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getCountries } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -111,7 +111,7 @@ const CreateRequestPage = () => {
       stopLoading();
       if (!success) return toast.error(response);
       else {
-        setValues(null as any)
+        setValues(null as any);
         toast.success(response?.message);
         reset();
         router.push("/");
@@ -151,12 +151,12 @@ const CreateRequestPage = () => {
         })
       : await onCreateLC(reqData);
     setLoader(false);
-    
+
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");
       reset();
-      setValues(null as any)
+      setValues(null as any);
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
       });

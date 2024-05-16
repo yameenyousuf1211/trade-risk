@@ -42,7 +42,7 @@ const useConfirmationStore = create<UseConfirmationStore>((set, get) => ({
     pricePerAnnum: "",
     advisingBank: "",
   },
-  setValues: (values: Partial<LcConfirmation>) =>
+  setValues: (values: Partial<LcConfirmation | null>) =>
     set((state) => ({ ...state, ...values })),
 }));
 export const getStateValues = (state: UseConfirmationStore): StateValues => {

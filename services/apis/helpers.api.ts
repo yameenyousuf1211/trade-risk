@@ -25,9 +25,7 @@ export const getBanks = async (country: string) => {
 export const getCities = async (country: string) => {
   try {
     if (!country) return;
-    const response = await api.get(
-      `/country/list/cities?country=${country.toLowerCase()}`
-    );
+    const response = await api.get(`/country/list/cities?country=${country}`);
 
     return { success: true, response: response.data.data };
   } catch (error) {
@@ -49,8 +47,10 @@ export const getCurrenncy = async () => {
 
 export const getPorts = async (country: string) => {
   try {
+    const capitalizedCountry =
+      country.charAt(0).toUpperCase() + country.slice(1).toLowerCase();
     const response = await api.get(
-      `/ports/details?country=${country.toLowerCase()}`
+      `/ports/details?country=${capitalizedCountry}`
     );
 
     return { success: true, response: response.data.data };

@@ -132,6 +132,7 @@ export const ProgressCharts = ({
       data.forEach((item: Count) => {
         // @ts-ignore
         if (isBank) statusCounts[item._id] = item.count;
+        // @ts-ignore
         else statusCounts[item.status] = item.count;
       });
 

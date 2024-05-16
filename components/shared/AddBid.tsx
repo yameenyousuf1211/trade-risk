@@ -67,11 +67,11 @@ export const AddBid = ({
     queryFn: () => fetchSingleLc(lcId),
   });
 
-  const { mutateAsync, isPending } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: addBid,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["bid-status"],
+        queryKey: ["bid-status", "fetch-lcs"],
       });
     },
   });
@@ -105,7 +105,7 @@ export const AddBid = ({
       }),
     });
 
-    if (!success) return toast.error("Something went wrong");
+    if (!success) return toast.error(response);
     else {
       let closeBtn = document.getElementById("submit-button-close");
       // @ts-ignore

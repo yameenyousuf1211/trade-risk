@@ -35,11 +35,9 @@ const TableDataCell = ({ data }: { data: string | number }) => {
 export const BankTable = ({
   data,
   isLoading,
-  search,
 }: {
   data: ApiResponse<IMyBids> | undefined;
   isLoading: boolean;
-  search: string;
 }) => {
   return (
     <div className="">
@@ -50,7 +48,7 @@ export const BankTable = ({
           <DateRangePicker />
         </div>
         <div className="flex items-center gap-x-2">
-          <SearchBar initialValue={search} />
+          <SearchBar />
           <Filter />
           <Ellipsis className="mx-3" />
         </div>
@@ -106,7 +104,7 @@ export const BankTable = ({
                         isInfo={item.status !== "Add bid"}
                         isDiscount
                         border
-                        lcId={item.lc}
+                        lcId={item.lc[0]}
                       />
                     ) : (
                       <Button

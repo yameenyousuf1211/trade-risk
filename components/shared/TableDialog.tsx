@@ -173,7 +173,6 @@ export const TableDialog = ({
   lcData: ILcs;
   bids: IBids[];
 }) => {
-  console.log(lcData);
   return (
     <Dialog>
       <DialogTrigger className="center border border-borderCol rounded-md w-full px-1 py-2">

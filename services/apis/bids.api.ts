@@ -103,10 +103,46 @@ export const fetchMyBids = async ({
   }
 };
 
+export const fetchCorporateBids = async ({
+  page,
+  limit,
+  filter,
+  search,
+  userId,
+}: {
+  page: number;
+  limit: number;
+  filter?: string;
+  search?: string;
+  userId: string;
+}) => {
+  try {
+    const { data } = await api.get(
+      `/bids?limit=${limit || 10}&page=${page || 1}&filter=${
+        filter || ""
+      }&search=${search || ""}&lcOwner=${userId}`
+    );
+    return data.data;
+  } catch (error: any) {
+    console.log(error);
+    return error.response?.data?.message || "Something went wrong";
+  }
+};
+
 export const getBidsCount = async () => {
   try {
     const { data } = await api.get(`/bids/count/list`);
     return data.data;
+  } catch (error: any) {
+    console.log(error);
+    return error.response?.data?.message || "Something went wrong";
+  }
+};
+
+export const getTotalRequests = async () => {
+  try {
+    const { data } = await api.get(`/lcs/total-request/list`);
+    return data.data.data;
   } catch (error: any) {
     console.log(error);
     return error.response?.data?.message || "Something went wrong";

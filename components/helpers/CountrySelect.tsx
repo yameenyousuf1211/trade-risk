@@ -1,15 +1,22 @@
 "use client";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { getCountries } from "@/services/apis/helpers.api";
 import { Country } from "@/types/type";
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import { Button } from "../ui/button";
+import { Check, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const CountrySelect = ({
   setValue,
@@ -22,6 +29,9 @@ export const CountrySelect = ({
   name: string;
   setValueChange?: any;
 }) => {
+  const [countryOpen, setCountryOpen] = useState(false);
+  const [countryVal, setCountryVal] = useState("");
+
   const [allData, setAllData] = useState<Country[]>([]);
   const [countries, setCountries] = useState([]);
   const [flags, setFlags] = useState([]);
@@ -46,31 +56,71 @@ export const CountrySelect = ({
 
   const setCountryCode = (selectedCountry: string) => {
     const country = allData.filter(
-      (country: any) => country.name == selectedCountry
+      (country: any) =>
+        country.name.toLowerCase() == selectedCountry.toLowerCase()
     );
     setIsoCode(country[0].isoCode);
   };
 
   return (
-    <Select
-      onValueChange={(value) => {
-        setCountryCode(value);
-        setValue(name, value, { shouldValidate: true });
-        setValueChange && setValueChange((prev: boolean) => !prev);
-      }}
-    >
-      <SelectTrigger className="w-full py-5 px-4 text-gray-500">
-        <SelectValue placeholder="Select Countries" />
-      </SelectTrigger>
-      <SelectContent>
-        {countries.length > 0 &&
-          countries.map((country: string, idx: number) => (
-            <SelectItem value={country} key={`${country}-${idx}`}>
-              <span className="mr-2">{flags[idx]}</span>
-              {country}
-            </SelectItem>
-          ))}
-      </SelectContent>
-    </Select>
+    <div className="w-full">
+      <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={countryOpen}
+            className="w-full justify-between font-normal text-sm text-gray-500"
+          >
+            {countryVal
+              ? countries?.find(
+                  (country: string) =>
+                    country.toLowerCase() === countryVal.toLowerCase()
+                )
+              : "Select country..."}
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0">
+          <Command>
+            <CommandInput placeholder="Search country..." />
+            <CommandEmpty>No country found.</CommandEmpty>
+            <CommandGroup className="max-h-[300px] overflow-y-auto">
+              {countries &&
+                countries.length > 0 &&
+                countries.map((country: string, idx: number) => (
+                  <CommandItem
+                    key={country}
+                    value={country}
+                    onSelect={(currentValue) => {
+                      setCountryVal(
+                        currentValue.toLowerCase() === countryVal.toLowerCase()
+                          ? ""
+                          : currentValue
+                      );
+                      setCountryOpen(false);
+                      setValue(name, currentValue, { shouldValidate: true });
+                      setCountryCode(currentValue);
+                      setValueChange &&
+                        setValueChange((prev: boolean) => !prev);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        country.toLowerCase() === countryVal.toLowerCase()
+                          ? "opacity-100"
+                          : "opacity-0"
+                      )}
+                    />
+                    <span className="mr-2">{flags[idx]}</span>
+                    {country}
+                  </CommandItem>
+                ))}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 };

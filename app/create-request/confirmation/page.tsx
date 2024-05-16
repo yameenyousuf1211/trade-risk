@@ -56,6 +56,7 @@ const ConfirmationPage = () => {
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
+  const [valueChanged,setValueChanged] = useState<boolean>(false)
   // Show errors
   useEffect(() => {
     if (errors) {
@@ -281,6 +282,7 @@ const ConfirmationPage = () => {
             getValues={getValues}
             countries={countries}
             flags={flags}
+            
           />
           {/* Transhipment */}
           <Transhipment register={register} setValue={setValue} />

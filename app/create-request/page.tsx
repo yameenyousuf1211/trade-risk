@@ -40,12 +40,10 @@ const CreateRequestPage = () => {
   });
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
+  const [valueChanged, setValueChanged] = useState<boolean>(false);
 
   const queryClient = useQueryClient();
-  
-
   const confirmationData = useConfirmationStore((state) => state); // Optional: to access current state
-  
 
   useEffect(() => {
     if (confirmationData && confirmationData?._id) {
@@ -54,33 +52,36 @@ const CreateRequestPage = () => {
         setValue(key, value);
       });
     }
+    setValueChanged(!valueChanged);
   }, [confirmationData]);
 
+  console.log(getValues(),"hhhhhhh")
+
   // Show errors
-  useEffect(() => {
-    if (errors) {
-      const showNestedErrors = (errorsObj: any, parentKey = "") => {
-        Object.keys(errorsObj)
-          .reverse()
-          .forEach((key) => {
-            const errorMessage =
-              errorsObj[key as keyof typeof errorsObj]?.message;
+  // useEffect(() => {
+  //   if (errors) {
+  //     const showNestedErrors = (errorsObj: any, parentKey = "") => {
+  //       Object.keys(errorsObj)
+  //         .reverse()
+  //         .forEach((key) => {
+  //           const errorMessage =
+  //             errorsObj[key as keyof typeof errorsObj]?.message;
 
-            if (errorMessage) {
-              // const fieldName = parentKey ? `${parentKey}.${key}` : key;
-              toast.error(`${errorMessage}`);
-            } else if (typeof errorsObj[key] === "object") {
-              showNestedErrors(errorsObj[key], key);
-            }
-          });
-      };
+  //           if (errorMessage) {
+  //             // const fieldName = parentKey ? `${parentKey}.${key}` : key;
+  //             toast.error(`${errorMessage}`);
+  //           } else if (typeof errorsObj[key] === "object") {
+  //             showNestedErrors(errorsObj[key], key);
+  //           }
+  //         });
+  //     };
 
-      showNestedErrors(errors);
-    }
-  }, [errors]);
+  //     showNestedErrors(errors);
+  //   }
+  // }, [errors,confirmationData]);
 
   const [proceed, setProceed] = useState(false);
-  
+
   const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data: z.infer<typeof confirmationSchema>
   ) => {
@@ -90,8 +91,6 @@ const CreateRequestPage = () => {
         ...data,
         lcType: "LC Confirmation",
         transhipment: data.transhipment === "yes" ? true : false,
-        
-
       };
 
       const { response, success } = await onCreateLC(reqData);
@@ -189,7 +188,6 @@ const CreateRequestPage = () => {
     }
   }, [countriesData]);
 
-
   return (
     <CreateLCLayout>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
@@ -201,6 +199,8 @@ const CreateRequestPage = () => {
           countries={countries}
           getValues={getValues}
           flags={flags}
+          valueChanged={valueChanged}
+          setValueChanged={setValueChanged}
         />
         <Step4
           register={register}

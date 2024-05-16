@@ -74,7 +74,6 @@ export const Period = ({
   let lcStartDate = getValues("lcPeriod.startDate");
   let lcEndDate = getValues("lcPeriod.endDate");
 
-
   useEffect(() => {
     shipmentCountry = getValues("shipmentPort.country");
   }, [valueChanged]);
@@ -92,9 +91,9 @@ export const Period = ({
   const [lcIssueType, setLcIssueType] = useState("");
 
   useEffect(() => {
-    setLcPeriodDate(lcStartDate)
-    setLcExpiryDate(lcEndDate)
-  },[lcStartDate,lcEndDate])
+    setLcPeriodDate(lcStartDate);
+    setLcExpiryDate(lcEndDate);
+  }, [lcStartDate, lcEndDate]);
 
   const handleRadioChange = (e: any) => {
     setLcIssueType(e.target.value);
@@ -271,12 +270,14 @@ export const Transhipment = ({
   register,
   setValue,
   isDiscount,
+  getValues
 }: {
   register: any;
   setValue: any;
   isDiscount?: boolean;
+  getValues?: any
 }) => {
-  let lcStartDate = getValues("lcPeriod.startDate");
+  // let lcStartDate = getValues("lcPeriod.startDate");
 
   const [expectedConfirmationDate, setExpectedConfirmationDate] =
     useState<Date>();

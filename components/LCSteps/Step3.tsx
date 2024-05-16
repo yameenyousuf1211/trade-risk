@@ -12,14 +12,17 @@ export const Step3 = ({
   getValues,
   countries,
   flags,
+  valueChanged,
+  setValueChanged
 }: {
   register: any;
   setValue: any;
   getValues: any;
   countries: string[];
   flags: string[];
+  valueChanged?:boolean
+  setValueChanged?:any
 }) => {
-  const [valueChanged, setValueChanged] = useState(false);
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
 
@@ -29,7 +32,6 @@ export const Step3 = ({
   let advisingBank = getValues("advisingBank.bank");
   let confirmingCountry = getValues("confirmingBank.country");
   let confirmingBank = getValues("confirmingBank.bank");
-
 
   useEffect(() => {
     issuingCountry = getValues("issuingBank.country");
@@ -232,7 +234,11 @@ export const Step3 = ({
         countries={countries}
         flags={flags}
       />
-      <Transhipment register={register} setValue={setValue} />
+      <Transhipment
+        getValues={getValues}
+        register={register}
+        setValue={setValue}
+      />
     </div>
   );
 };

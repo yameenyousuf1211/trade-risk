@@ -43,11 +43,11 @@ const PointContactPage = () => {
   }, [contactData]);
 
   const [pdfFile, setPdfFile] = useState<File | undefined>(undefined);
-
+  const [pdfError, setPdfError] = useState(false);
   const onSubmit: SubmitHandler<z.infer<typeof pointOfContractSchema>> = async (
     data: any
   ) => {
-    if (!pdfFile) return;
+    if (!pdfFile) return setPdfError(true);
     setValues(data);
     localStorage.setItem("contactData", JSON.stringify(data));
     router.push("/register/corporate/current-banking");
@@ -163,7 +163,7 @@ const PointContactPage = () => {
             className="hidden"
             onChange={(e) => setPdfFile(e.target.files?.[0])}
           />
-          {!pdfFile && (
+          {(Object.keys(errors).length > 0 || pdfError) && !pdfFile && (
             <span className="text-[11px] text-red-500">
               Please select a file
             </span>

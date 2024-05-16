@@ -43,6 +43,7 @@ const CreateRequestPage = () => {
   const [valueChanged, setValueChanged] = useState<boolean>(false);
 
   const queryClient = useQueryClient();
+  const setValues = useConfirmationStore((state) => state.setValues);
   const confirmationData = useConfirmationStore((state) => state); // Optional: to access current state
 
   useEffect(() => {
@@ -50,35 +51,36 @@ const CreateRequestPage = () => {
       Object.entries(confirmationData).forEach(([key, value]) => {
         // @ts-ignore
         setValue(key, value);
+        if (key === "transhipment") {
+          setValue(key, value === true ? "yes" : "no");
+        }
       });
     }
     setValueChanged(!valueChanged);
   }, [confirmationData]);
 
-  console.log(getValues(),"hhhhhhh")
-
   // Show errors
-  // useEffect(() => {
-  //   if (errors) {
-  //     const showNestedErrors = (errorsObj: any, parentKey = "") => {
-  //       Object.keys(errorsObj)
-  //         .reverse()
-  //         .forEach((key) => {
-  //           const errorMessage =
-  //             errorsObj[key as keyof typeof errorsObj]?.message;
+  useEffect(() => {
+    if (errors) {
+      const showNestedErrors = (errorsObj: any, parentKey = "") => {
+        Object.keys(errorsObj)
+          .reverse()
+          .forEach((key) => {
+            const errorMessage =
+              errorsObj[key as keyof typeof errorsObj]?.message;
 
-  //           if (errorMessage) {
-  //             // const fieldName = parentKey ? `${parentKey}.${key}` : key;
-  //             toast.error(`${errorMessage}`);
-  //           } else if (typeof errorsObj[key] === "object") {
-  //             showNestedErrors(errorsObj[key], key);
-  //           }
-  //         });
-  //     };
+            if (errorMessage) {
+              // const fieldName = parentKey ? `${parentKey}.${key}` : key;
+              toast.error(`${errorMessage}`);
+            } else if (typeof errorsObj[key] === "object") {
+              showNestedErrors(errorsObj[key], key);
+            }
+          });
+      };
 
-  //     showNestedErrors(errors);
-  //   }
-  // }, [errors,confirmationData]);
+      showNestedErrors(errors);
+    }
+  }, [errors]);
 
   const [proceed, setProceed] = useState(false);
 
@@ -91,12 +93,25 @@ const CreateRequestPage = () => {
         ...data,
         lcType: "LC Confirmation",
         transhipment: data.transhipment === "yes" ? true : false,
+        shipmentPort: {
+          ...data?.shipmentPort,
+          port: "xyz",
+        },
+        lcPeriod: {
+          ...data.lcPeriod,
+          expectedDate: false,
+        },
       };
-
-      const { response, success } = await onCreateLC(reqData);
+      const { response, success } = confirmationData?._id
+        ? await onUpdateLC({
+            payload: reqData,
+            id: confirmationData?._id,
+          })
+        : await onCreateLC(reqData);
       stopLoading();
       if (!success) return toast.error(response);
       else {
+        setValues(null as any)
         toast.success(response?.message);
         reset();
         router.push("/");
@@ -108,31 +123,6 @@ const CreateRequestPage = () => {
     }
   };
 
-  const updateLC: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
-    data: z.infer<typeof confirmationSchema>
-  ) => {
-    startLoading();
-    const reqData = {
-      ...data,
-      lcType: "LC Confirmation",
-      transhipment: data.transhipment === "yes" ? true : false,
-      isDraft: "false",
-    };
-
-    // const { response, success } = await onUpdateLC({
-    //   payload: reqData,
-    //   id: "as",
-    // });
-    stopLoading();
-    // if (!success) return toast.error(response);
-    // else {
-    //   toast.success(response?.message);
-    //   reset();
-    //   router.push("/");
-    // }
-    toast.success("lc updated");
-  };
-
   const [loader, setLoader] = useState(false);
 
   const saveAsDraft: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
@@ -142,16 +132,31 @@ const CreateRequestPage = () => {
     const reqData = {
       ...data,
       lcType: "LC Confirmation",
-      transhipment: data.transhipment === "yes" ? true : false,
       isDraft: "true",
+      transhipment: data.transhipment === "yes" ? true : false,
+      shipmentPort: {
+        ...data.shipmentPort,
+        port: "xyz",
+      },
+      lcPeriod: {
+        ...data.lcPeriod,
+        expectedDate: false,
+      },
     };
 
-    const { response, success } = await onCreateLC(reqData);
+    const { response, success } = confirmationData?._id
+      ? await onUpdateLC({
+          payload: reqData,
+          id: confirmationData?._id,
+        })
+      : await onCreateLC(reqData);
     setLoader(false);
+    
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");
       reset();
+      setValues(null as any)
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
       });
@@ -192,7 +197,13 @@ const CreateRequestPage = () => {
     <CreateLCLayout>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
         <Step1 register={register} />
-        <Step2 register={register} setValue={setValue} getValues={getValues} />
+        <Step2
+          register={register}
+          setValue={setValue}
+          getValues={getValues}
+          valueChanged={valueChanged}
+          setValueChanged={setValueChanged}
+        />
         <Step3
           register={register}
           setValue={setValue}
@@ -222,6 +233,7 @@ const CreateRequestPage = () => {
             setValue={setValue}
             getValues={getValues}
             title="Confirmation Charges"
+            valueChanged={valueChanged}
           />
           <Step7 register={register} step={7} />
         </div>

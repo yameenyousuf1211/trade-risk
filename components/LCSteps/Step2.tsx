@@ -18,10 +18,14 @@ export const Step2 = ({
   register,
   setValue,
   getValues,
+  valueChanged,
+  setValueChanged,
 }: {
   register: any;
   setValue: any;
   getValues: any;
+  valueChanged?: any;
+  setValueChanged?: any;
 }) => {
   const { data: currency } = useQuery({
     queryKey: ["currency"],
@@ -30,14 +34,15 @@ export const Step2 = ({
 
   let amount = getValues("amount");
   let currencyVal = getValues("currency");
-  let paymentTerms = getValues("paymentTerms")
+  let paymentTerms = getValues("paymentTerms");
 
-  const [valueChanged, setValueChanged] = useState(false);
   const [currencyValue, setCurrencyValue] = useState<number | null>(null);
   useEffect(() => {
-    amount = getValues("amount");
-    currencyVal = getValues("currency");
-  }, [register]);
+    if (amount) {
+      setValue("amount", amount.toString());
+      setCurrencyValue(amount);
+    }
+  }, [valueChanged]);
 
   const [checkedState, setCheckedState] = useState({
     "payment-sight": false,
@@ -90,6 +95,7 @@ export const Step2 = ({
                 ))} */}
             </SelectContent>
           </Select>
+
           <Input
             type="number"
             inputMode="numeric"

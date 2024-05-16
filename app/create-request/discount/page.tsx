@@ -85,6 +85,14 @@ const CreateDiscountPage = () => {
           dats: new Date("2024-04-28"),
           other: "nothing",
         },
+        shipmentPort: {
+          ...data?.shipmentPort,
+          port: "xyz",
+        },
+        lcPeriod: {
+          ...data.lcPeriod,
+          expectedDate: false,
+        },
         expectedDiscountingDate: new Date("2024-04-28"),
       };
 
@@ -116,6 +124,14 @@ const CreateDiscountPage = () => {
       extraInfo: {
         dats: new Date("2024-04-28"),
         other: "nothing",
+      },
+      shipmentPort: {
+        ...data?.shipmentPort,
+        port: "xyz",
+      },
+      lcPeriod: {
+        ...data.lcPeriod,
+        expectedDate: false,
       },
       expectedDiscountingDate: new Date("2024-04-28"),
       isDraft: "true",
@@ -370,7 +386,12 @@ const CreateDiscountPage = () => {
             flags={flags}
           />
           {/* Transhipment */}
-          <Transhipment register={register} isDiscount setValue={setValue} />
+          <Transhipment
+            getValues={getValues}
+            register={register}
+            isDiscount
+            setValue={setValue}
+          />
         </div>
 
         <Step4

@@ -63,19 +63,29 @@ export const Period = ({
   getValues,
   countries,
   flags,
+  valueChanged,
+  setValueChanged,
 }: {
   setValue: any;
   getValues: any;
   countries: string[];
   flags: string[];
+  valueChanged?: boolean;
+  setValueChanged?: any;
 }) => {
-  const [valueChanged, setValueChanged] = useState(false);
   let shipmentCountry = getValues("shipmentPort.country");
   let lcStartDate = getValues("lcPeriod.startDate");
   let lcEndDate = getValues("lcPeriod.endDate");
 
   useEffect(() => {
     shipmentCountry = getValues("shipmentPort.country");
+    setLcPeriodDate(lcStartDate);
+    setLcExpiryDate(lcEndDate);
+    if (lcStartDate && lcEndDate) {
+      setValue("lcPeriod.startDate", new Date(lcStartDate));
+      setValue("lcPeriod.endDate", new Date(lcEndDate));
+      setValue("expectedConfirmationDate", new Date(lcEndDate));
+    }
   }, [valueChanged]);
 
   const { data: shipmentPorts } = useQuery({
@@ -89,11 +99,6 @@ export const Period = ({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   const [lcIssueType, setLcIssueType] = useState("");
-
-  useEffect(() => {
-    setLcPeriodDate(lcStartDate);
-    setLcExpiryDate(lcEndDate);
-  }, [lcStartDate, lcEndDate]);
 
   const handleRadioChange = (e: any) => {
     setLcIssueType(e.target.value);
@@ -270,17 +275,27 @@ export const Transhipment = ({
   register,
   setValue,
   isDiscount,
-  getValues
+  getValues,
+  valueChanged,
+  setValueChanged,
 }: {
   register: any;
   setValue: any;
   isDiscount?: boolean;
-  getValues?: any
+  getValues?: any;
+  valueChanged?: boolean;
+  setValueChanged?: any;
 }) => {
-  // let lcStartDate = getValues("lcPeriod.startDate");
-
   const [expectedConfirmationDate, setExpectedConfirmationDate] =
     useState<Date>();
+  let lcEndDate = getValues("lcPeriod.endDate");
+  useEffect(() => {
+    setExpectedConfirmationDate(lcEndDate);
+
+    if (lcEndDate) {
+      setValue("expectedConfirmationDate", new Date(lcEndDate));
+    }
+  }, [valueChanged]);
   const [checkedState, setCheckedState] = useState({
     "transhipment-allowed-yes": false,
     "transhipment-allowed-no": false,

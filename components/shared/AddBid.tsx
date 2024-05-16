@@ -5,17 +5,10 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { CalendarIcon, Plus, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker, Loader } from "../helpers";
 import { Input } from "../ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Image from "next/image";
 import { convertDateToYYYYMMDD } from "@/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -25,16 +18,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addBid, fetchSingleBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 
 const LCInfo = ({
   label,
@@ -82,8 +67,13 @@ export const AddBid = ({
     queryFn: () => fetchSingleLc(lcId),
   });
 
-  const { mutateAsync, isPending } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: addBid,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["bid-status", "fetch-lcs"],
+      });
+    },
   });
 
   const {
@@ -115,20 +105,14 @@ export const AddBid = ({
       }),
     });
 
-    if (!success) return toast.error("Something went wrong");
+    if (!success) return toast.error(response);
     else {
-      queryClient.invalidateQueries({
-        queryKey: [`bid-status`, "fetch-lcs", "fetch-bids-count", response._id],
-      });
       let closeBtn = document.getElementById("submit-button-close");
       // @ts-ignore
       closeBtn.click();
       toast.success("Bid added");
     }
   };
-
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [validityDate, setValidityDate] = useState();
 
   return (
     <Dialog>

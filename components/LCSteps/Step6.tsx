@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BgRadioInput, DDInput } from "./helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,9 @@ export const Step6 = ({
   setValue,
   getValues,
   isConfirmation,
+  valueChanged,
+  getStateValues
+  
 }: {
   title: string;
   isDiscount?: boolean;
@@ -17,6 +20,8 @@ export const Step6 = ({
   setValue: any;
   getValues: any;
   isConfirmation?: boolean;
+  valueChanged?:boolean,
+  getStateValues?:any
 }) => {
   const [checkedState, setCheckedState] = useState({
     "account-beneficiary": false,
@@ -35,6 +40,12 @@ export const Step6 = ({
     "discount-yes": false,
     "discount-no": false,
   });
+  let pricePerAnnum = getValues('confirmationInfo.pricePerAnnum')
+  useEffect(() => {
+    if (pricePerAnnum) {
+      setValue("confirmationInfo.pricePerAnnum", pricePerAnnum.toString());
+    }
+  }, [valueChanged]);
 
   const handleCheckDiscountChange = (id: string) => {
     setCheckedState((prevState) => ({

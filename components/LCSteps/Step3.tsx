@@ -13,15 +13,15 @@ export const Step3 = ({
   countries,
   flags,
   valueChanged,
-  setValueChanged
+  setValueChanged,
 }: {
   register: any;
   setValue: any;
   getValues: any;
   countries: string[];
   flags: string[];
-  valueChanged?:boolean
-  setValueChanged?:any
+  valueChanged?: boolean;
+  setValueChanged?: any;
 }) => {
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
@@ -156,7 +156,7 @@ export const Step3 = ({
               label="Country"
               id="confirmingBank.country"
               placeholder="Select a Country"
-              value={confirmingBank}
+              value={confirmingCountry}
               data={countries}
               setValue={setValue}
               setValueChanged={setValueChanged}
@@ -167,7 +167,7 @@ export const Step3 = ({
             label="Bank"
             id="confirmingBank.bank"
             placeholder="Select bank"
-            value={confirmingCountry}
+            value={confirmingBank}
             setValue={setValue}
             setValueChanged={setValueChanged}
             disabled={
@@ -233,11 +233,15 @@ export const Step3 = ({
         getValues={getValues}
         countries={countries}
         flags={flags}
+        valueChanged={valueChanged}
+        setValueChanged={setValueChanged}
       />
       <Transhipment
         getValues={getValues}
         register={register}
         setValue={setValue}
+        valueChanged={valueChanged}
+        setValueChanged={setValueChanged}
       />
     </div>
   );

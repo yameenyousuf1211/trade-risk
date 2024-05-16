@@ -56,7 +56,7 @@ const ConfirmationPage = () => {
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
-  const [valueChanged,setValueChanged] = useState<boolean>(false)
+  const [valueChanged, setValueChanged] = useState<boolean>(false);
   // Show errors
   useEffect(() => {
     if (errors) {
@@ -90,6 +90,14 @@ const ConfirmationPage = () => {
         ...data,
         transhipment: data.transhipment === "yes" ? true : false,
         lcType: "LC Confirmation & Discounting",
+        shipmentPort: {
+          ...data?.shipmentPort,
+          port: "xyz",
+        },
+        lcPeriod: {
+          ...data.lcPeriod,
+          expectedDate: false,
+        },
       };
 
       const { response, success } = await onCreateLC(reqData);
@@ -118,6 +126,14 @@ const ConfirmationPage = () => {
       transhipment: data.transhipment === "yes" ? true : false,
       lcType: "LC Confirmation & Discounting",
       isDraft: "true",
+      shipmentPort: {
+        ...data?.shipmentPort,
+        port: "xyz",
+      },
+      lcPeriod: {
+        ...data.lcPeriod,
+        expectedDate: false,
+      },
     };
     const { response, success } = await onCreateLC(reqData);
     setLoader(false);
@@ -282,10 +298,13 @@ const ConfirmationPage = () => {
             getValues={getValues}
             countries={countries}
             flags={flags}
-            
           />
           {/* Transhipment */}
-          <Transhipment register={register} setValue={setValue} />
+          <Transhipment
+            getValues={getValues}
+            register={register}
+            setValue={setValue}
+          />
         </div>
 
         <Step4

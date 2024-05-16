@@ -7,7 +7,7 @@ import "swiper/css";
 import { AddBid } from "./AddBid";
 import { fetchAllLcs, fetchLcs } from "@/services/apis/lcs.api";
 import { ApiResponse, IBids, ILcs } from "@/types/type";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatLeftDate, formatLeftDays } from "@/utils";
 import useLoading from "@/hooks/useLoading";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
@@ -15,8 +15,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthProvider";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { useReactToPrint } from "react-to-print";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -24,23 +23,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { list } from "postcss";
 
 const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   const queryClient = useQueryClient();
-  const { startLoading, stopLoading, isLoading } = useLoading();
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: acceptOrRejectBid,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`fetch-lcs`] });
+    },
+  });
 
   const handleSubmit = async (status: string, id: string) => {
-    startLoading();
-    const { success, response } = await acceptOrRejectBid(status, id);
-    stopLoading();
+    const { success, response } = await mutateAsync({ status, id });
     if (!success) return toast.error(response as string);
-    else {
-      queryClient.invalidateQueries({
-        queryKey: ["fetch-lcs"],
-      });
-      toast.success(`Bid ${status}`);
-    }
+    else return toast.success(`Bid ${status}`);
   };
 
   return (
@@ -58,14 +55,14 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
         <Button
           onClick={() => handleSubmit("Accepted", info._id)}
           className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-8 rounded-lg"
-          disabled={isLoading}
+          disabled={isPending}
         >
           <Check className="size-5 text-para" />
         </Button>
         <Button
           onClick={() => handleSubmit("Rejected", info._id)}
           className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-8 rounded-lg"
-          disabled={isLoading}
+          disabled={isPending}
         >
           <X className="size-5 text-para" />
         </Button>
@@ -75,9 +72,10 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
 };
 
 const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
+  const pendingBids = data.bids.filter((bid) => bid.status === "Pending");
   return (
     <>
-      {data.bids.length > 0 ? (
+      {pendingBids.length > 0 ? (
         <div className="flex flex-col gap-y-5 bg-[#F5F7F9] rounded-md">
           {/* Data */}
           <div className="px-3 pt-2">
@@ -107,8 +105,8 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
             {!isBank ? (
               <div className="flex items-center justify-between gap-x-2">
                 <p className="text-gray-500 text-sm">
-                  {data.bids.length} bid
-                  {data.bids.length > 1 ? "s" : ""}
+                  {pendingBids.length} bid
+                  {pendingBids.length > 1 ? "s" : ""}
                 </p>
                 <Link
                   href="#"
@@ -126,7 +124,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
           {!isBank && (
             <div className="w-full">
               <Swiper slidesPerView={1.2} spaceBetween={10}>
-                {data.bids.map((info: IBids) => (
+                {pendingBids.map((info: IBids) => (
                   <SwiperSlide key={info._id}>
                     <SliderCard info={info} lcData={data} key={info._id} />
                   </SwiperSlide>
@@ -214,37 +212,56 @@ export const Sidebar = ({
 
   const generatePDF = (data: any) => {
     const unit = "pt";
-    const size = "A4"; // Use A1, A2, A3, or A4
+    const size = "A4"; // Use A1, A2, A3 or A4
     const orientation = "portrait"; // portrait or landscape
     const marginLeft = 40;
     const doc = new jsPDF(orientation, unit, size);
-
     doc.setFontSize(15);
-
     const title = "Trade Risk";
-    const headers = [Object.keys(data[0])];
 
+    // Flatten the data structure
+    const flattenedData = data.map((obj: any) => {
+      const flattenedObj: any = {};
+
+      for (const [key, value] of Object.entries(obj)) {
+        if (typeof value === "object" && value !== null) {
+          for (const [nestedKey, nestedValue] of Object.entries(value)) {
+            flattenedObj[`${key}.${nestedKey}`] = nestedValue;
+          }
+        } else {
+          flattenedObj[key] = value;
+        }
+      }
+
+      return flattenedObj;
+    });
+
+    const headers = Object.keys(flattenedData[0]);
     let startY = 50;
 
     const chunkSize = 4; // Number of columns per chunk
-    const numChunks = Math.ceil(headers[0].length / chunkSize);
+    const numChunks = Math.ceil(headers.length / chunkSize);
 
     for (let i = 0; i < numChunks; i++) {
       const startIdx = i * chunkSize;
-      const endIdx = Math.min(startIdx + chunkSize, headers[0].length);
-      const chunkHeaders = [headers[0].slice(startIdx, endIdx)];
-      const chunkData = data.map((obj: any) =>
-        Object.values(obj).slice(startIdx, endIdx)
+      const endIdx = Math.min(startIdx + chunkSize, headers.length);
+
+      const chunkHeaders = headers.slice(startIdx, endIdx);
+      const chunkData = flattenedData.map((obj: any) =>
+        chunkHeaders.map((header) => obj[header])
       );
 
       const content = {
         startY,
-        head: chunkHeaders,
+        head: [chunkHeaders],
         body: chunkData,
         pageBreak: "auto",
       };
 
-      doc.text(title, marginLeft, 40);
+      if (i === 0) {
+        doc.text(title, marginLeft, 40);
+      }
+
       // @ts-ignore
       doc.autoTable(content);
 

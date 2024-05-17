@@ -1,20 +1,32 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../ui/button";
 import { ApiResponse, ILcs } from "@/types/type";
-import { deleteLcDraft, fetchLcs, fetchSingleLc } from "@/services/apis/lcs.api";
+import {
+  deleteLcDraft,
+  fetchLcs,
+  fetchSingleLc,
+} from "@/services/apis/lcs.api";
 import { Loader } from "../helpers";
 import { convertDateToYYYYMMDD } from "@/utils";
 import { useAuth } from "@/context/AuthProvider";
 import { toast } from "sonner";
 import { usePathname } from "next/navigation";
 import useConfirmationStore from "@/store/lc.store";
+import useDiscountingStore from "@/store/discounting.store";
+import useConfirmationDiscountingStore from "@/store/confirmationDiscounting.store";
 
 const DraftCard = ({
   noBorder,
   draft,
+  isConfirmation,
+  isConfirmationDiscounting,
+  isDiscounting,
 }: {
   noBorder?: boolean;
   draft: ILcs;
+  isConfirmation: boolean;
+  isDiscounting: boolean;
+  isConfirmationDiscounting: boolean;
 }) => {
   const queryClient = useQueryClient();
   const { mutateAsync, isPending } = useMutation({
@@ -30,16 +42,24 @@ const DraftCard = ({
     toast.success("Draft deleted");
   };
 
-  const setValues = useConfirmationStore((state) => state.setValues);
+  const setConfirmationValues = useConfirmationStore(
+    (state) => state.setValues
+  );
+
+  const setDiscountingValues = useDiscountingStore((state) => state.setValues);
+  const setConfirmationDiscountingValues = useConfirmationDiscountingStore(
+    (state) => state.setValues
+  );
+
   const handleEditLC = async () => {
     // @ts-ignore
     try {
       const response = await fetchSingleLc(draft?._id);
-      console.log(response)
-      setValues(response);
-    } catch (error) {
-      
-    }
+
+      isConfirmation && setConfirmationValues(response);
+      isDiscounting && setDiscountingValues(response);
+      isConfirmationDiscounting && setConfirmationDiscountingValues(response);
+    } catch (error) {}
   };
 
   return (
@@ -131,6 +151,9 @@ export const DraftsSidebar = () => {
                     key={draft._id}
                     noBorder={idx === data.data.length - 1}
                     draft={draft}
+                    isConfirmation={isConfirmation}
+                    isDiscounting={isDiscounting}
+                    isConfirmationDiscounting={isConfirmationDiscounting}
                   />
                 ))}
             </div>

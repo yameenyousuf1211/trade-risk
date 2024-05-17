@@ -78,11 +78,6 @@ export const DDInput = ({
   const [ddOpen, setDdOpen] = useState(false);
   const [ddVal, setDdVal] = useState("");
 
-  const handleSelectChange = (value: string) => {
-    setValue(id, value);
-    setValueChanged && setValueChanged((prev: boolean) => !prev);
-  };
-
   return (
     <label
       id={id}

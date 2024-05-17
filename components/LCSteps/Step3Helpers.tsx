@@ -13,12 +13,11 @@ import { format, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { getBanks, getCountries, getPorts } from "@/services/apis/helpers.api";
+import { getBanks, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import {
   Select,
   SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -440,11 +439,15 @@ export const DiscountBanks = ({
   setValue,
   getValues,
   flags,
+  value,
+  valueSetter,
 }: {
   countries: string[];
   flags: string[];
   setValue: any;
   getValues: any;
+  value?: any;
+  valueSetter?: any;
 }) => {
   const [valueChanged, setValueChanged] = useState(false);
 
@@ -457,7 +460,7 @@ export const DiscountBanks = ({
     issuingCountry = getValues("issuingBank.country");
     advisingCountry = getValues("advisingBank.country");
     confirmingCountry = getValues("confirmingBank.country");
-  }, [valueChanged]);
+  }, [valueChanged, value]);
 
   const { data: issuingBanks } = useQuery({
     queryKey: ["issuing-banks", issuingCountry],

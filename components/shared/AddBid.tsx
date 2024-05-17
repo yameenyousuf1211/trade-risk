@@ -49,6 +49,8 @@ export const AddBid = ({
   triggerTitle,
   border,
   lcId,
+  isCorporate,
+  setRejected,
 }: {
   isDiscount?: boolean;
   isInfo?: boolean;
@@ -56,6 +58,8 @@ export const AddBid = ({
   triggerTitle: string;
   border?: boolean;
   lcId: string;
+  setRejected?: (rejected: boolean) => void;
+  isCorporate?: boolean;
 }) => {
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
@@ -112,6 +116,15 @@ export const AddBid = ({
       closeBtn.click();
       toast.success("Bid added");
     }
+  };
+
+  const handleRejectClick = () => {
+    setRejected && setRejected(true);
+    setTimeout(() => {
+      let closeBtn = document.getElementById("reject-button-close");
+      // @ts-ignore
+      closeBtn.click();
+    }, 200);
   };
 
   return (
@@ -333,15 +346,27 @@ export const AddBid = ({
                   </Button>
                 </div>
 
-                {/* {status === "Rejected" && (
-                  <AddBid
-                    triggerTitle={"Submit a new bid"}
-                    status={"Add bid"}
-                    isInfo={false}
-                    isDiscount={lcData?.lcType.includes("Discount")}
-                    lcId={lcData?._id}
-                  />
-                )} */}
+                {status === "Rejected" && !isCorporate && (
+                  // <AddBid
+                  //   triggerTitle={"Submit a new bid"}
+                  //   status={"Add bid"}
+                  //   isInfo={false}
+                  //   isDiscount={lcData?.lcType.includes("Discount")}
+                  //   lcId={lcData?._id}
+                  // />
+                  <>
+                    <DialogClose
+                      id="reject-button-close"
+                      className="hidden"
+                    ></DialogClose>
+                    <Button
+                      onClick={handleRejectClick}
+                      className="bg-primaryCol hover:bg-primaryCol text-white hover:text-white px-3 mt-2 rounded-md w-full p-2 capitalize hover:opacity-85"
+                    >
+                      Submit a new bid
+                    </Button>
+                  </>
+                )}
               </>
             ) : (
               // Add Bids

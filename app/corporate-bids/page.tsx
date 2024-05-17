@@ -98,7 +98,7 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
                 )}
               </div>
             </div>
-            <BankTable data={data} isLoading={isLoading} />
+            <BankTable data={data} isLoading={isLoading} isCorporate/>
           </div>
         </div>
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">

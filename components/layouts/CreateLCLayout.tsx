@@ -1,11 +1,6 @@
-import { Poppins } from "next/font/google";
 import { Header } from "../shared/Header";
 import { BreadcrumbDetails, CreateTabs } from "../helpers";
 import { DraftsSidebar } from "../shared/DraftsSidebar";
-const poppins = Poppins({
-  weight: ["200", "300", "400", "500", "600", "700", "800"],
-  subsets: ["latin"],
-});
 
 export default function AuthLayout({
   children,

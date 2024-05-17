@@ -49,8 +49,7 @@ export const AddBid = ({
   triggerTitle,
   border,
   lcId,
-  isCorporate,
-  setRejected,
+  setIsAddNewBid,
 }: {
   isDiscount?: boolean;
   isInfo?: boolean;
@@ -58,8 +57,7 @@ export const AddBid = ({
   triggerTitle: string;
   border?: boolean;
   lcId: string;
-  setRejected?: (rejected: boolean) => void;
-  isCorporate?: boolean;
+  setIsAddNewBid?: any;
 }) => {
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
@@ -118,17 +116,7 @@ export const AddBid = ({
     }
   };
 
-  const handleRejectClick = () => {
-    setRejected && setRejected(true);
-    setTimeout(() => {
-      let closeBtn = document.getElementById("reject-button-close");
-      // @ts-ignore
-      closeBtn.click();
-    }, 200);
-  };
-
   return (
-    
     <Dialog>
       <DialogTrigger
         className={`${
@@ -154,7 +142,7 @@ export const AddBid = ({
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">{lcData?.lcType || ""}</h2>
-          <DialogClose>
+          <DialogClose onClick={() => setIsAddNewBid(false)}>
             <X className="size-7" />
           </DialogClose>
         </div>
@@ -347,27 +335,15 @@ export const AddBid = ({
                   </Button>
                 </div>
 
-                {status === "Rejected" && !isCorporate && (
-                  // <AddBid
-                  //   triggerTitle={"Submit a new bid"}
-                  //   status={"Add bid"}
-                  //   isInfo={false}
-                  //   isDiscount={lcData?.lcType.includes("Discount")}
-                  //   lcId={lcData?._id}
-                  // />
-                  <>
-                    <DialogClose
-                      id="reject-button-close"
-                      className="hidden"
-                    ></DialogClose>
-                    <Button
-                      onClick={handleRejectClick}
-                      className="bg-primaryCol hover:bg-primaryCol text-white hover:text-white px-3 mt-2 rounded-md w-full p-2 capitalize hover:opacity-85"
-                    >
-                      Submit a new bid
-                    </Button>
-                  </>
-                )}
+      
+                <Button
+                  onClick={() => {
+                    setIsAddNewBid && setIsAddNewBid(true);
+                  }}
+                  className="bg-[#5625F2]  text-white hover:bg-[#5625F2] border border-[#D20000]"
+                >
+                  Submit A New Bid
+                </Button>
               </>
             ) : (
               // Add Bids
@@ -466,7 +442,7 @@ export const AddBid = ({
                   >
                     Submit
                   </Button>
-                  <DialogClose className="w-full">
+                  <DialogClose className="w-full" onClick={() => setIsAddNewBid(false)}>
                     <Button
                       type="button"
                       variant="ghost"

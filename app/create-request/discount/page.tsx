@@ -23,7 +23,7 @@ import { discountingSchema } from "@/validation/lc.validation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "@/components/ui/loader";
 import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
@@ -48,6 +48,7 @@ const CreateDiscountPage = () => {
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
+  const pathname = usePathname();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
 
   // Edit Request
@@ -136,6 +137,7 @@ const CreateDiscountPage = () => {
       let openDisclaimerBtn = document.getElementById("open-disclaimer");
       // @ts-ignore
       openDisclaimerBtn.click();
+      setProceed(true)
     }
   };
 
@@ -244,6 +246,16 @@ const CreateDiscountPage = () => {
       setValue("currency", currencyVal);
     }
   }, [valueChanged]);
+
+  // reset the form on page navigation
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setValues(getStateValues(useDiscountingStore.getInitialState()));
+      reset();
+    };
+
+    handleRouteChange();
+  }, [pathname, router]);
 
   return (
     <CreateLCLayout>
@@ -496,6 +508,7 @@ const CreateDiscountPage = () => {
           title="Submit Request"
           className="hidden"
           setProceed={setProceed}
+          onAccept={handleSubmit(onSubmit)}
         />
       </form>
     </CreateLCLayout>

@@ -117,7 +117,7 @@ const ProductInfoPage = () => {
               setValue("product", val.join(", "));
             }}
             name="product"
-            placeHolder="Products"
+            placeHolder="Your Product(s)"
           />
           {errors.product && (
             <span className="text-[11px] text-red-500">
@@ -201,7 +201,7 @@ const ProductInfoPage = () => {
             <Button
               type="button"
               variant="ghost"
-              className="text-para text-[16px] w-full"
+              className="text-lightGray text-[16px] w-full"
             >
               Previous
             </Button>

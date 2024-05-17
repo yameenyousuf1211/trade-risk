@@ -329,6 +329,14 @@ interface LcDiscounting extends TransactionData {
     behalfOf: string;
     pricePerAnnum: string;
   };
+  extraInfo:
+    | "shipment"
+    | "upas"
+    | "acceptance"
+    | "negotiation"
+    | "invoice"
+    | "sight"
+    | "others";
 }
 
 export type UseDiscountingStore = LcDiscounting & {

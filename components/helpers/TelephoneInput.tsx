@@ -6,23 +6,25 @@ import "react-phone-input-2/lib/style.css";
 export const TelephoneInput = ({
   name,
   placeholder,
-  setValue,setPhoneInput
+  setValue,
+  setPhoneInput,
 }: {
   name: string;
   placeholder: string;
-  setValue: any;setPhoneInput?:any
+  setValue: any;
+  setPhoneInput?: any;
 }) => {
   const [val, setVal] = useState();
 
   const handleChange = (val: any) => {
     setVal(val);
     setValue(name, val);
-    setPhoneInput(val)
+    setPhoneInput(val);
   };
   return (
     <div className="w-full">
       <PhoneInput
-      enableSearch
+        enableSearch
         country={"sa"}
         value={val}
         placeholder={placeholder}

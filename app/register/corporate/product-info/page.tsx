@@ -11,6 +11,43 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { TagsInput } from "react-tag-input-component";
+import { useQuery } from "@tanstack/react-query";
+import { getCurrenncy } from "@/services/apis/helpers.api";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const CurrencyDropdown = () => {
+  const { data: currency } = useQuery({
+    queryKey: ["currency"],
+    queryFn: () => getCurrenncy(),
+  });
+
+  return (
+    <Select onValueChange={(value) => {}}>
+      <SelectTrigger className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 text-sm font-medium bg-transparent px-1">
+        <SelectValue placeholder="USD" className="text-sm" />
+      </SelectTrigger>
+      <SelectContent className="max-h-[300px]">
+        {currency &&
+          currency.response.length > 0 &&
+          currency.response.map((curr: string, idx: number) => (
+            <SelectItem
+              defaultValue="USD"
+              key={`${curr}-${idx + 1}`}
+              value={curr}
+            >
+              {curr}
+            </SelectItem>
+          ))}
+      </SelectContent>
+    </Select>
+  );
+};
 
 const ProductInfoPage = () => {
   const router = useRouter();
@@ -91,9 +128,10 @@ const ProductInfoPage = () => {
 
         <div className="w-full">
           <div className="flex items-center gap-x-2 w-full">
-            <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
+            {/* <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
               USD
-            </div>
+            </div> */}
+            <CurrencyDropdown />
             <div className="w-full">
               <FloatingInput
                 register={register}
@@ -113,9 +151,7 @@ const ProductInfoPage = () => {
 
         <div className="w-full">
           <div className="flex items-center gap-x-2 w-full">
-            <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
-              USD
-            </div>
+            <CurrencyDropdown />
             <div className="w-full">
               <FloatingInput
                 register={register}
@@ -134,9 +170,7 @@ const ProductInfoPage = () => {
         </div>
         <div className="w-full">
           <div className="flex items-center gap-x-2 w-full">
-            <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
-              USD
-            </div>
+            <CurrencyDropdown />
             <div className="w-full">
               <FloatingInput
                 register={register}

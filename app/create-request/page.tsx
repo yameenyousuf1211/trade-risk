@@ -56,6 +56,9 @@ const CreateRequestPage = () => {
         if (key === "transhipment") {
           setValue(key, value === true ? "yes" : "no");
         }
+        if (key === "lcPeriod.expectedDate") {
+          setValue(key, value === true ? "yes" : "no");
+        }
       });
     }
     setValueChanged(!valueChanged);
@@ -101,7 +104,7 @@ const CreateRequestPage = () => {
         },
         lcPeriod: {
           ...data.lcPeriod,
-          expectedDate: false,
+          expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
         },
       };
       const { response, success } = confirmationData?._id
@@ -142,7 +145,7 @@ const CreateRequestPage = () => {
       },
       lcPeriod: {
         ...data.lcPeriod,
-        expectedDate: false,
+        expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
       },
     };
 

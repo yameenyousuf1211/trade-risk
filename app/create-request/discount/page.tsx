@@ -61,6 +61,9 @@ const CreateDiscountPage = () => {
         if (key === "transhipment") {
           setValue(key, value === true ? "yes" : "no");
         }
+        if (key === "lcPeriod.expectedDate") {
+          setValue(key, value === true ? "yes" : "no");
+        }
       });
     }
     setValueChanged(!valueChanged);
@@ -110,7 +113,7 @@ const CreateDiscountPage = () => {
         },
         lcPeriod: {
           ...data.lcPeriod,
-          expectedDate: false,
+          expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
         },
         expectedDiscountingDate: new Date("2024-04-28"),
       };
@@ -156,7 +159,7 @@ const CreateDiscountPage = () => {
       },
       lcPeriod: {
         ...data.lcPeriod,
-        expectedDate: false,
+        expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
       },
       expectedDiscountingDate: new Date("2024-04-28"),
       isDraft: "true",

@@ -19,7 +19,7 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
-import { ApiResponse, IMyBids } from "@/types/type";
+import { ApiResponse, IBids } from "@/types/type";
 import { convertDateToYYYYMMDD } from "@/utils";
 
 const TableDataCell = ({ data }: { data: string | number }) => {
@@ -35,9 +35,11 @@ const TableDataCell = ({ data }: { data: string | number }) => {
 export const BankTable = ({
   data,
   isLoading,
+  isCorporate,
 }: {
-  data: ApiResponse<IMyBids> | undefined;
+  data: ApiResponse<IBids> | undefined;
   isLoading: boolean;
+  isCorporate?: boolean;
 }) => {
   return (
     <div className="">
@@ -90,10 +92,21 @@ export const BankTable = ({
                       <div className="truncate">{item.bidType || ""}</div>
                     </div>
                   </TableCell>
-                  <TableDataCell data={item.confirmationPrice || ""} />
-                  <TableDataCell data={item.confirmationPrice || ""} />
+                  <TableDataCell
+                    data={item.confirmationPrice.toLocaleString() || ""}
+                  />
+                  <TableDataCell
+                    data={
+                      item.discountBaseRate?.toLocaleString() ||
+                      "Not Applicable"
+                    }
+                  />
 
-                  <TableDataCell data={item.confirmationPrice || ""} />
+                  <TableDataCell
+                    data={
+                      item.discountMargin?.toLocaleString() || "Not Applicable"
+                    }
+                  />
                   <TableDataCell data={item.confirmationPrice || ""} />
 
                   <TableCell className="px-1 py-1 max-w-[200px]">
@@ -105,6 +118,7 @@ export const BankTable = ({
                         isDiscount
                         border
                         lcId={item.lc[0]}
+                        isCorporate={isCorporate}
                       />
                     ) : (
                       <Button

@@ -25,7 +25,8 @@ export const TableBidStatus = ({
           status={data.response.data}
           isInfo={data.response.data !== "Add bid"}
           isDiscount={lcData.lcType.includes("Discount")}
-          lcId={lcData._id}        />
+          lcId={lcData._id}
+        />
       ) : (
         <Button
           variant="ghost"

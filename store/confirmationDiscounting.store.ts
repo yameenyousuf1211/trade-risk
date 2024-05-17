@@ -23,6 +23,7 @@ const useConfirmationStore = create<UseConfrimationDiscountingStore>(
     lcPeriod: {
       startDate: undefined,
       endDate: undefined,
+      expectedDate: false,
     },
     participantRole: "exporter",
     shipmentPort: {

@@ -335,15 +335,16 @@ export const AddBid = ({
                   </Button>
                 </div>
 
-      
-                <Button
-                  onClick={() => {
-                    setIsAddNewBid && setIsAddNewBid(true);
-                  }}
-                  className="bg-[#5625F2]  text-white hover:bg-[#5625F2] border border-[#D20000]"
-                >
-                  Submit A New Bid
-                </Button>
+                {status === "Rejected" && (
+                  <Button
+                    onClick={() => {
+                      setIsAddNewBid && setIsAddNewBid(true);
+                    }}
+                    className="bg-[#5625F2]  text-white hover:bg-[#5625F2] border border-[#D20000]"
+                  >
+                    Submit A New Bid
+                  </Button>
+                )}
               </>
             ) : (
               // Add Bids
@@ -442,7 +443,10 @@ export const AddBid = ({
                   >
                     Submit
                   </Button>
-                  <DialogClose className="w-full" onClick={() => setIsAddNewBid(false)}>
+                  <DialogClose
+                    className="w-full"
+                    onClick={() => setIsAddNewBid(false)}
+                  >
                     <Button
                       type="button"
                       variant="ghost"

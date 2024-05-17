@@ -198,7 +198,7 @@ export const RequestTable = ({
                       </Button>
                     </TableCell>
                     <TableCell className="px-1 py-1 max-w-[200px]">
-                      <TableDialog lcData={item} bids={item.bids} />
+                      <TableDialog lcId={item._id} bids={item.bids} />
                     </TableCell>
                   </TableRow>
                 ))

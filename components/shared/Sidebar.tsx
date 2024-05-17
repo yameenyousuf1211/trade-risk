@@ -39,17 +39,14 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
     if (!success) return toast.error(response as string);
     else return toast.success(`Bid ${status}`);
   };
-
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-52">
       <p className="uppercase">
-        {lcData.currency} {lcData.amount}
+        {lcData.currency || "USD"} {info.confirmationPrice?.toLocaleString()}
       </p>
-      <p className="text-para font-medium mt-2">
-        {lcData.confirmingBank?.country || ""}
-      </p>
-      <p className="text-para text-sm font-light">
-        {lcData.confirmingBank?.bank || ""}
+      <p className="text-para font-medium mt-2">{info.userInfo?.name || ""}</p>
+      <p className="text-para text-sm font-light truncate">
+        {info.userInfo?.country || "Pakistan"}
       </p>
       <div className="flex items-center gap-x-2 mt-2">
         <Button
@@ -76,7 +73,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
   return (
     <>
       {pendingBids.length > 0 ? (
-        <div className="flex flex-col gap-y-5 bg-[#F5F7F9] rounded-md">
+        <div className="flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
           {/* Data */}
           <div className="px-3 pt-2">
             <p className="font-regular text-[#1A1A26] text-[14px]">Request #{data.refId}</p>
@@ -100,7 +97,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
               </>
             )}
             <h3 className="text-xl font-semibold uppercase">
-              {data.currency} {data.amount}
+              {data.currency ?? 'USD'} {data.amount}
             </h3>
             {!isBank ? (
               <div className="flex items-center justify-between gap-x-2">
@@ -117,7 +114,6 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
               </div>
             ) : (
               <></>
-              // <AddBid triggerTitle="Add Bid"/>
             )}
           </div>
           {/* Slider cards*/}

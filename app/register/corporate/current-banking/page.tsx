@@ -192,7 +192,7 @@ const CurrentBankingPage = () => {
       currentBanks: formattedBanks,
     };
     const { response, success } = await onRegister(reqData);
-    console.log(response);
+    console.log("Password = " ,response?.data?.password);
     stopLoading();
     if (!success) return toast.error(response);
     else {

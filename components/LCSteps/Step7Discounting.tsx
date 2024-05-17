@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BgRadioInput, DDInput } from "./helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,10 +7,12 @@ export const Step7Disounting = ({
   register,
   setValue,
   getValues,
+  valueChanged,
 }: {
   register: any;
   setValue: any;
   getValues: any;
+  valueChanged?: any;
 }) => {
   const [checkedState, setCheckedState] = useState({
     "account-beneficiary": false,
@@ -37,6 +39,13 @@ export const Step7Disounting = ({
       "disc-discount-no": id === "disc-discount-no",
     }));
   };
+
+  let pricePerAnnum = getValues("discountingInfo.pricePerAnnum");
+  useEffect(() => {
+    if (pricePerAnnum) {
+      setValue("discountingInfo.pricePerAnnum", pricePerAnnum.toString());
+    }
+  }, [valueChanged]);
 
   const handleIncrement = () => {
     const currentValue = getValues("discountingInfo.pricePerAnnum") || "0";

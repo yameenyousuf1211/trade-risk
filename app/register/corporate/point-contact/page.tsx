@@ -22,6 +22,7 @@ const PointContactPage = () => {
     register,
     setValue,
     handleSubmit,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<z.infer<typeof pointOfContractSchema>>({
     resolver: zodResolver(pointOfContractSchema),
@@ -52,6 +53,11 @@ const PointContactPage = () => {
     localStorage.setItem("contactData", JSON.stringify(data));
     router.push("/register/corporate/current-banking");
   };
+  const [phoneInput, setPhoneInput] = useState<string>("");
+  let phone = getValues("pocPhone");
+
+  useEffect(() => {}, [phoneInput]);
+
 
   return (
     <CorporateStepLayout
@@ -95,8 +101,10 @@ const PointContactPage = () => {
               name="pocPhone"
               placeholder="pocPhone"
               setValue={setValue}
+              setPhoneInput={setPhoneInput}
+
             />
-            {errors.pocPhone && (
+              {(phone === '' || phone === undefined) && errors.pocPhone && (
               <span className="mt-1 absolute text-[11px] text-red-500">
                 {errors.pocPhone.message}
               </span>
@@ -148,10 +156,10 @@ const PointContactPage = () => {
               {pdfFile ? pdfFile.name.substring(0, 20) : "Select PDF file"}
               {pdfFile && (
                 <div
-                  className="bg-red-500 text-white size-4 rounded-full center absolute text-[12px] -top-3 -right-2 z-20"
+                  className="bg-red-500 text-white size-4 rounded-full center absolute text-[12px] -top-2 -left-4 z-20"
                   onClick={() => setPdfFile(undefined)}
                 >
-                  <X />
+                  <X className="size-3"/>
                 </div>
               )}
             </p>

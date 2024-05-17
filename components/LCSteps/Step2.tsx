@@ -37,6 +37,7 @@ export const Step2 = ({
   let paymentTerms = getValues("paymentTerms");
 
   const [currencyValue, setCurrencyValue] = useState<number | null>(null);
+
   useEffect(() => {
     if (amount) {
       setValue("amount", amount.toString());
@@ -75,14 +76,14 @@ export const Step2 = ({
           <Select
             onValueChange={(value) => {
               setValue("currency", value);
-              setValueChanged((prev) => !prev);
+              setValueChanged((prev: boolean) => !prev);
             }}
           >
             <SelectTrigger className="w-[100px] bg-borderCol/80">
               <SelectValue placeholder="USD" />
             </SelectTrigger>
             <SelectContent>
-              {/* {currency &&
+              {currency &&
                 currency.response.length > 0 &&
                 currency.response.map((curr: string, idx: number) => (
                   <SelectItem
@@ -92,7 +93,7 @@ export const Step2 = ({
                   >
                     {curr}
                   </SelectItem>
-                ))} */}
+                ))}
             </SelectContent>
           </Select>
 

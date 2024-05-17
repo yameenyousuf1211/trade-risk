@@ -115,6 +115,7 @@ export const AddBid = ({
   };
 
   return (
+    
     <Dialog>
       <DialogTrigger
         className={`${

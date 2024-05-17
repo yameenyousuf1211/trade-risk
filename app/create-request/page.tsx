@@ -14,13 +14,13 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { confirmationSchema } from "@/validation/lc.validation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "../../components/ui/loader";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { getCountries } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -42,9 +42,11 @@ const CreateRequestPage = () => {
   const router = useRouter();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
 
+  const btnRef = useRef();
+
   const queryClient = useQueryClient();
   const setValues = useConfirmationStore((state) => state.setValues);
-  const confirmationData = useConfirmationStore((state) => state); // Optional: to access current state
+  const confirmationData = useConfirmationStore((state) => state);
 
   useEffect(() => {
     if (confirmationData && confirmationData?._id) {
@@ -111,7 +113,7 @@ const CreateRequestPage = () => {
       stopLoading();
       if (!success) return toast.error(response);
       else {
-        setValues(null as any);
+        setValues(getStateValues(useConfirmationStore.getInitialState()));
         toast.success(response?.message);
         reset();
         router.push("/");
@@ -156,7 +158,7 @@ const CreateRequestPage = () => {
     else {
       toast.success("LC saved as draft");
       reset();
-      setValues(null as any);
+      setValues(getStateValues(useConfirmationStore.getInitialState()));
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
       });
@@ -253,12 +255,7 @@ const CreateRequestPage = () => {
             size="lg"
             disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
-            onClick={
-              // editData && editData._id
-              //   ? handleSubmit(updateLC)
-              //   : handleSubmit(onSubmit)
-              handleSubmit(onSubmit)
-            }
+            onClick={handleSubmit(onSubmit)}
           >
             {isLoading ? <Loader /> : "Submit request"}
           </Button>
@@ -267,6 +264,7 @@ const CreateRequestPage = () => {
           title="Submit Request"
           className="hidden"
           setProceed={setProceed}
+          // ref={btnRef}
         />
       </form>
     </CreateLCLayout>

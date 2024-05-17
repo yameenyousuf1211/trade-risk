@@ -27,10 +27,10 @@ import {
 } from "@/components/LCSteps/Step3Helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { onCreateLC } from "@/services/apis/lcs.api";
+import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { useRouter } from "next/navigation";
 import { confirmationDiscountSchema } from "@/validation/lc.validation";
 import Loader from "@/components/ui/loader";
@@ -39,6 +39,9 @@ import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Country } from "@/types/type";
 import { DisclaimerDialog } from "@/components/helpers";
+import useConfirmationDiscountingStore, {
+  getStateValues,
+} from "@/store/confirmationDiscounting.store";
 
 const ConfirmationPage = () => {
   const {
@@ -53,10 +56,26 @@ const ConfirmationPage = () => {
   });
 
   const queryClient = useQueryClient();
-
+  const btnRef = useRef();
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
+
+  const setValues = useConfirmationDiscountingStore((state) => state.setValues);
+  const confirmationData = useConfirmationDiscountingStore((state) => state);
+  useEffect(() => {
+    if (confirmationData && confirmationData?._id) {
+      Object.entries(confirmationData).forEach(([key, value]) => {
+        // @ts-ignore
+        setValue(key, value);
+        if (key === "transhipment") {
+          setValue(key, value === true ? "yes" : "no");
+        }
+      });
+    }
+    setValueChanged(!valueChanged);
+  }, [confirmationData]);
+
   // Show errors
   useEffect(() => {
     if (errors) {
@@ -79,6 +98,7 @@ const ConfirmationPage = () => {
       showNestedErrors(errors);
     }
   }, [errors]);
+
   const [proceed, setProceed] = useState(false);
 
   const onSubmit: SubmitHandler<
@@ -100,11 +120,19 @@ const ConfirmationPage = () => {
         },
       };
 
-      const { response, success } = await onCreateLC(reqData);
+      const { response, success } = confirmationData?._id
+        ? await onUpdateLC({
+            payload: reqData,
+            id: confirmationData?._id,
+          })
+        : await onCreateLC(reqData);
       stopLoading();
       if (!success) return toast.error(response);
       else {
         toast.success(response?.message);
+        setValues(
+          getStateValues(useConfirmationDiscountingStore.getInitialState())
+        );
         reset();
         router.push("/");
       }
@@ -135,11 +163,20 @@ const ConfirmationPage = () => {
         expectedDate: false,
       },
     };
-    const { response, success } = await onCreateLC(reqData);
+    const { response, success } = confirmationData?._id
+      ? await onUpdateLC({
+          payload: reqData,
+          id: confirmationData?._id,
+        })
+      : await onCreateLC(reqData);
+
     setLoader(false);
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");
+      setValues(
+        getStateValues(useConfirmationDiscountingStore.getInitialState())
+      );
       reset();
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
@@ -198,6 +235,15 @@ const ConfirmationPage = () => {
       "payment-upas": id === "payment-upas",
     }));
   };
+
+  let amount = getValues("amount");
+  let currencyVal = getValues("currency");
+  useEffect(() => {
+    if (amount) {
+      setValue("amount", amount.toString());
+      setValue("currency", currencyVal);
+    }
+  }, [valueChanged]);
 
   return (
     <CreateLCLayout>
@@ -294,16 +340,21 @@ const ConfirmationPage = () => {
           />
           {/* Period */}
           <Period
+            register={register}
             setValue={setValue}
             getValues={getValues}
             countries={countries}
             flags={flags}
+            valueChanged={valueChanged}
+            setValueChanged={setValueChanged}
           />
           {/* Transhipment */}
           <Transhipment
             getValues={getValues}
             register={register}
             setValue={setValue}
+            valueChanged={valueChanged}
+            setValueChanged={setValueChanged}
           />
         </div>
 
@@ -321,6 +372,8 @@ const ConfirmationPage = () => {
           flags={flags}
           setValue={setValue}
           getValues={getValues}
+          valueChanged={valueChanged}
+          setValueChanged={setValueChanged}
         />
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
@@ -329,11 +382,13 @@ const ConfirmationPage = () => {
             title="Confirmation Info"
             getValues={getValues}
             setValue={setValue}
+            valueChanged={valueChanged}
           />
           <Step7Disounting
             getValues={getValues}
             setValue={setValue}
             register={register}
+            valueChanged={valueChanged}
           />
         </div>
         <Step7 register={register} step={8} />

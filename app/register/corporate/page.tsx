@@ -30,6 +30,7 @@ import { Country } from "@/types/type";
 const CompanyInfoPage = () => {
   const router = useRouter();
   const setValues = useRegisterStore((state) => state.setValues);
+  const [phoneInput, setPhoneInput] = useState<string>("");
 
   const corporateData =
     typeof window !== "undefined"
@@ -56,6 +57,10 @@ const CompanyInfoPage = () => {
       });
     }
   }, [corporateData]);
+  useEffect(() => {
+    getValues("phone");
+    console.log(getValues("phone"));
+  }, [errors]);
 
   const onSubmit: SubmitHandler<z.infer<typeof companyInfoSchema>> = async (
     data: any
@@ -84,7 +89,11 @@ const CompanyInfoPage = () => {
   }, [citiesData, isoCode]);
 
   const [procceed, setProceed] = useState(false);
-  
+
+  let phone = getValues("phone");
+
+  useEffect(() => {}, [phoneInput]);
+
   return (
     <AuthLayout>
       <section className="max-w-2xl mx-auto w-full max-xs:px-1 z-10 ">
@@ -129,6 +138,7 @@ const CompanyInfoPage = () => {
                   <SelectItem value="public_limited_co">
                     Public Limited Co.
                   </SelectItem>
+                  <SelectItem value="partnership">Partnership</SelectItem>
                 </SelectContent>
               </Select>
               {errors.constitution && (
@@ -170,8 +180,9 @@ const CompanyInfoPage = () => {
                 name="phone"
                 placeholder="Telephone"
                 setValue={setValue}
+                setPhoneInput={setPhoneInput}
               />
-              {errors.phone && (
+              {(phone === '' || phone === undefined) && errors.phone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.phone.message}
                 </span>
@@ -204,6 +215,9 @@ const CompanyInfoPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Automotive">Automotive</SelectItem>
+                  <SelectItem value="Healthcare">Healthcare</SelectItem>
+                  <SelectItem value="Technology">Technology</SelectItem>
+                  <SelectItem value="Finance">Finance</SelectItem>
                 </SelectContent>
               </Select>{" "}
               {errors.businessType && (
@@ -297,7 +311,7 @@ const CompanyInfoPage = () => {
                 >
                   <SelectValue placeholder="Account City" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   {cities &&
                     cities.length > 0 &&
                     cities.map((city: string, idx: number) => (

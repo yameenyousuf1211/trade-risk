@@ -13,12 +13,11 @@ import { format, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { getBanks, getCountries, getPorts } from "@/services/apis/helpers.api";
+import { getBanks, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import {
   Select,
   SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -59,6 +58,7 @@ export const ValidatingCalendar = ({
 };
 
 export const Period = ({
+  register,
   setValue,
   getValues,
   countries,
@@ -66,6 +66,7 @@ export const Period = ({
   valueChanged,
   setValueChanged,
 }: {
+  register: any;
   setValue: any;
   getValues: any;
   countries: string[];
@@ -101,8 +102,9 @@ export const Period = ({
   const [lcIssueType, setLcIssueType] = useState("");
 
   const handleRadioChange = (e: any) => {
+
     setLcIssueType(e.target.value);
-    setValue("lcPeriod.startDate", "");
+    setValue("lcPeriod.expectedDate", e.target.value);
   };
   // Function to update value in React Hook Form
   const updateValue = (name: string, value: any) => {
@@ -123,10 +125,10 @@ export const Period = ({
             <input
               type="radio"
               id="date-lc-issued"
-              value="date-lc-issued"
               className="accent-primaryCol size-4"
-              name="lcPeriodType"
-              checked={lcIssueType === "date-lc-issued"}
+              name="lcPeriod.expectedDate"
+              value="yes"
+              checked={lcIssueType === "yes"}
               onChange={handleRadioChange}
             />
             <label htmlFor="date-lc-issued">Date LC Issued</label>
@@ -135,10 +137,10 @@ export const Period = ({
             <input
               type="radio"
               id="expected-date"
-              value="expected-date"
               className="accent-primaryCol size-4"
-              name="lcPeriodType"
-              checked={lcIssueType === "expected-date"}
+              name="lcPeriod.expectedDate"
+              value="no"
+              checked={lcIssueType === "no"}
               onChange={handleRadioChange}
             />
             <label htmlFor="expected-date">Expected date of LC issuance</label>
@@ -440,11 +442,15 @@ export const DiscountBanks = ({
   setValue,
   getValues,
   flags,
+  value,
+  valueSetter,
 }: {
   countries: string[];
   flags: string[];
   setValue: any;
   getValues: any;
+  value?: any;
+  valueSetter?: any;
 }) => {
   const [valueChanged, setValueChanged] = useState(false);
 
@@ -457,7 +463,7 @@ export const DiscountBanks = ({
     issuingCountry = getValues("issuingBank.country");
     advisingCountry = getValues("advisingBank.country");
     confirmingCountry = getValues("confirmingBank.country");
-  }, [valueChanged]);
+  }, [valueChanged, value]);
 
   const { data: issuingBanks } = useQuery({
     queryKey: ["issuing-banks", issuingCountry],

@@ -86,6 +86,7 @@ export const fetchMyBids = async ({
   filter?: string;
   search?: string;
 }) => {
+  console.log(filter)
   try {
     const { data } = await api.get(
       `/bids?bidBy=true&limit=${limit || 10}&page=${page || 1}&filter=${

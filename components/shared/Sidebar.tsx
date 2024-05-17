@@ -39,17 +39,17 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
     if (!success) return toast.error(response as string);
     else return toast.success(`Bid ${status}`);
   };
-
+  console.log(info);
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-52">
       <p className="uppercase">
-        {lcData.currency} {lcData.amount}
+        {lcData.currency || "USD"} {lcData.amount?.toLocaleString()}
       </p>
       <p className="text-para font-medium mt-2">
-        {lcData.confirmingBank?.country || ""}
+        {info.userInfo?.country || ""}
       </p>
-      <p className="text-para text-sm font-light">
-        {lcData.confirmingBank?.bank || ""}
+      <p className="text-para text-sm font-light truncate">
+        {info.userInfo?.name || ""}
       </p>
       <div className="flex items-center gap-x-2 mt-2">
         <Button
@@ -117,7 +117,6 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
               </div>
             ) : (
               <></>
-              // <AddBid triggerTitle="Add Bid"/>
             )}
           </div>
           {/* Slider cards*/}

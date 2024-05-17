@@ -55,14 +55,14 @@ const companyInfoSchema = z.object({
     .min(3, "*Account holder name field cannot be empty."),
   businessNature: z
     .string({ message: "*Business nature field cannot be empty." })
-    .min(3, "*Business nature field cannot be empty."),
+    .min(1, "*Business nature field cannot be empty."),
   constitution: z
     .string({ message: "*Constitution field cannot be empty." })
     .min(3, "*Constitution field cannot be empty."),
   accountCountry: z
     .string({ message: "*Account country is required" })
-    .nonempty("*Account country is required"),
-  // .min(1, "Account country field cannot be empty.")
+    .nonempty("*Account country is required")
+    .min(1, "Account country field cannot be empty."),
   accountCity: z
     .string({ message: "*Account city field cannot be empty." })
     .min(1, "*Account city field cannot be empty."),

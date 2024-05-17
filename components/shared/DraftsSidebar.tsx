@@ -82,7 +82,7 @@ const DraftCard = ({
       </p>
       <div className="flex items-center w-full justify-between gap-x-1 mt-2">
         <p className="text-xl font-semibold uppercase">
-          {draft.currency} {draft.amount}
+          {draft.currency || "USD"} {draft.amount?.toLocaleString()}
         </p>
         <Button
           size="sm"

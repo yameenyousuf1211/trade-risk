@@ -31,7 +31,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { confirmationDiscountSchema } from "@/validation/lc.validation";
 import Loader from "@/components/ui/loader";
 import useLoading from "@/hooks/useLoading";
@@ -59,6 +59,8 @@ const ConfirmationPage = () => {
   const btnRef = useRef();
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
+  const pathname = usePathname();
+
   const [valueChanged, setValueChanged] = useState<boolean>(false);
 
   const setValues = useConfirmationDiscountingStore((state) => state.setValues);
@@ -247,6 +249,18 @@ const ConfirmationPage = () => {
       setValue("currency", currencyVal);
     }
   }, [valueChanged]);
+
+  // reset the form on page navigation
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setValues(
+        getStateValues(useConfirmationDiscountingStore.getInitialState())
+      );
+      reset();
+    };
+
+    handleRouteChange();
+  }, [pathname, router]);
 
   return (
     <CreateLCLayout>

@@ -57,7 +57,7 @@ const ProductInfoPage = () => {
     getValues,
     setValue,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<z.infer<typeof productsInfoSchema>>({
     resolver: zodResolver(productsInfoSchema),
   });

@@ -20,7 +20,7 @@ import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { confirmationSchema } from "@/validation/lc.validation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "../../components/ui/loader";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getCountries } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -40,6 +40,7 @@ const CreateRequestPage = () => {
   });
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
+  const pathname = usePathname();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
 
   const btnRef = useRef();
@@ -197,6 +198,16 @@ const CreateRequestPage = () => {
       setFlags(fetchedFlags);
     }
   }, [countriesData]);
+
+  // reset the form on page navigation
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setValues(getStateValues(useConfirmationStore.getInitialState()));
+      reset();
+    };
+
+    handleRouteChange();
+  }, [pathname, router]);
 
   return (
     <CreateLCLayout>

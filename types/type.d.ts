@@ -206,7 +206,8 @@ export interface IBids {
   _id: string;
   status: string;
   bidType: string;
-  discountingPrice?: number;
+  discountMargin?: number;
+  discountBaseRate?: number;
   confirmationPrice: number;
   bidValidity?: Date;
   bidBy: {

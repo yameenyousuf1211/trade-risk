@@ -95,8 +95,8 @@ const pointOfContractSchema = z.object({
 
 const productsInfoSchema = z.object({
   product: z
-    .string({ message: "*Product field cannot be empty." })
-    .min(1, "*Product field cannot be empty."),
+    .string({ message: "*Add atleast 1 product." })
+    .min(1, "*Add atleast 1 product."),
   annualSalary: z
     .string({ message: "*Annual salary is required." })
     .min(1, "*Annual salary is required.")

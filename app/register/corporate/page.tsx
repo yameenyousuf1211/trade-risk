@@ -84,7 +84,7 @@ const CompanyInfoPage = () => {
   }, [citiesData, isoCode]);
 
   const [procceed, setProceed] = useState(false);
-  
+
   return (
     <AuthLayout>
       <section className="max-w-2xl mx-auto w-full max-xs:px-1 z-10 ">
@@ -129,6 +129,7 @@ const CompanyInfoPage = () => {
                   <SelectItem value="public_limited_co">
                     Public Limited Co.
                   </SelectItem>
+                  <SelectItem value="partnership">Partnership</SelectItem>
                 </SelectContent>
               </Select>
               {errors.constitution && (
@@ -204,6 +205,9 @@ const CompanyInfoPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Automotive">Automotive</SelectItem>
+                  <SelectItem value="Healthcare">Healthcare</SelectItem>
+                  <SelectItem value="Technology">Technology</SelectItem>
+                  <SelectItem value="Finance">Finance</SelectItem>
                 </SelectContent>
               </Select>{" "}
               {errors.businessType && (
@@ -297,7 +301,7 @@ const CompanyInfoPage = () => {
                 >
                   <SelectValue placeholder="Account City" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   {cities &&
                     cities.length > 0 &&
                     cities.map((city: string, idx: number) => (

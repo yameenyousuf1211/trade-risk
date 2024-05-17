@@ -148,10 +148,10 @@ const PointContactPage = () => {
               {pdfFile ? pdfFile.name.substring(0, 20) : "Select PDF file"}
               {pdfFile && (
                 <div
-                  className="bg-red-500 text-white size-4 rounded-full center absolute text-[12px] -top-3 -right-2 z-20"
+                  className="bg-red-500 text-white size-4 rounded-full center absolute text-[12px] -top-2 -left-4 z-20"
                   onClick={() => setPdfFile(undefined)}
                 >
-                  <X />
+                  <X className="size-3"/>
                 </div>
               )}
             </p>

@@ -58,6 +58,7 @@ export const ValidatingCalendar = ({
 };
 
 export const Period = ({
+  register,
   setValue,
   getValues,
   countries,
@@ -65,6 +66,7 @@ export const Period = ({
   valueChanged,
   setValueChanged,
 }: {
+  register: any;
   setValue: any;
   getValues: any;
   countries: string[];
@@ -100,8 +102,9 @@ export const Period = ({
   const [lcIssueType, setLcIssueType] = useState("");
 
   const handleRadioChange = (e: any) => {
+
     setLcIssueType(e.target.value);
-    setValue("lcPeriod.startDate", "");
+    setValue("lcPeriod.expectedDate", e.target.value);
   };
   // Function to update value in React Hook Form
   const updateValue = (name: string, value: any) => {
@@ -122,10 +125,10 @@ export const Period = ({
             <input
               type="radio"
               id="date-lc-issued"
-              value="date-lc-issued"
               className="accent-primaryCol size-4"
-              name="lcPeriodType"
-              checked={lcIssueType === "date-lc-issued"}
+              name="lcPeriod.expectedDate"
+              value="yes"
+              checked={lcIssueType === "yes"}
               onChange={handleRadioChange}
             />
             <label htmlFor="date-lc-issued">Date LC Issued</label>
@@ -134,10 +137,10 @@ export const Period = ({
             <input
               type="radio"
               id="expected-date"
-              value="expected-date"
               className="accent-primaryCol size-4"
-              name="lcPeriodType"
-              checked={lcIssueType === "expected-date"}
+              name="lcPeriod.expectedDate"
+              value="no"
+              checked={lcIssueType === "no"}
               onChange={handleRadioChange}
             />
             <label htmlFor="expected-date">Expected date of LC issuance</label>

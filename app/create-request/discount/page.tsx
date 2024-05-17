@@ -30,7 +30,7 @@ import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Country } from "@/types/type";
 import { DisclaimerDialog } from "@/components/helpers";
-import useDiscountingStore from "@/store/discounting.store";
+import useDiscountingStore, { getStateValues } from "@/store/discounting.store";
 
 const CreateDiscountPage = () => {
   const {
@@ -124,7 +124,7 @@ const CreateDiscountPage = () => {
       stopLoading();
       if (!success) return toast.error(response);
       else {
-        setValues(null as any);
+        setValues(getStateValues(useDiscountingStore.getInitialState()));
         toast.success(response?.message);
         reset();
         router.push("/");
@@ -173,7 +173,7 @@ const CreateDiscountPage = () => {
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");
-      setValues(null as any);
+      setValues(getStateValues(useDiscountingStore.getInitialState()));
       reset();
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
@@ -422,6 +422,7 @@ const CreateDiscountPage = () => {
           />
           {/* Period */}
           <Period
+            register={register}
             setValue={setValue}
             getValues={getValues}
             countries={countries}

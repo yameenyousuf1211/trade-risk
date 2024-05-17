@@ -158,7 +158,6 @@ const ProductInfoPage = () => {
           <Button
             className="disabled:bg-[#E2E2EA] disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
-            disabled={!isValid}
             type="submit"
           >
             Continue

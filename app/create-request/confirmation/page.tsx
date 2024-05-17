@@ -27,7 +27,7 @@ import {
 } from "@/components/LCSteps/Step3Helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
@@ -39,7 +39,9 @@ import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Country } from "@/types/type";
 import { DisclaimerDialog } from "@/components/helpers";
-import useConfirmationDiscountingStore from "@/store/confirmationDiscounting.store";
+import useConfirmationDiscountingStore, {
+  getStateValues,
+} from "@/store/confirmationDiscounting.store";
 
 const ConfirmationPage = () => {
   const {
@@ -54,7 +56,7 @@ const ConfirmationPage = () => {
   });
 
   const queryClient = useQueryClient();
-
+  const btnRef = useRef();
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
@@ -128,7 +130,9 @@ const ConfirmationPage = () => {
       if (!success) return toast.error(response);
       else {
         toast.success(response?.message);
-        setValues(null as any);
+        setValues(
+          getStateValues(useConfirmationDiscountingStore.getInitialState())
+        );
         reset();
         router.push("/");
       }
@@ -170,7 +174,9 @@ const ConfirmationPage = () => {
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");
-      setValues(null as any);
+      setValues(
+        getStateValues(useConfirmationDiscountingStore.getInitialState())
+      );
       reset();
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
@@ -334,6 +340,7 @@ const ConfirmationPage = () => {
           />
           {/* Period */}
           <Period
+            register={register}
             setValue={setValue}
             getValues={getValues}
             countries={countries}

@@ -229,6 +229,7 @@ export const Step3 = ({
         )}
       </div>
       <Period
+        register={register}
         setValue={setValue}
         getValues={getValues}
         countries={countries}

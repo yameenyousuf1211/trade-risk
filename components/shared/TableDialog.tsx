@@ -9,9 +9,10 @@ import { ArrowUpNarrowWide, Eye, ListFilter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IBids, ILcs } from "@/types/type";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { convertDateToYYYYMMDD } from "@/utils";
 import { toast } from "sonner";
+import { fetchSingleLc } from "@/services/apis/lcs.api";
 
 const BidCard = ({ data }: { data: IBids }) => {
   const queryClient = useQueryClient();
@@ -60,7 +61,7 @@ const BidCard = ({ data }: { data: IBids }) => {
           <p className="text-sm text-para mb-1">Discount Rate</p>
           <p className="text-lg font-semibold ">
             {data.bidType.includes("Discounting")
-              ? "Applicable"
+              ? data.discountBaseRate || "Applicable"
               : "Not Applicable"}
           </p>
         </div>
@@ -69,7 +70,7 @@ const BidCard = ({ data }: { data: IBids }) => {
           <p className="text-sm text-para mb-1">Discount Margin</p>
           <p className="text-lg font-semibold ">
             {data.bidType.includes("Discounting")
-              ? "Applicable"
+              ? data.discountMargin || "Applicable"
               : "Not Applicable"}
           </p>
         </div>
@@ -166,13 +167,18 @@ const LCInfo = ({
 };
 
 export const TableDialog = ({
-  lcData,
+  lcId,
   bids,
 }: {
-  lcData: ILcs;
+  lcId: string;
   bids: IBids[];
 }) => {
-  console.log(lcData);
+  // Get LC
+  const { data: lcData, isLoading } = useQuery({
+    queryKey: [`single-lc`, lcId],
+    queryFn: () => fetchSingleLc(lcId),
+  });
+
   return (
     <Dialog>
       <DialogTrigger className="center border border-borderCol rounded-md w-full px-1 py-2">
@@ -180,7 +186,7 @@ export const TableDialog = ({
       </DialogTrigger>
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
-          <h2 className="text-lg font-semibold">{lcData.lcType}</h2>
+          <h2 className="text-lg font-semibold">{lcData && lcData.lcType}</h2>
           <DialogClose>
             <X className="size-7" />
           </DialogClose>
@@ -192,13 +198,14 @@ export const TableDialog = ({
             <div className="px-4">
               <h2 className="text-2xl font-semibold mb-1">
                 <span className="text-para font-medium">LC Amount:</span> USD{" "}
-                {lcData.amount || ""}
+                {(lcData && lcData.amount.toLocaleString()) || ""}
               </h2>
               <p className="text-sm text-para">
-                Created at, {convertDateToYYYYMMDD(lcData.lcPeriod?.startDate)},
+                Created at,{" "}
+                {lcData && convertDateToYYYYMMDD(lcData.lcPeriod?.startDate)},
                 by{" "}
                 <span className="text-text">
-                  {lcData.exporterInfo?.beneficiaryName || ""}
+                  {(lcData && lcData.exporterInfo?.beneficiaryName) || ""}
                 </span>
               </p>
 
@@ -208,23 +215,23 @@ export const TableDialog = ({
             <div className="px-4">
               <LCInfo
                 label="LC Issuing Bank"
-                value={lcData.issuingBank?.bank || ""}
+                value={(lcData && lcData.issuingBank?.bank) || ""}
               />
               <LCInfo
                 label="LC Applicant"
-                value={lcData.importerInfo?.applicantName || ""}
+                value={(lcData && lcData.importerInfo?.applicantName) || ""}
               />
               <LCInfo
                 label="Advising Bank"
-                value={lcData.advisingBank?.bank || ""}
+                value={(lcData && lcData.advisingBank?.bank) || ""}
               />
               <LCInfo
                 label="Confirming Bank"
-                value={lcData.confirmingBank?.bank || ""}
+                value={(lcData && lcData.confirmingBank?.bank) || ""}
               />
               <LCInfo
                 label="Payments Terms"
-                value={lcData.paymentTerms || ""}
+                value={(lcData && lcData.paymentTerms) || ""}
                 noBorder
               />
             </div>
@@ -235,30 +242,38 @@ export const TableDialog = ({
               <h2 className="text-xl font-semibold">LC Details</h2>
               <LCInfo
                 label="LC Issuance (Expected)"
-                value={convertDateToYYYYMMDD(lcData.lcPeriod?.startDate)}
+                value={
+                  lcData && convertDateToYYYYMMDD(lcData.lcPeriod?.startDate)
+                }
               />
               <LCInfo
                 label="LC Expiry Date"
-                value={convertDateToYYYYMMDD(lcData.lcPeriod?.endDate)}
+                value={
+                  lcData && convertDateToYYYYMMDD(lcData.lcPeriod?.endDate)
+                }
               />
               <LCInfo
                 label="Transhipment"
-                value={lcData.transhipment === true ? "Allowed" : "Not allowed"}
+                value={
+                  lcData && lcData.transhipment === true
+                    ? "Allowed"
+                    : "Not allowed"
+                }
               />
               <LCInfo
                 label="Port of Shipment"
-                value={lcData.shipmentPort?.port || ""}
+                value={(lcData && lcData.shipmentPort?.port) || ""}
                 noBorder
               />
 
               <h2 className="text-xl font-semibold mt-3">Exporter Info</h2>
               <LCInfo
                 label="Beneficiary"
-                value={lcData.exporterInfo?.beneficiaryName || ""}
+                value={(lcData && lcData.exporterInfo?.beneficiaryName) || ""}
               />
               <LCInfo
                 label="Country"
-                value={lcData.exporterInfo?.countryOfExport || ""}
+                value={(lcData && lcData.exporterInfo?.countryOfExport) || ""}
               />
               <LCInfo
                 label="Charges on account of"

@@ -119,7 +119,6 @@ export const BankTable = ({
                       <AddBid
                         triggerTitle={item.status}
                         status={item.status}
-                        isInfo={item.status !== "Add bid"}
                         isInfo={item.status !== "Add bid" && !isAddNewBid}
                         setIsAddNewBid={setIsAddNewBid}
                         isDiscount

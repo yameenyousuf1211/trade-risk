@@ -55,7 +55,7 @@ const Chart = ({
 
   return (
     <div
-      className="hover:shadow-xl rounded-lg pb-2 cursor-pointer"
+      className="hover:shadow-xl hover:bg-white rounded-xl pb-2 cursor-pointer"
       onClick={handleFilter}
     >
       <div className="flex flex-col items-center justify-center">
@@ -91,7 +91,7 @@ const Chart = ({
           <div className="progress-value text-4xl font-semibold">{value}</div>
         </div>
       </div>
-      <p className="text-sm text-[#1A1A26] text-center">{title}</p>
+      <p className="text-sm font-light	 text-[#1A1A26] text-center">{title}</p>
     </div>
   );
 };
@@ -153,8 +153,8 @@ export const ProgressCharts = ({
 
   return (
     <div
-      className="bg-white rounded-lg border border-borderCol py-4 px-5 
-    xl:max-w-[525px] w-full max-h-[550px]"
+      className="bg-[white] rounded-lg border border-borderCol py-4 px-5 
+    2xl:max-w-[525px] w-full max-h-[550px]"
     >
       <div className="flex items-center gap-x-2 justify-between mb-3 w-full">
         <div className="flex items-center gap-x-2">
@@ -171,21 +171,22 @@ export const ProgressCharts = ({
         )}
       </div>
       {/* Charts */}
-      <div className="flex items-center overflow-x-auto">
+      <div className="flex items-center overflow-x-auto ">
         {isLoading ? (
           <div className="w-full h-full center">
             <Loader />
           </div>
         ) : (
-          <>
-            <Chart
-              value={accepted}
-              bg="#E0F2EF"
-              color="#49E2B4"
-              title="accepted"
-              maxValue={maxValue}
-              isBank={isBank}
-            />
+          
+            <div className="bg-[#F5F7F9] flex rounded-[6px]">
+              <Chart
+                value={accepted}
+                bg="#E0F2EF"
+                color="#49E2B4"
+                title="accepted"
+                maxValue={maxValue}
+                isBank={isBank}
+              />
             <Chart
               value={rejected}
               bg="#FFE6E6"
@@ -210,7 +211,7 @@ export const ProgressCharts = ({
               maxValue={maxValue}
               isBank={isBank}
             />
-          </>
+          </div>
         )}
       </div>
     </div>

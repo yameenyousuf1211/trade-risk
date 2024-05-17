@@ -79,7 +79,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
         <div className="flex flex-col gap-y-5 bg-[#F5F7F9] rounded-md">
           {/* Data */}
           <div className="px-3 pt-2">
-            <p>Request #{data.refId}</p>
+            <p className="font-regular text-[#1A1A26] text-[14px]">Request #{data.refId}</p>
             {isBank && <p className="text-lg font-semibold my-1">Aramco</p>}
 
             <p className="text-sm flex items-center flex-wrap">
@@ -355,7 +355,7 @@ export const Sidebar = ({
 
       <div className="bg-white border border-borderCol py-4 px-5 mt-5 rounded-lg min-h-[70%] max-h-[80%] overflow-y-auto overflow-x-hidden flex flex-col justify-between">
         <div>
-          <h4 className="-ml-2 text-lg font-medium mb-3">
+          <h4 className="-ml-2 text-lg text-center font-medium mb-3">
             {isBank ? "Needs Action" : "Needs your attention"}
           </h4>
           <div className="flex flex-col gap-y-5">

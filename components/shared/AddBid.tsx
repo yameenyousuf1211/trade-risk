@@ -333,7 +333,7 @@ export const AddBid = ({
                   </Button>
                 </div>
 
-                {/* {status === "Rejected" && (
+                 {status === "Rejected" && (
                   <AddBid
                     triggerTitle={"Submit a new bid"}
                     status={"Add bid"}
@@ -341,7 +341,7 @@ export const AddBid = ({
                     isDiscount={lcData?.lcType.includes("Discount")}
                     lcId={lcData?._id}
                   />
-                )} */}
+                )} 
               </>
             ) : (
               // Add Bids

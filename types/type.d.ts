@@ -258,12 +258,7 @@ export interface IMyBids {
   status: string;
 }
 
-interface IssuingBank {
-  bank: string;
-  country: string;
-}
-
-interface ConfirmingBank {
+interface Bank {
   bank: string;
   country: string;
 }
@@ -288,8 +283,8 @@ type TransactionData = {
   amount: string;
   paymentTerms: "sight-lc" | "usance-lc" | "deferred-lc" | "upas-lc";
   currency: string;
-  issuingBank: IssuingBank;
-  confirmingBank: ConfirmingBank;
+  issuingBank: Bank;
+  confirmingBank: Bank;
   lcPeriod: LcPeriod;
   shipmentPort: ShipmentPort;
   transhipment: "yes" | "no";
@@ -314,6 +309,51 @@ interface LcConfirmation extends TransactionData {
 
 export type UseConfirmationStore = LcConfirmation & {
   setValues: (values: Partial<LcConfirmation>) => void;
+};
+
+interface LcDiscounting extends TransactionData {
+  _id: string;
+  expectedDiscountingDate: any;
+  advisingBank: Bank;
+  exporterInfo: {
+    beneficiaryName: string;
+    countryOfExport: string;
+    beneficiaryCountry: string;
+  };
+  discountingInfo: {
+    discountAtSight: string;
+    behalfOf: string;
+    pricePerAnnum: string;
+  };
+}
+
+export type UseDiscountingStore = LcDiscounting & {
+  setValues: (values: Partial<LcDiscounting>) => void;
+};
+
+interface LcConfrimationDiscounting extends TransactionData {
+  _id: string;
+  expectedConfirmationDate: any;
+  advisingBank: Bank;
+  exporterInfo: {
+    beneficiaryName: string;
+    countryOfExport: string;
+    beneficiaryCountry: string;
+    bank: string;
+  };
+  confirmationInfo: {
+    behalfOf: string;
+    pricePerAnnum: string;
+  };
+  discountingInfo: {
+    discountAtSight: string;
+    behalfOf: string;
+    pricePerAnnum: string;
+  };
+}
+
+export type UseConfrimationDiscountingStore = LcConfrimationDiscounting & {
+  setValues: (values: Partial<LcConfrimationDiscounting>) => void;
 };
 
 export interface Country {

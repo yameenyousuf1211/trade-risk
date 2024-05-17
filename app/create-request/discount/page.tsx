@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { discountingSchema } from "@/validation/lc.validation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { onCreateLC } from "@/services/apis/lcs.api";
+import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { useRouter } from "next/navigation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "@/components/ui/loader";
@@ -30,6 +30,7 @@ import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Country } from "@/types/type";
 import { DisclaimerDialog } from "@/components/helpers";
+import useDiscountingStore from "@/store/discounting.store";
 
 const CreateDiscountPage = () => {
   const {
@@ -47,6 +48,24 @@ const CreateDiscountPage = () => {
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
+  const [valueChanged, setValueChanged] = useState<boolean>(false);
+
+  // Edit Request
+  const setValues = useDiscountingStore((state) => state.setValues);
+  const discountingData = useDiscountingStore((state) => state);
+  useEffect(() => {
+    if (discountingData && discountingData?._id) {
+      Object.entries(discountingData).forEach(([key, value]) => {
+        // @ts-ignore
+        setValue(key, value);
+        if (key === "transhipment") {
+          setValue(key, value === true ? "yes" : "no");
+        }
+      });
+    }
+    setValueChanged(!valueChanged);
+  }, [discountingData]);
+
   // Showing errors
   useEffect(() => {
     if (errors) {
@@ -96,10 +115,16 @@ const CreateDiscountPage = () => {
         expectedDiscountingDate: new Date("2024-04-28"),
       };
 
-      const { response, success } = await onCreateLC(reqData);
+      const { response, success } = discountingData?._id
+        ? await onUpdateLC({
+            payload: reqData,
+            id: discountingData?._id,
+          })
+        : await onCreateLC(reqData);
       stopLoading();
       if (!success) return toast.error(response);
       else {
+        setValues(null as any);
         toast.success(response?.message);
         reset();
         router.push("/");
@@ -136,11 +161,19 @@ const CreateDiscountPage = () => {
       expectedDiscountingDate: new Date("2024-04-28"),
       isDraft: "true",
     };
-    const { response, success } = await onCreateLC(reqData);
+
+    const { response, success } = discountingData?._id
+      ? await onUpdateLC({
+          payload: reqData,
+          id: discountingData?._id,
+        })
+      : await onCreateLC(reqData);
+
     setLoader(false);
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");
+      setValues(null as any);
       reset();
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
@@ -199,6 +232,15 @@ const CreateDiscountPage = () => {
       "payment-upas": id === "payment-upas",
     }));
   };
+
+  let amount = getValues("amount");
+  let currencyVal = getValues("currency");
+  useEffect(() => {
+    if (amount) {
+      setValue("amount", amount.toString());
+      setValue("currency", currencyVal);
+    }
+  }, [valueChanged]);
 
   return (
     <CreateLCLayout>
@@ -384,6 +426,8 @@ const CreateDiscountPage = () => {
             getValues={getValues}
             countries={countries}
             flags={flags}
+            valueChanged={valueChanged}
+            setValueChanged={setValueChanged}
           />
           {/* Transhipment */}
           <Transhipment
@@ -391,6 +435,8 @@ const CreateDiscountPage = () => {
             register={register}
             isDiscount
             setValue={setValue}
+            valueChanged={valueChanged}
+            setValueChanged={setValueChanged}
           />
         </div>
 
@@ -416,6 +462,7 @@ const CreateDiscountPage = () => {
             isDiscount
             setValue={setValue}
             getValues={getValues}
+            valueChanged={valueChanged}
           />
           <Step7 register={register} step={7} />
         </div>

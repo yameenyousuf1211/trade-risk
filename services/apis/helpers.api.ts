@@ -38,7 +38,20 @@ export const getCurrenncy = async () => {
   try {
     const response = await api.get(`/country/currencies/list`);
 
-    return { success: true, response: response.data.data };
+    if (Array.isArray(response.data.data)) {
+      const uniqueCurrencies = new Set();
+
+      const filteredResponse = response.data.data.filter((currency: string) => {
+        if (uniqueCurrencies.has(currency)) {
+          return false;
+        } else {
+          uniqueCurrencies.add(currency);
+          return true;
+        }
+      });
+
+      return { success: true, response: filteredResponse };
+    } else return { success: false, response: "Failed to get currencies" };
   } catch (error) {
     console.error(error);
     return { success: false, response: (error as any).response.data.message };

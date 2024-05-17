@@ -24,7 +24,7 @@ import { useParams, useRouter } from "next/navigation";
 import { getCountries } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import useConfirmationStore, { getStateValues } from "@/store/lc.store";
+import useConfirmationStore from "@/store/lc.store";
 import { Country } from "@/types/type";
 
 const CreateRequestPage = () => {
@@ -44,7 +44,7 @@ const CreateRequestPage = () => {
 
   const queryClient = useQueryClient();
   const setValues = useConfirmationStore((state) => state.setValues);
-  const confirmationData = useConfirmationStore((state) => state); // Optional: to access current state
+  const confirmationData = useConfirmationStore((state) => state);
 
   useEffect(() => {
     if (confirmationData && confirmationData?._id) {
@@ -253,12 +253,7 @@ const CreateRequestPage = () => {
             size="lg"
             disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
-            onClick={
-              // editData && editData._id
-              //   ? handleSubmit(updateLC)
-              //   : handleSubmit(onSubmit)
-              handleSubmit(onSubmit)
-            }
+            onClick={handleSubmit(onSubmit)}
           >
             {isLoading ? <Loader /> : "Submit request"}
           </Button>

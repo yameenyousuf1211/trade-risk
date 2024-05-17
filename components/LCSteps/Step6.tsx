@@ -11,8 +11,7 @@ export const Step6 = ({
   getValues,
   isConfirmation,
   valueChanged,
-  getStateValues
-  
+  getStateValues,
 }: {
   title: string;
   isDiscount?: boolean;
@@ -20,8 +19,8 @@ export const Step6 = ({
   setValue: any;
   getValues: any;
   isConfirmation?: boolean;
-  valueChanged?:boolean,
-  getStateValues?:any
+  valueChanged?: boolean;
+  getStateValues?: any;
 }) => {
   const [checkedState, setCheckedState] = useState({
     "account-beneficiary": false,
@@ -40,10 +39,14 @@ export const Step6 = ({
     "discount-yes": false,
     "discount-no": false,
   });
-  let pricePerAnnum = getValues('confirmationInfo.pricePerAnnum')
+  let pricePerAnnum = isDiscount
+    ? getValues("discountingInfo.pricePerAnnum")
+    : getValues("confirmationInfo.pricePerAnnum");
   useEffect(() => {
     if (pricePerAnnum) {
-      setValue("confirmationInfo.pricePerAnnum", pricePerAnnum.toString());
+      isDiscount
+        ? setValue("discountingInfo.pricePerAnnum", pricePerAnnum.toString())
+        : setValue("confirmationInfo.pricePerAnnum", pricePerAnnum.toString());
     }
   }, [valueChanged]);
 

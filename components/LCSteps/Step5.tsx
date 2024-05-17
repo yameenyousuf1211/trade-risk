@@ -2,6 +2,8 @@ import { useAuth } from "@/context/AuthProvider";
 import { DDInput } from "./helpers";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
+import { getBanks } from "@/services/apis/helpers.api";
+import { useQuery } from "@tanstack/react-query";
 
 export const Step5 = ({
   register,
@@ -10,6 +12,8 @@ export const Step5 = ({
   setValue,
   getValues,
   flags,
+  valueChanged,
+  setValueChanged,
 }: {
   register: any;
   isConfirmation?: boolean;
@@ -17,6 +21,8 @@ export const Step5 = ({
   setValue: any;
   getValues: any;
   flags: string[];
+  valueChanged?: boolean;
+  setValueChanged?: any;
 }) => {
   const { user } = useAuth();
   let isExporter = getValues("participantRole") === "exporter";
@@ -24,14 +30,19 @@ export const Step5 = ({
   let beneficiaryCountry = getValues("exporterInfo.beneficiaryCountry");
   let beneficiaryBank = getValues("exporterInfo.bank");
 
+  useEffect(() => {
+    countryOfExport = getValues("exporterInfo.countryOfExport");
+  }, [valueChanged]);
 
-
-  
+  const { data: exporterBanks } = useQuery({
+    queryKey: ["exporter-banks", countryOfExport],
+    queryFn: () => getBanks(countryOfExport),
+    enabled: !!countryOfExport,
+  });
 
   useEffect(() => {
     isExporter = getValues("participantRole") === "exporter";
   }, [getValues, user]);
-  // console.log(isExporter);
 
   isExporter && setValue("exporterInfo.beneficiaryName", user ? user.name : "");
 
@@ -72,6 +83,7 @@ export const Step5 = ({
           data={countries}
           setValue={setValue}
           flags={flags}
+          setValueChanged={setValueChanged}
         />
         <DDInput
           id="exporterInfo.beneficiaryCountry"
@@ -89,6 +101,15 @@ export const Step5 = ({
             value={beneficiaryBank}
             placeholder="Select bank"
             setValue={setValue}
+            disabled={
+              !exporterBanks ||
+              !exporterBanks?.success ||
+              !exporterBanks?.response ||
+              !exporterBanks.success
+            }
+            data={
+              exporterBanks && exporterBanks.success && exporterBanks.response
+            }
           />
         )}
       </div>

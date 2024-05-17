@@ -14,17 +14,17 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { confirmationSchema } from "@/validation/lc.validation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "../../components/ui/loader";
-import { useParams, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getCountries } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import useConfirmationStore from "@/store/lc.store";
+import useConfirmationStore, { getStateValues } from "@/store/lc.store";
 import { Country } from "@/types/type";
 
 const CreateRequestPage = () => {
@@ -40,7 +40,10 @@ const CreateRequestPage = () => {
   });
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
+  const pathname = usePathname();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
+
+  const btnRef = useRef();
 
   const queryClient = useQueryClient();
   const setValues = useConfirmationStore((state) => state.setValues);
@@ -52,6 +55,9 @@ const CreateRequestPage = () => {
         // @ts-ignore
         setValue(key, value);
         if (key === "transhipment") {
+          setValue(key, value === true ? "yes" : "no");
+        }
+        if (key === "lcPeriod.expectedDate") {
           setValue(key, value === true ? "yes" : "no");
         }
       });
@@ -99,7 +105,7 @@ const CreateRequestPage = () => {
         },
         lcPeriod: {
           ...data.lcPeriod,
-          expectedDate: false,
+          expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
         },
       };
       const { response, success } = confirmationData?._id
@@ -111,7 +117,7 @@ const CreateRequestPage = () => {
       stopLoading();
       if (!success) return toast.error(response);
       else {
-        setValues(null as any);
+        setValues(getStateValues(useConfirmationStore.getInitialState()));
         toast.success(response?.message);
         reset();
         router.push("/");
@@ -120,6 +126,7 @@ const CreateRequestPage = () => {
       let openDisclaimerBtn = document.getElementById("open-disclaimer");
       // @ts-ignore
       openDisclaimerBtn.click();
+      setProceed(true);
     }
   };
 
@@ -140,7 +147,7 @@ const CreateRequestPage = () => {
       },
       lcPeriod: {
         ...data.lcPeriod,
-        expectedDate: false,
+        expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
       },
     };
 
@@ -156,7 +163,7 @@ const CreateRequestPage = () => {
     else {
       toast.success("LC saved as draft");
       reset();
-      setValues(null as any);
+      setValues(getStateValues(useConfirmationStore.getInitialState()));
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
       });
@@ -192,6 +199,16 @@ const CreateRequestPage = () => {
       setFlags(fetchedFlags);
     }
   }, [countriesData]);
+
+  // reset the form on page navigation
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setValues(getStateValues(useConfirmationStore.getInitialState()));
+      reset();
+    };
+
+    handleRouteChange();
+  }, [pathname, router]);
 
   return (
     <CreateLCLayout>
@@ -262,6 +279,8 @@ const CreateRequestPage = () => {
           title="Submit Request"
           className="hidden"
           setProceed={setProceed}
+          onAccept={handleSubmit(onSubmit)}
+          // ref={btnRef}
         />
       </form>
     </CreateLCLayout>

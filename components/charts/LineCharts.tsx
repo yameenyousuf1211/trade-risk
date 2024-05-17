@@ -9,7 +9,7 @@ const CountrySearch = () => {
       <input
         type="text"
         placeholder="Enter country name"
-        className="flex w-full rounded-md border border-input placeholder:text-[13px] pr-5 h-8 max-w-[200px] bg-background px-3 py-2 text-sm placeholder:text-muted-foreground"
+        className="flex bg-[#F0F0F0] text-[#92929D] border border-[#E2E2EA] font-light w-full rounded-md placeholder:text-[13px] pr-5 h-8 max-w-[200px] bg-back ground px-3 py-2 text-sm placeholder:text-muted-foreground"
       />
       <Search className="size-4 text-para absolute right-2 top-2" />
     </div>
@@ -64,7 +64,7 @@ const Chart = ({
             height={20}
             className="object-cover"
           />
-          <h4 className="text-lg font-semibold">{country}</h4>
+          <h4 className="text-lg font-medium font-roboto">{country}</h4>
         </div>
         <p className="text-lg">{percentage}%</p>
       </div>
@@ -81,7 +81,7 @@ const Chart = ({
       </div>
 
       <Button
-        className="text-[16px] font-semibold bg-none w-full mt-1"
+        className="text-[16px] bg-[#F5F7F9] font-roboto font-medium bg-none w-full mt-1"
         variant="ghost"
       >
         View banks
@@ -150,7 +150,7 @@ export const LineCharts = () => {
         <div className="flex items-center justify-end gap-x-1 w-full">
           <CountrySearch />
           <YearFilter />
-          <Button variant="ghost" size="sm" className="text-para">
+          <Button variant="ghost" size="sm" className="text-para bg-[#F1F1F5] text-black font-light">
             View all
           </Button>
           <Settings className="size-5 text-para" />

@@ -206,7 +206,8 @@ export interface IBids {
   _id: string;
   status: string;
   bidType: string;
-  discountingPrice?: number;
+  discountMargin?: number;
+  discountBaseRate?: number;
   confirmationPrice: number;
   bidValidity?: Date;
   bidBy: {
@@ -221,6 +222,7 @@ export interface IBids {
     _id: string;
     country: string;
   };
+  lc?: string[];
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -233,6 +235,7 @@ export interface IMyBids {
     name: string;
     email: string;
   };
+
   address: string;
   avalizationExportBills: boolean;
   confirmationLcs: boolean;
@@ -266,6 +269,7 @@ interface Bank {
 interface LcPeriod {
   startDate: any;
   endDate: any;
+  expectedDate?: boolean;
 }
 
 interface ShipmentPort {

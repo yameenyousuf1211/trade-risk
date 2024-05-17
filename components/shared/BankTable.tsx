@@ -19,10 +19,12 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
-import { ApiResponse, IMyBids } from "@/types/type";
+import { ApiResponse, IBids } from "@/types/type";
 import { convertDateToYYYYMMDD } from "@/utils";
+import { useState } from "react";
 
 const TableDataCell = ({ data }: { data: string | number }) => {
+
   return (
     <TableCell className="px-1 py-1 max-w-[200px]">
       <div className="truncate border border-borderCol rounded-md w-full p-2 py-2.5">
@@ -35,10 +37,15 @@ const TableDataCell = ({ data }: { data: string | number }) => {
 export const BankTable = ({
   data,
   isLoading,
+  isCorporate,
 }: {
-  data: ApiResponse<IMyBids> | undefined;
+  data: ApiResponse<IBids> | undefined;
   isLoading: boolean;
+  isCorporate?: boolean;
 }) => {
+  const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
+  
+
   return (
     <div className="">
       <div className="flex items-center justify-between gap-x-2 mb-2">
@@ -90,10 +97,21 @@ export const BankTable = ({
                       <div className="truncate">{item.bidType || ""}</div>
                     </div>
                   </TableCell>
-                  <TableDataCell data={item.confirmationPrice || ""} />
-                  <TableDataCell data={item.confirmationPrice || ""} />
+                  <TableDataCell
+                    data={item.confirmationPrice.toLocaleString() || ""}
+                  />
+                  <TableDataCell
+                    data={
+                      item.discountBaseRate?.toLocaleString() ||
+                      "Not Applicable"
+                    }
+                  />
 
-                  <TableDataCell data={item.confirmationPrice || ""} />
+                  <TableDataCell
+                    data={
+                      item.discountMargin?.toLocaleString() || "Not Applicable"
+                    }
+                  />
                   <TableDataCell data={item.confirmationPrice || ""} />
 
                   <TableCell className="px-1 py-1 max-w-[200px]">
@@ -102,9 +120,12 @@ export const BankTable = ({
                         triggerTitle={item.status}
                         status={item.status}
                         isInfo={item.status !== "Add bid"}
+                        isInfo={item.status !== "Add bid" && !isAddNewBid}
+                        setIsAddNewBid={setIsAddNewBid}
                         isDiscount
                         border
                         lcId={item.lc[0]}
+                        isCorporate={isCorporate}
                       />
                     ) : (
                       <Button

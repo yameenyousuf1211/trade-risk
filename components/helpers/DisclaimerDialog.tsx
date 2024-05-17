@@ -7,21 +7,30 @@ import {
 } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MutableRefObject, RefObject } from "react";
 
 export const DisclaimerDialog = ({
   title,
   className,
   setProceed,
+  ref,
+  onAccept
 }: {
   title: string;
   className?: string;
   setProceed?: any;
+  ref?: any;
+  onAccept: () => void
 }) => {
   const handleProceed = () => {
-    setProceed(true);
+    // console.log(ref);
+    // if (ref && ref.current) {
+    //   ref.current.click();
+    // }
     let closeBtn = document.getElementById("close-disclaimer");
-    // @ts-ignore
-    closeBtn.click();
+    // // @ts-ignore
+    closeBtn?.click();
+    onAccept()
   };
 
   return (

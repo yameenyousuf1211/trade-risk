@@ -23,14 +23,14 @@ import { discountingSchema } from "@/validation/lc.validation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "@/components/ui/loader";
 import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Country } from "@/types/type";
 import { DisclaimerDialog } from "@/components/helpers";
-import useDiscountingStore from "@/store/discounting.store";
+import useDiscountingStore, { getStateValues } from "@/store/discounting.store";
 
 const CreateDiscountPage = () => {
   const {
@@ -48,6 +48,7 @@ const CreateDiscountPage = () => {
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
+  const pathname = usePathname();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
 
   // Edit Request
@@ -59,6 +60,9 @@ const CreateDiscountPage = () => {
         // @ts-ignore
         setValue(key, value);
         if (key === "transhipment") {
+          setValue(key, value === true ? "yes" : "no");
+        }
+        if (key === "lcPeriod.expectedDate") {
           setValue(key, value === true ? "yes" : "no");
         }
       });
@@ -110,7 +114,7 @@ const CreateDiscountPage = () => {
         },
         lcPeriod: {
           ...data.lcPeriod,
-          expectedDate: false,
+          expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
         },
         expectedDiscountingDate: new Date("2024-04-28"),
       };
@@ -124,7 +128,7 @@ const CreateDiscountPage = () => {
       stopLoading();
       if (!success) return toast.error(response);
       else {
-        setValues(null as any);
+        setValues(getStateValues(useDiscountingStore.getInitialState()));
         toast.success(response?.message);
         reset();
         router.push("/");
@@ -133,6 +137,7 @@ const CreateDiscountPage = () => {
       let openDisclaimerBtn = document.getElementById("open-disclaimer");
       // @ts-ignore
       openDisclaimerBtn.click();
+      setProceed(true)
     }
   };
 
@@ -156,7 +161,7 @@ const CreateDiscountPage = () => {
       },
       lcPeriod: {
         ...data.lcPeriod,
-        expectedDate: false,
+        expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
       },
       expectedDiscountingDate: new Date("2024-04-28"),
       isDraft: "true",
@@ -173,7 +178,7 @@ const CreateDiscountPage = () => {
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");
-      setValues(null as any);
+      setValues(getStateValues(useDiscountingStore.getInitialState()));
       reset();
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
@@ -241,6 +246,16 @@ const CreateDiscountPage = () => {
       setValue("currency", currencyVal);
     }
   }, [valueChanged]);
+
+  // reset the form on page navigation
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setValues(getStateValues(useDiscountingStore.getInitialState()));
+      reset();
+    };
+
+    handleRouteChange();
+  }, [pathname, router]);
 
   return (
     <CreateLCLayout>
@@ -422,6 +437,7 @@ const CreateDiscountPage = () => {
           />
           {/* Period */}
           <Period
+            register={register}
             setValue={setValue}
             getValues={getValues}
             countries={countries}
@@ -492,6 +508,7 @@ const CreateDiscountPage = () => {
           title="Submit Request"
           className="hidden"
           setProceed={setProceed}
+          onAccept={handleSubmit(onSubmit)}
         />
       </form>
     </CreateLCLayout>

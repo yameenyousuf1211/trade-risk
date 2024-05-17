@@ -1,9 +1,4 @@
-import { Poppins } from "next/font/google";
 import Image from "next/image";
-const poppins = Poppins({
-  weight: ["200", "300", "400", "500", "600", "700", "800"],
-  subsets: ["latin"],
-});
 
 export default function RegisterCompleteLayout({
   children,

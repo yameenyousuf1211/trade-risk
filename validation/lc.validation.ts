@@ -37,6 +37,9 @@ export const generalLcSchema = z.object({
   ),
   lcPeriod: z.object(
     {
+      expectedDate: z.enum(["yes", "no"], {
+        message: "Select LC Period Type",
+      }),
       startDate: z.date({ message: "Select issuance date" }),
       endDate: z.date({ message: "Select expiry date" }),
     },

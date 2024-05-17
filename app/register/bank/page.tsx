@@ -44,6 +44,7 @@ const BankRegisterPage = () => {
     register,
     setValue,
     handleSubmit,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<z.infer<typeof bankSchema>>({
     resolver: zodResolver(bankSchema),
@@ -54,7 +55,7 @@ const BankRegisterPage = () => {
   ) => {
     const { response, success } = await onRegister(data);
     if (!success) return toast.error(response);
-    console.log(response);
+    console.log("Password = " ,response?.data?.password);
     if (success) {
       toast.success("Account Register successfully");
       router.push("/register/complete");
@@ -63,6 +64,12 @@ const BankRegisterPage = () => {
 
   const [isoCode, setIsoCode] = useState("");
   const [procceed, setProceed] = useState(false);
+  const [phoneInput, setPhoneInput] = useState<string>("");
+
+  let phone = getValues("pocPhone");
+
+  useEffect(() => {
+  }, [phoneInput]);
 
   return (
     <AuthLayout>
@@ -159,8 +166,9 @@ const BankRegisterPage = () => {
                 name="pocPhone"
                 placeholder="POC Telephone"
                 setValue={setValue}
+                setPhoneInput={setPhoneInput}
               />
-              {errors.pocPhone && (
+              {(phone === "" || phone === undefined) && errors.pocPhone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.pocPhone.message}
                 </span>

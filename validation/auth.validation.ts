@@ -55,14 +55,14 @@ const companyInfoSchema = z.object({
     .min(3, "*Account holder name field cannot be empty."),
   businessNature: z
     .string({ message: "*Business nature field cannot be empty." })
-    .min(3, "*Business nature field cannot be empty."),
+    .min(1, "*Business nature field cannot be empty."),
   constitution: z
     .string({ message: "*Constitution field cannot be empty." })
     .min(3, "*Constitution field cannot be empty."),
   accountCountry: z
     .string({ message: "*Account country is required" })
-    .nonempty("*Account country is required"),
-  // .min(1, "Account country field cannot be empty.")
+    .nonempty("*Account country is required")
+    .min(1, "Account country field cannot be empty."),
   accountCity: z
     .string({ message: "*Account city field cannot be empty." })
     .min(1, "*Account city field cannot be empty."),
@@ -95,8 +95,8 @@ const pointOfContractSchema = z.object({
 
 const productsInfoSchema = z.object({
   product: z
-    .string({ message: "*Product field cannot be empty." })
-    .min(1, "*Product field cannot be empty."),
+    .string({ message: "*Add atleast 1 product." })
+    .min(1, "*Add atleast 1 product."),
   annualSalary: z
     .string({ message: "*Annual salary is required." })
     .min(1, "*Annual salary is required.")

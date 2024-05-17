@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AddBid } from "../shared/AddBid";
 import { Button } from "../ui/button";
 import { ILcs } from "@/types/type";
+import { useState } from "react";
 
 export const TableBidStatus = ({
   id,
@@ -16,13 +17,16 @@ export const TableBidStatus = ({
     queryKey: ["bid-status", "fetch-lcs", id],
     queryFn: () => getBankLcStatus(id),
   });
+  const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
+
   return (
     <>
       {data && data.response.data !== "Pending" ? (
         <AddBid
           triggerTitle={data.response.data || ""}
           status={data.response.data}
-          isInfo={data.response.data !== "Add bid"}
+          isInfo={data.response.data !== "Add bid" && !isAddNewBid}
+          setIsAddNewBid={setIsAddNewBid}
           isDiscount={lcData.lcType.includes("Discount")}
           lcId={lcData._id}
         />

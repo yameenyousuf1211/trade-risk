@@ -35,7 +35,7 @@ export const SearchBar = ({ initialValue }: { initialValue?: string }) => {
       <input
         type="text"
         placeholder="Search"
-        className="placeholder:text-muted-foreground border-none bg-transparent placeholder:text-black max-w-20 outline-none"
+        className="placeholder:text-[#1A1A26] border-none bg-transparent placeholder:text-black max-w-20 outline-none"
         name="search"
         value={value}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>

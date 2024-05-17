@@ -27,11 +27,11 @@ import {
 } from "@/components/LCSteps/Step3Helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { confirmationDiscountSchema } from "@/validation/lc.validation";
 import Loader from "@/components/ui/loader";
 import useLoading from "@/hooks/useLoading";
@@ -39,7 +39,9 @@ import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Country } from "@/types/type";
 import { DisclaimerDialog } from "@/components/helpers";
-import useConfirmationDiscountingStore from "@/store/confirmationDiscounting.store";
+import useConfirmationDiscountingStore, {
+  getStateValues,
+} from "@/store/confirmationDiscounting.store";
 
 const ConfirmationPage = () => {
   const {
@@ -54,9 +56,11 @@ const ConfirmationPage = () => {
   });
 
   const queryClient = useQueryClient();
-
+  const btnRef = useRef();
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
+  const pathname = usePathname();
+
   const [valueChanged, setValueChanged] = useState<boolean>(false);
 
   const setValues = useConfirmationDiscountingStore((state) => state.setValues);
@@ -67,6 +71,9 @@ const ConfirmationPage = () => {
         // @ts-ignore
         setValue(key, value);
         if (key === "transhipment") {
+          setValue(key, value === true ? "yes" : "no");
+        }
+        if (key === "lcPeriod.expectedDate") {
           setValue(key, value === true ? "yes" : "no");
         }
       });
@@ -114,7 +121,7 @@ const ConfirmationPage = () => {
         },
         lcPeriod: {
           ...data.lcPeriod,
-          expectedDate: false,
+          expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
         },
       };
 
@@ -128,7 +135,9 @@ const ConfirmationPage = () => {
       if (!success) return toast.error(response);
       else {
         toast.success(response?.message);
-        setValues(null as any);
+        setValues(
+          getStateValues(useConfirmationDiscountingStore.getInitialState())
+        );
         reset();
         router.push("/");
       }
@@ -136,6 +145,7 @@ const ConfirmationPage = () => {
       let openDisclaimerBtn = document.getElementById("open-disclaimer");
       // @ts-ignore
       openDisclaimerBtn.click();
+      setProceed(true)
     }
   };
 
@@ -156,7 +166,7 @@ const ConfirmationPage = () => {
       },
       lcPeriod: {
         ...data.lcPeriod,
-        expectedDate: false,
+        expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
       },
     };
     const { response, success } = confirmationData?._id
@@ -170,7 +180,9 @@ const ConfirmationPage = () => {
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");
-      setValues(null as any);
+      setValues(
+        getStateValues(useConfirmationDiscountingStore.getInitialState())
+      );
       reset();
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
@@ -238,6 +250,18 @@ const ConfirmationPage = () => {
       setValue("currency", currencyVal);
     }
   }, [valueChanged]);
+
+  // reset the form on page navigation
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setValues(
+        getStateValues(useConfirmationDiscountingStore.getInitialState())
+      );
+      reset();
+    };
+
+    handleRouteChange();
+  }, [pathname, router]);
 
   return (
     <CreateLCLayout>
@@ -334,6 +358,7 @@ const ConfirmationPage = () => {
           />
           {/* Period */}
           <Period
+            register={register}
             setValue={setValue}
             getValues={getValues}
             countries={countries}
@@ -411,7 +436,8 @@ const ConfirmationPage = () => {
           title="Submit Request"
           className="hidden"
           setProceed={setProceed}
-        />
+          onAccept={handleSubmit(onSubmit)}
+          />
       </form>
     </CreateLCLayout>
   );

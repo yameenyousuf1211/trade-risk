@@ -258,7 +258,7 @@ const CreateRequestPage = () => {
             onClick={handleSubmit(saveAsDraft)}
             type="button"
             variant="ghost"
-            className="bg-none w-1/3"
+            className="!bg-[#F1F1F5] w-1/3"
             disabled={loader}
           >
             {loader ? <Loader /> : "Save as draft"}

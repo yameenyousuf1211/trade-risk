@@ -111,8 +111,8 @@ export const Step2 = ({
           {currencyValue &&
             numberToText.convertToText(currencyValue.toString())}
           {/* {amount} */}{" "}
-          <span className="text-primaryCol uppercase">
-            {currencyVal ? currencyVal : "USD"}
+          <span className="text-primaryCol uppe rcase">
+            {currencyVal ? currencyVal === 'USD'? 'US Dollars' : currencyVal :  "US Dollars"}
           </span>
         </p>
       </div>

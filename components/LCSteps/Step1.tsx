@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { BgRadioInput } from "./helpers";
 
-export const Step1 = ({ register }: any) => {
+export const Step1 = ({ register, type }: any) => {
   const [checkedState, setCheckedState] = useState({
     "role-exporter": false,
     "role-importer": false,
@@ -23,7 +23,9 @@ export const Step1 = ({ register }: any) => {
           1
         </p>
         <p className="font-semibold text-lg text-lightGray">
-          In this transaction you are?
+          {type === "discount"
+            ? "Transaction as"
+            : "In this transaction you are?"}
         </p>
       </div>
       <BgRadioInput

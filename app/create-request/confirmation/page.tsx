@@ -266,7 +266,7 @@ const ConfirmationPage = () => {
   return (
     <CreateLCLayout>
       <form className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white">
-        <Step1 register={register} />
+        <Step1 type="discount" register={register} />
         {/* Step 2 */}
         <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
           <div className="flex items-center gap-x-2 justify-between mb-3">
@@ -416,7 +416,7 @@ const ConfirmationPage = () => {
             onClick={handleSubmit(saveAsDraft)}
             disabled={loader}
             variant="ghost"
-            className="bg-none w-1/3"
+            className="!bg-[#F1F1F5] w-1/3"
           >
             {loader ? <Loader /> : "Save as draft"}
           </Button>

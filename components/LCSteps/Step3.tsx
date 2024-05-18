@@ -219,7 +219,7 @@ export const Step3 = ({
         ) : (
           <div
             onClick={() => setShowConfirmingBank((prev: boolean) => !prev)}
-            className="cursor-pointer center gap-x-3 border-2 border-dotted border-borderCol py-2 rounded-md mt-2"
+            className="cursor-pointer bg-white ml-4 center gap-x-3 border-2 border-dotted border-borderCol py-2 rounded-md mt-2"
           >
             <div className=" center p-1 border border-black rounded-full">
               <Plus className="size-4" />

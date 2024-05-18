@@ -94,7 +94,7 @@ export const RequestTable = ({
                         key={`${header}-${idx}`}
                         className="px-2 h-8 py-2"
                       >
-                        <div className="flex text-[#44444F] items-center gap-x-2 justify-center text-sm">
+                        <div className="flex text-[#44444F]  items-center gap-x-2 justify-center text-sm">
                           {header}
                           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
                             <ChevronUp className="size-4" />
@@ -171,7 +171,7 @@ export const RequestTable = ({
                       data={convertDateToYYYYMMDD(item.lcPeriod?.endDate)}
                     />
                     <TableDataCell data={item.lcType} />
-                    <TableCell className="px-1 py-1 max-w-[200px]">
+                    <TableCell className="px-1 py-1 max-w-[300px]">
                       <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <Image
                           src="/images/flag.png"
@@ -184,7 +184,12 @@ export const RequestTable = ({
                       </div>
                     </TableCell>
                     <TableDataCell data={item.exporterInfo.beneficiaryName} />
-                    <TableDataCell data={item.importerInfo.applicantName} />
+                    {/* <TableDataCell data={item.importerInfo.applicantName} /> */}
+                    <TableCell className="px-1 py-1 min-w-[140px]">
+                      <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
+                        <div className="truncate">{item.importerInfo.applicantName}</div>
+                      </div>
+                    </TableCell>
                     <TableDataCell
                       data={item.amount?.toLocaleString() + ".00"}
                     />

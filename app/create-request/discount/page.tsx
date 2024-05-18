@@ -301,7 +301,7 @@ const CreateDiscountPage = () => {
   return (
     <CreateLCLayout>
       <form className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white">
-        <Step1 register={register} />
+        <Step1 type="discount" register={register} />
         {/* Step 2 */}
         <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
           <div className="flex items-center gap-x-2 justify-between mb-3">
@@ -461,7 +461,7 @@ const CreateDiscountPage = () => {
               />
             </div>
             <div
-              className={`flex items-end gap-x-5 px-3 py-4 w-full rounded-md mb-2 border border-borderCol ${
+              className={`flex bg-white items-end gap-x-5 px-3 py-4 w-full rounded-md mb-2 border border-borderCol ${
                 extraCheckedState["payment-others"] && "bg-[#EEE9FE]"
               }`}
             >
@@ -554,7 +554,7 @@ const CreateDiscountPage = () => {
             onClick={handleSubmit(saveAsDraft)}
             type="button"
             variant="ghost"
-            className="bg-[#F5F7F9] w-1/3"
+            className="!bg-[#F1F1F5] w-1/3"
             disabled={loader}
           >
             {loader ? <Loader /> : "Save as draft"}

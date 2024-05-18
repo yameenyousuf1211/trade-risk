@@ -133,7 +133,7 @@ export const Period = ({
     <div className="flex items-start gap-x-4 my-5">
       <div className="border border-borderCol py-3 px-2 rounded-md w-2/3 bg-[#F5F7F9]">
         <p className="font-semibold mb-2 ml-3">LC Period</p>
-        <div className="flex items-center gap-x-4 justify-between border border-borderCol rounded-md py-3 px-3 mb-3">
+        <div className="flex bg-white items-center gap-x-4 justify-between border border-borderCol rounded-md py-3 px-3 mb-3">
           <div className="w-full rounded-md flex items-center gap-x-2">
             <input
               type="radio"
@@ -150,7 +150,7 @@ export const Period = ({
             <input
               type="radio"
               id="expected-date"
-              className="accent-primaryCol size-4"
+              className="accent-primaryCol !bg-white size-4"
               name="lcPeriod.expectedDate"
               value="no"
               checked={lcIssueType === "no"}
@@ -201,7 +201,7 @@ export const Period = ({
         {/* LC Expiry Date */}
         <label
           id="period-expiry-date"
-          className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
+          className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
         >
           <p>LC Expiry Date</p>
           {/* Popover for LC Expiry Date */}

@@ -182,7 +182,7 @@ const CompanyInfoPage = () => {
                 setValue={setValue}
                 setPhoneInput={setPhoneInput}
               />
-              {(phone === '' || phone === undefined) && errors.phone && (
+              {(phone === "" || phone === undefined) && errors.phone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.phone.message}
                 </span>
@@ -350,7 +350,7 @@ const CompanyInfoPage = () => {
               <Button
                 type="button"
                 variant="ghost"
-                className="text-para text-[16px]"
+                className="text-[#92929D] bg-[#F5F7F9] text-[16px]"
                 onClick={() => localStorage.removeItem("corporateData")}
               >
                 Go back to login

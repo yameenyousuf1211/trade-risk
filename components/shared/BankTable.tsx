@@ -24,7 +24,6 @@ import { convertDateToYYYYMMDD } from "@/utils";
 import { useState } from "react";
 
 const TableDataCell = ({ data }: { data: string | number }) => {
-
   return (
     <TableCell className="px-1 py-1 max-w-[200px]">
       <div className="truncate border border-borderCol rounded-md w-full p-2 py-2.5">
@@ -44,7 +43,6 @@ export const BankTable = ({
   isCorporate?: boolean;
 }) => {
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
-  
 
   return (
     <div className="">
@@ -121,7 +119,7 @@ export const BankTable = ({
                         status={item.status}
                         isInfo={item.status !== "Add bid" && !isAddNewBid}
                         setIsAddNewBid={setIsAddNewBid}
-                        isDiscount
+                        isDiscount={item.bidType.includes("Discount")}
                         border
                         lcId={item.lc[0]}
                         isCorporate={isCorporate}

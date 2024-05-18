@@ -13,24 +13,18 @@ export const DisclaimerDialog = ({
   title,
   className,
   setProceed,
-  ref,
-  onAccept
+  onAccept,
 }: {
   title: string;
   className?: string;
   setProceed?: any;
-  ref?: any;
-  onAccept: () => void
+  onAccept?: () => void;
 }) => {
   const handleProceed = () => {
-    // console.log(ref);
-    // if (ref && ref.current) {
-    //   ref.current.click();
-    // }
     let closeBtn = document.getElementById("close-disclaimer");
     // // @ts-ignore
     closeBtn?.click();
-    onAccept()
+    onAccept && onAccept();
   };
 
   return (

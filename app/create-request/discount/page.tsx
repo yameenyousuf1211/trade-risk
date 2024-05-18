@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { discountingSchema } from "@/validation/lc.validation";
@@ -45,11 +45,19 @@ const CreateDiscountPage = () => {
   });
 
   const queryClient = useQueryClient();
+  const calculateDaysLeft = (futureDate: any) => {
+    const currentDate = new Date();
+    const targetDate = new Date(futureDate);
+    const timeDifference = targetDate - currentDate;
+    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+    return daysDifference > 0 ? daysDifference : 0;
+  };
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
+  const [days, setDays] = useState<number>(0);
 
   // Edit Request
   const setValues = useDiscountingStore((state) => state.setValues);
@@ -64,6 +72,11 @@ const CreateDiscountPage = () => {
         }
         if (key === "lcPeriod.expectedDate") {
           setValue(key, value === true ? "yes" : "no");
+        }
+        if (key === "extraInfo") {
+          const daysLeft = calculateDaysLeft(value.dats);
+          setDays(daysLeft);
+          setValue("extraInfo", value.other);
         }
       });
     }
@@ -99,14 +112,20 @@ const CreateDiscountPage = () => {
     data: z.infer<typeof discountingSchema>
   ) => {
     if (proceed) {
+      if (!days) return toast.error("Please select days from");
+      const currentDate = new Date();
+      const futureDate = new Date(
+        currentDate.setDate(currentDate.getDate() + days)
+      );
       startLoading();
+
       const reqData = {
         ...data,
         transhipment: data.transhipment === "yes" ? true : false,
         lcType: "LC Discounting",
         extraInfo: {
-          dats: new Date("2024-04-28"),
-          other: "nothing",
+          dats: futureDate,
+          other: data.extraInfo,
         },
         shipmentPort: {
           ...data?.shipmentPort,
@@ -116,9 +135,7 @@ const CreateDiscountPage = () => {
           ...data.lcPeriod,
           expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
         },
-        expectedDiscountingDate: new Date("2024-04-28"),
       };
-
       const { response, success } = discountingData?._id
         ? await onUpdateLC({
             payload: reqData,
@@ -137,7 +154,7 @@ const CreateDiscountPage = () => {
       let openDisclaimerBtn = document.getElementById("open-disclaimer");
       // @ts-ignore
       openDisclaimerBtn.click();
-      setProceed(true)
+      setProceed(true);
     }
   };
 
@@ -146,14 +163,19 @@ const CreateDiscountPage = () => {
   const saveAsDraft: SubmitHandler<z.infer<typeof discountingSchema>> = async (
     data: z.infer<typeof discountingSchema>
   ) => {
+    if (!days) return toast.error("Please select days from");
+    const currentDate = new Date();
+    const futureDate = new Date(
+      currentDate.setDate(currentDate.getDate() + days)
+    );
     setLoader(true);
     const reqData = {
       ...data,
       transhipment: data.transhipment === "yes" ? true : false,
       lcType: "LC Discounting",
       extraInfo: {
-        dats: new Date("2024-04-28"),
-        other: "nothing",
+        dats: futureDate,
+        other: data.extraInfo,
       },
       shipmentPort: {
         ...data?.shipmentPort,
@@ -163,7 +185,6 @@ const CreateDiscountPage = () => {
         ...data.lcPeriod,
         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
       },
-      expectedDiscountingDate: new Date("2024-04-28"),
       isDraft: "true",
     };
 
@@ -185,7 +206,6 @@ const CreateDiscountPage = () => {
       });
     }
   };
-
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [countries, setCountries] = useState([]);
   const [flags, setFlags] = useState([]);
@@ -235,6 +255,27 @@ const CreateDiscountPage = () => {
       "payment-usance": id === "payment-usance",
       "payment-deferred": id === "payment-deferred",
       "payment-upas": id === "payment-upas",
+    }));
+  };
+
+  const [extraCheckedState, setExtraCheckedState] = useState({
+    "payment-shipment": false,
+    "payment-acceptance": false,
+    "payment-negotiation": false,
+    "payment-invoice": false,
+    "payment-extra-sight": false,
+    "payment-others": false,
+  });
+
+  const handleExtraCheckChange = (id: string) => {
+    setExtraCheckedState((prevState) => ({
+      ...prevState,
+      "payment-shipment": id === "payment-shipment",
+      "payment-acceptance": id === "payment-acceptance",
+      "payment-negotiation": id === "payment-negotiation",
+      "payment-invoice": id === "payment-invoice",
+      "payment-extra-sight": id === "payment-extra-sight",
+      "payment-others": id === "payment-others",
     }));
   };
 
@@ -336,22 +377,33 @@ const CreateDiscountPage = () => {
             {/* Days input */}
             <div className="flex items-center gap-x-2 my-3 ml-2">
               <div className="border-b-2 border-black flex items-center">
-                <Input
+                <input
                   placeholder="enter days"
-                  register={register}
-                  name="ddas"
-                  className="border-none focus-visible:ring-0 focus-visible:ring-offset-0 max-w-[150px]"
+                  inputMode="numeric"
+                  name="days"
+                  type="number"
+                  value={days}
+                  className="border-none focus-visible:ring-0 focus-visible:ring-offset-0 max-w-[150px] bg-[#F5F7F9] outline-none"
+                  onChange={(e: any) => setDays(e.target.value)}
                 />
                 <div className="flex items-center gap-x-1">
                   <button
                     type="button"
-                    className="rounded-sm border border-para size-6 center"
+                    className="rounded-sm border border-para size-6 center mb-2"
+                    onClick={() => {
+                      setDays((prev) => Number(prev) + 1);
+                    }}
                   >
                     +
                   </button>
                   <button
                     type="button"
-                    className="rounded-sm border border-para size-6 center"
+                    className="rounded-sm border border-para size-6 center mb-2"
+                    onClick={() => {
+                      setDays((prev) =>
+                        Number(prev) > 0 ? Number(prev) - 1 : 0
+                      );
+                    }}
                   >
                     -
                   </button>
@@ -360,62 +412,77 @@ const CreateDiscountPage = () => {
               <p className="font-semibold">days from</p>
             </div>
             <div className="flex items-center gap-x-3 justify-between">
-              <RadioInput
-                id="lc-terms-shipment"
+              <BgRadioInput
+                id="payment-shipment"
                 label="BL Date/Shipment Date"
-                name="lc-payment-terms-date"
-                value=""
+                name="extraInfo"
+                value="shipment"
                 register={register}
+                checked={extraCheckedState["payment-shipment"]}
+                handleCheckChange={handleExtraCheckChange}
               />
-              <RadioInput
-                id="lc-terms-acceptance"
+              <BgRadioInput
+                id="payment-acceptance"
                 label="Acceptance Date"
-                name="lc-payment-terms-date"
-                value=""
+                name="extraInfo"
+                value="acceptance"
                 register={register}
+                checked={extraCheckedState["payment-acceptance"]}
+                handleCheckChange={handleExtraCheckChange}
               />
             </div>
             <div className="flex items-center gap-x-3 justify-between">
-              <RadioInput
-                id="lc-terms-negotiation"
+              <BgRadioInput
+                id="payment-negotiation"
                 label="Negotiation Date"
-                name="lc-payment-terms-date"
-                value=""
+                name="extraInfo"
+                value="negotiation"
                 register={register}
+                checked={extraCheckedState["payment-negotiation"]}
+                handleCheckChange={handleExtraCheckChange}
               />
-              <RadioInput
-                id="lc-terms-invoice"
+              <BgRadioInput
+                id="payment-invoice"
                 label="Invoice Date"
-                name="lc-payment-terms-date"
-                value=""
+                name="extraInfo"
+                value="invoice"
                 register={register}
+                checked={extraCheckedState["payment-invoice"]}
+                handleCheckChange={handleExtraCheckChange}
               />
-              <RadioInput
-                id="lc-terms-sight"
+              <BgRadioInput
+                id="payment-extra-sight"
                 label="Sight"
-                name="lc-payment-terms-date"
-                value=""
+                name="extraInfo"
+                value="sight"
                 register={register}
+                checked={extraCheckedState["payment-extra-sight"]}
+                handleCheckChange={handleExtraCheckChange}
               />
             </div>
-            <div className="flex items-end gap-x-5 px-3 py-4 w-full rounded-md mb-2 border border-borderCol">
+            <div
+              className={`flex items-end gap-x-5 px-3 py-4 w-full rounded-md mb-2 border border-borderCol ${
+                extraCheckedState["payment-others"] && "bg-[#EEE9FE]"
+              }`}
+            >
               <label
-                htmlFor="lc-terms-others"
+                htmlFor="payment-others"
                 className=" flex items-center gap-x-2  text-lightGray"
               >
                 <input
                   type="radio"
-                  name="lc-payment-terms-date"
-                  id="lc-terms-others"
-                  className="accent-primaryCol size-4"
+                  name="extraInfo"
+                  value="others"
+                  id="payment-others"
+                  className="accent-primaryCol size-4 "
+                  onChange={() => handleExtraCheckChange("payment-others")}
                 />
                 Others
               </label>
-              <Input
-                register={register}
+              <input
                 type="text"
                 name="ds"
-                className="bg-transparent !border-b-2 !border-b-neutral-300 rounded-none border-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="bg-transparent !border-b-2 !border-b-neutral-300 rounded-none border-transparent focus-visible:ring-0 focus-visible:ring-offset-0 outline-none w-[80%]"
               />
             </div>
           </div>
@@ -437,7 +504,6 @@ const CreateDiscountPage = () => {
           />
           {/* Period */}
           <Period
-            register={register}
             setValue={setValue}
             getValues={getValues}
             countries={countries}
@@ -452,7 +518,6 @@ const CreateDiscountPage = () => {
             isDiscount
             setValue={setValue}
             valueChanged={valueChanged}
-            setValueChanged={setValueChanged}
           />
         </div>
 

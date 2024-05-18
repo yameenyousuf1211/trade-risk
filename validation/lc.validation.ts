@@ -4,7 +4,6 @@ const fileSchema = z.object({
   name: z.string(),
   type: z.string(),
   size: z.number(),
-  // Add more properties if needed
 });
 
 export const generalLcSchema = z.object({
@@ -48,7 +47,7 @@ export const generalLcSchema = z.object({
   shipmentPort: z.object(
     {
       country: z.string({ message: "Select shipment country" }),
-      // port: z.string({ message: "Select shipment port" }),
+      port: z.string({ message: "Select shipment port" }),
     },
     { message: "Shipment details is required" }
   ),
@@ -144,6 +143,18 @@ export const discountingSchema = z.lazy(() =>
             message: "Price per annum must be less than 100",
           }),
       }),
+      extraInfo: z.enum(
+        [
+          "shipment",
+          "upas",
+          "acceptance",
+          "negotiation",
+          "invoice",
+          "sight",
+          "others",
+        ],
+        { message: "Extra info is required" }
+      ),
     })
   )
 );

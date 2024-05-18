@@ -47,6 +47,7 @@ const useConfirmationStore = create<UseDiscountingStore>((set, get) => ({
     behalfOf: "",
     pricePerAnnum: "",
   },
+  extraInfo: "shipment",
   setValues: (values: Partial<LcDiscounting | null>) =>
     set((state) => ({ ...state, ...values })),
 }));

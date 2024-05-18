@@ -13,7 +13,8 @@ export const getCountries = async () => {
 
 export const getBanks = async (country: string) => {
   try {
-    const response = await api.get(`/country/banks/${country.toLowerCase()}`);
+    const capitalizedCountry = capitalizeWords(country);
+    const response = await api.get(`/country/banks/${capitalizedCountry}`);
 
     return { success: true, response: response.data.data };
   } catch (error) {
@@ -60,10 +61,9 @@ export const getCurrenncy = async () => {
 
 export const getPorts = async (country: string) => {
   try {
-    const capitalizedCountry =
-      country.charAt(0).toUpperCase() + country.slice(1).toLowerCase();
+    const capitalizedCountry = capitalizeWords(country);
     const response = await api.get(
-      `/ports/details?country=${capitalizedCountry}`
+      `/country/ports/details?country=${capitalizedCountry}`
     );
 
     return { success: true, response: response.data.data };
@@ -72,3 +72,15 @@ export const getPorts = async (country: string) => {
     return { success: false, response: (error as any).response.data.message };
   }
 };
+
+function capitalizeWords(str: string) {
+  const words = str.split(" ");
+
+  const capitalizedWords = words.map((word) => {
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  });
+
+  const capitalizedStr = capitalizedWords.join(" ");
+
+  return capitalizedStr;
+}

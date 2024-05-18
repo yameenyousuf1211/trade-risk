@@ -45,6 +45,7 @@ const CompanyInfoPage = () => {
     formState: { errors, isValid, isDirty },
   } = useForm<z.infer<typeof companyInfoSchema>>({
     resolver: zodResolver(companyInfoSchema),
+    mode:'all'
   });
 
   useEffect(() => {
@@ -360,7 +361,7 @@ const CompanyInfoPage = () => {
               type="submit"
               className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
-              // disabled={isDirty}
+              disabled={!isValid || !isDirty}
             >
               Get Started
             </Button>

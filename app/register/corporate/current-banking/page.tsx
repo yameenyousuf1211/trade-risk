@@ -332,59 +332,57 @@ const CurrentBankingPage = () => {
 
             {/* City Field */}
             <Popover open={cityOpen} onOpenChange={setCityOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={cityOpen}
-                  className="w-[230px] justify-between"
-                  disabled={countryVal === ""}
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={cityOpen}
+          className="w-[230px] justify-between"
+          disabled={countryVal === ""}
+        >
+          {cityVal
+            ? cityVal
+            : countryVal
+            ? "Select city..."
+            : "Select city..."}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[230px] p-0">
+        <Command>
+          <CommandInput placeholder="Search city..." />
+          <CommandEmpty>No city found.</CommandEmpty>
+          <CommandGroup className="max-h-[300px] overflow-y-auto">
+            {cities &&
+              cities.length > 0 &&
+              cities.map((city: string) => (
+                <CommandItem
+                  key={city}
+                  value={city}
+                  onSelect={(currentValue) => {
+                    setCityVal(
+                      currentValue.toLowerCase() === cityVal.toLowerCase()
+                        ? ""
+                        : currentValue
+                    );
+                    setCityOpen(false);
+                  }}
                 >
-                  {countryVal
-                    ? cities?.find(
-                        (city: string) =>
-                          city.toLowerCase() === cityVal.toLowerCase()
-                      )
-                    : "Select city..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[230px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search city..." />
-                  <CommandEmpty>No city found.</CommandEmpty>
-                  <CommandGroup className="max-h-[300px] overflow-y-auto">
-                    {cities &&
-                      cities.length > 0 &&
-                      cities.map((city: string) => (
-                        <CommandItem
-                          key={city}
-                          value={city}
-                          onSelect={(currentValue) => {
-                            setCityVal(
-                              currentValue.toLowerCase() ===
-                                cityVal.toLowerCase()
-                                ? ""
-                                : currentValue
-                            );
-                            setCityOpen(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              city.toLowerCase() === cityVal.toLowerCase()
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {city}
-                        </CommandItem>
-                      ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      city.toLowerCase() === cityVal.toLowerCase()
+                        ? "opacity-100"
+                        : "opacity-0"
+                    )}
+                  />
+                  {city}
+                </CommandItem>
+              ))}
+          </CommandGroup>
+        </Command>
+      </PopoverContent>
+    </Popover>
 
             <Button
               variant="ghost"

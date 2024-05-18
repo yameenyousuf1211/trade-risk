@@ -31,7 +31,7 @@ interface TableDataCellProps {
 const TableDataCell = ({ data }: TableDataCellProps) => {
   return (
     <TableCell className="px-1 py-1 max-w-[200px]">
-      <div className="truncate border border-borderCol rounded-md w-full p-2 py-2.5">
+      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5">
         {data !== undefined ? String(data) : "-"}
       </div>
     </TableCell>
@@ -134,7 +134,9 @@ export const RequestTable = ({
                           height={100}
                           className="object-cover size-5"
                         />
-                        <div className="truncate">{item.issuingBank.bank}</div>
+                        <div className="truncate capitalize">
+                          {item.issuingBank.bank}
+                        </div>
                       </div>
                     </TableCell>
                     <TableDataCell data={item.exporterInfo.beneficiaryName} />
@@ -180,16 +182,13 @@ export const RequestTable = ({
                           height={100}
                           className="object-cover size-5"
                         />
-                        <div className="truncate">{item.issuingBank.bank}</div>
+                        <div className="capitalize truncate">
+                          {item.issuingBank.bank}
+                        </div>
                       </div>
                     </TableCell>
                     <TableDataCell data={item.exporterInfo.beneficiaryName} />
-                    {/* <TableDataCell data={item.importerInfo.applicantName} /> */}
-                    <TableCell className="px-1 py-1 min-w-[140px]">
-                      <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                        <div className="truncate">{item.importerInfo.applicantName}</div>
-                      </div>
-                    </TableCell>
+                    <TableDataCell data={item.importerInfo.applicantName} />
                     <TableDataCell
                       data={item.amount?.toLocaleString() + ".00"}
                     />

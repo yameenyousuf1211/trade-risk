@@ -8,13 +8,15 @@ export const TelephoneInput = ({
   placeholder,
   setValue,
   setPhoneInput,
+  value,
 }: {
   name: string;
   placeholder: string;
   setValue: any;
   setPhoneInput?: any;
+  value?: string;
 }) => {
-  const [val, setVal] = useState();
+  const [val, setVal] = useState(value || undefined);
 
   const handleChange = (val: any) => {
     setVal(val);
@@ -29,6 +31,7 @@ export const TelephoneInput = ({
         value={val}
         placeholder={placeholder}
         onChange={handleChange}
+        countryCodeEditable={false}
         inputStyle={{
           width: "100%",
           backgroundColor: "#fff",

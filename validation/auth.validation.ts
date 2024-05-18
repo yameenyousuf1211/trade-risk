@@ -31,7 +31,7 @@ const companyInfoSchema = z.object({
     .trim(),
   address: z
     .string({ message: "*Address is required" })
-    .min(3, "*Address must be greater than 3 letters"),
+    .min(1, "*Address is required"),
   phone: z
     .string({ message: "*Phone number is required" })
     .min(4, "*Phone number is required.")

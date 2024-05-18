@@ -39,16 +39,17 @@ const CheckBoxInput = ({ label, id }: { label: string; id: string }) => {
 
 const BankRegisterPage = () => {
   const router = useRouter();
+  const [allowSubmit, setAllowSubmit] = useState(false);
 
   const {
     register,
     setValue,
     handleSubmit,
     getValues,
-    formState: { errors, isSubmitting,isDirty, isValid},
+    formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<z.infer<typeof bankSchema>>({
     resolver: zodResolver(bankSchema),
-    mode:'all'
+    mode: "all",
   });
 
   const onSubmit: SubmitHandler<z.infer<typeof bankSchema>> = async (
@@ -56,7 +57,7 @@ const BankRegisterPage = () => {
   ) => {
     const { response, success } = await onRegister(data);
     if (!success) return toast.error(response);
-    console.log("Password = " ,response?.data?.password);
+    console.log("Password = ", response?.data?.password);
     if (success) {
       toast.success("Account Register successfully");
       router.push("/register/complete");
@@ -70,7 +71,14 @@ const BankRegisterPage = () => {
   let phone = getValues("pocPhone");
 
   useEffect(() => {
-  }, [phoneInput]);
+    if (isValid && isDirty) {
+      setAllowSubmit(true);
+    } else {
+      (!isValid || !isDirty) && setAllowSubmit(false);
+    }
+  }, [errors, isValid, isDirty, phoneInput]);
+
+  useEffect(() => {}, [phoneInput]);
 
   return (
     <AuthLayout>
@@ -168,6 +176,7 @@ const BankRegisterPage = () => {
                 placeholder="POC Telephone"
                 setValue={setValue}
                 setPhoneInput={setPhoneInput}
+                value={phoneInput}
               />
               {(phone === "" || phone === undefined) && errors.pocPhone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
@@ -182,7 +191,7 @@ const BankRegisterPage = () => {
           </p>
 
           {/* Checkboxes */}
-          <div className="grid sm:grid-cols-2 grid-cols-1 gap-x-2 gap-y-3 p-2 rounded-lg border border-borderCol">
+          <div className="bg-[#F5F7F9] grid sm:grid-cols-2 grid-cols-1 gap-x-2 gap-y-3 p-2 rounded-lg border border-borderCol">
             <CheckBoxInput
               label="Confirmation of LCs"
               id="confirmation-of-lcs"
@@ -241,7 +250,7 @@ const BankRegisterPage = () => {
               <Button
                 type="button"
                 variant="ghost"
-                className="text-para text-[16px]"
+                className="w-full text-para bg-[#F5F7F9] text-[16px]"
               >
                 Login
               </Button>
@@ -249,7 +258,7 @@ const BankRegisterPage = () => {
             <Button
               className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
-              disabled={isSubmitting || !isValid || !isDirty}
+              disabled={!allowSubmit}
               type="submit"
             >
               Get Started

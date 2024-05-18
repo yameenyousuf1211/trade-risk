@@ -44,10 +44,12 @@ const BidCard = ({ data }: { data: IBids }) => {
         </div>
 
         <div>
-          <p className="text-lg font-semibold mb-1">
+          <p className="capitalize text-lg font-semibold mb-1">
             {data.userInfo?.name || ""}
           </p>
-          <p className="text-sm text-para">{data.userInfo?.country || ""}</p>
+          <p className="capitalize text-sm text-para">
+            {data.userInfo?.country || ""}
+          </p>
         </div>
 
         <div>
@@ -161,7 +163,9 @@ const LCInfo = ({
       }`}
     >
       <p className="text-para text-sm">{label}</p>
-      <p className="font-semibold text-right text-sm max-w-[60%]">{value}</p>
+      <p className="capitalize font-semibold text-right text-sm max-w-[60%]">
+        {value}
+      </p>
     </div>
   );
 };
@@ -204,7 +208,7 @@ export const TableDialog = ({
                 Created at,{" "}
                 {lcData && convertDateToYYYYMMDD(lcData.lcPeriod?.startDate)},
                 by{" "}
-                <span className="text-text">
+                <span className="text-text capitalize">
                   {(lcData && lcData.exporterInfo?.beneficiaryName) || ""}
                 </span>
               </p>

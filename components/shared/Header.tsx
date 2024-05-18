@@ -69,22 +69,6 @@ export const Header = () => {
 
             <div className="relative py-6">
               <Link
-                href="/risk-assessment"
-                className={`${
-                  pathname === "/risk-assessment"
-                    ? "text-primaryCol"
-                    : "hover:text-primaryCol transition-colors duration-150"
-                }  font-medium`}
-              >
-                Risk Assessment
-              </Link>
-              {pathname === "/risk-assessment" && (
-                <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />
-              )}
-            </div>
-
-            <div className="relative py-6">
-              <Link
                 href="/my-bids"
                 className={`${
                   pathname === "/my-bids"
@@ -111,6 +95,22 @@ export const Header = () => {
                 Risk Participation Requests
               </Link>
               {pathname === "/risk-participation" && (
+                <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />
+              )}
+            </div>
+
+            <div className="relative py-6">
+              <Link
+                href="/risk-assessment"
+                className={`${
+                  pathname === "/risk-assessment"
+                    ? "text-primaryCol"
+                    : "hover:text-primaryCol transition-colors duration-150"
+                }  font-medium`}
+              >
+                Risk Assessment
+              </Link>
+              {pathname === "/risk-assessment" && (
                 <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />
               )}
             </div>
@@ -147,21 +147,7 @@ export const Header = () => {
                 <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />
               )}
             </div>
-            <div className="relative py-6">
-              <Link
-                href="/risk-assessment"
-                className={`${
-                  pathname === "/risk-assessment"
-                    ? "text-primaryCol"
-                    : "hover:text-primaryCol transition-colors duration-150"
-                }  font-medium`}
-              >
-                Risk Assessment
-              </Link>
-              {pathname === "/risk-assessment" && (
-                <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />
-              )}
-            </div>
+
             <div className="relative py-6">
               <Link
                 href="/create-request"
@@ -174,6 +160,21 @@ export const Header = () => {
                 Create a Request
               </Link>
               {pathname.includes("/create-request") && (
+                <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />
+              )}
+            </div>
+            <div className="relative py-6">
+              <Link
+                href="/risk-assessment"
+                className={`${
+                  pathname === "/risk-assessment"
+                    ? "text-primaryCol"
+                    : "hover:text-primaryCol transition-colors duration-150"
+                }  font-medium`}
+              >
+                Risk Assessment
+              </Link>
+              {pathname === "/risk-assessment" && (
                 <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />
               )}
             </div>

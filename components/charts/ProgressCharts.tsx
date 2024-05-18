@@ -177,16 +177,15 @@ export const ProgressCharts = ({
             <Loader />
           </div>
         ) : (
-          
-            <div className="bg-[#F5F7F9] flex rounded-[6px]">
-              <Chart
-                value={accepted}
-                bg="#E0F2EF"
-                color="#49E2B4"
-                title="accepted"
-                maxValue={maxValue}
-                isBank={isBank}
-              />
+          <div className="bg-[#F5F7F9] flex rounded-[6px]">
+            <Chart
+              value={accepted}
+              bg="#E0F2EF"
+              color="#49E2B4"
+              title="accepted"
+              maxValue={maxValue}
+              isBank={isBank}
+            />
             <Chart
               value={rejected}
               bg="#FFE6E6"
@@ -199,7 +198,7 @@ export const ProgressCharts = ({
               value={expired}
               bg="#F6EBE7"
               color="#FF7939"
-              title={isBank ? "bids" : "expired"}
+              title="expired"
               maxValue={maxValue}
               isBank={isBank}
             />

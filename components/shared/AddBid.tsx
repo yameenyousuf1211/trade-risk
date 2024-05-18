@@ -37,7 +37,9 @@ const LCInfo = ({
       }`}
     >
       <p className="text-para text-sm">{label}</p>
-      <p className="font-semibold text-right text-sm max-w-[60%]">{value}</p>
+      <p className="capitalize font-semibold text-right text-sm max-w-[60%]">
+        {value}
+      </p>
     </div>
   );
 };

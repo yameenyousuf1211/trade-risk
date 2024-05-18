@@ -26,7 +26,7 @@ import { useState } from "react";
 const TableDataCell = ({ data }: { data: string | number }) => {
   return (
     <TableCell className="px-1 py-1 max-w-[200px]">
-      <div className="truncate border border-borderCol rounded-md w-full p-2 py-2.5">
+      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5">
         {data}
       </div>
     </TableCell>
@@ -96,7 +96,9 @@ export const BankTable = ({
                     </div>
                   </TableCell>
                   <TableDataCell
-                    data={item.confirmationPrice.toLocaleString() || ""}
+                    data={
+                      item.confirmationPrice.toLocaleString() + ".00 %" || ""
+                    }
                   />
                   <TableDataCell
                     data={
@@ -110,7 +112,7 @@ export const BankTable = ({
                       item.discountMargin?.toLocaleString() || "Not Applicable"
                     }
                   />
-                  <TableDataCell data={item.confirmationPrice || ""} />
+                  <TableDataCell data={"USD " + item.confirmationPrice || ""} />
 
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     {item.status !== "Pending" ? (

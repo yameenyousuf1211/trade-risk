@@ -57,9 +57,11 @@ const ProductInfoPage = () => {
     getValues,
     setValue,
     handleSubmit,
-    formState: { errors },
+    
+    formState: { errors,isDirty, isValid},
   } = useForm<z.infer<typeof productsInfoSchema>>({
     resolver: zodResolver(productsInfoSchema),
+    mode:'all'
   });
 
   const productData =
@@ -193,6 +195,7 @@ const ProductInfoPage = () => {
             className="disabled:bg-[#E2E2EA] disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
             type="submit"
+            disabled={!isValid || !isDirty}
           >
             Continue
           </Button>

@@ -23,12 +23,12 @@ const PointContactPage = () => {
     setValue,
     handleSubmit,
     getValues,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting,isDirty,isValid },
   } = useForm<z.infer<typeof pointOfContractSchema>>({
     resolver: zodResolver(pointOfContractSchema),
+    mode:'all'
   });
 
-  // Updating the locally saved values
   const contactData =
     typeof window !== "undefined" ? localStorage.getItem("contactData") : null;
 
@@ -180,9 +180,9 @@ const PointContactPage = () => {
 
         <div className="flex flex-col gap-y-2">
           <Button
-            className="disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
+            className="disabled:bg-borderCol disabled:text-[#9f9faf] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
-            disabled={false}
+            disabled={!isValid || !isDirty}
           >
             Continue
           </Button>

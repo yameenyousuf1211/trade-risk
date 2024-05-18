@@ -24,7 +24,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import { isDirty, z } from "zod";
 
 const CheckBoxInput = ({ label, id }: { label: string; id: string }) => {
   return (
@@ -45,9 +45,10 @@ const BankRegisterPage = () => {
     setValue,
     handleSubmit,
     getValues,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting,isDirty, isValid},
   } = useForm<z.infer<typeof bankSchema>>({
     resolver: zodResolver(bankSchema),
+    mode:'all'
   });
 
   const onSubmit: SubmitHandler<z.infer<typeof bankSchema>> = async (
@@ -248,7 +249,7 @@ const BankRegisterPage = () => {
             <Button
               className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !isValid || !isDirty}
               type="submit"
             >
               Get Started

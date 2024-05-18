@@ -70,7 +70,7 @@ export const Step5 = ({
             type="text"
             name="exporterInfo.beneficiaryName"
             register={register}
-            className="block bg-none border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+            className="block bg-none text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Enter name"
           />
         </label>

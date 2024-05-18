@@ -50,6 +50,7 @@ export const AddBid = ({
   border,
   lcId,
   setIsAddNewBid,
+  isCorporate,
 }: {
   isDiscount?: boolean;
   isInfo?: boolean;
@@ -58,6 +59,7 @@ export const AddBid = ({
   border?: boolean;
   lcId: string;
   setIsAddNewBid?: any;
+  isCorporate?: boolean;
 }) => {
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
@@ -95,17 +97,21 @@ export const AddBid = ({
     if (isDiscount && !discountMargin)
       return toast.error("Please provide discount margin");
 
-    const { success, response } = await mutateAsync({
+    const baseData = {
       confirmationPrice: data.confirmationPrice,
       lc: lcData._id,
       type: lcData.lcType!,
-      // validity: new Date(),
       validity: data.validity,
-      ...(isDiscount && {
-        discountMargin: discountMargin,
-        discountBaseRate: discountBaseRate,
-      }),
-    });
+    };
+
+    const reqData = isDiscount
+      ? {
+          ...baseData,
+          discountMargin,
+          discountBaseRate,
+        }
+      : baseData;
+    const { success, response } = await mutateAsync(reqData);
 
     if (!success) return toast.error(response);
     else {
@@ -335,12 +341,12 @@ export const AddBid = ({
                   </Button>
                 </div>
 
-                {status === "Rejected" && (
+                {status === "Rejected" && !isCorporate && (
                   <Button
                     onClick={() => {
                       setIsAddNewBid && setIsAddNewBid(true);
                     }}
-                    className="bg-[#5625F2]  text-white hover:bg-[#5625F2] border border-[#D20000]"
+                    className="bg-[#5625F2]  text-white hover:bg-[#5625F2] mt-5"
                   >
                     Submit A New Bid
                   </Button>

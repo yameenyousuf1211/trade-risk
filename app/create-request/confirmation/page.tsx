@@ -358,7 +358,6 @@ const ConfirmationPage = () => {
           />
           {/* Period */}
           <Period
-            register={register}
             setValue={setValue}
             getValues={getValues}
             countries={countries}
@@ -372,7 +371,6 @@ const ConfirmationPage = () => {
             register={register}
             setValue={setValue}
             valueChanged={valueChanged}
-            setValueChanged={setValueChanged}
           />
         </div>
 

@@ -229,7 +229,6 @@ export const Step3 = ({
         )}
       </div>
       <Period
-        register={register}
         setValue={setValue}
         getValues={getValues}
         countries={countries}
@@ -242,7 +241,6 @@ export const Step3 = ({
         register={register}
         setValue={setValue}
         valueChanged={valueChanged}
-        setValueChanged={setValueChanged}
       />
     </div>
   );

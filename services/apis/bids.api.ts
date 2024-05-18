@@ -45,22 +45,32 @@ export const addBid = async ({
   lc,
   type,
   validity,
-  discountingPrice,
+  discountBaseRate,
+  discountMargin,
 }: {
   type: string;
   lc: string;
   validity: string;
   confirmationPrice: string;
-  discountingPrice?: string;
+  discountBaseRate?: string;
+  discountMargin?: string;
 }) => {
   try {
-    const { data } = await api.post(`/bids`, {
+    const baseData = {
+      confirmationPrice,
+      lc,
       bidType: type,
       bidValidity: validity,
-      confirmationPrice: confirmationPrice,
-      lc: lc,
-      ...(discountingPrice && { discountingPrice }),
-    });
+    };
+
+    const reqData = discountMargin
+      ? {
+          ...baseData,
+          discountMargin,
+          discountBaseRate,
+        }
+      : baseData;
+    const { data } = await api.post(`/bids`, reqData);
 
     return {
       success: true,

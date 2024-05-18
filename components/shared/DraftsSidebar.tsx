@@ -55,7 +55,7 @@ const DraftCard = ({
     // @ts-ignore
     try {
       const response = await fetchSingleLc(draft?._id);
-
+      console.log("response: ", response);
       isConfirmation && setConfirmationValues(response);
       isDiscounting && setDiscountingValues(response);
       isConfirmationDiscounting && setConfirmationDiscountingValues(response);

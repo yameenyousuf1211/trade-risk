@@ -14,7 +14,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { confirmationSchema } from "@/validation/lc.validation";
@@ -42,8 +42,6 @@ const CreateRequestPage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
-
-  const btnRef = useRef();
 
   const queryClient = useQueryClient();
   const setValues = useConfirmationStore((state) => state.setValues);
@@ -280,7 +278,6 @@ const CreateRequestPage = () => {
           className="hidden"
           setProceed={setProceed}
           onAccept={handleSubmit(onSubmit)}
-          // ref={btnRef}
         />
       </form>
     </CreateLCLayout>

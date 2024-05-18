@@ -18,6 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Select,
   SelectContent,
+  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -58,7 +59,6 @@ export const ValidatingCalendar = ({
 };
 
 export const Period = ({
-  register,
   setValue,
   getValues,
   countries,
@@ -66,7 +66,6 @@ export const Period = ({
   valueChanged,
   setValueChanged,
 }: {
-  register: any;
   setValue: any;
   getValues: any;
   countries: string[];
@@ -77,6 +76,46 @@ export const Period = ({
   let shipmentCountry = getValues("shipmentPort.country");
   let lcStartDate = getValues("lcPeriod.startDate");
   let lcEndDate = getValues("lcPeriod.endDate");
+  let lcPeriodType = getValues("lcPeriod.expectedDate");
+
+  const [ports, setPorts] = useState([]);
+
+  useEffect(() => {
+    const fetchPorts = async () => {
+      const { success, response } = await getPorts(shipmentCountry);
+      if (success) {
+        const fetchedPorts = response.map((port: any) => {
+          return port.PORT_NAME;
+        });
+        fetchedPorts.length > 0 ? setPorts(fetchedPorts) : setPorts([]);
+      } else {
+        setPorts([]);
+      }
+    };
+
+    shipmentCountry && fetchPorts();
+  }, [shipmentCountry]);
+
+  const [lcPeriodDate, setLcPeriodDate] = useState<Date>();
+  const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+  const [lcIssueType, setLcIssueType] = useState("");
+
+  const handleRadioChange = (e: any) => {
+    setLcIssueType(e.target.value);
+    setValue("lcPeriod.expectedDate", e.target.value);
+  };
+
+  // Function to update value in React Hook Form
+  const updateValue = (name: string, value: any) => {
+    setValue(name, value);
+  };
+
+  const handleSelectChange = (value: string) => {
+    setValue("shipmentPort.port", value);
+    setValueChanged((prev: boolean) => !prev);
+  };
 
   useEffect(() => {
     shipmentCountry = getValues("shipmentPort.country");
@@ -87,34 +126,8 @@ export const Period = ({
       setValue("lcPeriod.endDate", new Date(lcEndDate));
       setValue("expectedConfirmationDate", new Date(lcEndDate));
     }
+    setValue("lcPeriod.expectedDate", lcPeriodType === false ? "yes" : "no");
   }, [valueChanged]);
-
-  const { data: shipmentPorts } = useQuery({
-    queryKey: ["shipmentPorts", shipmentCountry],
-    queryFn: () => getPorts(shipmentCountry),
-    enabled: !!shipmentCountry,
-  });
-
-  const [lcPeriodDate, setLcPeriodDate] = useState<Date>();
-  const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
-  const [lcIssueType, setLcIssueType] = useState("");
-
-  const handleRadioChange = (e: any) => {
-
-    setLcIssueType(e.target.value);
-    setValue("lcPeriod.expectedDate", e.target.value);
-  };
-  // Function to update value in React Hook Form
-  const updateValue = (name: string, value: any) => {
-    setValue(name, value);
-  };
-
-  const handleSelectChange = (value: string) => {
-    setValue("shipmentPort.port", value);
-    setValueChanged((prev: boolean) => !prev);
-  };
 
   return (
     <div className="flex items-start gap-x-4 my-5">
@@ -241,29 +254,20 @@ export const Period = ({
             <p className="text-lightGray">Select port</p>
             <Select onValueChange={handleSelectChange}>
               <SelectTrigger
-                // disabled={
-                //   !shipmentPorts ||
-                //   !shipmentPorts.success ||
-                //   !shipmentPorts?.response ||
-                //   !shipmentPorts.success
-                // }
+                disabled={!ports || ports.length <= 0}
                 id="shipmentPort.port"
                 className="w-fit border-none bg-transparent text-[#B5B5BE]"
               >
                 <SelectValue placeholder="Select port" />
               </SelectTrigger>
               <SelectContent>
-                {/* {shipmentPorts &&
-                  shipmentPorts.response &&
-                  shipmentPorts.response.length > 0 &&
-                  shipmentPorts.response?.map((val: any, idx: number) => (
-                    <SelectItem
-                      value={val.port_name}
-                      key={`${val.port_name}-${idx}`}
-                    >
-                      {val.port_name}
+                {ports &&
+                  ports.length > 0 &&
+                  ports.map((val: string, idx: number) => (
+                    <SelectItem value={val} key={`${val}-${idx}`}>
+                      {val}
                     </SelectItem>
-                  ))} */}
+                  ))}
               </SelectContent>
             </Select>
           </label>
@@ -279,23 +283,25 @@ export const Transhipment = ({
   isDiscount,
   getValues,
   valueChanged,
-  setValueChanged,
 }: {
   register: any;
   setValue: any;
   isDiscount?: boolean;
   getValues?: any;
   valueChanged?: boolean;
-  setValueChanged?: any;
 }) => {
   const [expectedConfirmationDate, setExpectedConfirmationDate] =
     useState<Date>();
-  let lcEndDate = getValues("lcPeriod.endDate");
+  let expectedDate = isDiscount
+    ? getValues("expectedDiscountingDate")
+    : getValues("expectedConfirmationDate");
   useEffect(() => {
-    setExpectedConfirmationDate(lcEndDate);
+    setExpectedConfirmationDate(expectedDate);
 
-    if (lcEndDate) {
-      setValue("expectedConfirmationDate", new Date(lcEndDate));
+    if (expectedDate) {
+      isDiscount
+        ? setValue("expectedDiscountingDate", new Date(expectedDate))
+        : setValue("expectedConfirmationDate", new Date(expectedDate));
     }
   }, [valueChanged]);
   const [checkedState, setCheckedState] = useState({
@@ -318,7 +324,7 @@ export const Transhipment = ({
 
   return (
     <div className="w-full flex items-start gap-x-4 justify-between mt-4">
-      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9]">
+      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-full">
         <p className="font-semibold mb-2 ml-3">Transhipment Allowed</p>
         <BgRadioInput
           id="transhipment-allowed-yes"
@@ -340,8 +346,8 @@ export const Transhipment = ({
         />
       </div>
 
-      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9]">
-        <p className="font-semibold  mb-2 ml-3">
+      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-full">
+        <p className="font-semibold mb-2 ml-3">
           {isDiscount
             ? "Expected Date for Discounting"
             : "Expected Date to add Confirmation"}
@@ -423,7 +429,7 @@ export const Transhipment = ({
         </div>
       </div>
 
-      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9]">
+      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-full">
         <p className="font-semibold mb-2 ml-3">Product Description</p>
         <Textarea
           name="productDescription"
@@ -574,7 +580,7 @@ export const DiscountBanks = ({
             />
             <label
               htmlFor="same-as-advising"
-              className="ml-2 text-sm text-lightGray"
+              className="ml-2 text-[12px] text-lightGray"
             >
               Same as advising bank
             </label>

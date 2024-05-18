@@ -42,7 +42,7 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
             Welcome, {user && user.name}
           </h2>
           {/* Charts */}
-          <div className="flex 2xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 h-fit">
+          <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 h-fit">
             <ProgressCharts title="Deals Overview" isBank />
             <LineCharts />
           </div>

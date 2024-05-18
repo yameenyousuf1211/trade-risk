@@ -33,6 +33,7 @@ export const Step7Disounting = ({
   });
 
   const handleCheckDiscountChange = (id: string) => {
+    console.log(id)
     setCheckedState((prevState) => ({
       ...prevState,
       "disc-discount-yes": id === "disc-discount-yes",

@@ -37,7 +37,7 @@ const BidCard = ({ data }: { data: IBids }) => {
 
   return (
     <div className="border border-borderCol py-5 px-3 rounded-lg">
-      <div className="grid grid-cols-2 gap-y-1.5">
+      <div className="grid grid-cols-2 gap-y-4">
         <div>
           <p className="text-sm text-para mb-1">Bid Number</p>
           <p className="font-semibold text-lg">{data._id.slice(1, 6)}</p>
@@ -194,8 +194,8 @@ export const TableDialog = ({
 
         <div className="overflow-y-hidden relative -mt-4 flex items-start justify-between h-full">
           {/* Left Section */}
-          <div className="w-full py-5 border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[75vh]">
-            <div className="px-4">
+          <div className="w-full  pb-5 border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[75vh]">
+            <div className="px-4 pt-5 bg-[#F5F7F9]">
               <h2 className="text-2xl font-semibold mb-1">
                 <span className="text-para font-medium">LC Amount:</span> USD{" "}
                 {(lcData && lcData.amount.toLocaleString()) || ""}
@@ -212,7 +212,7 @@ export const TableDialog = ({
               <div className="h-[2px] w-full bg-neutral-800 mt-5" />
             </div>
             {/* Main Info */}
-            <div className="px-4">
+            <div className="px-4  bg-[#F5F7F9]">
               <LCInfo
                 label="LC Issuing Bank"
                 value={(lcData && lcData.issuingBank?.bank) || ""}
@@ -236,7 +236,7 @@ export const TableDialog = ({
               />
             </div>
             {/* Separator */}
-            <div className="h-[2px] w-full bg-borderCol mt-5" />
+            <div className="h-[2px] w-full bg-borderCol mt- 5" />
             {/* LC Details */}
             <div className="px-4 mt-4">
               <h2 className="text-xl font-semibold">LC Details</h2>

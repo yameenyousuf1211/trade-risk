@@ -81,6 +81,7 @@ function capitalizeWords(str: string) {
   });
 
   const capitalizedStr = capitalizedWords.join(" ");
+  console.log(capitalizedStr,"COUNTRY")
 
   return capitalizedStr;
 }

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { IBids, ILcs } from "@/types/type";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { convertDateToYYYYMMDD } from "@/utils";
+import { convertDateToString, convertDateToYYYYMMDD } from "@/utils";
 import { toast } from "sonner";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
 
@@ -38,12 +38,12 @@ const BidCard = ({ data }: { data: IBids }) => {
   return (
     <div className="border border-borderCol py-5 px-3 rounded-lg">
       <div className="grid grid-cols-2 gap-y-4">
-        <div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Number</p>
           <p className="font-semibold text-lg">{data._id.slice(1, 6)}</p>
         </div>
 
-        <div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="capitalize text-lg font-semibold mb-1">
             {data.userInfo?.name || ""}
           </p>
@@ -52,14 +52,14 @@ const BidCard = ({ data }: { data: IBids }) => {
           </p>
         </div>
 
-        <div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Confirmation Rate</p>
           <p className="text-lg font-semibold text-text">
             {data.confirmationPrice}% per annum
           </p>
         </div>
 
-        <div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Discount Rate</p>
           <p className="text-lg font-semibold ">
             {data.bidType.includes("Discounting")
@@ -68,7 +68,7 @@ const BidCard = ({ data }: { data: IBids }) => {
           </p>
         </div>
 
-        <div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Discount Margin</p>
           <p className="text-lg font-semibold ">
             {data.bidType.includes("Discounting")
@@ -77,19 +77,19 @@ const BidCard = ({ data }: { data: IBids }) => {
           </p>
         </div>
 
-        <div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Minimum Charges</p>
           <p className="text-lg font-semibold text-text">AED 30,000.00</p>
         </div>
 
-        <div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Recieved</p>
           <p className="font-semibold text-lg">
             {convertDateToYYYYMMDD(data.createdAt)}
           </p>
         </div>
 
-        <div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Expiry</p>
           <p className="font-semibold text-lg">
             {convertDateToYYYYMMDD(data.bidValidity)}
@@ -178,7 +178,7 @@ export const TableDialog = ({
   bids: IBids[];
 }) => {
   // Get LC
-  const { data: lcData, isLoading } = useQuery({
+  const { data: lcData } = useQuery({
     queryKey: [`single-lc`, lcId],
     queryFn: () => fetchSingleLc(lcId),
   });
@@ -196,9 +196,9 @@ export const TableDialog = ({
           </DialogClose>
         </div>
 
-        <div className="overflow-y-hidden relative -mt-4 flex items-start justify-between h-full">
+        <div className="overflow-y-hidden relative -mt-9 flex items-start justify-between h-full">
           {/* Left Section */}
-          <div className="w-full  pb-5 border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[75vh]">
+          <div className="w-full pb-5 border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[75vh]">
             <div className="px-4 pt-5 bg-[#F5F7F9]">
               <h2 className="text-2xl font-semibold mb-1">
                 <span className="text-para font-medium">LC Amount:</span> USD{" "}
@@ -206,8 +206,7 @@ export const TableDialog = ({
               </h2>
               <p className="text-sm text-para">
                 Created at,{" "}
-                {lcData && convertDateToYYYYMMDD(lcData.lcPeriod?.startDate)},
-                by{" "}
+                {lcData && convertDateToString(lcData.lcPeriod?.startDate)}, by{" "}
                 <span className="text-text capitalize">
                   {(lcData && lcData.exporterInfo?.beneficiaryName) || ""}
                 </span>

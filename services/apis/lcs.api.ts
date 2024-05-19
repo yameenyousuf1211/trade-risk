@@ -21,7 +21,9 @@ export const fetchLcs = async ({
     const { data } = await api.get(
       `/lcs?limit=${limit || 10}&page=${page || 1}&draft=${
         draft || false
-      }&search=${search || ""}&filter=${filter || ""}&createdBy=${userId}`
+      }&search=${search || ""}&filter=${
+        (filter && encodeURIComponent(filter)) || ""
+      }&createdBy=${userId}`
     );
 
     return data.data.updatedData;
@@ -46,7 +48,7 @@ export const fetchAllLcs = async ({
     const { data } = await api.get(
       `/lcs?limit=${limit || 10}&page=${page || 1}&draft=${false}&search=${
         search || ""
-      }&filter=${filter || ""}`
+      }&filter=${(filter && encodeURIComponent(filter)) || ""}`
     );
     return data.data.updatedData;
   } catch (error: any) {

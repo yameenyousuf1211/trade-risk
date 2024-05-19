@@ -17,17 +17,17 @@ export const ProductFilter = () => {
     const queryParams = new URLSearchParams(searchParams);
     queryParams.set("filter", lcType.toString());
     queryParams.set("page", "1");
-    
+
     const queryString = queryParams.toString();
     router.push(`${pathname}?${queryString}`, { scroll: false });
   };
 
   return (
     <Select onValueChange={(val: string) => handleFilter(val)}>
-      <SelectTrigger className="border-none outline-none focus:none">
+      <SelectTrigger className="w-[150px] border-none outline-none focus:none">
         <SelectValue placeholder="Product Type" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="">
         <SelectItem value="LC Confirmation">LC Confirmation</SelectItem>
         <SelectItem value="LC Discounting">LC Discounting</SelectItem>
         <SelectItem value="LC Confirmation & Discounting">

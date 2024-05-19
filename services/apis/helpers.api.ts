@@ -80,8 +80,5 @@ function capitalizeWords(str: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
   });
 
-  const capitalizedStr = capitalizedWords.join(" ");
-  console.log(capitalizedStr,"COUNTRY")
-
-  return capitalizedStr;
+  return capitalizedWords.join(" ");
 }

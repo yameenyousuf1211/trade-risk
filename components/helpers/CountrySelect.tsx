@@ -23,11 +23,13 @@ export const CountrySelect = ({
   name,
   setValueChange,
   setIsoCode,
+  placeholder,
 }: {
   setIsoCode: any;
   setValue: any;
   name: string;
   setValueChange?: any;
+  placeholder?: string;
 }) => {
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryVal, setCountryVal] = useState("");
@@ -70,14 +72,14 @@ export const CountrySelect = ({
             variant="outline"
             role="combobox"
             aria-expanded={countryOpen}
-            className="w-full justify-between font-normal text-sm text-gray-500"
+            className="capitalize w-full justify-between font-normal text-sm text-gray-400"
           >
             {countryVal
               ? countries?.find(
                   (country: string) =>
                     country.toLowerCase() === countryVal.toLowerCase()
                 )
-              : "Select country..."}
+              : placeholder || "Select country..."}
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>

@@ -22,7 +22,7 @@ import { TableDialog } from "./TableDialog";
 import Image from "next/image";
 import { columnHeaders, bankColumnHeaders } from "@/utils/data";
 import { ApiResponse, ILcs } from "@/types/type";
-import { convertDateToYYYYMMDD } from "@/utils";
+import { convertDateToString, convertDateToYYYYMMDD } from "@/utils";
 
 interface TableDataCellProps {
   data?: string | number | Date | undefined;
@@ -31,7 +31,7 @@ interface TableDataCellProps {
 const TableDataCell = ({ data }: TableDataCellProps) => {
   return (
     <TableCell className="px-1 py-1 max-w-[200px]">
-      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5">
+      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-lightGray">
         {data !== undefined ? String(data) : "-"}
       </div>
     </TableCell>
@@ -71,7 +71,7 @@ export const RequestTable = ({
             <Ellipsis className="mx-3" />
           </div>
         </div>
-        <div className="max-h-[60vh] overflow-y-auto">
+        <div className="max-h-[70vh] overflow-y-auto">
           <Table>
             <TableHeader className="bg-[#F0F0F0] hover:bg-[#F0F0F0]/90 p-2 rounded-md">
               <TableRow className="py-0">
@@ -119,10 +119,10 @@ export const RequestTable = ({
                 data.data.map((item: ILcs, index: number) => (
                   <TableRow key={index} className="border-none ">
                     <TableDataCell
-                      data={convertDateToYYYYMMDD(item.lcPeriod.startDate)}
+                      data={convertDateToString(item.lcPeriod.startDate)}
                     />
                     <TableDataCell
-                      data={convertDateToYYYYMMDD(item.lcPeriod.endDate)}
+                      data={convertDateToString(item.lcPeriod.endDate)}
                     />
                     <TableDataCell data={item.lcType} />
                     <TableCell className="px-1 py-1 max-w-[200px]">
@@ -134,7 +134,7 @@ export const RequestTable = ({
                           height={100}
                           className="object-cover size-5"
                         />
-                        <div className="truncate capitalize">
+                        <div className="truncate capitalize text-lightGray">
                           {item.issuingBank.bank}
                         </div>
                       </div>
@@ -142,7 +142,7 @@ export const RequestTable = ({
                     <TableDataCell data={item.exporterInfo.beneficiaryName} />
                     <TableDataCell data={item.importerInfo.applicantName} />
                     <TableDataCell
-                      data={item.amount?.toLocaleString() + ".00"}
+                      data={"USD " + item.amount?.toLocaleString() + ".00"}
                     />
                     <TableCell className="px-1 py-1 max-w-[200px]">
                       <TableBidStatus id={item._id} lcData={item} />
@@ -167,10 +167,10 @@ export const RequestTable = ({
                       </div>
                     </TableCell>
                     <TableDataCell
-                      data={convertDateToYYYYMMDD(item.lcPeriod?.startDate)}
+                      data={convertDateToString(item.lcPeriod?.startDate)}
                     />
                     <TableDataCell
-                      data={convertDateToYYYYMMDD(item.lcPeriod?.endDate)}
+                      data={convertDateToString(item.lcPeriod?.endDate)}
                     />
                     <TableDataCell data={item.lcType} />
                     <TableCell className="px-1 py-1 max-w-[300px]">
@@ -182,7 +182,7 @@ export const RequestTable = ({
                           height={100}
                           className="object-cover size-5"
                         />
-                        <div className="capitalize truncate">
+                        <div className="capitalize truncate text-lightGray">
                           {item.issuingBank.bank}
                         </div>
                       </div>

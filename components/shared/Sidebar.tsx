@@ -325,8 +325,6 @@ export const Sidebar = ({
 
   const [generateType, setGenerateType] = useState("csv");
 
-  console.log(allLcs);
-
   return (
     <>
       {/* Action Box */}
@@ -374,7 +372,11 @@ export const Sidebar = ({
 
       <div className="bg-white border border-borderCol py-4 px-5 mt-5 rounded-lg min-h-[70%] max-h-[80%] overflow-y-auto overflow-x-hidden flex flex-col justify-between">
         <div>
-          <h4 className="-ml-2 text-xl text-center font-semibold mb-3">
+          <h4
+            className={`text-xl ${
+              isBank ? "text-left" : "text-center"
+            } font-semibold mb-3`}
+          >
             {isBank ? "Needs Action" : "Needs your attention"}
           </h4>
           <div className="flex flex-col gap-y-5">

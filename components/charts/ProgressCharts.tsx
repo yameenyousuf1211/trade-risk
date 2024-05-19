@@ -55,7 +55,7 @@ const Chart = ({
 
   return (
     <div
-      className="hover:shadow-xl hover:bg-white rounded-xl pb-2 cursor-pointer"
+      className="hover:shadow-xl hover:bg-white rounded-xl pb-2 cursor-pointer transition-all duration-100"
       onClick={handleFilter}
     >
       <div className="flex flex-col items-center justify-center">

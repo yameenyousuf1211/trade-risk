@@ -389,7 +389,7 @@ const CurrentBankingPage = () => {
               variant="ghost"
               type="button"
               onClick={handleBankAdd}
-              className="text-center font-semibold text-[16px] mt-4"
+              className="bg-[#F5F7F9] text-center font-semibold text-[16px] mt-4"
             >
               Add Bank
             </Button>

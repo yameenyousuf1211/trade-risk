@@ -80,7 +80,7 @@ const PointContactPage = () => {
       text="Give us the details of the POC our sales team should get in touch with after verification"
     >
       <form
-        className="max-w-xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-6"
+        className="max-w-2xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-6"
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="w-full relative">
@@ -126,7 +126,7 @@ const PointContactPage = () => {
           </div>
         </div>
 
-        <div className="h-[2px] w-full bg-borderCol" />
+        <div className="h-[2px] w-full bg-borderCol/80" />
 
         <div className="flex items-center gap-x-2">
           <div className="w-full relative">
@@ -160,7 +160,7 @@ const PointContactPage = () => {
         <div className="w-full">
           <label
             htmlFor="pdf-file"
-            className="flex items-center justify-between border border-borderCol py-3 rounded-md px-4 cursor-pointer"
+            className="flex items-center justify-between border border-borderCol py-4 rounded-md px-4 cursor-pointer"
           >
             <div className="flex items-center gap-x-1">
               <Paperclip className="text-gray-500 size-4" />

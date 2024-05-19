@@ -29,6 +29,7 @@ export const TableBidStatus = ({
           setIsAddNewBid={setIsAddNewBid}
           isDiscount={lcData.lcType.includes("Discount")}
           lcId={lcData._id}
+          bidId={id}
         />
       ) : (
         <Button

@@ -79,14 +79,21 @@ export const Period = ({
   let lcPeriodType = getValues("lcPeriod.expectedDate");
 
   const [ports, setPorts] = useState([]);
+  // const [portCountries, setPortCountries] = useState([]);
 
   useEffect(() => {
     const fetchPorts = async () => {
       const { success, response } = await getPorts(shipmentCountry);
       if (success) {
+        // const fetchedPortCountries = response.map((port: any) => {
+        //   return port.COUNTRY;
+        // });
         const fetchedPorts = response.map((port: any) => {
           return port.PORT_NAME;
         });
+        // fetchedPortCountries.length > 0
+        //   ? setPortCountries(fetchedPortCountries)
+        //   : setPortCountries([]);
         fetchedPorts.length > 0 ? setPorts(fetchedPorts) : setPorts([]);
       } else {
         setPorts([]);

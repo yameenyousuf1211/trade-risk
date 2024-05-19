@@ -78,7 +78,7 @@ const ProductInfoPage = () => {
       text="Please add information about your products and trade volume below"
     >
       <form
-        className="max-w-xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5"
+        className="max-w-xl w-full shadow-md bg-white rounded-2xl p-8 z-10 mt-3 flex flex-col gap-y-5"
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="w-full">

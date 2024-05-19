@@ -58,7 +58,7 @@ export const Header = () => {
                   pathname === "/dashboard"
                     ? "text-primaryCol"
                     : "hover:text-primaryCol transition-colors duration-150"
-                }  font-medium`}
+                }  font-semibold`}
               >
                 Dashboard
               </Link>
@@ -74,7 +74,7 @@ export const Header = () => {
                   pathname === "/my-bids"
                     ? "text-primaryCol"
                     : "hover:text-primaryCol transition-colors duration-150"
-                }  font-medium`}
+                }  font-semibold`}
               >
                 My Bids
               </Link>
@@ -90,7 +90,7 @@ export const Header = () => {
                   pathname === "/risk-participation"
                     ? "text-primaryCol"
                     : "hover:text-primaryCol transition-colors duration-150"
-                }  font-medium`}
+                }  font-semibold`}
               >
                 Risk Participation Requests
               </Link>
@@ -106,7 +106,7 @@ export const Header = () => {
                   pathname === "/risk-assessment"
                     ? "text-primaryCol"
                     : "hover:text-primaryCol transition-colors duration-150"
-                }  font-medium`}
+                }  font-semibold`}
               >
                 Risk Assessment
               </Link>
@@ -124,7 +124,7 @@ export const Header = () => {
                   pathname === "/"
                     ? "text-primaryCol"
                     : "hover:text-primaryCol transition-colors duration-150"
-                }  font-medium`}
+                }  font-semibold`}
               >
                 My Requests
               </Link>
@@ -139,7 +139,7 @@ export const Header = () => {
                   pathname === "/my-bids"
                     ? "text-primaryCol"
                     : "hover:text-primaryCol transition-colors duration-150"
-                }  font-medium`}
+                }  font-semibold`}
               >
                 My Bids
               </Link>
@@ -155,7 +155,7 @@ export const Header = () => {
                   pathname === "/create-request"
                     ? "text-primaryCol"
                     : "hover:text-primaryCol transition-colors duration-150"
-                }  font-medium`}
+                }  font-semibold`}
               >
                 Create a Request
               </Link>
@@ -170,7 +170,7 @@ export const Header = () => {
                   pathname === "/risk-assessment"
                     ? "text-primaryCol"
                     : "hover:text-primaryCol transition-colors duration-150"
-                }  font-medium`}
+                }  font-semibold`}
               >
                 Risk Assessment
               </Link>

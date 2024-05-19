@@ -86,7 +86,7 @@ export const AddBid = ({
     mutationFn: addBid,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["bid-status", "fetch-lcs", "fetch-bids-count"],
+        queryKey: ["bid-status", "fetch-lcs"],
       });
     },
   });

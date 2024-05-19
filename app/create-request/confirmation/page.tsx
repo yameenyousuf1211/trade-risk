@@ -56,7 +56,6 @@ const ConfirmationPage = () => {
   });
 
   const queryClient = useQueryClient();
-  const btnRef = useRef();
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
@@ -115,10 +114,6 @@ const ConfirmationPage = () => {
         ...data,
         transhipment: data.transhipment === "yes" ? true : false,
         lcType: "LC Confirmation & Discounting",
-        shipmentPort: {
-          ...data?.shipmentPort,
-          port: "xyz",
-        },
         lcPeriod: {
           ...data.lcPeriod,
           expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
@@ -145,7 +140,7 @@ const ConfirmationPage = () => {
       let openDisclaimerBtn = document.getElementById("open-disclaimer");
       // @ts-ignore
       openDisclaimerBtn.click();
-      setProceed(true)
+      setProceed(true);
     }
   };
 
@@ -160,10 +155,6 @@ const ConfirmationPage = () => {
       transhipment: data.transhipment === "yes" ? true : false,
       lcType: "LC Confirmation & Discounting",
       isDraft: "true",
-      shipmentPort: {
-        ...data?.shipmentPort,
-        port: "xyz",
-      },
       lcPeriod: {
         ...data.lcPeriod,
         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
@@ -435,7 +426,7 @@ const ConfirmationPage = () => {
           className="hidden"
           setProceed={setProceed}
           onAccept={handleSubmit(onSubmit)}
-          />
+        />
       </form>
     </CreateLCLayout>
   );

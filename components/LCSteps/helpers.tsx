@@ -83,7 +83,7 @@ export const DDInput = ({
             variant="outline"
             role="combobox"
             aria-expanded={ddOpen}
-            className="w-fit border-none justify-between font-normal text-sm text-gray-500"
+            className="capitalize w-fit border-none justify-between font-normal text-sm text-gray-500"
             disabled={disabled}
           >
             {ddVal

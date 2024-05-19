@@ -44,7 +44,7 @@ export const BankTable = ({
   isCorporate?: boolean;
 }) => {
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
-
+  console.log(data);
   return (
     <div className="">
       <div className="flex items-center justify-between gap-x-2 mb-2">
@@ -115,7 +115,9 @@ export const BankTable = ({
                       item.discountMargin?.toLocaleString() || "Not Applicable"
                     }
                   />
-                  <TableDataCell data={"USD " + item.confirmationPrice || ""} />
+                  <TableDataCell
+                    data={"USD " + item.confirmationPrice + ".00" || ""}
+                  />
 
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     {item.status !== "Pending" ? (

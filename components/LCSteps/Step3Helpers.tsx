@@ -74,11 +74,12 @@ export const Period = ({
   setValueChanged?: any;
 }) => {
   let shipmentCountry = getValues("shipmentPort.country");
+  let shipmentPort = getValues("shipmentPort.port");
   let lcStartDate = getValues("lcPeriod.startDate");
   let lcEndDate = getValues("lcPeriod.endDate");
   let lcPeriodType = getValues("lcPeriod.expectedDate");
 
-  const [ports, setPorts] = useState([]);
+  const [ports, setPorts] = useState<string[]>([]);
   // const [portCountries, setPortCountries] = useState([]);
 
   useEffect(() => {
@@ -254,7 +255,17 @@ export const Period = ({
             flags={flags}
             setValueChanged={setValueChanged}
           />
-          <label
+          <DDInput
+            id="shipmentPort.port"
+            label="Port"
+            value={shipmentPort}
+            placeholder="Select port"
+            setValue={setValue}
+            setValueChanged={setValueChanged}
+            disabled={!ports || ports.length === 0}
+            data={ports}
+          />
+          {/* <label
             id="shipmentPort.port"
             className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
           >
@@ -277,7 +288,7 @@ export const Period = ({
                   ))}
               </SelectContent>
             </Select>
-          </label>
+          </label> */}
         </div>
       </div>
     </div>
@@ -468,13 +479,17 @@ export const DiscountBanks = ({
   const [valueChanged, setValueChanged] = useState(false);
 
   let issuingCountry = getValues("issuingBank.country");
+  let issuingBank = getValues("issuingBank.bank");
   let advisingCountry = getValues("advisingBank.country");
+  let advisingBank = getValues("advisingBank.bank");
   let confirmingCountry = getValues("confirmingBank.country");
   let confirmingBank = getValues("confirmingBank.bank");
 
   useEffect(() => {
     issuingCountry = getValues("issuingBank.country");
+    issuingBank = getValues("issuingBank.bank");
     advisingCountry = getValues("advisingBank.country");
+    advisingBank = getValues("advisingBank.bank");
     confirmingCountry = getValues("confirmingBank.country");
   }, [valueChanged, value]);
 
@@ -524,6 +539,7 @@ export const DiscountBanks = ({
             placeholder="Select a country"
             label="Country"
             id="issuingBank.country"
+            value={issuingCountry}
             data={countries}
             flags={flags}
             setValue={setValue}
@@ -533,6 +549,7 @@ export const DiscountBanks = ({
             placeholder="Select bank"
             label="Bank"
             id="issuingBank.bank"
+            value={issuingBank}
             setValue={setValue}
             setValueChanged={setValueChanged}
             disabled={
@@ -552,6 +569,7 @@ export const DiscountBanks = ({
             placeholder="Select a country"
             label="Country"
             id="advisingBank.country"
+            value={advisingCountry}
             data={countries}
             flags={flags}
             setValue={setValue}
@@ -561,6 +579,7 @@ export const DiscountBanks = ({
             placeholder="Select bank"
             label="Bank"
             id="advisingBank.bank"
+            value={advisingBank}
             setValue={setValue}
             setValueChanged={setValueChanged}
             disabled={

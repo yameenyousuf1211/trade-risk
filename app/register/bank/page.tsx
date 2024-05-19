@@ -159,7 +159,7 @@ const BankRegisterPage = () => {
             </div>
           </div>
           <div className="flex items-center gap-x-2 w-full max-sm:flex-col max-sm:gap-y-3">
-            {isoCode && (
+            {/* {isoCode && (
               <div className="w-1/3 relative">
                 <Select
                   onValueChange={(value) =>
@@ -188,7 +188,7 @@ const BankRegisterPage = () => {
                   </span>
                 )}
               </div>
-            )}
+            )} */}
             <div className="w-full relative">
               <FloatingInput
                 name="address"

@@ -133,7 +133,7 @@ const PointContactPage = () => {
             <FloatingInput
               type="text"
               name="poc"
-              placeholder="Authorized POC"
+              placeholder="Authorized User"
               register={register}
             />
             {errors.poc && (

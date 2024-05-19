@@ -47,7 +47,7 @@ export const generalLcSchema = z.object({
   shipmentPort: z.object(
     {
       country: z.string({ message: "Select shipment country" }),
-      port: z.string({ message: "Select shipment port" }).optional(),
+      port: z.string({ message: "Select shipment port" }),
     },
     { message: "Shipment details is required" }
   ),

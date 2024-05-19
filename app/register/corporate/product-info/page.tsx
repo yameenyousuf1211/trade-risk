@@ -17,10 +17,9 @@ const ProductInfoPage = () => {
   const setValues = useRegisterStore((state) => state.setValues);
   const {
     register,
-    getValues,
     setValue,
     handleSubmit,
-
+    trigger,
     formState: { errors, isDirty, isValid },
   } = useForm<z.infer<typeof productsInfoSchema>>({
     resolver: zodResolver(productsInfoSchema),
@@ -54,6 +53,13 @@ const ProductInfoPage = () => {
     } else {
       (!isValid || !isDirty || products.length <= 0) && setAllowSubmit(false);
     }
+    // const checkValidation = async () => {
+    //   const validationResult = await trigger("product");
+
+    //   const isFormValid = Object.values(validationResult).every(Boolean);
+    //   console.log("isValid:", isFormValid);
+    // };
+    // products.length > 0 && checkValidation();
   }, [errors, isValid, isDirty, productData]);
 
   const onSubmit: SubmitHandler<z.infer<typeof productsInfoSchema>> = async (
@@ -70,7 +76,7 @@ const ProductInfoPage = () => {
     localStorage.setItem("productData", JSON.stringify(values));
     router.push("/register/corporate/point-contact");
   };
-  console.log(productInput);
+
   return (
     <CorporateStepLayout
       step={1}
@@ -88,18 +94,19 @@ const ProductInfoPage = () => {
               setProducts(val);
               setValue("product", val.join(", "));
               setProductInput("");
-              val.length >= 1 && setAllowSubmit(true);
+              // val.length >= 1 && setAllowSubmit(true);
             }}
             onKeyUp={(e) => {
               if (e.key.length === 1) {
                 setProductInput((prev) => prev + e.key);
               }
             }}
-            onBlur={() => {
-              console.log("blurrrrrr...");
-              if (productInput.length > 2) {
+            onBlur={(e: any) => {
+              if (productInput.length > 1) {
                 setProducts((prev) => [...prev, productInput]);
+                e.target.value = "";
               }
+              setProductInput("");
             }}
             onRemoved={() => {
               products.length <= 1 && setAllowSubmit(false);

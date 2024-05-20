@@ -59,6 +59,7 @@ const BankRegisterPage = () => {
   ) => {
     const { response, success } = await onRegister(data);
     if (!success) return toast.error(response);
+    console.log("Email = ", response?.data?.email);
     console.log("Password = ", response?.data?.password);
     if (success) {
       toast.success("Account Register successfully");

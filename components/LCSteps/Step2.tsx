@@ -20,12 +20,14 @@ export const Step2 = ({
   getValues,
   valueChanged,
   setValueChanged,
+  setStepCompleted,
 }: {
   register: any;
   setValue: any;
   getValues: any;
   valueChanged?: any;
   setValueChanged?: any;
+  setStepCompleted?: any;
 }) => {
   const { data: currency } = useQuery({
     queryKey: ["currency"],
@@ -61,6 +63,12 @@ export const Step2 = ({
       "payment-upas": id === "payment-upas",
     }));
   };
+
+  useEffect(() => {
+    if (amount && paymentTerms) {
+      setStepCompleted(1, true);
+    }
+  }, [amount, paymentTerms, valueChanged]);
 
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
@@ -112,7 +120,11 @@ export const Step2 = ({
             numberToText.convertToText(currencyValue.toString())}
           {/* {amount} */}{" "}
           <span className="text-primaryCol uppe rcase">
-            {currencyVal ? currencyVal === 'USD'? 'US Dollars' : currencyVal :  "US Dollars"}
+            {currencyVal
+              ? currencyVal === "USD"
+                ? "US Dollars"
+                : currencyVal
+              : "US Dollars"}
           </span>
         </p>
       </div>

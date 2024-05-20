@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { DDInput } from "./helpers";
 import { useAuth } from "@/context/AuthProvider";
+import { useForm, useWatch } from "react-hook-form";
 
 export const Step4 = ({
   register,
@@ -9,22 +10,36 @@ export const Step4 = ({
   setValue,
   getValues,
   flags,
+  valueChanged,
+  setValueChanged,
+  setStepCompleted,
+  watch,
 }: {
   register: any;
   countries: string[];
   flags: string[];
   setValue: any;
   getValues: any;
+  valueChanged: boolean;
+  setValueChanged?: any;
+  setStepCompleted?: any;
 }) => {
   const { user } = useAuth();
   let isImporter = getValues("participantRole") === "importer";
-  let importerCountry = getValues("importerInfo.countryOfImport");
+  let importerCountry = getValues("importerInfo.countryOfImport")
+  let applicantName = getValues("importerInfo.applicantName")
 
 
   useEffect(() => {
     isImporter = getValues("participantRole") === "importer";
   }, [getValues, user]);
   // console.log(isImporter);
+  useEffect(() => {
+    console.log(applicantName);
+    if (importerCountry && applicantName) {
+      setStepCompleted(3, true);
+    }
+  }, [valueChanged]);
 
   isImporter && setValue("importerInfo.applicantName", user ? user.name : "");
 
@@ -36,7 +51,6 @@ export const Step4 = ({
         </p>
         <p className="font-semibold text-lg text-lightGray">Importer Info</p>
       </div>
-
       <label
         id="name"
         className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between mb-2"
@@ -48,6 +62,7 @@ export const Step4 = ({
           register={register}
           className="block bg-none text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
           placeholder="Enter name"
+          onChange={() => setValueChanged(!valueChanged)}
         />
       </label>
       <DDInput
@@ -58,6 +73,7 @@ export const Step4 = ({
         value={importerCountry}
         setValue={setValue}
         flags={flags}
+        setValueChanged={setValueChanged}
       />
     </div>
   );

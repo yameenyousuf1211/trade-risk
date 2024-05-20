@@ -94,7 +94,7 @@ export const BankTable = ({
                         className="object-cover size-5"
                       />
                       <div className="truncate text-lightGray capitalize">
-                        {item.lcInfo[2].bank || ""}
+                        {item.lcInfo?.[2]?.bank || ""}
                       </div>
                     </div>
                   </TableCell>

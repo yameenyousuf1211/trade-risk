@@ -3,15 +3,13 @@ import CreateLCLayout from "@/components/layouts/CreateLCLayout";
 import { Button } from "@/components/ui/button";
 import {
   Step1,
-  Step2,
-  Step3,
   Step4,
   Step5,
   Step6,
   Step7,
   Step7Disounting,
 } from "@/components/LCSteps";
-import { BgRadioInput, RadioInput } from "@/components/LCSteps/helpers";
+import { BgRadioInput } from "@/components/LCSteps/helpers";
 import {
   Select,
   SelectContent,
@@ -114,6 +112,10 @@ const ConfirmationPage = () => {
         ...data,
         transhipment: data.transhipment === "yes" ? true : false,
         lcType: "LC Confirmation & Discounting",
+        shipmentPort: {
+          country: data.shipmentPort.country,
+          port: "Jeddah",
+        },
         lcPeriod: {
           ...data.lcPeriod,
           expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
@@ -155,6 +157,10 @@ const ConfirmationPage = () => {
       transhipment: data.transhipment === "yes" ? true : false,
       lcType: "LC Confirmation & Discounting",
       isDraft: "true",
+      shipmentPort: {
+        country: data.shipmentPort.country,
+        port: "Jeddah",
+      },
       lcPeriod: {
         ...data.lcPeriod,
         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,

@@ -7,7 +7,7 @@ import {
   Period,
   Transhipment,
 } from "@/components/LCSteps/Step3Helpers";
-import { BgRadioInput, RadioInput } from "@/components/LCSteps/helpers";
+import { BgRadioInput } from "@/components/LCSteps/helpers";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -130,6 +130,10 @@ const CreateDiscountPage = () => {
           dats: futureDate,
           other: data.extraInfo,
         },
+        shipmentPort: {
+          country: data.shipmentPort.country,
+          port: "Jeddah",
+        },
         lcPeriod: {
           ...data.lcPeriod,
           expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
@@ -175,6 +179,10 @@ const CreateDiscountPage = () => {
       extraInfo: {
         dats: futureDate,
         other: data.extraInfo,
+      },
+      shipmentPort: {
+        country: data.shipmentPort.country,
+        port: "Jeddah",
       },
       lcPeriod: {
         ...data.lcPeriod,

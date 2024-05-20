@@ -101,6 +101,10 @@ const CreateRequestPage = () => {
         ...data,
         lcType: "LC Confirmation",
         transhipment: data.transhipment === "yes" ? true : false,
+        shipmentPort: {
+          country: data.shipmentPort.country,
+          port: "Jeddah",
+        },
         lcPeriod: {
           ...data.lcPeriod,
           expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
@@ -139,6 +143,10 @@ const CreateRequestPage = () => {
       lcType: "LC Confirmation",
       isDraft: "true",
       transhipment: data.transhipment === "yes" ? true : false,
+      shipmentPort: {
+        country: data.shipmentPort.country,
+        port: "Jeddah",
+      },
       lcPeriod: {
         ...data.lcPeriod,
         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,

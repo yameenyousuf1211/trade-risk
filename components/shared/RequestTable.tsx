@@ -190,7 +190,7 @@ export const RequestTable = ({
                     <TableDataCell data={item.exporterInfo.beneficiaryName} />
                     <TableDataCell data={item.importerInfo.applicantName} />
                     <TableDataCell
-                      data={item.amount?.toLocaleString() + ".00"}
+                      data={"USD "+ item.amount?.toLocaleString() + ".00"}
                     />
 
                     <TableCell className="px-1 py-1 max-w-[200px]">

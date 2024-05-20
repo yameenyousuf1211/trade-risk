@@ -1,12 +1,5 @@
 "use client";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -90,7 +83,7 @@ export const DDInput = ({
             variant="outline"
             role="combobox"
             aria-expanded={ddOpen}
-            className="w-fit border-none justify-between font-normal text-sm text-gray-500"
+            className="capitalize w-fit border-none justify-between font-normal text-sm text-gray-500"
             disabled={disabled}
           >
             {ddVal

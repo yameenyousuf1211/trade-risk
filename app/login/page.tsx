@@ -50,7 +50,7 @@ export default function LoginPage() {
           Sign in using your registered credentials to start trading
         </p>
         <form
-          className="bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-7"
+          className="bg-white rounded-3xl p-8 z-10 mt-8 flex flex-col gap-y-7"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="relative">
@@ -67,7 +67,7 @@ export default function LoginPage() {
             )}
           </div>
 
-          <div className="relative w-full mb-2">
+          <div className="relative w-full mb-1">
             <input
               type={showPass ? "text" : "password"}
               id="password"
@@ -116,7 +116,7 @@ export default function LoginPage() {
 
           <Button
             role="submit"
-            className="bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
+            className="py-6 bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
             disabled={isSubmitting}
           >
@@ -126,7 +126,7 @@ export default function LoginPage() {
 
         <p className="text-para mt-10 text-sm text-center">
           Don&apos;t have a TradeRisk account?{" "}
-          <Link href="/register" className="text-text font-semibold">
+          <Link href="/register" className="text-text font-medium">
             Register now
           </Link>
         </p>

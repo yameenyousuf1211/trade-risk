@@ -51,14 +51,14 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
       <div className="flex items-center gap-x-2 mt-2">
         <Button
           onClick={() => handleSubmit("Accepted", info._id)}
-          className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-8 rounded-lg"
+          className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
           disabled={isPending}
         >
           <Check className="size-5 text-para" />
         </Button>
         <Button
           onClick={() => handleSubmit("Rejected", info._id)}
-          className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-8 rounded-lg"
+          className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
           disabled={isPending}
         >
           <X className="size-5 text-para" />
@@ -70,13 +70,16 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
 
 const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
   const pendingBids = data.bids.filter((bid) => bid.status === "Pending");
+
   return (
     <>
       {pendingBids.length > 0 ? (
         <div className="flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
           {/* Data */}
           <div className="px-3 pt-2">
-            <p className="font-regular text-[#1A1A26] text-[14px]">Request #{data.refId}</p>
+            <p className="font-regular text-[#1A1A26] text-[14px]">
+              Request #{data.refId}
+            </p>
             {isBank && <p className="text-lg font-semibold my-1">Aramco</p>}
 
             <p className="text-sm flex items-center flex-wrap">
@@ -97,7 +100,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
               </>
             )}
             <h3 className="text-xl font-semibold uppercase">
-              {data.currency ?? 'USD'} {data.amount}
+              {data.currency ?? "USD"} {data.amount}
             </h3>
             {!isBank ? (
               <div className="flex items-center justify-between gap-x-2">
@@ -116,6 +119,16 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
               <></>
             )}
           </div>
+          {/* {isBank && (
+            // <AddBid
+            //   triggerTitle={data.data || ""}
+            //   status={data.data}
+            //   isInfo={data.response.data !== "Add bid" && !isAddNewBid}
+            //   isDiscount={data.lcType.includes("Discount")}
+            //   lcId={data._id}
+            // />
+            <Button>Add Bid</Button>
+          )} */}
           {/* Slider cards*/}
           {!isBank && (
             <div className="w-full">
@@ -150,6 +163,15 @@ export const Sidebar = ({
     useQuery({
       queryKey: ["fetch-lcs"],
       queryFn: () => fetchLcs({ userId: user._id }),
+      enabled: !!user?._id,
+    });
+
+  const {
+    data: allLcs,
+  }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
+    useQuery({
+      queryKey: ["fetch-all-lcs"],
+      queryFn: () => fetchAllLcs({ limit: 4 }),
       enabled: !!user?._id,
     });
 
@@ -323,7 +345,6 @@ export const Sidebar = ({
         </div>
       ) : (
         <div className="bg-primaryCol rounded-lg py-4 px-4 flex flex-col gap-y-4 items-center justify-center">
-          {/* <p className="text-white text-sm font-normal">Export CSV</p> */}
           <Select onValueChange={(val: string) => setGenerateType(val)}>
             <SelectTrigger className="max-w-36 w-full mx-auto text-center bg-transparent border-none text-white text-sm ring-0 flex items-center justify-between">
               <p className="text-sm">Export</p>
@@ -351,14 +372,18 @@ export const Sidebar = ({
 
       <div className="bg-white border border-borderCol py-4 px-5 mt-5 rounded-lg min-h-[70%] max-h-[80%] overflow-y-auto overflow-x-hidden flex flex-col justify-between">
         <div>
-          <h4 className="-ml-2 text-lg text-center font-medium mb-3">
+          <h4
+            className={`text-xl ${
+              isBank ? "text-left" : "text-center"
+            } font-semibold mb-3`}
+          >
             {isBank ? "Needs Action" : "Needs your attention"}
           </h4>
           <div className="flex flex-col gap-y-5">
             {isBank
-              ? data &&
-                data.data &&
-                data.data.map((item: ILcs) => (
+              ? allLcs &&
+                allLcs.data &&
+                allLcs.data.map((item: ILcs) => (
                   <RequestCard isBank={isBank} data={item} key={item._id} />
                 ))
               : data &&

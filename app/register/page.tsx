@@ -23,14 +23,14 @@ export default function RegisterPage() {
           Please select your business entity{" "}
         </p>
 
-        <div className="bg-white shadow-md rounded-xl p-8 mt-5 flex flex-col gap-y-5">
+        <div className="bg-white shadow-md rounded-xl p-8 mt-8 flex flex-col gap-y-8">
           <div className="flex items-center justify-between gap-x-4">
             <div
               className={`${
                 role === "corporate"
-                  ? "border-2 border-primaryCol shadow-lg"
+                  ? "border-2 border-primaryCol shadow-lg bg-[#5625F20A]"
                   : "border border-neutral-200"
-              }  rounded-md w-full flex flex-col items-center gap-y-4 p-5 cursor-pointer`}
+              }  rounded-xl w-full flex flex-col items-center gap-y-4 p-5 cursor-pointer`}
               onClick={() => setRole("corporate")}
             >
               <Image
@@ -51,9 +51,9 @@ export default function RegisterPage() {
             <div
               className={`${
                 role === "bank"
-                  ? "border-2 border-primaryCol shadow-lg"
+                  ? "border-2 border-primaryCol shadow-lg bg-[#5625F20A]"
                   : "border border-neutral-200"
-              }  rounded-md w-full flex flex-col items-center gap-y-4 p-5 cursor-pointer`}
+              }  rounded-xl w-full flex flex-col items-center gap-y-4 p-5 cursor-pointer`}
               onClick={() => setRole("bank")}
             >
               <Image
@@ -70,7 +70,7 @@ export default function RegisterPage() {
           </div>
 
           <Button
-            className="disabled:bg-[#E2E2EA] disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
+            className="py-6 disabled:bg-[#E2E2EA] disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
             disabled={!role}
             onClick={navigate}

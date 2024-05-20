@@ -49,12 +49,8 @@ export const Step6 = ({
         : setValue("confirmationInfo.pricePerAnnum", pricePerAnnum.toString());
     }
   }, [valueChanged]);
-  console.log(checkedDiscountState["discount-yes"])
-  console.log(checkedDiscountState["discount-no"])
-
 
   const handleCheckDiscountChange = (id: string) => {
-    console.log(id,)
     setCheckedDiscountState((prevState) => ({
       ...prevState,
       "discount-yes": id === "discount-yes",
@@ -152,7 +148,11 @@ export const Step6 = ({
       </div>
 
       <div className="border border-borderCol py-3 px-2 rounded-md mt-5 bg-[#F5F7F9]">
-        <p className="font-semibold ml-3 mb-2">{title == "Confirmation Charges" ? "Expected pricing" : "Expected charges"}</p>
+        <p className="font-semibold ml-3 mb-2">
+          {title == "Confirmation Charges"
+            ? "Expected pricing"
+            : "Expected charges"}
+        </p>
         {isDiscount && (
           <div className="mb-3 bg-white">
             <label

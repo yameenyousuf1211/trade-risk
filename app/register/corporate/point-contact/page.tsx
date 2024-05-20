@@ -23,19 +23,24 @@ const PointContactPage = () => {
     setValue,
     handleSubmit,
     getValues,
-    formState: { errors, isSubmitting,isDirty,isValid },
+    formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<z.infer<typeof pointOfContractSchema>>({
     resolver: zodResolver(pointOfContractSchema),
-    mode:'all'
+    mode: "all",
   });
 
   const contactData =
     typeof window !== "undefined" ? localStorage.getItem("contactData") : null;
 
+  const [allowSubmit, setAllowSubmit] = useState(false);
+  const [pdfFile, setPdfFile] = useState<File | undefined>(undefined);
+  const [pdfError, setPdfError] = useState(false);
+
   useEffect(() => {
     if (contactData) {
       const data = JSON.parse(contactData);
       data && setValues(data);
+      console.log(data);
       Object.entries(data).forEach(([key, value]) => {
         // @ts-ignore
         setValue(key, value);
@@ -43,13 +48,23 @@ const PointContactPage = () => {
     }
   }, [contactData]);
 
-  const [pdfFile, setPdfFile] = useState<File | undefined>(undefined);
-  const [pdfError, setPdfError] = useState(false);
+  useEffect(() => {
+    if (contactData) {
+      setAllowSubmit(true);
+    } else if (isValid && isDirty) {
+      setAllowSubmit(true);
+    } else {
+      (!isValid || !isDirty) && setAllowSubmit(false);
+    }
+    if (!pdfFile) setAllowSubmit(false);
+  }, [errors, isValid, isDirty, contactData, pdfFile]);
+
   const onSubmit: SubmitHandler<z.infer<typeof pointOfContractSchema>> = async (
     data: any
   ) => {
     if (!pdfFile) return setPdfError(true);
     setValues(data);
+
     localStorage.setItem("contactData", JSON.stringify(data));
     router.push("/register/corporate/current-banking");
   };
@@ -58,7 +73,6 @@ const PointContactPage = () => {
 
   useEffect(() => {}, [phoneInput]);
 
-
   return (
     <CorporateStepLayout
       step={2}
@@ -66,7 +80,7 @@ const PointContactPage = () => {
       text="Give us the details of the POC our sales team should get in touch with after verification"
     >
       <form
-        className="max-w-xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-6"
+        className="max-w-2xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-6"
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="w-full relative">
@@ -102,9 +116,9 @@ const PointContactPage = () => {
               placeholder="pocPhone"
               setValue={setValue}
               setPhoneInput={setPhoneInput}
-
+              value={(contactData && JSON.parse(contactData).pocPhone) || ""}
             />
-              {(phone === '' || phone === undefined) && errors.pocPhone && (
+            {(phone === "" || phone === undefined) && errors.pocPhone && (
               <span className="mt-1 absolute text-[11px] text-red-500">
                 {errors.pocPhone.message}
               </span>
@@ -112,14 +126,14 @@ const PointContactPage = () => {
           </div>
         </div>
 
-        <div className="h-[2px] w-full bg-borderCol" />
+        <div className="h-[2px] w-full bg-borderCol/80" />
 
         <div className="flex items-center gap-x-2">
           <div className="w-full relative">
             <FloatingInput
               type="text"
               name="poc"
-              placeholder="Authorized POC"
+              placeholder="Authorized User"
               register={register}
             />
             {errors.poc && (
@@ -146,22 +160,22 @@ const PointContactPage = () => {
         <div className="w-full">
           <label
             htmlFor="pdf-file"
-            className="flex items-center justify-between border border-borderCol py-3 rounded-md px-4 cursor-pointer"
+            className="flex items-center justify-between border border-borderCol py-4 rounded-md px-4 cursor-pointer"
           >
             <div className="flex items-center gap-x-1">
               <Paperclip className="text-gray-500 size-4" />
               <p className="text-sm">Upload authorization letter</p>
             </div>
-            <p className="relative text-sm text-[#333]">
-              {pdfFile ? pdfFile.name.substring(0, 20) : "Select PDF file"}
+            <p className="center gap-x-1 relative text-sm text-[#333]">
               {pdfFile && (
                 <div
-                  className="bg-red-500 text-white size-4 rounded-full center absolute text-[12px] -top-2 -left-4 z-20"
+                  className="bg-red-500 text-white size-4 rounded-full center text-[12px] z-20"
                   onClick={() => setPdfFile(undefined)}
                 >
-                  <X className="size-3"/>
+                  <X className="size-3" />
                 </div>
               )}
+              {pdfFile ? pdfFile.name.substring(0, 20) : "Select PDF file"}
             </p>
           </label>
           <input
@@ -182,7 +196,7 @@ const PointContactPage = () => {
           <Button
             className="disabled:bg-borderCol disabled:text-[#9f9faf] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
-            disabled={!isValid || !isDirty}
+            disabled={!allowSubmit}
           >
             Continue
           </Button>

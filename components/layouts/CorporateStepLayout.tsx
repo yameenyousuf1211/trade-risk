@@ -16,7 +16,7 @@ export default function CorporateStepLayout({
     <>
       <RegisterStepnav step={step} />
       <main className="bg-bg px-2 relative w-full min-h-[88vh] flex flex-col items-center justify-center py-10">
-        <div className="max-w-xl mb-5">
+        <div className="max-w-3xl mb-5">
           <h2 className="font-semibold text-3xl text-center">{title}</h2>
           <p className="text-para text-center mt-5">{text}</p>
         </div>

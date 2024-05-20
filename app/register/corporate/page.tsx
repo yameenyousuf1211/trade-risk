@@ -2,7 +2,6 @@
 import { FloatingInput } from "@/components/helpers/FloatingInput";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
   SelectItem,
@@ -25,12 +24,12 @@ import {
 } from "@/components/helpers";
 import { getCities } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
-import { Country } from "@/types/type";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
   const setValues = useRegisterStore((state) => state.setValues);
   const [phoneInput, setPhoneInput] = useState<string>("");
+  const [allowSubmit, setAllowSubmit] = useState(false);
 
   const corporateData =
     typeof window !== "undefined"
@@ -45,7 +44,7 @@ const CompanyInfoPage = () => {
     formState: { errors, isValid, isDirty },
   } = useForm<z.infer<typeof companyInfoSchema>>({
     resolver: zodResolver(companyInfoSchema),
-    mode:'all'
+    mode: "all",
   });
 
   useEffect(() => {
@@ -60,8 +59,14 @@ const CompanyInfoPage = () => {
   }, [corporateData]);
   useEffect(() => {
     getValues("phone");
-    console.log(getValues("phone"));
-  }, [errors]);
+    if (corporateData) {
+      setAllowSubmit(true);
+    } else if (isValid && isDirty) {
+      setAllowSubmit(true);
+    } else {
+      (!isValid || !isDirty) && setAllowSubmit(false);
+    }
+  }, [errors, isValid, isDirty, corporateData]);
 
   const onSubmit: SubmitHandler<z.infer<typeof companyInfoSchema>> = async (
     data: any
@@ -74,7 +79,7 @@ const CompanyInfoPage = () => {
   const [isoCode, setIsoCode] = useState("");
   const [cities, setCities] = useState([]);
 
-  const { data: citiesData, isLoading } = useQuery({
+  const { data: citiesData } = useQuery({
     queryKey: ["cities", isoCode],
     queryFn: () => getCities(isoCode),
     enabled: !!isoCode,
@@ -104,7 +109,7 @@ const CompanyInfoPage = () => {
           later.
         </p>
         <form
-          className="max-w-2xl mx-auto w-full shadow-md bg-white rounded-xl xs:p-8 max-xs:py-8 max-xs:px-4 z-10 mt-5 flex flex-col sm:gap-y-6 gap-y-3"
+          className="max-w-2xl mx-auto w-full shadow-md bg-white rounded-3xl xs:p-8 max-xs:py-8 max-xs:px-4 z-10 mt-8 flex flex-col sm:gap-y-6 gap-y-3"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
@@ -126,8 +131,15 @@ const CompanyInfoPage = () => {
                   setValue("constitution", value, { shouldValidate: true })
                 }
               >
-                <SelectTrigger className="w-full py-5 px-4 text-gray-500">
-                  <SelectValue placeholder="Company Constitution" />
+                <SelectTrigger className="capitalize w-full py-5 px-4 text-gray-400">
+                  <SelectValue
+                    className="capitalize"
+                    placeholder={
+                      corporateData
+                        ? JSON.parse(corporateData).constitution
+                        : "Company Constitution"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="individual_proprietorship_co">
@@ -182,6 +194,7 @@ const CompanyInfoPage = () => {
                 placeholder="Telephone"
                 setValue={setValue}
                 setPhoneInput={setPhoneInput}
+                value={(corporateData && JSON.parse(corporateData).phone) || ""}
               />
               {(phone === "" || phone === undefined) && errors.phone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
@@ -211,8 +224,14 @@ const CompanyInfoPage = () => {
                   setValue("businessType", value, { shouldValidate: true })
                 }
               >
-                <SelectTrigger className="w-full py-5 px-4 text-gray-500">
-                  <SelectValue placeholder="Business Sector" />
+                <SelectTrigger className="capitalize w-full py-5 px-4 text-gray-400">
+                  <SelectValue
+                    placeholder={
+                      corporateData
+                        ? JSON.parse(corporateData).businessType
+                        : "Business Sector"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Automotive">Automotive</SelectItem>
@@ -293,6 +312,11 @@ const CompanyInfoPage = () => {
                 setIsoCode={setIsoCode}
                 setValue={setValue}
                 name="accountCountry"
+                placeholder={
+                  corporateData
+                    ? JSON.parse(corporateData).accountCountry
+                    : "Account Country"
+                }
               />
               {errors.accountCountry && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
@@ -307,10 +331,18 @@ const CompanyInfoPage = () => {
                 }
               >
                 <SelectTrigger
-                  disabled={!cities || cities.length <= 0}
-                  className="w-full py-5 px-4 text-gray-500"
+                  disabled={
+                    corporateData ? true : !cities || cities.length <= 0
+                  }
+                  className="w-full py-5 px-4 text-gray-400"
                 >
-                  <SelectValue placeholder="Account City" />
+                  <SelectValue
+                    placeholder={
+                      corporateData
+                        ? JSON.parse(corporateData).accountCity
+                        : "Account City"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
                   {cities &&
@@ -331,7 +363,12 @@ const CompanyInfoPage = () => {
           </div>
 
           <div className="flex items-center space-x-2 my-2">
-            <input type="checkbox" id="agree" required />
+            <input
+              type="checkbox"
+              id="agree"
+              required
+              checked={corporateData}
+            />
             <label
               htmlFor="agree"
               className="text-sm text-[#44444F] leading-none"
@@ -361,7 +398,7 @@ const CompanyInfoPage = () => {
               type="submit"
               className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
-              disabled={!isValid || !isDirty}
+              disabled={!allowSubmit}
             >
               Get Started
             </Button>

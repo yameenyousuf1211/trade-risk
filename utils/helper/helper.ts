@@ -59,3 +59,51 @@ export const formatFileSize = (size: number): string => {
     return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
   }
 };
+
+export const convertDateToString = (date: any) => {
+  const jsDate = new Date(date);
+
+  const year = jsDate.getFullYear();
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const month = monthNames[jsDate.getMonth()]; // Get the month name from the array
+  const day = String(jsDate.getDate()).padStart(2, "0");
+
+  return `${day} ${month} ${year}`;
+};
+
+export const convertDateToCommaString = (date: any) => {
+  const jsDate = new Date(date);
+
+  const year = jsDate.getFullYear();
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const month = monthNames[jsDate.getMonth()]; // Get the month name from the array
+  const day = String(jsDate.getDate()).padStart(2, "0");
+
+  return `${month} ${day}, ${year}`;
+};

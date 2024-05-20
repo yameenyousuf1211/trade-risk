@@ -25,6 +25,7 @@ export const DisclaimerDialog = ({
     // // @ts-ignore
     closeBtn?.click();
     onAccept && onAccept();
+    setProceed(true);
   };
 
   return (

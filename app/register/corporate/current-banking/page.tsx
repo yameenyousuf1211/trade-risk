@@ -192,7 +192,7 @@ const CurrentBankingPage = () => {
       currentBanks: formattedBanks,
     };
     const { response, success } = await onRegister(reqData);
-    console.log("Password = " ,response?.data?.password);
+    console.log("Password = ", response?.data?.password);
     stopLoading();
     if (!success) return toast.error(response);
     else {
@@ -208,7 +208,7 @@ const CurrentBankingPage = () => {
     <CorporateStepLayout
       step={3}
       title="Current Banking"
-      text="Add the banks you currently use so that they can be notified of any requests you add. This list can also be edited later."
+      text="Add the banks you have facilities with, so that they can be notified of any requests you add. This list can also be edited later."
     >
       <div className="max-w-[800px] w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5">
         <h2 className="text-lg font-semibold">Add your current banks</h2>
@@ -332,63 +332,64 @@ const CurrentBankingPage = () => {
 
             {/* City Field */}
             <Popover open={cityOpen} onOpenChange={setCityOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={cityOpen}
-          className="w-[230px] justify-between"
-          disabled={countryVal === ""}
-        >
-          {cityVal
-            ? cityVal
-            : countryVal
-            ? "Select city..."
-            : "Select city..."}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[230px] p-0">
-        <Command>
-          <CommandInput placeholder="Search city..." />
-          <CommandEmpty>No city found.</CommandEmpty>
-          <CommandGroup className="max-h-[300px] overflow-y-auto">
-            {cities &&
-              cities.length > 0 &&
-              cities.map((city: string) => (
-                <CommandItem
-                  key={city}
-                  value={city}
-                  onSelect={(currentValue) => {
-                    setCityVal(
-                      currentValue.toLowerCase() === cityVal.toLowerCase()
-                        ? ""
-                        : currentValue
-                    );
-                    setCityOpen(false);
-                  }}
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={cityOpen}
+                  className="w-[230px] justify-between"
+                  disabled={countryVal === ""}
                 >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      city.toLowerCase() === cityVal.toLowerCase()
-                        ? "opacity-100"
-                        : "opacity-0"
-                    )}
-                  />
-                  {city}
-                </CommandItem>
-              ))}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
+                  {cityVal
+                    ? cityVal
+                    : countryVal
+                    ? "Select city..."
+                    : "Select city..."}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[230px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search city..." />
+                  <CommandEmpty>No city found.</CommandEmpty>
+                  <CommandGroup className="max-h-[300px] overflow-y-auto">
+                    {cities &&
+                      cities.length > 0 &&
+                      cities.map((city: string) => (
+                        <CommandItem
+                          key={city}
+                          value={city}
+                          onSelect={(currentValue) => {
+                            setCityVal(
+                              currentValue.toLowerCase() ===
+                                cityVal.toLowerCase()
+                                ? ""
+                                : currentValue
+                            );
+                            setCityOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              city.toLowerCase() === cityVal.toLowerCase()
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {city}
+                        </CommandItem>
+                      ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
 
             <Button
               variant="ghost"
               type="button"
               onClick={handleBankAdd}
-              className="text-center font-semibold text-[16px] mt-4"
+              className="bg-[#F5F7F9] text-center font-semibold text-[16px] mt-4"
             >
               Add Bank
             </Button>
@@ -429,7 +430,7 @@ const CurrentBankingPage = () => {
             type="button"
             className="disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
-            disabled={isLoading}
+            disabled={isLoading || Object.keys(allBanks).length === 0}
             onClick={handleSubmit}
           >
             Submit

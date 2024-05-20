@@ -31,7 +31,7 @@ const companyInfoSchema = z.object({
     .trim(),
   address: z
     .string({ message: "*Address is required" })
-    .min(3, "*Address must be greater than 3 letters"),
+    .min(1, "*Address is required"),
   phone: z
     .string({ message: "*Phone number is required" })
     .min(4, "*Phone number is required.")
@@ -131,6 +131,7 @@ const bankSchema = z.object({
   accountCountry: z
     .string({ message: "*Select a country" })
     .nonempty("*Select a country"),
+  // accountCity: z.string({ message: "*Select city" }).nonempty("*Select city"),
   pocPhone: z
     .string({ message: "*POC Phone number is required" })
     .min(7, "*Provide a valid phone number")

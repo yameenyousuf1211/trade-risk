@@ -11,66 +11,33 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { TagsInput } from "react-tag-input-component";
-import { useQuery } from "@tanstack/react-query";
-import { getCurrenncy } from "@/services/apis/helpers.api";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-const CurrencyDropdown = () => {
-  const { data: currency } = useQuery({
-    queryKey: ["currency"],
-    queryFn: () => getCurrenncy(),
-  });
-
-  return (
-    <Select onValueChange={(value) => {}}>
-      <SelectTrigger className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 text-sm font-medium bg-transparent px-1">
-        <SelectValue placeholder="USD" className="text-sm" />
-      </SelectTrigger>
-      <SelectContent className="max-h-[300px]">
-        {currency &&
-          currency.response.length > 0 &&
-          currency.response.map((curr: string, idx: number) => (
-            <SelectItem
-              defaultValue="USD"
-              key={`${curr}-${idx + 1}`}
-              value={curr}
-            >
-              {curr}
-            </SelectItem>
-          ))}
-      </SelectContent>
-    </Select>
-  );
-};
 
 const ProductInfoPage = () => {
   const router = useRouter();
   const setValues = useRegisterStore((state) => state.setValues);
   const {
     register,
-    getValues,
     setValue,
     handleSubmit,
-    
-    formState: { errors,isDirty, isValid},
+    trigger,
+    formState: { errors, isDirty, isValid },
   } = useForm<z.infer<typeof productsInfoSchema>>({
     resolver: zodResolver(productsInfoSchema),
-    mode:'all'
+    mode: "all",
   });
 
   const productData =
     typeof window !== "undefined" ? localStorage.getItem("productData") : null;
 
+  const [products, setProducts] = useState([]);
+  const [productInput, setProductInput] = useState("");
+  const [allowSubmit, setAllowSubmit] = useState(false);
+
   useEffect(() => {
     if (productData) {
       const data = JSON.parse(productData);
       data && setValues({ productInfo: data });
+      data && setProducts(data.products);
       Object.entries(data).forEach(([key, value]) => {
         // @ts-ignore
         setValue(key, value);
@@ -78,7 +45,22 @@ const ProductInfoPage = () => {
     }
   }, [productData]);
 
-  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    if (productData) {
+      setAllowSubmit(true);
+    } else if (isValid && isDirty) {
+      setAllowSubmit(true);
+    } else {
+      (!isValid || !isDirty || products.length <= 0) && setAllowSubmit(false);
+    }
+    // const checkValidation = async () => {
+    //   const validationResult = await trigger("product");
+
+    //   const isFormValid = Object.values(validationResult).every(Boolean);
+    //   console.log("isValid:", isFormValid);
+    // };
+    // products.length > 0 && checkValidation();
+  }, [errors, isValid, isDirty, productData]);
 
   const onSubmit: SubmitHandler<z.infer<typeof productsInfoSchema>> = async (
     data: any
@@ -102,21 +84,32 @@ const ProductInfoPage = () => {
       text="Please add information about your products and trade volume below"
     >
       <form
-        className="max-w-xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5"
+        className="max-w-xl w-full shadow-md bg-white rounded-2xl p-8 z-10 mt-3 flex flex-col gap-y-5"
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="w-full">
-          {/* <FloatingInput
-            register={register}
-            type="text"
-            name="product"
-            placeholder="Your Product(s)"
-          /> */}
           <TagsInput
             value={products}
             onChange={(val: any) => {
               setProducts(val);
               setValue("product", val.join(", "));
+              setProductInput("");
+              // val.length >= 1 && setAllowSubmit(true);
+            }}
+            onKeyUp={(e) => {
+              if (e.key.length === 1) {
+                setProductInput((prev) => prev + e.key);
+              }
+            }}
+            onBlur={(e: any) => {
+              if (productInput.length > 1) {
+                setProducts((prev) => [...prev, productInput]);
+                e.target.value = "";
+              }
+              setProductInput("");
+            }}
+            onRemoved={() => {
+              products.length <= 1 && setAllowSubmit(false);
             }}
             name="product"
             placeHolder="Your Product(s)"
@@ -130,10 +123,9 @@ const ProductInfoPage = () => {
 
         <div className="w-full">
           <div className="flex items-center gap-x-2 w-full">
-            {/* <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
+            <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
               USD
-            </div> */}
-            <CurrencyDropdown />
+            </div>
             <div className="w-full">
               <FloatingInput
                 register={register}
@@ -153,7 +145,9 @@ const ProductInfoPage = () => {
 
         <div className="w-full">
           <div className="flex items-center gap-x-2 w-full">
-            <CurrencyDropdown />
+            <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
+              USD
+            </div>
             <div className="w-full">
               <FloatingInput
                 register={register}
@@ -172,7 +166,9 @@ const ProductInfoPage = () => {
         </div>
         <div className="w-full">
           <div className="flex items-center gap-x-2 w-full">
-            <CurrencyDropdown />
+            <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
+              USD
+            </div>
             <div className="w-full">
               <FloatingInput
                 register={register}
@@ -195,7 +191,7 @@ const ProductInfoPage = () => {
             className="disabled:bg-[#E2E2EA] disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
             type="submit"
-            disabled={!isValid || !isDirty}
+            disabled={!allowSubmit}
           >
             Continue
           </Button>

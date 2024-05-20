@@ -15,8 +15,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { onRegister } from "@/services/apis";
+import { getCities } from "@/services/apis/helpers.api";
 import { bankSchema } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -39,16 +41,17 @@ const CheckBoxInput = ({ label, id }: { label: string; id: string }) => {
 
 const BankRegisterPage = () => {
   const router = useRouter();
+  const [allowSubmit, setAllowSubmit] = useState(false);
 
   const {
     register,
     setValue,
     handleSubmit,
     getValues,
-    formState: { errors, isSubmitting,isDirty, isValid},
+    formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<z.infer<typeof bankSchema>>({
     resolver: zodResolver(bankSchema),
-    mode:'all'
+    mode: "all",
   });
 
   const onSubmit: SubmitHandler<z.infer<typeof bankSchema>> = async (
@@ -56,7 +59,7 @@ const BankRegisterPage = () => {
   ) => {
     const { response, success } = await onRegister(data);
     if (!success) return toast.error(response);
-    console.log("Password = " ,response?.data?.password);
+    console.log("Password = ", response?.data?.password);
     if (success) {
       toast.success("Account Register successfully");
       router.push("/register/complete");
@@ -70,7 +73,27 @@ const BankRegisterPage = () => {
   let phone = getValues("pocPhone");
 
   useEffect(() => {
-  }, [phoneInput]);
+    console.log("isValid: ", isValid, "\tisDirty: ", isDirty);
+    if (isValid && isDirty) setAllowSubmit(true);
+    if (!isValid || !isDirty) setAllowSubmit(false);
+  }, [errors, isValid, isDirty]);
+
+  const [cities, setCities] = useState([]);
+
+  const { data: citiesData } = useQuery({
+    queryKey: ["cities", isoCode],
+    queryFn: () => getCities(isoCode),
+    enabled: !!isoCode,
+  });
+
+  useEffect(() => {
+    if (citiesData && citiesData.response && citiesData.response.length > 0) {
+      const fetchedCitites = citiesData?.response?.map((city: any) => {
+        return city.name;
+      });
+      setCities(fetchedCitites);
+    }
+  }, [citiesData, isoCode]);
 
   return (
     <AuthLayout>
@@ -114,6 +137,7 @@ const BankRegisterPage = () => {
                 setIsoCode={setIsoCode}
                 setValue={setValue}
                 name="accountCountry"
+                placeholder="Bank Country"
               />
               {errors.accountCountry && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
@@ -134,17 +158,49 @@ const BankRegisterPage = () => {
               )}
             </div>
           </div>
-          <div className="w-full relative">
-            <FloatingInput
-              name="address"
-              placeholder="Registered Address"
-              register={register}
-            />
-            {errors.address && (
-              <span className="mt-1 absolute text-[11px] text-red-500">
-                {errors.address.message}
-              </span>
-            )}
+          <div className="flex items-center gap-x-2 w-full max-sm:flex-col max-sm:gap-y-3">
+            {/* {isoCode && (
+              <div className="w-1/3 relative">
+                <Select
+                  onValueChange={(value) =>
+                    setValue("accountCity", value, { shouldValidate: true })
+                  }
+                >
+                  <SelectTrigger
+                    disabled={!cities || cities.length <= 0}
+                    className="w-full py-5 px-4 text-gray-400"
+                  >
+                    <SelectValue placeholder="City" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {cities &&
+                      cities.length > 0 &&
+                      cities.map((city: string, idx: number) => (
+                        <SelectItem value={city} key={`${city}-${idx}`}>
+                          {city}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                {errors.accountCity && (
+                  <span className="mt-1 absolute text-[11px] text-red-500">
+                    {errors.accountCity.message}
+                  </span>
+                )}
+              </div>
+            )} */}
+            <div className="w-full relative">
+              <FloatingInput
+                name="address"
+                placeholder="Registered Address"
+                register={register}
+              />
+              {errors.address && (
+                <span className="mt-1 absolute text-[11px] text-red-500">
+                  {errors.address.message}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-x-2 w-full">
@@ -168,6 +224,8 @@ const BankRegisterPage = () => {
                 placeholder="POC Telephone"
                 setValue={setValue}
                 setPhoneInput={setPhoneInput}
+                value={phoneInput}
+                setAllowSubmit={setAllowSubmit}
               />
               {(phone === "" || phone === undefined) && errors.pocPhone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
@@ -182,7 +240,7 @@ const BankRegisterPage = () => {
           </p>
 
           {/* Checkboxes */}
-          <div className="grid sm:grid-cols-2 grid-cols-1 gap-x-2 gap-y-3 p-2 rounded-lg border border-borderCol">
+          <div className="bg-[#F5F7F9] grid sm:grid-cols-2 grid-cols-1 gap-x-2 gap-y-3 p-2 rounded-lg border border-borderCol">
             <CheckBoxInput
               label="Confirmation of LCs"
               id="confirmation-of-lcs"
@@ -241,7 +299,7 @@ const BankRegisterPage = () => {
               <Button
                 type="button"
                 variant="ghost"
-                className="text-para text-[16px]"
+                className="w-full text-para bg-[#F5F7F9] text-[16px]"
               >
                 Login
               </Button>
@@ -249,7 +307,7 @@ const BankRegisterPage = () => {
             <Button
               className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
-              disabled={isSubmitting || !isValid || !isDirty}
+              disabled={!allowSubmit}
               type="submit"
             >
               Get Started

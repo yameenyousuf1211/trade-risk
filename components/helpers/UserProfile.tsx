@@ -34,8 +34,10 @@ export const UserProfile = () => {
         </Avatar>
 
         <div>
-          <h2 className="font-semibold">{user && user.name}</h2>
-          <p className="text-para text-sm">Trade Finance Solutions</p>
+          <h2 className="font-semibold capitalize">{user && user.name}</h2>
+          <p className="text-para text-sm capitalize">
+            Trade Finance Solutions
+          </p>
         </div>
       </div>
       {/* Dropdwon icon */}

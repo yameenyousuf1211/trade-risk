@@ -47,7 +47,7 @@ export const generalLcSchema = z.object({
   shipmentPort: z.object(
     {
       country: z.string({ message: "Select shipment country" }),
-      port: z.string({ message: "Select shipment port" }).optional(),
+      port: z.string({ message: "Select shipment port" }),
     },
     { message: "Shipment details is required" }
   ),
@@ -65,7 +65,7 @@ export const generalLcSchema = z.object({
   ),
   productDescription: z
     .string({ message: "Add product description" })
-    .min(10, { message: "Description must be greater than 10 characters" })
+    .min(1, { message: "Product Description is required" })
     .max(300, { message: "Description cannot be more than 300 characters" }),
 });
 

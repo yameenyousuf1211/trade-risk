@@ -8,18 +8,23 @@ export const TelephoneInput = ({
   placeholder,
   setValue,
   setPhoneInput,
+  value,
+  setAllowSubmit,
 }: {
   name: string;
   placeholder: string;
   setValue: any;
   setPhoneInput?: any;
+  value?: string;
+  setAllowSubmit?: (allowSubmit: boolean) => void;
 }) => {
-  const [val, setVal] = useState();
+  const [val, setVal] = useState(value || undefined);
 
   const handleChange = (val: any) => {
     setVal(val);
     setValue(name, val);
     setPhoneInput(val);
+    setAllowSubmit && setAllowSubmit(true);
   };
   return (
     <div className="w-full">
@@ -29,6 +34,10 @@ export const TelephoneInput = ({
         value={val}
         placeholder={placeholder}
         onChange={handleChange}
+        countryCodeEditable={false}
+        onBlur={() => {
+          setAllowSubmit && setAllowSubmit(true);
+        }}
         inputStyle={{
           width: "100%",
           backgroundColor: "#fff",

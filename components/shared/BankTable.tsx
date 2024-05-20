@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import { ChevronUp, Ellipsis } from "lucide-react";
 import {
+  BidsCountrySelect,
   DateRangePicker,
   Filter,
   Pagination,
@@ -20,13 +21,13 @@ import Image from "next/image";
 import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
 import { ApiResponse, IBids } from "@/types/type";
-import { convertDateToYYYYMMDD } from "@/utils";
+import { convertDateToString, convertDateToYYYYMMDD } from "@/utils";
 import { useState } from "react";
 
 const TableDataCell = ({ data }: { data: string | number }) => {
   return (
     <TableCell className="px-1 py-1 max-w-[200px]">
-      <div className="truncate border border-borderCol rounded-md w-full p-2 py-2.5">
+      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-center text-lightGray">
         {data}
       </div>
     </TableCell>
@@ -43,13 +44,13 @@ export const BankTable = ({
   isCorporate?: boolean;
 }) => {
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
-
+  console.log(data);
   return (
     <div className="">
       <div className="flex items-center justify-between gap-x-2 mb-2">
         <div className="flex items-center gap-x-2">
           <ProductFilter />
-          {/* <CountrySelect /> */}
+          <BidsCountrySelect />
           <DateRangePicker />
         </div>
         <div className="flex items-center gap-x-2">
@@ -82,7 +83,7 @@ export const BankTable = ({
               data.data &&
               data.data.map((item, index) => (
                 <TableRow key={index} className="border-none ">
-                  <TableDataCell data={convertDateToYYYYMMDD(item.createdAt)} />
+                  <TableDataCell data={convertDateToString(item.createdAt)} />
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                       <Image
@@ -92,11 +93,15 @@ export const BankTable = ({
                         height={100}
                         className="object-cover size-5"
                       />
-                      <div className="truncate">{item.bidType || ""}</div>
+                      <div className="truncate text-lightGray capitalize">
+                        {item.bidType || ""}
+                      </div>
                     </div>
                   </TableCell>
                   <TableDataCell
-                    data={item.confirmationPrice.toLocaleString() || ""}
+                    data={
+                      item.confirmationPrice.toLocaleString() + ".00 %" || ""
+                    }
                   />
                   <TableDataCell
                     data={
@@ -110,7 +115,9 @@ export const BankTable = ({
                       item.discountMargin?.toLocaleString() || "Not Applicable"
                     }
                   />
-                  <TableDataCell data={item.confirmationPrice || ""} />
+                  <TableDataCell
+                    data={"USD " + item.confirmationPrice + ".00" || ""}
+                  />
 
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     {item.status !== "Pending" ? (

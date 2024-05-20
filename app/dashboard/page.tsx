@@ -26,7 +26,6 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
   }
   const {
     isLoading,
-    error,
     data,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
@@ -38,12 +37,12 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">
         <div className="2xl:w-5/6 w-4/5 p-4">
-          <h2 className="text-4xl font-semibold mb-5">
+          <h2 className="text-4xl font-semibold mb-5 capitalize">
             Welcome, {user && user.name}
           </h2>
           {/* Charts */}
           <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 h-fit">
-            <ProgressCharts title="Deals Overview" isBank />
+            <ProgressCharts title="Transactions Overview" isBank />
             <LineCharts />
           </div>
           {/* Data Table */}

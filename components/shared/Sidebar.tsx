@@ -42,7 +42,8 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-52">
       <p className="uppercase">
-        {lcData.currency || "USD"} {info.confirmationPrice?.toLocaleString()}
+        {lcData.currency || "USD"}{" "}
+        {info.confirmationPrice?.toLocaleString() + ".00"}
       </p>
       <p className="text-para font-medium mt-2">{info.userInfo?.name || ""}</p>
       <p className="text-para text-sm font-light truncate">
@@ -69,78 +70,91 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
 };
 
 const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
+  const { user } = useAuth();
   const pendingBids = data.bids.filter((bid) => bid.status === "Pending");
+  const showData = !data.bids.some((bid) => bid.bidBy === user?._id);
 
   return (
     <>
-      {pendingBids.length > 0 ? (
+      {isBank ? (
+        showData && (
+          <>
+            <div className="px-3 py-2 flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
+              {/* Data */}
+              <div>
+                <p className="font-regular text-[#1A1A26] text-[14px]">
+                  Request #{data.refId}
+                </p>
+                <p className="capitalize text-lg font-semibold my-1">
+                  {data.issuingBank.bank}
+                </p>
+
+                <p className="text-sm flex items-center flex-wrap">
+                  <span className="text-text">{data.lcType}</span>
+                </p>
+
+                <p className="text-para text-sm">Request Expiry</p>
+                <p className="text-neutral-900 font-medium text-sm mb-2">
+                  {formatLeftDate(data.lcPeriod.endDate)}
+                </p>
+                <h3 className="text-xl font-semibold uppercase">
+                  {data.currency ?? "USD"}{" "}
+                  {data.amount?.toLocaleString() + ".00"}
+                </h3>
+              </div>
+
+              <AddBid
+                triggerTitle="Add Bid"
+                status="Add bid"
+                isBank
+                isDiscount={data.lcType.includes("Discount")}
+                lcId={data._id}
+              />
+            </div>
+          </>
+        )
+      ) : pendingBids.length > 0 ? (
         <div className="flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
           {/* Data */}
           <div className="px-3 pt-2">
             <p className="font-regular text-[#1A1A26] text-[14px]">
               Request #{data.refId}
             </p>
-            {isBank && <p className="text-lg font-semibold my-1">Aramco</p>}
 
             <p className="text-sm flex items-center flex-wrap">
               <span className="text-text">{data.lcType}</span>
-              {!isBank && (
-                <span className="text-para text-[10px] flex items-center">
-                  <Dot />
-                  {formatLeftDays(data.lcPeriod.endDate)}
-                </span>
-              )}
+              <span className="text-para text-[10px] flex items-center">
+                <Dot />
+                {formatLeftDays(data.lcPeriod.endDate)}
+              </span>
             </p>
-            {isBank && (
-              <>
-                <p className="text-para text-sm">Request Expiry</p>
-                <p className="text-neutral-900 font-medium text-sm mb-2">
-                  {formatLeftDate(data.lcPeriod.endDate)}
-                </p>
-              </>
-            )}
             <h3 className="text-xl font-semibold uppercase">
-              {data.currency ?? "USD"} {data.amount}
+              {data.currency ?? "USD"} {data.amount?.toLocaleString() + ".00"}
             </h3>
-            {!isBank ? (
-              <div className="flex items-center justify-between gap-x-2">
-                <p className="text-gray-500 text-sm">
-                  {pendingBids.length} bid
-                  {pendingBids.length > 1 ? "s" : ""}
-                </p>
-                <Link
-                  href="#"
-                  className="text-sm text-primaryCol font-light underline"
-                >
-                  View all
-                </Link>
-              </div>
-            ) : (
-              <></>
-            )}
-          </div>
-          {/* {isBank && (
-            // <AddBid
-            //   triggerTitle={data.data || ""}
-            //   status={data.data}
-            //   isInfo={data.response.data !== "Add bid" && !isAddNewBid}
-            //   isDiscount={data.lcType.includes("Discount")}
-            //   lcId={data._id}
-            // />
-            <Button>Add Bid</Button>
-          )} */}
-          {/* Slider cards*/}
-          {!isBank && (
-            <div className="w-full">
-              <Swiper slidesPerView={1.2} spaceBetween={10}>
-                {pendingBids.map((info: IBids) => (
-                  <SwiperSlide key={info._id}>
-                    <SliderCard info={info} lcData={data} key={info._id} />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+            <div className="flex items-center justify-between gap-x-2">
+              <p className="text-gray-500 text-sm">
+                {pendingBids.length} bid
+                {pendingBids.length > 1 ? "s" : ""}
+              </p>
+              <Link
+                href="#"
+                className="text-sm text-primaryCol font-light underline"
+              >
+                View all
+              </Link>
             </div>
-          )}
+          </div>
+
+          {/* Slider cards*/}
+          <div className="w-full">
+            <Swiper slidesPerView={1.2} spaceBetween={10}>
+              {pendingBids.map((info: IBids) => (
+                <SwiperSlide key={info._id}>
+                  <SliderCard info={info} lcData={data} key={info._id} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         </div>
       ) : null}
     </>
@@ -171,7 +185,7 @@ export const Sidebar = ({
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["fetch-all-lcs"],
-      queryFn: () => fetchAllLcs({ limit: 4 }),
+      queryFn: () => fetchAllLcs({ limit: 20 }),
       enabled: !!user?._id,
     });
 
@@ -373,7 +387,7 @@ export const Sidebar = ({
       <div className="bg-white border border-borderCol py-4 px-5 mt-5 rounded-lg min-h-[70%] max-h-[80%] overflow-y-auto overflow-x-hidden flex flex-col justify-between">
         <div>
           <h4
-            className={`text-xl ${
+            className={`text-lg ${
               isBank ? "text-left" : "text-center"
             } font-semibold mb-3`}
           >
@@ -394,7 +408,7 @@ export const Sidebar = ({
           </div>
         </div>
         {isBank && (
-          <Button className="w-full bg-borderCol hover:bg-borderCol/90 text-[#696974]">
+          <Button className="w-full bg-borderCol hover:bg-borderCol/90 text-[#696974] mt-4">
             View all requests
           </Button>
         )}

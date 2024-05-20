@@ -44,7 +44,7 @@ export const BankTable = ({
   isCorporate?: boolean;
 }) => {
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
-  console.log(data);
+
   return (
     <div className="">
       <div className="flex items-center justify-between gap-x-2 mb-2">

@@ -1,6 +1,6 @@
 "use client";
 import { DDInput } from "./helpers";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Period, Transhipment } from "./Step3Helpers";
 import { useQuery } from "@tanstack/react-query";
 import { getBanks } from "@/services/apis/helpers.api";
@@ -205,7 +205,7 @@ export const Step3 = ({
         </div>
 
         {showConfirmingBank ? (
-          <div className="flex items-center gap-x-3 w-full mt-3">
+          <div className="relative flex items-center gap-x-3 w-full mt-3">
             <div className="flex items-center gap-x-2 w-full">
               <p className="font-semibold">2.</p>
               <DDInput
@@ -236,6 +236,9 @@ export const Step3 = ({
                 confirmingBanks.response
               }
             />
+            <div className="absolute -top-2 right-0 bg-[#9797971A] center text-[#7E7E7E] rounded-full size-6 shadow-md z-10 cursor-pointer" onClick={() => setShowConfirmingBank(false)}>
+              <X className="size-5 text-red-500" />
+            </div>
           </div>
         ) : (
           <div

@@ -26,6 +26,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import useConfirmationStore, { getStateValues } from "@/store/lc.store";
 import { Country } from "@/types/type";
+import useStepStore from "@/store/lcsteps.store";
 
 const CreateRequestPage = () => {
   const {
@@ -33,6 +34,7 @@ const CreateRequestPage = () => {
     setValue,
     getValues,
     reset,
+    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof confirmationSchema>>({
@@ -46,6 +48,8 @@ const CreateRequestPage = () => {
   const queryClient = useQueryClient();
   const setValues = useConfirmationStore((state) => state.setValues);
   const confirmationData = useConfirmationStore((state) => state);
+  const { setStepStatus } = useStepStore(); // Access setStepStatus
+  const stepStatus = useStepStore((state) => state.stepStatus);
 
   useEffect(() => {
     if (confirmationData && confirmationData?._id) {
@@ -195,21 +199,27 @@ const CreateRequestPage = () => {
     const handleRouteChange = () => {
       setValues(getStateValues(useConfirmationStore.getInitialState()));
       reset();
+      useStepStore.getState().setStepStatus(null, null);
     };
 
     handleRouteChange();
   }, [pathname, router]);
 
+  const handleStepCompletion = (index: number, status: boolean) => {
+    setStepStatus(index, status);
+  };
+
   return (
     <CreateLCLayout>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
-        <Step1 register={register} />
+      <Step1 register={register} setStepCompleted={handleStepCompletion} />
         <Step2
           register={register}
           setValue={setValue}
           getValues={getValues}
           valueChanged={valueChanged}
           setValueChanged={setValueChanged}
+          setStepCompleted={handleStepCompletion}
         />
         <Step3
           register={register}
@@ -219,6 +229,7 @@ const CreateRequestPage = () => {
           flags={flags}
           valueChanged={valueChanged}
           setValueChanged={setValueChanged}
+          setStepCompleted={handleStepCompletion}
         />
         <Step4
           register={register}
@@ -226,6 +237,10 @@ const CreateRequestPage = () => {
           countries={countries}
           getValues={getValues}
           flags={flags}
+          valueChanged={valueChanged}
+          setValueChanged={setValueChanged}
+          watch={watch}
+          setStepCompleted={handleStepCompletion}
         />
         <Step5
           register={register}
@@ -233,6 +248,7 @@ const CreateRequestPage = () => {
           countries={countries}
           getValues={getValues}
           flags={flags}
+          setStepCompleted={handleStepCompletion}
         />
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6
@@ -241,8 +257,9 @@ const CreateRequestPage = () => {
             getValues={getValues}
             title="Confirmation Charges"
             valueChanged={valueChanged}
+            setStepCompleted={handleStepCompletion}
           />
-          <Step7 register={register} step={7} />
+          <Step7 register={register} step={7}  />
         </div>
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">

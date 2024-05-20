@@ -42,6 +42,7 @@ import { DisclaimerDialog } from "@/components/helpers";
 import useConfirmationDiscountingStore, {
   getStateValues,
 } from "@/store/confirmationDiscounting.store";
+import useStepStore from "@/store/lcsteps.store";
 
 const ConfirmationPage = () => {
   const {
@@ -64,6 +65,8 @@ const ConfirmationPage = () => {
 
   const setValues = useConfirmationDiscountingStore((state) => state.setValues);
   const confirmationData = useConfirmationDiscountingStore((state) => state);
+  const { setStepStatus } = useStepStore();
+
   useEffect(() => {
     if (confirmationData && confirmationData?._id) {
       Object.entries(confirmationData).forEach(([key, value]) => {
@@ -249,15 +252,24 @@ const ConfirmationPage = () => {
         getStateValues(useConfirmationDiscountingStore.getInitialState())
       );
       reset();
+      useStepStore.getState().setStepStatus(null, null);
     };
 
     handleRouteChange();
   }, [pathname, router]);
 
+  const handleStepCompletion = (index: number, status: boolean) => {
+    setStepStatus(index, status);
+  };
+
   return (
     <CreateLCLayout>
       <form className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white">
-        <Step1 type="discount" register={register} />
+        <Step1
+          type="discount"
+          setStepCompleted={handleStepCompletion}
+          register={register}
+        />
         {/* Step 2 */}
         <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
           <div className="flex items-center gap-x-2 justify-between mb-3">
@@ -371,6 +383,9 @@ const ConfirmationPage = () => {
           setValue={setValue}
           getValues={getValues}
           flags={flags}
+          valueChanged={valueChanged}
+          setValueChanged={setValueChanged}
+          setStepCompleted={handleStepCompletion}
         />
         <Step5
           register={register}
@@ -381,6 +396,7 @@ const ConfirmationPage = () => {
           getValues={getValues}
           valueChanged={valueChanged}
           setValueChanged={setValueChanged}
+          setStepCompleted={handleStepCompletion}
         />
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
@@ -389,6 +405,7 @@ const ConfirmationPage = () => {
             title="Confirmation Info"
             getValues={getValues}
             setValue={setValue}
+            setStepCompleted={handleStepCompletion}
             valueChanged={valueChanged}
           />
           <Step7Disounting

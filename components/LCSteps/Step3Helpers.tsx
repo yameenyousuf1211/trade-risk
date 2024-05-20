@@ -596,8 +596,8 @@ export const DiscountBanks = ({
       {/* Confirming Bank */}
       <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
         <div className="flex items-center gap-x-2 justify-between mb-2">
-          <p className="font-semibold  ml-3">Confirming Bank</p>
-          <div>
+          <p className="font-semibold">Confirming Bank</p>
+          <div className="flex items-center">
             <input
               type="checkbox"
               id="same-as-advising"
@@ -606,7 +606,7 @@ export const DiscountBanks = ({
             />
             <label
               htmlFor="same-as-advising"
-              className="ml-2 text-[12px] text-lightGray"
+              className="ml-1  text-[12px] text-lightGray"
             >
               Same as advising bank
             </label>

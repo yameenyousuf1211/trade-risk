@@ -15,13 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { getBanks, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export const ValidatingCalendar = ({
   initialDate,
@@ -265,30 +258,6 @@ export const Period = ({
             disabled={!ports || ports.length === 0}
             data={ports}
           />
-          {/* <label
-            id="shipmentPort.port"
-            className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
-          >
-            <p className="text-lightGray">Select port</p>
-            <Select onValueChange={handleSelectChange}>
-              <SelectTrigger
-                disabled={!ports || ports.length <= 0}
-                id="shipmentPort.port"
-                className="w-fit border-none bg-transparent text-[#B5B5BE]"
-              >
-                <SelectValue placeholder="Select port" />
-              </SelectTrigger>
-              <SelectContent>
-                {ports &&
-                  ports.length > 0 &&
-                  ports.map((val: string, idx: number) => (
-                    <SelectItem value={val} key={`${val}-${idx}`}>
-                      {val}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-          </label> */}
         </div>
       </div>
     </div>

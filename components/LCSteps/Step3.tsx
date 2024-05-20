@@ -14,6 +14,7 @@ export const Step3 = ({
   flags,
   valueChanged,
   setValueChanged,
+  setStepCompleted,
 }: {
   register: any;
   setValue: any;
@@ -22,6 +23,7 @@ export const Step3 = ({
   flags: string[];
   valueChanged?: boolean;
   setValueChanged?: any;
+  setStepCompleted?: any;
 }) => {
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
@@ -32,11 +34,30 @@ export const Step3 = ({
   let advisingBank = getValues("advisingBank.bank");
   let confirmingCountry = getValues("confirmingBank.country");
   let confirmingBank = getValues("confirmingBank.bank");
+  let expectedDate = getValues("lcPeriod.expectedDate");
+  let startDate = getValues("lcPeriod.startDate");
+  let endDate = getValues("lcPeriod.endDate");
+  let productDescription = getValues("productDescription");
 
   useEffect(() => {
     issuingCountry = getValues("issuingBank.country");
     confirmingCountry = getValues("confirmingBank.country");
     advisingCountry = getValues("advisingBank.country");
+  }, [valueChanged]);
+
+  useEffect(() => {
+    if (
+      issuingCountry &&
+      issuingBank &&
+      confirmingBank &&
+      confirmingCountry &&
+      startDate &&
+      endDate &&
+      expectedDate &&
+      productDescription
+    ) {
+      setStepCompleted(2, true);
+    }
   }, [valueChanged]);
 
   const { data: issuingBanks } = useQuery({

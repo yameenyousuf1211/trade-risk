@@ -1,20 +1,27 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BgRadioInput } from "./helpers";
+import { useForm } from "react-hook-form";
 
-export const Step1 = ({ register, type }: any) => {
+export const Step1 = ({ register, type, setStepCompleted }: any) => {
+  const { getValues } = useForm();
   const [checkedState, setCheckedState] = useState({
     "role-exporter": false,
     "role-importer": false,
   });
 
   const handleCheckChange = (id: string) => {
-    setCheckedState((prevState) => ({
-      ...prevState,
+    const newCheckedState = {
       "role-exporter": id === "role-exporter",
       "role-importer": id === "role-importer",
-    }));
+    };
+    setCheckedState(newCheckedState);
+
+    const isStepComplete =
+      newCheckedState["role-exporter"] || newCheckedState["role-importer"];
+    setStepCompleted(0, isStepComplete);
   };
+
 
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">

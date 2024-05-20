@@ -15,13 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { getBanks, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export const ValidatingCalendar = ({
   initialDate,
@@ -265,30 +258,6 @@ export const Period = ({
             disabled={!ports || ports.length === 0}
             data={ports}
           />
-          {/* <label
-            id="shipmentPort.port"
-            className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
-          >
-            <p className="text-lightGray">Select port</p>
-            <Select onValueChange={handleSelectChange}>
-              <SelectTrigger
-                disabled={!ports || ports.length <= 0}
-                id="shipmentPort.port"
-                className="w-fit border-none bg-transparent text-[#B5B5BE]"
-              >
-                <SelectValue placeholder="Select port" />
-              </SelectTrigger>
-              <SelectContent>
-                {ports &&
-                  ports.length > 0 &&
-                  ports.map((val: string, idx: number) => (
-                    <SelectItem value={val} key={`${val}-${idx}`}>
-                      {val}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-          </label> */}
         </div>
       </div>
     </div>
@@ -596,8 +565,8 @@ export const DiscountBanks = ({
       {/* Confirming Bank */}
       <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
         <div className="flex items-center gap-x-2 justify-between mb-2">
-          <p className="font-semibold  ml-3">Confirming Bank</p>
-          <div>
+          <p className="font-semibold">Confirming Bank</p>
+          <div className="flex items-center">
             <input
               type="checkbox"
               id="same-as-advising"
@@ -606,7 +575,7 @@ export const DiscountBanks = ({
             />
             <label
               htmlFor="same-as-advising"
-              className="ml-2 text-[12px] text-lightGray"
+              className="ml-1  text-[12px] text-lightGray"
             >
               Same as advising bank
             </label>

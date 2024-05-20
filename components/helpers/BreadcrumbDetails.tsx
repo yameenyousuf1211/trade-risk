@@ -12,6 +12,8 @@ import { usePathname } from "next/navigation";
 import { ApiResponse, ILcs } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import { fetchLcs } from "@/services/apis/lcs.api";
+import useStepStore from "@/store/lcsteps.store";
+import { CheckIcon } from "lucide-react";
 
 const Separator = () => {
   return (
@@ -37,6 +39,8 @@ export const BreadcrumbDetails = () => {
     "Confirmation Charges",
     "Attachments",
   ];
+
+  const { stepStatus } = useStepStore();
 
   const { user } = useAuth();
   const pathname = usePathname();
@@ -75,9 +79,16 @@ export const BreadcrumbDetails = () => {
         <BreadcrumbList>
           {crumbs.map((crumb, idx) => (
             <div className="flex items-center gap-x-2" key={`${crumb}-${idx}`}>
-              <BreadcrumbItem key={`${crumb}-${idx}`}>
-                <BreadcrumbList>{crumb}</BreadcrumbList>
-              </BreadcrumbItem>
+              <div className="flex gap-1 items-center">
+                {stepStatus[idx] && (
+                 <div>
+                  <CheckIcon color="#29C084" size={20}/>
+                 </div>
+                )}
+                <BreadcrumbItem key={`${crumb}-${idx}`}>
+                  <BreadcrumbList>{crumb}</BreadcrumbList>
+                </BreadcrumbItem>
+              </div>
               {idx !== crumbs.length - 1 && <Separator />}
             </div>
           ))}

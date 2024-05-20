@@ -7,7 +7,7 @@ import {
   Period,
   Transhipment,
 } from "@/components/LCSteps/Step3Helpers";
-import { BgRadioInput, RadioInput } from "@/components/LCSteps/helpers";
+import { BgRadioInput } from "@/components/LCSteps/helpers";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -31,6 +31,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Country } from "@/types/type";
 import { DisclaimerDialog } from "@/components/helpers";
 import useDiscountingStore, { getStateValues } from "@/store/discounting.store";
+import useStepStore from "@/store/lcsteps.store";
 
 const CreateDiscountPage = () => {
   const {
@@ -62,6 +63,8 @@ const CreateDiscountPage = () => {
   // Edit Request
   const setValues = useDiscountingStore((state) => state.setValues);
   const discountingData = useDiscountingStore((state) => state);
+  const { setStepStatus } = useStepStore(); // Access setStepStatus
+
   useEffect(() => {
     if (discountingData && discountingData?._id) {
       Object.entries(discountingData).forEach(([key, value]) => {
@@ -127,6 +130,10 @@ const CreateDiscountPage = () => {
           dats: futureDate,
           other: data.extraInfo,
         },
+        shipmentPort: {
+          country: data.shipmentPort.country,
+          port: "Jeddah",
+        },
         lcPeriod: {
           ...data.lcPeriod,
           expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
@@ -172,6 +179,10 @@ const CreateDiscountPage = () => {
       extraInfo: {
         dats: futureDate,
         other: data.extraInfo,
+      },
+      shipmentPort: {
+        country: data.shipmentPort.country,
+        port: "Jeddah",
       },
       lcPeriod: {
         ...data.lcPeriod,
@@ -285,15 +296,24 @@ const CreateDiscountPage = () => {
     const handleRouteChange = () => {
       setValues(getStateValues(useDiscountingStore.getInitialState()));
       reset();
+      useStepStore.getState().setStepStatus(null, null);
     };
 
     handleRouteChange();
   }, [pathname, router]);
 
+  const handleStepCompletion = (index: number, status: boolean) => {
+    setStepStatus(index, status);
+  };
+
   return (
     <CreateLCLayout>
       <form className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white">
-        <Step1 type="discount" register={register} />
+        <Step1
+          type="discount"
+          setStepCompleted={handleStepCompletion}
+          register={register}
+        />
         {/* Step 2 */}
         <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
           <div className="flex items-center gap-x-2 justify-between mb-3">
@@ -519,6 +539,9 @@ const CreateDiscountPage = () => {
           countries={countries}
           getValues={getValues}
           flags={flags}
+          valueChanged={valueChanged}
+          setValueChanged={setValueChanged}
+          setStepCompleted={handleStepCompletion}
         />
         <Step5
           register={register}
@@ -526,6 +549,9 @@ const CreateDiscountPage = () => {
           flags={flags}
           setValue={setValue}
           getValues={getValues}
+          valueChanged={valueChanged}
+          setValueChanged={setValueChanged}
+          setStepCompleted={handleStepCompletion}
         />
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
@@ -536,6 +562,7 @@ const CreateDiscountPage = () => {
             setValue={setValue}
             getValues={getValues}
             valueChanged={valueChanged}
+            setStepCompleted={handleStepCompletion}
           />
           <Step7 register={register} step={7} />
         </div>

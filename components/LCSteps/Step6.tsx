@@ -12,6 +12,7 @@ export const Step6 = ({
   isConfirmation,
   valueChanged,
   getStateValues,
+  setStepCompleted,
 }: {
   title: string;
   isDiscount?: boolean;
@@ -21,6 +22,7 @@ export const Step6 = ({
   isConfirmation?: boolean;
   valueChanged?: boolean;
   getStateValues?: any;
+  setStepCompleted?: any;
 }) => {
   const [checkedState, setCheckedState] = useState({
     "account-beneficiary": false,
@@ -33,6 +35,7 @@ export const Step6 = ({
       "account-beneficiary": id === "account-beneficiary",
       "account-importer": id === "account-importer",
     }));
+    setStepCompleted(5, true);
   };
 
   const [checkedDiscountState, setCheckedDiscountState] = useState({

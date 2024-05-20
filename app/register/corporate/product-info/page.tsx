@@ -114,7 +114,7 @@ const ProductInfoPage = () => {
             name="product"
             placeHolder="Your Product(s)"
           />
-          {errors.product && (
+          {errors.product && products?.length === 0 && (
             <span className="text-[11px] text-red-500">
               {errors.product.message}
             </span>
@@ -191,7 +191,7 @@ const ProductInfoPage = () => {
             className="disabled:bg-[#E2E2EA] disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
             type="submit"
-            disabled={!allowSubmit}
+            // disabled={!allowSubmit}
           >
             Continue
           </Button>

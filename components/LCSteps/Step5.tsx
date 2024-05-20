@@ -14,6 +14,7 @@ export const Step5 = ({
   flags,
   valueChanged,
   setValueChanged,
+  setStepCompleted,
 }: {
   register: any;
   isConfirmation?: boolean;
@@ -23,12 +24,14 @@ export const Step5 = ({
   flags: string[];
   valueChanged?: boolean;
   setValueChanged?: any;
+  setStepCompleted?: any;
 }) => {
   const { user } = useAuth();
   let isExporter = getValues("participantRole") === "exporter";
   let countryOfExport = getValues("exporterInfo.countryOfExport");
   let beneficiaryCountry = getValues("exporterInfo.beneficiaryCountry");
   let beneficiaryBank = getValues("exporterInfo.bank");
+  let beneficiaryName = getValues('exporterInfo.beneficiaryName')
 
   useEffect(() => {
     countryOfExport = getValues("exporterInfo.countryOfExport");
@@ -43,6 +46,12 @@ export const Step5 = ({
   useEffect(() => {
     isExporter = getValues("participantRole") === "exporter";
   }, [getValues, user]);
+
+  useEffect(() => {
+    if (countryOfExport && beneficiaryCountry && beneficiaryName) {
+      setStepCompleted(4, true);
+    }
+  },[valueChanged,beneficiaryBank,beneficiaryCountry]);
 
   isExporter && setValue("exporterInfo.beneficiaryName", user ? user.name : "");
 
@@ -93,6 +102,7 @@ export const Step5 = ({
           data={countries}
           setValue={setValue}
           flags={flags}
+          setValueChanged={setValueChanged}
         />
         {isConfirmation && (
           <DDInput

@@ -3,15 +3,13 @@ import CreateLCLayout from "@/components/layouts/CreateLCLayout";
 import { Button } from "@/components/ui/button";
 import {
   Step1,
-  Step2,
-  Step3,
   Step4,
   Step5,
   Step6,
   Step7,
   Step7Disounting,
 } from "@/components/LCSteps";
-import { BgRadioInput, RadioInput } from "@/components/LCSteps/helpers";
+import { BgRadioInput } from "@/components/LCSteps/helpers";
 import {
   Select,
   SelectContent,
@@ -42,6 +40,7 @@ import { DisclaimerDialog } from "@/components/helpers";
 import useConfirmationDiscountingStore, {
   getStateValues,
 } from "@/store/confirmationDiscounting.store";
+import useStepStore from "@/store/lcsteps.store";
 
 const ConfirmationPage = () => {
   const {
@@ -64,6 +63,8 @@ const ConfirmationPage = () => {
 
   const setValues = useConfirmationDiscountingStore((state) => state.setValues);
   const confirmationData = useConfirmationDiscountingStore((state) => state);
+  const { setStepStatus } = useStepStore();
+
   useEffect(() => {
     if (confirmationData && confirmationData?._id) {
       Object.entries(confirmationData).forEach(([key, value]) => {
@@ -114,6 +115,10 @@ const ConfirmationPage = () => {
         ...data,
         transhipment: data.transhipment === "yes" ? true : false,
         lcType: "LC Confirmation & Discounting",
+        shipmentPort: {
+          country: data.shipmentPort.country,
+          port: "Jeddah",
+        },
         lcPeriod: {
           ...data.lcPeriod,
           expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
@@ -155,6 +160,10 @@ const ConfirmationPage = () => {
       transhipment: data.transhipment === "yes" ? true : false,
       lcType: "LC Confirmation & Discounting",
       isDraft: "true",
+      shipmentPort: {
+        country: data.shipmentPort.country,
+        port: "Jeddah",
+      },
       lcPeriod: {
         ...data.lcPeriod,
         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
@@ -249,15 +258,24 @@ const ConfirmationPage = () => {
         getStateValues(useConfirmationDiscountingStore.getInitialState())
       );
       reset();
+      useStepStore.getState().setStepStatus(null, null);
     };
 
     handleRouteChange();
   }, [pathname, router]);
 
+  const handleStepCompletion = (index: number, status: boolean) => {
+    setStepStatus(index, status);
+  };
+
   return (
     <CreateLCLayout>
       <form className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white">
-        <Step1 type="discount" register={register} />
+        <Step1
+          type="discount"
+          setStepCompleted={handleStepCompletion}
+          register={register}
+        />
         {/* Step 2 */}
         <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
           <div className="flex items-center gap-x-2 justify-between mb-3">
@@ -371,6 +389,9 @@ const ConfirmationPage = () => {
           setValue={setValue}
           getValues={getValues}
           flags={flags}
+          valueChanged={valueChanged}
+          setValueChanged={setValueChanged}
+          setStepCompleted={handleStepCompletion}
         />
         <Step5
           register={register}
@@ -381,6 +402,7 @@ const ConfirmationPage = () => {
           getValues={getValues}
           valueChanged={valueChanged}
           setValueChanged={setValueChanged}
+          setStepCompleted={handleStepCompletion}
         />
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
@@ -389,6 +411,7 @@ const ConfirmationPage = () => {
             title="Confirmation Info"
             getValues={getValues}
             setValue={setValue}
+            setStepCompleted={handleStepCompletion}
             valueChanged={valueChanged}
           />
           <Step7Disounting

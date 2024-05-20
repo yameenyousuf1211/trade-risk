@@ -10,13 +10,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { companyInfoSchema } from "@/validation";
 import { z } from "zod";
-import useRegisterStore, { getStateValues } from "@/store/register.store";
+import useRegisterStore from "@/store/register.store";
 import {
   CountrySelect,
   DisclaimerDialog,
@@ -24,6 +36,8 @@ import {
 } from "@/components/helpers";
 import { getCities } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
+import { Check, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
@@ -78,6 +92,8 @@ const CompanyInfoPage = () => {
 
   const [isoCode, setIsoCode] = useState("");
   const [cities, setCities] = useState([]);
+  const [cityVal, setCityVal] = useState("");
+  const [cityOpen, setCityOpen] = useState(false);
 
   const { data: citiesData } = useQuery({
     queryKey: ["cities", isoCode],
@@ -325,35 +341,67 @@ const CompanyInfoPage = () => {
               )}
             </div>
             <div className="w-full relative">
-              <Select
-                onValueChange={(value) =>
-                  setValue("accountCity", value, { shouldValidate: true })
-                }
-              >
-                <SelectTrigger
-                  disabled={
-                    corporateData ? true : !cities || cities.length <= 0
-                  }
-                  className="w-full py-5 px-4 text-gray-400"
-                >
-                  <SelectValue
-                    placeholder={
-                      corporateData
-                        ? JSON.parse(corporateData).accountCity
-                        : "Account City"
+              <Popover open={cityOpen} onOpenChange={setCityOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={cityOpen}
+                    className="capitalize w-full justify-between font-normal text-sm text-gray-400"
+                    disabled={
+                      corporateData ? true : !cities || cities.length <= 0
                     }
-                  />
-                </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
-                  {cities &&
-                    cities.length > 0 &&
-                    cities.map((city: string, idx: number) => (
-                      <SelectItem value={city} key={`${city}-${idx}`}>
-                        {city}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
+                  >
+                    {cityVal
+                      ? cities?.find(
+                          (country: string) =>
+                            country.toLowerCase() === cityVal.toLowerCase()
+                        )
+                      : corporateData
+                      ? JSON.parse(corporateData).accountCity
+                      : "Account City"}
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Search country..." />
+                    <CommandEmpty>No city found.</CommandEmpty>
+                    <CommandGroup className="max-h-[300px] overflow-y-auto">
+                      {cities &&
+                        cities.length > 0 &&
+                        cities.map((country: string, idx: number) => (
+                          <CommandItem
+                            key={country}
+                            value={country}
+                            onSelect={(currentValue) => {
+                              setCityVal(
+                                currentValue.toLowerCase() ===
+                                  cityVal.toLowerCase()
+                                  ? ""
+                                  : currentValue
+                              );
+                              setCityOpen(false);
+                              setValue("accountCity", currentValue, {
+                                shouldValidate: true,
+                              });
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                country.toLowerCase() === cityVal.toLowerCase()
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {country}
+                          </CommandItem>
+                        ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               {errors.accountCity && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.accountCity.message}

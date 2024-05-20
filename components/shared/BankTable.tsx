@@ -94,7 +94,7 @@ export const BankTable = ({
                         className="object-cover size-5"
                       />
                       <div className="truncate text-lightGray capitalize">
-                        {item.bidType || ""}
+                        {item.lcInfo?.[2]?.bank || ""}
                       </div>
                     </div>
                   </TableCell>
@@ -105,14 +105,17 @@ export const BankTable = ({
                   />
                   <TableDataCell
                     data={
-                      item.discountBaseRate?.toLocaleString() ||
-                      "Not Applicable"
+                      item.discountBaseRate
+                        ? item.discountBaseRate?.toLocaleString() + ".00%"
+                        : "Not Applicable"
                     }
                   />
 
                   <TableDataCell
                     data={
-                      item.discountMargin?.toLocaleString() || "Not Applicable"
+                      item.discountMargin
+                        ? item.discountMargin?.toLocaleString() + ".00%"
+                        : "Not Applicable"
                     }
                   />
                   <TableDataCell

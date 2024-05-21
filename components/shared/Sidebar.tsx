@@ -43,7 +43,7 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-52">
       <p className="uppercase">
         {lcData.currency || "USD"}{" "}
-        {info.confirmationPrice?.toLocaleString() + ".00"}
+        {info.confirmationPrice?.toLocaleString() || "00" + ".00"}
       </p>
       <p className="text-para font-medium mt-2">{info.userInfo?.name || ""}</p>
       <p className="text-para text-sm font-light truncate">
@@ -86,16 +86,16 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
                   Request #{data.refId}
                 </p>
                 <p className="capitalize text-lg font-semibold my-1">
-                  {data.issuingBank.bank}
+                  {data.issuingBank?.bank}
                 </p>
 
                 <p className="text-sm flex items-center flex-wrap">
-                  <span className="text-text">{data.lcType}</span>
+                  <span className="text-text">{data.lcType || ""}</span>
                 </p>
 
                 <p className="text-para text-sm">Request Expiry</p>
                 <p className="text-neutral-900 font-medium text-sm mb-2">
-                  {formatLeftDate(data.lcPeriod.endDate)}
+                  {formatLeftDate(data.lcPeriod?.endDate) || ""}
                 </p>
                 <h3 className="text-xl font-semibold uppercase">
                   {data.currency ?? "USD"}{" "}
@@ -125,11 +125,11 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
               <span className="text-text">{data.lcType}</span>
               <span className="text-para text-[10px] flex items-center">
                 <Dot />
-                {formatLeftDays(data.lcPeriod.endDate)}
+                {formatLeftDays(data.lcPeriod?.endDate)}
               </span>
             </p>
             <h3 className="text-xl font-semibold uppercase">
-              {data.currency ?? "USD"} {data.amount?.toLocaleString() + ".00"}
+              {data.currency || "USD"} {data.amount?.toLocaleString() + ".00"}
             </h3>
             <div className="flex items-center justify-between gap-x-2">
               <p className="text-gray-500 text-sm">

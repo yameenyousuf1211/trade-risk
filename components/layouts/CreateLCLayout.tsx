@@ -1,11 +1,14 @@
 import { Header } from "../shared/Header";
 import { BreadcrumbDetails, CreateTabs } from "../helpers";
 import { DraftsSidebar } from "../shared/DraftsSidebar";
+import { Button } from "../ui/button";
 
 export default function AuthLayout({
   children,
+  isRisk,
 }: Readonly<{
   children: React.ReactNode;
+  isRisk: boolean;
 }>) {
   return (
     <>
@@ -14,18 +17,32 @@ export default function AuthLayout({
         <div className="flex w-full 2xl:px-10 px-2 gap-x-2">
           <div className="2xl:w-5/6 w-4/5 p-4">
             <h2 className="text-3xl font-semibold mb-2">
-              Create a new request
+              {isRisk
+                ? "Risk participation distribution requests"
+                : "Create a new request"}
             </h2>
-            <p className="text-para text-sm mb-7">
-              Select a request type to start creating a new request
-            </p>
-
-            <CreateTabs />
-            <BreadcrumbDetails />
+            <div
+              className={`${isRisk && "flex items-end w-full justify-between"}`}
+            >
+              <p className="text-para text-sm mb-7">
+                Select a request type to start creating a new request
+              </p>
+              {isRisk && (
+                <Button className="bg-transparent text-para hover:bg-para hover:text-white rounded-lg py-1 border border-para">
+                  Drafts (0)
+                </Button>
+              )}
+            </div>
+            {!isRisk && (
+              <>
+                <CreateTabs />
+                <BreadcrumbDetails />
+              </>
+            )}
             {children}
           </div>
           <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
-            <DraftsSidebar />
+            <DraftsSidebar isRisk={isRisk} />
           </div>
         </div>
       </main>

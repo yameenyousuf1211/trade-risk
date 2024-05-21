@@ -81,7 +81,7 @@ export const RequestTable = ({
                         key={`${header}-${idx}`}
                         className="px-2 h-8 py-2"
                       >
-                        <div className="flex text-[#44444F] items-center gap-x-2 justify-center text-[13px]">
+                        <div className="capitalize flex text-[#44444F] items-center gap-x-2 justify-center text-[13px]">
                           {header}
                           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
                             <ChevronUp className="size-4" />
@@ -94,7 +94,7 @@ export const RequestTable = ({
                         key={`${header}-${idx}`}
                         className="px-2 h-8 py-2"
                       >
-                        <div className="flex text-[#44444F]  items-center gap-x-2 justify-center text-sm">
+                        <div className="capitalize flex text-[#44444F]  items-center gap-x-2 justify-center text-sm">
                           {header}
                           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
                             <ChevronUp className="size-4" />
@@ -190,7 +190,7 @@ export const RequestTable = ({
                     <TableDataCell data={item.exporterInfo.beneficiaryName} />
                     <TableDataCell data={item.importerInfo.applicantName} />
                     <TableDataCell
-                      data={"USD "+ item.amount?.toLocaleString() + ".00"}
+                      data={"USD " + item.amount?.toLocaleString() + ".00"}
                     />
 
                     <TableCell className="px-1 py-1 max-w-[200px]">

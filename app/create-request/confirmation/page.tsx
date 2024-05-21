@@ -41,6 +41,7 @@ import useConfirmationDiscountingStore, {
   getStateValues,
 } from "@/store/confirmationDiscounting.store";
 import useStepStore from "@/store/lcsteps.store";
+import { bankCountries } from "@/utils/data";
 
 const ConfirmationPage = () => {
   const {
@@ -110,6 +111,10 @@ const ConfirmationPage = () => {
     z.infer<typeof confirmationDiscountSchema>
   > = async (data: z.infer<typeof confirmationDiscountSchema>) => {
     if (proceed) {
+      if (data.issuingBank.country === data.confirmingBank.country)
+        return toast.error(
+          "Confirming bank country cannot be the same as issuing bank country"
+        );
       startLoading();
       const reqData = {
         ...data,
@@ -154,6 +159,10 @@ const ConfirmationPage = () => {
   const saveAsDraft: SubmitHandler<
     z.infer<typeof confirmationDiscountSchema>
   > = async (data: z.infer<typeof confirmationDiscountSchema>) => {
+    if (data.issuingBank.country === data.confirmingBank.country)
+      return toast.error(
+        "Confirming bank country cannot be the same as issuing bank country"
+      );
     setLoader(true);
     const reqData = {
       ...data,
@@ -194,6 +203,8 @@ const ConfirmationPage = () => {
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [countries, setCountries] = useState([]);
   const [flags, setFlags] = useState([]);
+  const countryNames = bankCountries.map((country) => country.name);
+  const countryFlags = bankCountries.map((country) => country.flag);
 
   const { data: countriesData } = useQuery({
     queryKey: ["countries"],
@@ -270,7 +281,7 @@ const ConfirmationPage = () => {
   };
 
   return (
-    <CreateLCLayout>
+    <CreateLCLayout isRisk={false}>
       <form className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white">
         <Step1
           type="discount"
@@ -361,8 +372,8 @@ const ConfirmationPage = () => {
             <p className="font-semibold text-lg text-lightGray">LC Details</p>
           </div>
           <DiscountBanks
-            countries={countries}
-            flags={flags}
+            countries={countryNames}
+            flags={countryFlags}
             setValue={setValue}
             getValues={getValues}
           />

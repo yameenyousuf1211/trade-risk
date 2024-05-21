@@ -27,6 +27,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useConfirmationStore, { getStateValues } from "@/store/lc.store";
 import { Country } from "@/types/type";
 import useStepStore from "@/store/lcsteps.store";
+import { bankCountries } from "@/utils/data";
 
 const CreateRequestPage = () => {
   const {
@@ -96,6 +97,10 @@ const CreateRequestPage = () => {
     data: z.infer<typeof confirmationSchema>
   ) => {
     if (proceed) {
+      if (data.issuingBank.country === data.confirmingBank.country)
+        return toast.error(
+          "Confirming bank country cannot be the same as issuing bank country"
+        );
       startLoading();
       const reqData = {
         ...data,
@@ -137,6 +142,10 @@ const CreateRequestPage = () => {
   const saveAsDraft: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data: z.infer<typeof confirmationSchema>
   ) => {
+    if (data.issuingBank.country === data.confirmingBank.country)
+      return toast.error(
+        "Confirming bank country cannot be the same as issuing bank country"
+      );
     setLoader(true);
     const reqData = {
       ...data,
@@ -176,6 +185,9 @@ const CreateRequestPage = () => {
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [countries, setCountries] = useState([]);
   const [flags, setFlags] = useState([]);
+
+  const countryNames = bankCountries.map((country) => country.name);
+  const countryFlags = bankCountries.map((country) => country.flag);
 
   const { data: countriesData } = useQuery({
     queryKey: ["countries"],
@@ -219,9 +231,9 @@ const CreateRequestPage = () => {
   };
 
   return (
-    <CreateLCLayout>
+    <CreateLCLayout isRisk={false}>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
-      <Step1 register={register} setStepCompleted={handleStepCompletion} />
+        <Step1 register={register} setStepCompleted={handleStepCompletion} />
         <Step2
           register={register}
           setValue={setValue}
@@ -233,9 +245,9 @@ const CreateRequestPage = () => {
         <Step3
           register={register}
           setValue={setValue}
-          countries={countries}
+          countries={countryNames}
           getValues={getValues}
-          flags={flags}
+          flags={countryFlags}
           valueChanged={valueChanged}
           setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
@@ -268,7 +280,7 @@ const CreateRequestPage = () => {
             valueChanged={valueChanged}
             setStepCompleted={handleStepCompletion}
           />
-          <Step7 register={register} step={7}  />
+          <Step7 register={register} step={7} />
         </div>
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">

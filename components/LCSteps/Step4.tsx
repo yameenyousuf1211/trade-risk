@@ -23,12 +23,12 @@ export const Step4 = ({
   valueChanged: boolean;
   setValueChanged?: any;
   setStepCompleted?: any;
+  watch?: any;
 }) => {
   const { user } = useAuth();
   let isImporter = getValues("participantRole") === "importer";
-  let importerCountry = getValues("importerInfo.countryOfImport")
-  let applicantName = getValues("importerInfo.applicantName")
-
+  let importerCountry = getValues("importerInfo.countryOfImport");
+  let applicantName = getValues("importerInfo.applicantName");
 
   useEffect(() => {
     isImporter = getValues("participantRole") === "importer";

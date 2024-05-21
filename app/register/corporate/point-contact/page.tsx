@@ -40,7 +40,6 @@ const PointContactPage = () => {
     if (contactData) {
       const data = JSON.parse(contactData);
       data && setValues(data);
-      console.log(data);
       Object.entries(data).forEach(([key, value]) => {
         // @ts-ignore
         setValue(key, value);

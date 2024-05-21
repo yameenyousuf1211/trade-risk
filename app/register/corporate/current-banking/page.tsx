@@ -26,6 +26,7 @@ import { getBanks, getCities, getCountries } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import useLoading from "@/hooks/useLoading";
 import { Country } from "@/types/type";
+import { bankCountries } from "@/utils/data";
 
 interface Bank {
   country: string;
@@ -68,28 +69,21 @@ const CurrentBankingPage = () => {
   const [bankOpen, setBankOpen] = useState(false);
   const [bankVal, setBankVal] = useState("");
 
-  const [allCountries, setAllCountries] = useState<Country[]>([]);
+  const [allCountries, setAllCountries] = useState<Country[]>(bankCountries);
   const [countries, setCountries] = useState([]);
   const [flags, setFlags] = useState([]);
   const [isoCode, setIsoCode] = useState("");
   const [cities, setCities] = useState([]);
 
-  // Fetch the countries and sort them
   useEffect(() => {
-    const fetchCountries = async () => {
-      const { response } = await getCountries();
-      setAllCountries(response);
-      const fetchedCountries = response?.map((country: Country) => {
-        return country.name;
-      });
-      setCountries(fetchedCountries);
-      const fetchedFlags = response?.map((country: Country) => {
-        return country.flag;
-      });
-      setFlags(fetchedFlags);
-    };
-
-    fetchCountries();
+    const fetchedCountries = allCountries?.map((country: Country) => {
+      return country.name;
+    });
+    setCountries(fetchedCountries);
+    const fetchedFlags = allCountries?.map((country: Country) => {
+      return country.flag;
+    });
+    setFlags(fetchedFlags);
   }, []);
 
   const setCountryCode = (selectedCountry: string) => {

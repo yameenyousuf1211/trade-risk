@@ -55,6 +55,7 @@ export const AddBid = ({
   setIsAddNewBid,
   isCorporate,
   bidId,
+  isBank,
 }: {
   isDiscount?: boolean;
   isInfo?: boolean;
@@ -65,6 +66,7 @@ export const AddBid = ({
   setIsAddNewBid?: any;
   isCorporate?: boolean;
   bidId?: string;
+  isBank?: boolean;
 }) => {
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
@@ -147,10 +149,13 @@ export const AddBid = ({
               }`
             : status === "Expired"
             ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
-                border && "border border-[#7E7E7E] bg-transparent"
+                border &&
+                "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
               }`
-            : status === "Add bid"
+            : status === "Add bid" && !isBank
             ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
+            : status === "Add bid" && isBank
+            ? "bg-[#1A1A26] text-white text-sm"
             : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
         } rounded-md w-full p-2 capitalize hover:opacity-85`}
       >
@@ -159,7 +164,7 @@ export const AddBid = ({
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">{lcData?.lcType || ""}</h2>
-          <DialogClose onClick={() => setIsAddNewBid(false)}>
+          <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>
             <X className="size-7" />
           </DialogClose>
         </div>
@@ -177,7 +182,7 @@ export const AddBid = ({
                   <h2 className="text-2xl font-semibold mb-1">
                     <span className="text-para font-medium">LC Amount:</span>{" "}
                     USD
-                    {lcData?.amount || ""}
+                    {lcData?.amount?.toLocaleString() || ""}
                   </h2>
                   <div className="h-[2px] w-full bg-neutral-800 mt-5" />
                 </div>

@@ -136,10 +136,6 @@ const CreateDiscountPage = () => {
           dats: futureDate,
           other: data.extraInfo,
         },
-        shipmentPort: {
-          country: data.shipmentPort.country,
-          port: "Jeddah",
-        },
         lcPeriod: {
           ...data.lcPeriod,
           expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
@@ -189,10 +185,6 @@ const CreateDiscountPage = () => {
       extraInfo: {
         dats: futureDate,
         other: data.extraInfo,
-      },
-      shipmentPort: {
-        country: data.shipmentPort.country,
-        port: "Jeddah",
       },
       lcPeriod: {
         ...data.lcPeriod,

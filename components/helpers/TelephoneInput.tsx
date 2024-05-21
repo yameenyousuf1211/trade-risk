@@ -19,21 +19,34 @@ export const TelephoneInput = ({
   setAllowSubmit?: (allowSubmit: boolean) => void;
 }) => {
   const [val, setVal] = useState(value || undefined);
+  const [selectedCountry, setSelectedCountry] = useState<string>("sa");
 
-  const handleChange = (val: any) => {
-    setVal(val);
-    setValue(name, val);
-    setPhoneInput(val);
-    setAllowSubmit && setAllowSubmit(true);
+  const handleChange = (val: any, country: string) => {
+    if (selectedCountry === country) {
+      setSelectedCountry(country);
+      setVal(val);
+      setValue(name, val);
+      setPhoneInput(val);
+      setAllowSubmit && setAllowSubmit(true);
+    } else {
+      setSelectedCountry(country);
+      setVal('');
+      setValue(name, "");
+      setPhoneInput("");
+      console.log("Els")
+    }
   };
   return (
     <div className="w-full">
       <PhoneInput
         enableSearch
-        country={"sa"}
+        country={selectedCountry}
         value={val}
         placeholder={placeholder}
-        onChange={handleChange}
+        onChange={(e, countryObj) => {
+          console.log(countryObj);
+          handleChange(e, countryObj?.countryCode);
+        }}
         countryCodeEditable={false}
         onBlur={() => {
           setAllowSubmit && setAllowSubmit(true);

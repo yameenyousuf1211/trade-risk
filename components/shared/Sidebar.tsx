@@ -393,11 +393,11 @@ export const Sidebar = ({
                 ))}
           </div>
         </div>
-        {isBank && (
+        {/* {isBank && ( */}
           <Button className="w-full bg-borderCol hover:bg-borderCol/90 text-[#696974]">
             View all requests
           </Button>
-        )}
+        {/* )} */}
       </div>
     </>
   );

@@ -181,7 +181,7 @@ export const ProgressCharts = ({
             <Chart
               value={accepted}
               bg="#E0F2EF"
-              color="#49E2B4"
+              color={accepted === 0 ? "#e3f5f2" : "#49E2B4"}
               title="accepted"
               maxValue={maxValue}
               isBank={isBank}
@@ -189,7 +189,7 @@ export const ProgressCharts = ({
             <Chart
               value={rejected}
               bg="#FFE6E6"
-              color="#FF0000"
+              color={rejected === 0 ? "#FFE5E5" : "#FF0000"}
               title="rejected"
               maxValue={maxValue}
               isBank={isBank}
@@ -197,7 +197,7 @@ export const ProgressCharts = ({
             <Chart
               value={expired}
               bg="#F6EBE7"
-              color="#FF7939"
+              color={expired === 0 ? "#F6EAE6" : "#FF7939"}
               title="expired"
               maxValue={maxValue}
               isBank={isBank}
@@ -205,7 +205,7 @@ export const ProgressCharts = ({
             <Chart
               value={pending}
               bg="#DDE9FA"
-              color="#0062FF"
+              color={pending === 0 ? "#DBE8FB" : "#0062FF"}
               title="pending"
               maxValue={maxValue}
               isBank={isBank}

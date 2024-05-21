@@ -30,22 +30,29 @@ export const convertDateToYYYYMMDD = (date: any) => {
 };
 
 export const formatLeftDate = (date: any) => {
-  const jsDate = new Date(date);
-  const daysLeftInYear = differenceInDays(endOfYear(jsDate), jsDate);
+  const targetDate = new Date(date);
+  const currentDate = new Date();
+
+  const daysUntilTarget = Math.ceil(
+    (targetDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
   const formattedDate = `${format(
     date,
     "dd MMM yyyy"
-  )} (${daysLeftInYear} days left)`;
+  )} (${daysUntilTarget} days left)`;
 
   return formattedDate;
 };
 
 export const formatLeftDays = (date: any) => {
-  const jsDate = new Date(date);
-  const daysLeftInYear = differenceInDays(endOfYear(jsDate), jsDate);
-  const formattedDate = `${daysLeftInYear}d left`;
+  const targetDate = new Date(date);
+  const currentDate = new Date();
 
-  return formattedDate;
+  const daysUntilTarget = Math.ceil(
+    (targetDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  return `${daysUntilTarget}d left`;
 };
 
 export const formatFileSize = (size: number): string => {

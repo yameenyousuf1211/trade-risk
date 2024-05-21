@@ -13,7 +13,11 @@ import { format, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { getBanks, getPorts } from "@/services/apis/helpers.api";
+import {
+  getAllPortData,
+  getBanks,
+  getPorts,
+} from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 
 export const ValidatingCalendar = ({
@@ -72,26 +76,34 @@ export const Period = ({
   let lcEndDate = getValues("lcPeriod.endDate");
   let lcPeriodType = getValues("lcPeriod.expectedDate");
 
+  const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
   // const [portCountries, setPortCountries] = useState([]);
+
+  const { data: portsData } = useQuery({
+    queryKey: ["port-countries"],
+    queryFn: () => getAllPortData(),
+  });
+
+  useEffect(() => {
+    if (
+      portsData &&
+      portsData.success &&
+      portsData.response &&
+      portsData.response.length > 0
+    ) {
+      const allPortCountries = portsData.response.map((port: any) => {
+        return port.country;
+      });
+      setPortCountries(allPortCountries);
+    }
+  }, [portsData]);
 
   useEffect(() => {
     const fetchPorts = async () => {
       const { success, response } = await getPorts(shipmentCountry);
-      if (success) {
-        // const fetchedPortCountries = response.map((port: any) => {
-        //   return port.COUNTRY;
-        // });
-        const fetchedPorts = response.map((port: any) => {
-          return port.PORT_NAME;
-        });
-        // fetchedPortCountries.length > 0
-        //   ? setPortCountries(fetchedPortCountries)
-        //   : setPortCountries([]);
-        fetchedPorts.length > 0 ? setPorts(fetchedPorts) : setPorts([]);
-      } else {
-        setPorts([]);
-      }
+      if (success) setPorts(response[0].ports);
+      else setPorts([]);
     };
 
     shipmentCountry && fetchPorts();
@@ -244,7 +256,8 @@ export const Period = ({
             value={shipmentCountry}
             placeholder="Select a country"
             setValue={setValue}
-            data={countries}
+            data={portCountries}
+            disabled={portCountries.length <= 0}
             flags={flags}
             setValueChanged={setValueChanged}
           />

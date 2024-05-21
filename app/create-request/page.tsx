@@ -165,6 +165,7 @@ const CreateRequestPage = () => {
     else {
       toast.success("LC saved as draft");
       reset();
+      router.push("/");
       setValues(getStateValues(useConfirmationStore.getInitialState()));
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],

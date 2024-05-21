@@ -499,7 +499,7 @@ export const DiscountBanks = ({
   };
 
   return (
-    <div className="flex items-center justify-between w-full mb-3 gap-x-4">
+    <div className="flex items-center justify-between w-full mb-3 gap-x-4 flex-wrap xl:flex-nowrap">
       {/* Issuing Bank */}
       <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
         <p className="font-semibold mb-2 ml-3">Issuing Bank</p>

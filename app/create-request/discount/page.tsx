@@ -204,6 +204,7 @@ const CreateDiscountPage = () => {
       toast.success("LC saved as draft");
       setValues(getStateValues(useDiscountingStore.getInitialState()));
       reset();
+      router.push("/");
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
       });

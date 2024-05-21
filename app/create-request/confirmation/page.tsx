@@ -184,6 +184,7 @@ const ConfirmationPage = () => {
         getStateValues(useConfirmationDiscountingStore.getInitialState())
       );
       reset();
+      router.push("/");
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
       });

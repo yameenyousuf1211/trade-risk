@@ -70,6 +70,12 @@ export const Step2 = ({
     }
   }, [amount, paymentTerms, valueChanged]);
 
+  const handleAmountValidation = (val: string) => {
+    const cleanedValue = val.replace(/\D/g, "");
+    const formattedValue = Number(cleanedValue).toLocaleString();
+    // setCurrencyValue(formattedValue);
+  };
+
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">

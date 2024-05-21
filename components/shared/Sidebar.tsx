@@ -350,12 +350,14 @@ export const Sidebar = ({
           <p className="text-white text-center font-semibold">
             Send a risk participation request to other banks
           </p>
-          <Button
-            className="w-full text-[#255EF2] bg-white hover:bg-white/90 rounded-lg text-[16px]"
-            size="lg"
-          >
-            Create Request
-          </Button>
+          <Link href="/risk-participation/funded" className="w-full">
+            <Button
+              className="w-full text-[#255EF2] bg-white hover:bg-white/90 rounded-lg text-[16px]"
+              size="lg"
+            >
+              Create Request
+            </Button>
+          </Link>
         </div>
       ) : (
         <div className="bg-primaryCol rounded-lg py-4 px-4 flex flex-col gap-y-4 items-center justify-center">
@@ -408,9 +410,9 @@ export const Sidebar = ({
           </div>
         </div>
         {/* {isBank && ( */}
-          <Button className="w-full bg-borderCol hover:bg-borderCol/90 text-[#696974]">
-            View all requests
-          </Button>
+        <Button className="w-full bg-borderCol hover:bg-borderCol/90 text-[#696974]">
+          View all requests
+        </Button>
         {/* )} */}
       </div>
     </>

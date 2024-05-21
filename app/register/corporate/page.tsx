@@ -348,9 +348,7 @@ const CompanyInfoPage = () => {
                     role="combobox"
                     aria-expanded={cityOpen}
                     className="capitalize w-full justify-between font-normal text-sm text-gray-400"
-                    disabled={
-                      corporateData ? true : !cities || cities.length <= 0
-                    }
+                    disabled={!cities || cities.length <= 0}
                   >
                     {cityVal
                       ? cities?.find(

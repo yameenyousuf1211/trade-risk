@@ -30,10 +30,9 @@ export const TelephoneInput = ({
       setAllowSubmit && setAllowSubmit(true);
     } else {
       setSelectedCountry(country);
-      setVal('');
+      setVal("");
       setValue(name, "");
       setPhoneInput("");
-      console.log("Els")
     }
   };
   return (
@@ -44,7 +43,6 @@ export const TelephoneInput = ({
         value={val}
         placeholder={placeholder}
         onChange={(e, countryObj) => {
-          console.log(countryObj);
           handleChange(e, countryObj?.countryCode);
         }}
         countryCodeEditable={false}

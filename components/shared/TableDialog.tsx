@@ -63,7 +63,7 @@ const BidCard = ({ data }: { data: IBids }) => {
           <p className="text-sm text-para mb-1">Discount Rate</p>
           <p className="text-lg font-semibold ">
             {data.bidType.includes("Discounting")
-              ? data.discountBaseRate || "Applicable"
+              ? data.discountBaseRate + ".00" || "Applicable"
               : "Not Applicable"}
           </p>
         </div>
@@ -72,7 +72,7 @@ const BidCard = ({ data }: { data: IBids }) => {
           <p className="text-sm text-para mb-1">Discount Margin</p>
           <p className="text-lg font-semibold ">
             {data.bidType.includes("Discounting")
-              ? data.discountMargin || "Applicable"
+              ? data.discountMargin + "%" || "Applicable"
               : "Not Applicable"}
           </p>
         </div>
@@ -202,7 +202,7 @@ export const TableDialog = ({
             <div className="px-4 pt-5 bg-[#F5F7F9]">
               <h2 className="text-2xl font-semibold mb-1">
                 <span className="text-para font-medium">LC Amount:</span> USD{" "}
-                {(lcData && lcData.amount.toLocaleString()) || ""}
+                {(lcData && lcData.amount?.toLocaleString()) || ""}
               </h2>
               <p className="text-sm text-para">
                 Created at,{" "}

@@ -98,7 +98,7 @@ const DraftCard = ({
   );
 };
 
-export const DraftsSidebar = () => {
+export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
   const { user } = useAuth();
   const pathname = usePathname();
   const isConfirmation = pathname === "/create-request";

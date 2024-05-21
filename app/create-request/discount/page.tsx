@@ -32,6 +32,7 @@ import { Country } from "@/types/type";
 import { DisclaimerDialog } from "@/components/helpers";
 import useDiscountingStore, { getStateValues } from "@/store/discounting.store";
 import useStepStore from "@/store/lcsteps.store";
+import { bankCountries } from "@/utils/data";
 
 const CreateDiscountPage = () => {
   const {
@@ -116,10 +117,15 @@ const CreateDiscountPage = () => {
   ) => {
     if (proceed) {
       if (!days) return toast.error("Please select days from");
+
       const currentDate = new Date();
       const futureDate = new Date(
         currentDate.setDate(currentDate.getDate() + days)
       );
+      if (data.issuingBank.country === data.confirmingBank.country)
+        return toast.error(
+          "Confirming bank country cannot be the same as issuing bank country"
+        );
       startLoading();
 
       const reqData = {
@@ -171,6 +177,10 @@ const CreateDiscountPage = () => {
     const futureDate = new Date(
       currentDate.setDate(currentDate.getDate() + days)
     );
+    if (data.issuingBank.country === data.confirmingBank.country)
+      return toast.error(
+        "Confirming bank country cannot be the same as issuing bank country"
+      );
     setLoader(true);
     const reqData = {
       ...data,
@@ -213,6 +223,9 @@ const CreateDiscountPage = () => {
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [countries, setCountries] = useState([]);
   const [flags, setFlags] = useState([]);
+
+  const countryNames = bankCountries.map((country) => country.name);
+  const countryFlags = bankCountries.map((country) => country.flag);
 
   const { data: countriesData } = useQuery({
     queryKey: ["countries"],
@@ -308,7 +321,7 @@ const CreateDiscountPage = () => {
   };
 
   return (
-    <CreateLCLayout>
+    <CreateLCLayout isRisk={false}>
       <form className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white">
         <Step1
           type="discount"
@@ -511,8 +524,8 @@ const CreateDiscountPage = () => {
           </div>
           <DiscountBanks
             setValue={setValue}
-            countries={countries}
-            flags={flags}
+            countries={countryNames}
+            flags={countryFlags}
             getValues={getValues}
           />
           {/* Period */}

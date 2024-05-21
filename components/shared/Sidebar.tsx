@@ -407,13 +407,8 @@ export const Sidebar = ({
                 ))}
           </div>
         </div>
-<<<<<<< HEAD
         {/* {isBank && ( */}
           <Button className="w-full bg-borderCol hover:bg-borderCol/90 text-[#696974]">
-=======
-        {isBank && (
-          <Button className="w-full bg-borderCol hover:bg-borderCol/90 text-[#696974] mt-4">
->>>>>>> danish-edit
             View all requests
           </Button>
         {/* )} */}

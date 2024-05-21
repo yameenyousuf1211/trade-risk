@@ -40,7 +40,9 @@ const BidCard = ({ data }: { data: IBids }) => {
       <div className="grid grid-cols-2 gap-y-4">
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Number</p>
-          <p className="font-semibold text-lg">{data._id.slice(1, 6)}</p>
+          <p className="font-semibold text-lg">
+            {data._id?.slice(1, 6) || "12365"}
+          </p>
         </div>
 
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
@@ -62,7 +64,7 @@ const BidCard = ({ data }: { data: IBids }) => {
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Discount Rate</p>
           <p className="text-lg font-semibold ">
-            {data.bidType.includes("Discounting")
+            {data.bidType?.includes("Discounting")
               ? data.discountBaseRate + ".00" || "Applicable"
               : "Not Applicable"}
           </p>
@@ -71,7 +73,7 @@ const BidCard = ({ data }: { data: IBids }) => {
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Discount Margin</p>
           <p className="text-lg font-semibold ">
-            {data.bidType.includes("Discounting")
+            {data.bidType?.includes("Discounting")
               ? data.discountMargin + "%" || "Applicable"
               : "Not Applicable"}
           </p>
@@ -190,7 +192,9 @@ export const TableDialog = ({
       </DialogTrigger>
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
-          <h2 className="text-lg font-semibold">{lcData && lcData.lcType}</h2>
+          <h2 className="text-lg font-semibold">
+            {(lcData && lcData.lcType) || ""}
+          </h2>
           <DialogClose>
             <X className="size-7" />
           </DialogClose>

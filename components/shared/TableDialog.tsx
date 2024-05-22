@@ -34,7 +34,7 @@ const BidCard = ({ data }: { data: IBids }) => {
       toast.success(`Bid ${status}`);
     }
   };
-
+  
   return (
     <div className="border border-borderCol py-5 px-3 rounded-lg">
       <div className="grid grid-cols-2 gap-y-4">

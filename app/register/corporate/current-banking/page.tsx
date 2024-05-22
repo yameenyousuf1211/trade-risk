@@ -3,7 +3,7 @@ import CorporateStepLayout from "@/components/layouts/CorporateStepLayout";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -17,12 +17,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useEffect, useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
 import { onRegister } from "@/services/apis";
 import { toast } from "sonner";
-import { getBanks, getCities, getCountries } from "@/services/apis/helpers.api";
+import { getBanks, getCities } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import useLoading from "@/hooks/useLoading";
 import { Country } from "@/types/type";
@@ -203,7 +203,7 @@ const CurrentBankingPage = () => {
     <CorporateStepLayout
       step={3}
       title="Current Banking"
-      text="Add the banks you have facilities with, so that they can be notified of any requests you add. This list can also be edited later."
+      text={`Add the banks you have facilities with, so that they can be notified of any requests you add. \nThis list can also be edited later.`}
     >
       <div className="max-w-[800px] w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5">
         <h2 className="text-lg font-semibold">Add your current banks</h2>
@@ -218,15 +218,15 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={countryOpen}
-                  className="w-[230px] justify-between"
+                  className="capitalize w-[230px] justify-between"
                 >
                   {countryVal
                     ? countries?.find(
                         (country: string) =>
                           country.toLowerCase() === countryVal.toLowerCase()
                       )
-                    : "Select country..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    : "Select country*"}
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[230px] p-0">
@@ -275,7 +275,7 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={bankOpen}
-                  className="w-[230px] justify-between truncate"
+                  className="capitalize w-[230px] justify-between truncate"
                   disabled={countryVal === ""}
                 >
                   {bankVal
@@ -283,8 +283,8 @@ const CurrentBankingPage = () => {
                         (bank: string) =>
                           bank.toLowerCase() === bankVal.toLowerCase()
                       )
-                    : "Select bank..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    : "Select bank*"}
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[230px] p-0">
@@ -332,15 +332,15 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={cityOpen}
-                  className="w-[230px] justify-between"
+                  className="capitalize w-[230px] justify-between"
                   disabled={countryVal === ""}
                 >
                   {cityVal
                     ? cityVal
                     : countryVal
-                    ? "Select city..."
-                    : "Select city..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    ? "Select city*"
+                    : "Select city*"}
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[230px] p-0">

@@ -292,7 +292,7 @@ export const AddBid = ({
           </div>
 
           {/* Right Section */}
-          <div className="w-full h-full flex flex-col justify-start px-5">
+          <div className="w-full h-full flex flex-col justify-start px-5 overflow-y-auto max-h-[75vh]">
             <p className="text-xl font-semibold pt-5">Bid</p>
             {isInfo ? (
               <>

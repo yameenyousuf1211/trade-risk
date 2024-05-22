@@ -74,7 +74,6 @@ const BankRegisterPage = () => {
   let phone = getValues("pocPhone");
 
   useEffect(() => {
-    console.log("isValid: ", isValid, "\tisDirty: ", isDirty);
     if (isValid && isDirty) setAllowSubmit(true);
     if (!isValid || !isDirty) setAllowSubmit(false);
   }, [errors, isValid, isDirty]);

@@ -21,7 +21,7 @@ export const FloatingInput = <T extends FieldValues>({
         inputMode={inputMode}
         type={type || "text"}
         id={name}
-        className="z-[1] relative px-2.5 pb-2.5 pt-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
+        className="z-[1] relative px-2.5 pb-2.5 pt-2.5 w-full text-sm text-lightGray bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
         placeholder=""
         {...register(name as Path<T>)}
       />

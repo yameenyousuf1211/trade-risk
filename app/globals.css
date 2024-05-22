@@ -206,6 +206,7 @@ input[type="number"] {
 }
 .rti--tag {
   font-size: 12px !important;
+  background: #f4f4f4 !important;
 }
 .rti--input {
   font-size: 14px !important;

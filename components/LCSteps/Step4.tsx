@@ -35,7 +35,6 @@ export const Step4 = ({
   }, [getValues, user]);
   // console.log(isImporter);
   useEffect(() => {
-    console.log(applicantName);
     if (importerCountry && applicantName) {
       setStepCompleted(3, true);
     }

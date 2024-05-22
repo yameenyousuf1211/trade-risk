@@ -5,7 +5,7 @@ const getAccessToken = () => {
 };
 
 const api = axios.create({
-  baseURL: 'http://128.199.30.51:8080/api',
+  baseURL: "https://trade.yameenyousuf.com/api",
 });
 
 api.interceptors.request.use(
@@ -15,7 +15,7 @@ api.interceptors.request.use(
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
-    
+
     return config;
   },
   (error) => {

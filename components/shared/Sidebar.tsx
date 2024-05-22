@@ -71,13 +71,16 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
 
 const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
   const { user } = useAuth();
-  const pendingBids = data.bids.filter((bid) => bid.status === "Pending");
+  const pendingBids =
+    data.status !== "Expired" &&
+    data.bids.filter((bid) => bid.status === "Pending");
   const showData = !data.bids.some((bid) => bid.bidBy === user?._id);
 
   return (
     <>
       {isBank ? (
-        showData && (
+        showData &&
+        data.status !== "Expired" && (
           <>
             <div className="px-3 py-2 flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
               {/* Data */}

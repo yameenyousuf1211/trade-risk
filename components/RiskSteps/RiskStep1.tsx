@@ -7,11 +7,11 @@ export const RiskStep1 = ({ setValue }: { setValue: any }) => {
   const [productInput, setProductInput] = useState("");
 
   return (
-    <div className="bg-white rounded-lg border-borderCol py-4 px-4">
+    <div className="bg-white rounded-lg border border-borderCol py-4 px-4">
       <p className="text-lightGray font-semibold">
         Select banks you want to send your risk participation request
       </p>
-      <div>
+      <div className="mt-3">
         <TagsInput
           value={products}
           onChange={(val: any) => {

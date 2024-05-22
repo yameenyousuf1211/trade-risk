@@ -29,7 +29,7 @@ import Loader from "@/components/ui/loader";
 import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Country } from "@/types/type";
-import { DisclaimerDialog } from "@/components/helpers";
+import { DisclaimerDialog, NumberInput } from "@/components/helpers";
 import useDiscountingStore, { getStateValues } from "@/store/discounting.store";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
@@ -344,11 +344,11 @@ const CreateDiscountPage = () => {
                     ))}
                 </SelectContent>
               </Select>
-              <Input
-                type="text"
+              <NumberInput
                 register={register}
+                setValue={setValue}
                 name="amount"
-                className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={amount?.toString()}
               />
             </div>
           </div>

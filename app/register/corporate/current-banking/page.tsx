@@ -218,7 +218,7 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={countryOpen}
-                  className="capitalize w-[230px] justify-between"
+                  className="capitalize w-[230px] justify-between font-normal"
                 >
                   {countryVal
                     ? countries?.find(
@@ -275,7 +275,7 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={bankOpen}
-                  className="capitalize w-[230px] justify-between truncate"
+                  className="capitalize w-[230px] justify-between truncate font-normal"
                   disabled={countryVal === ""}
                 >
                   {bankVal
@@ -332,7 +332,7 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={cityOpen}
-                  className="capitalize w-[230px] justify-between"
+                  className="capitalize w-[230px] justify-between font-normal"
                   disabled={countryVal === ""}
                 >
                   {cityVal

@@ -1,4 +1,5 @@
-import { BidsCountrySelect } from './BidsCountrySelect';
+import { NumberInput } from "./NumberInput";
+import { BidsCountrySelect } from "./BidsCountrySelect";
 import { DashboardCountries } from "./DashboardCountries";
 import { TelephoneInput } from "./TelephoneInput";
 import { TableBidStatus } from "./TableBidStatus";
@@ -31,5 +32,6 @@ export {
   TableBidStatus,
   TelephoneInput,
   DashboardCountries,
-  BidsCountrySelect
+  BidsCountrySelect,
+  NumberInput,
 };

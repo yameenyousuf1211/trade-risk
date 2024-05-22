@@ -52,10 +52,9 @@ const DraftCard = ({
   );
 
   const handleEditLC = async () => {
-    // @ts-ignore
     try {
       const response = await fetchSingleLc(draft?._id);
-      console.log("response: ", response);
+      // console.log("response: ", response);
       isConfirmation && setConfirmationValues(response);
       isDiscounting && setDiscountingValues(response);
       isConfirmationDiscounting && setConfirmationDiscountingValues(response);

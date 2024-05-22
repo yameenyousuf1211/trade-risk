@@ -15,7 +15,7 @@ export const RegisterStepnav = ({ step }: { step: number }) => {
       {/* Logo */}
       <Link href="/login" className="flex items-center justify-center gap-2">
         <Image
-          src="/images/logo.png"
+          src="/images/logo.svg"
           alt="logo"
           width={50}
           height={50}

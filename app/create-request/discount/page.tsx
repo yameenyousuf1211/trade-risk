@@ -126,6 +126,8 @@ const CreateDiscountPage = () => {
         return toast.error(
           "Confirming bank country cannot be the same as issuing bank country"
         );
+      if (/^\d+$/.test(data.productDescription))
+        return toast.error("Product description cannot contain only digits");
       startLoading();
 
       const reqData = {
@@ -177,6 +179,8 @@ const CreateDiscountPage = () => {
       return toast.error(
         "Confirming bank country cannot be the same as issuing bank country"
       );
+    if (/^\d+$/.test(data.productDescription))
+      return toast.error("Product description cannot contain only digits");
     setLoader(true);
     const reqData = {
       ...data,
@@ -324,10 +328,10 @@ const CreateDiscountPage = () => {
         <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
           <div className="flex items-center gap-x-2 justify-between mb-3">
             <div className="flex items-center gap-x-2 ml-3">
-              <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold">
+              <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
                 2
               </p>
-              <p className="font-semibold text-lg text-lightGray">Amount</p>
+              <p className="font-semibold text-[16px] text-lightGray">Amount</p>
             </div>
             <div className="flex items-center gap-x-2">
               <Select onValueChange={(value) => setValue("currency", value)}>
@@ -509,10 +513,12 @@ const CreateDiscountPage = () => {
         {/* Step 3 */}
         <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
           <div className="flex items-center gap-x-2 ml-3 mb-3">
-            <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold">
+            <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
               3
             </p>
-            <p className="font-semibold text-lg text-lightGray">LC Details</p>
+            <p className="font-semibold text-[16px] text-lightGray">
+              LC Details
+            </p>
           </div>
           <DiscountBanks
             setValue={setValue}

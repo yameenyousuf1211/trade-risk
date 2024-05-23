@@ -114,3 +114,32 @@ export const convertDateToCommaString = (date: any) => {
 
   return `${month} ${day}, ${year}`;
 };
+
+export const convertDateAndTimeToString = (date: any) => {
+  const jsDate = new Date(date);
+  // console.log("Parsed Date object:", jsDate);
+
+  const year = jsDate.getFullYear();
+
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const month = monthNames[jsDate.getMonth()];
+  const day = String(jsDate.getDate()).padStart(2, "0");
+  const hours = String(jsDate.getHours()).padStart(2, "0");
+  const minutes = String(jsDate.getMinutes()).padStart(2, "0");
+
+  return `${month} ${day} ${year} ${hours}:${minutes}`;
+};

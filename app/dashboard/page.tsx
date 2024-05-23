@@ -6,7 +6,7 @@ import { Sidebar } from "@/components/shared/Sidebar";
 import { useAuth } from "@/context/AuthProvider";
 import { fetchAllLcs } from "@/services/apis/lcs.api";
 import { ApiResponse, ILcs } from "@/types/type";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 
 interface SearchParams {

@@ -38,12 +38,41 @@ export const Step2 = ({
   let currencyVal = getValues("currency");
   let paymentTerms = getValues("paymentTerms");
 
-  const [currencyValue, setCurrencyValue] = useState<number | null>(null);
+  const [currencyValue, setCurrencyValue] = useState<string | number | null>(
+    null
+  );
+  const [rawValue, setRawValue] = useState("");
+
+  const handleChange = (e: any) => {
+    const { value } = e.target;
+
+    const digitsOnly = value.replace(/\D/g, "");
+    if (digitsOnly) {
+      const formattedValue = parseInt(digitsOnly).toLocaleString();
+      setCurrencyValue(formattedValue);
+      setRawValue(digitsOnly);
+      setValue("amount", digitsOnly);
+    } else {
+      setCurrencyValue("");
+      setRawValue("");
+      setValue("amount", "");
+    }
+  };
+
+  const handleBlur = () => {
+    if (rawValue) {
+      const formattedValueWithCents = `${parseInt(
+        rawValue
+      ).toLocaleString()}.00`;
+      setCurrencyValue(formattedValueWithCents);
+    }
+  };
 
   useEffect(() => {
     if (amount) {
       setValue("amount", amount.toString());
       setCurrencyValue(amount);
+      setRawValue(amount);
     }
   }, [valueChanged]);
 
@@ -70,19 +99,13 @@ export const Step2 = ({
     }
   }, [amount, paymentTerms, valueChanged]);
 
-  const handleAmountValidation = (val: string) => {
-    const cleanedValue = val.replace(/\D/g, "");
-    const formattedValue = Number(cleanedValue).toLocaleString();
-    // setCurrencyValue(formattedValue);
-  };
-
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
-        <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold">
+        <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           2
         </p>
-        <p className="font-semibold text-lg text-lightGray">Amount</p>
+        <p className="font-semibold text-[16px] text-lightGray">Amount</p>
       </div>
 
       <div className="flex items-center gap-x-2 justify-between w-full mb-3 border border-borderCol py-2 px-3 rounded-md bg-[#F5F7F9]">
@@ -111,19 +134,28 @@ export const Step2 = ({
             </SelectContent>
           </Select>
 
-          <Input
+          {/* <Input
             type="number"
             inputMode="numeric"
             name="amount"
             register={register}
             onChange={(e: any) => setCurrencyValue(e.target.value)}
             className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0"
+          /> */}
+          <input
+            type="text"
+            inputMode="numeric"
+            name="amount"
+            {...register("amount")}
+            value={currencyValue}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0  flex h-10 w-full rounded-md  bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           />
         </div>
 
         <p className="font-semibold text-sm">
-          {currencyValue &&
-            numberToText.convertToText(currencyValue.toString())}
+          {rawValue && numberToText.convertToText(rawValue.toString())}
           {/* {amount} */}{" "}
           <span className="text-primaryCol uppe rcase">
             {currencyVal
@@ -136,7 +168,7 @@ export const Step2 = ({
       </div>
 
       <div className="border border-borderCol px-2 py-3 rounded-md bg-[#F5F7F9]">
-        <h5 className="font-semibold ml-3">Payment Terms</h5>
+        <h5 className="font-semibold text-sm ml-3">Payment Terms</h5>
         <div className="flex items-center flex-wrap xl:flex-nowrap  gap-x-3 w-full mt-2">
           <BgRadioInput
             id="payment-sight"

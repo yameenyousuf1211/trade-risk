@@ -354,7 +354,7 @@ const CreateDiscountPage = () => {
           </div>
           <div className="border border-borderCol px-2 py-3 rounded-md bg-[#F5F7F9]">
             <h5 className="font-semibold ml-3">LC Payment Terms</h5>
-            <div className="flex items-center gap-x-3 w-full mt-2">
+            <div className="flex items-center flex-wrap xl:flex-nowrap  gap-x-3 w-full mt-2">
               <BgRadioInput
                 id="payment-sight"
                 label="Sight LC"

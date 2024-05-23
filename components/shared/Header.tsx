@@ -35,8 +35,8 @@ export const Header = () => {
   }, [data]);
 
   return (
-    <header className="relative 2xl:px-20 px-10 flex items-center justify-between gap-x-2 ">
-      <div className="flex items-center gap-x-2 py-4">
+    <header className="relative 2xl:px-20 px-6 xl:px-10 flex items-center justify-between gap-x-2 ">
+      <div className="flex flex-col xl:flex-row items-center gap-x-2 py-4">
         <Image
           src="/images/logo.svg"
           alt="logo"
@@ -48,7 +48,7 @@ export const Header = () => {
           <span className="font-semibold">Trade</span>Risk
         </Link>
       </div>
-      <nav className="flex items-center gap-x-20">
+      <nav className="flex items-center gap-x-4 lg:gap-x-10 xl:gap-x-20">
         {user && user.role === "bank" ? (
           <>
             <div className="relative py-6">

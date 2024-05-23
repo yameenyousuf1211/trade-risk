@@ -15,7 +15,7 @@ export default function AuthLayout({
       <Header />
       <main className="bg-bg px-2 relative w-full min-h-[88vh] flex flex-col items-center justify-center py-10">
         <div className="flex w-full 2xl:px-10 px-2 gap-x-2">
-          <div className="2xl:w-5/6 w-4/5 p-4">
+          <div className="2xl:w-5/6 w-4/5 p-2 xl:p-4">
             <h2 className="text-3xl font-semibold mb-2">
               {isRisk
                 ? "Risk participation distribution requests"

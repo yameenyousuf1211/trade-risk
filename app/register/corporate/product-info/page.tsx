@@ -165,9 +165,12 @@ const ProductInfoPage = () => {
               }
             }}
             onBlur={(e: any) => {
-              if (productInput.length > 1) {
-                setProducts((prev) => [...prev, productInput]);
-                e.target.value = "";
+              if (e.target.value) {
+                console.log(e.target.value);
+                setProducts((prev) => [...prev, e.target.value]);
+                setTimeout(() => {
+                  e.target.value = "";
+                }, 10);
               }
               setProductInput("");
             }}
@@ -175,7 +178,7 @@ const ProductInfoPage = () => {
               products.length <= 1 && setAllowSubmit(false);
             }}
             name="product"
-            placeHolder="Your Product(s)"
+            placeHolder={products?.length ===0 && "Your Product(s)"}
           />
           {errors.product && products?.length === 0 && (
             <span className="text-[11px] text-red-500">

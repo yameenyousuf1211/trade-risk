@@ -25,7 +25,7 @@ export const RiskStep5 = ({
         </p>
         <p className="font-semibold text-lg text-lightGray">Exporter Info</p>
       </div>
-      <div className="flex items-center justify-between gap-x-2 w-full">
+      <div className="flex items-center justify-between gap-x-2 flex-wrap xl:flex-nowrap w-full">
         <label
           id="name"
           className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"

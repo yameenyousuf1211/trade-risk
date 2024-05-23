@@ -67,7 +67,7 @@ export const Step5 = ({
         className={
           isConfirmation
             ? "grid grid-cols-2 gap-y-2 gap-x-2"
-            : "flex items-center gap-x-3"
+            : "flex items-center gap-3  flex-wrap xl:flex-nowrap"
         }
       >
         <label

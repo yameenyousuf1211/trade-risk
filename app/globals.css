@@ -255,3 +255,14 @@ input[type="checkbox"]:checked::after {
   -ms-transform: rotate(45deg);
   -o-transform: rotate(45deg);
 }
+
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge, and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}

@@ -144,7 +144,7 @@ export const Period = ({
 
   return (
     <div className="flex items-start gap-x-4 my-5">
-      <div className="border border-borderCol py-3 px-2 rounded-md w-2/3 bg-[#F5F7F9]">
+      <div className="border border-borderCol py-3 px-2 rounded-md w-[60%] bg-[#F5F7F9]">
         <p className="font-semibold mb-2 ml-3">LC Period</p>
         <div className="flex bg-white items-center gap-x-4 justify-between border border-borderCol rounded-md py-3 px-3 mb-3">
           <div className="w-full rounded-md flex items-center gap-x-2">
@@ -247,7 +247,7 @@ export const Period = ({
         </label>
       </div>
       {/* Port of Shipment */}
-      <div className="border border-borderCol py-3 px-2 rounded-md w-1/3 h-[185px] min-h-44 bg-[#F5F7F9]">
+      <div className="border border-borderCol py-3 px-2 rounded-md w-[40%] h-[185px] min-h-44 bg-[#F5F7F9]">
         <p className="font-semibold ml-3">Port of Shipment</p>
         <div className="flex flex-col gap-y-2 mt-2">
           <DDInput
@@ -459,6 +459,8 @@ export const DiscountBanks = ({
   valueSetter?: any;
 }) => {
   const [valueChanged, setValueChanged] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+
 
   let issuingCountry = getValues("issuingBank.country");
   let issuingBank = getValues("issuingBank.bank");
@@ -498,9 +500,11 @@ export const DiscountBanks = ({
     const advisingBank = getValues("advisingBank.bank");
     const confirmingBank = getValues("confirmingBank.bank");
     const confirmingCountry = getValues("confirmingBank.country");
-
-    if (!advisingBank || !advisingCountry)
-      return toast.error("Please select advising bank first");
+    if (!advisingBank || !advisingCountry) {
+      toast.error("Please select advising bank first");
+      setIsChecked(false); 
+      return;
+    }
     if (confirmingBank && confirmingCountry) {
       setValue("confirmingBank.country", undefined);
       setValue("confirmingBank.bank", undefined);
@@ -509,6 +513,11 @@ export const DiscountBanks = ({
       setValue("confirmingBank.bank", advisingBank);
     }
     setValueChanged(!valueChanged);
+  };
+
+  const handleCheckboxChange = (e) => {
+    setIsChecked(e.target.checked);
+    handleSameAsAdvisingBank();
   };
 
   return (
@@ -577,15 +586,16 @@ export const DiscountBanks = ({
       </div>
       {/* Confirming Bank */}
       <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
-        <div className="flex items-center gap-x-2 justify-between mb-2">
+        <div className="flex items-center gap-x-2 justify-between mb-2 px-3 xl:px-0">
           <p className="font-semibold">Confirming Bank</p>
           <div className="flex items-center">
             <input
               type="checkbox"
               id="same-as-advising"
               className="accent-primaryCol"
-              onChange={handleSameAsAdvisingBank}
-            />
+              checked={isChecked}
+              onChange={handleCheckboxChange}
+              />
             <label
               htmlFor="same-as-advising"
               className="ml-1  text-[12px] text-lightGray"

@@ -134,16 +134,16 @@ export const Header = () => {
             </div>
             <div className="relative py-6">
               <Link
-                href="/corporate-bids"
+                href="/corporate-bids?filter=LC Confirmation"
                 className={`${
-                  pathname === "/my-bids"
+                  pathname.includes("/corporate-bids")
                     ? "text-primaryCol"
                     : "hover:text-primaryCol transition-colors duration-150"
                 }  font-semibold`}
               >
                 My Bids
               </Link>
-              {pathname === "/corporate-bids" && (
+              {pathname.includes("/corporate-bids") && (
                 <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />
               )}
             </div>

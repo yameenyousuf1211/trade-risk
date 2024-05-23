@@ -51,6 +51,9 @@ export const Step7Disounting = ({
   const handleIncrement = () => {
     const currentValue = getValues("discountingInfo.pricePerAnnum") || "0";
     const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
+    if(Number(newValue) > 100) {
+      return;
+    }
     setValue("discountingInfo.pricePerAnnum", newValue);
   };
 
@@ -122,7 +125,7 @@ export const Step7Disounting = ({
 
         <label
           id="expected-pricing"
-          className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
+          className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
         >
           <p className="text-lightGray">Per Annum(%)</p>
           <div className="flex items-center gap-x-2">

@@ -45,21 +45,23 @@ export const Step4 = ({
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
-        <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold">
+        <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           4
         </p>
-        <p className="font-semibold text-lg text-lightGray">Importer Info</p>
+        <p className="font-semibold text-[16px] text-lightGray">
+          Importer Info
+        </p>
       </div>
       <label
         id="name"
         className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between mb-2"
       >
-        <p className="w-full text-lightGray">Name of Applicant</p>
+        <p className="w-full text-sm text-lightGray">Name of Applicant</p>
         <Input
           type="text"
           name="importerInfo.applicantName"
           register={register}
-          className="block bg-none text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+          className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
           placeholder="Enter name"
           onChange={() => setValueChanged(!valueChanged)}
         />

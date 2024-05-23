@@ -31,11 +31,11 @@ export const SearchBar = ({ initialValue }: { initialValue?: string }) => {
 
   return (
     <div className="flex items-center gap-x-2">
-      <Search className="size-5 text-black" />
+      <Search className="size-4 text-[#1A1A26]" />
       <input
         type="text"
         placeholder="Search"
-        className="placeholder:text-[#1A1A26] border-none bg-transparent placeholder:text-black max-w-20 outline-none"
+        className="placeholder:text-[#1A1A26] text-sm border-none bg-transparent max-w-20 outline-none"
         name="search"
         value={value}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>

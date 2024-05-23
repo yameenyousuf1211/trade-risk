@@ -98,7 +98,7 @@ export const fetchMyBids = async ({
 }) => {
   try {
     const { data } = await api.get(
-      `/bids?bidBy=true&limit=${limit || 10}&page=${page || 1}&filter=${
+      `/bids?bidBy=true&limit=${limit || 7}&page=${page || 1}&filter=${
         (filter && encodeURIComponent(filter)) || ""
       }&search=${search || ""}`
     );
@@ -124,7 +124,7 @@ export const fetchCorporateBids = async ({
 }) => {
   try {
     const { data } = await api.get(
-      `/bids?limit=${limit || 10}&page=${page || 1}&filter=${
+      `/bids?limit=${limit || 7}&page=${page || 1}&filter=${
         (filter && encodeURIComponent(filter)) || ""
       }&search=${search || ""}&lcOwner=${userId}`
     );

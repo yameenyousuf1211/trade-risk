@@ -84,7 +84,7 @@ export const getPorts = async (country: string) => {
   }
 };
 
-function capitalizeWords(str: string) {
+export function capitalizeWords(str: string) {
   const words = str.split(" ");
 
   const capitalizedWords = words.map((word) => {

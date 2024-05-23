@@ -7,11 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronUp, Ellipsis, Eye, ListFilter, Plus } from "lucide-react";
+import { ChevronUp, Ellipsis, ListFilter, Plus } from "lucide-react";
 import {
-  DashboardCountries,
+  BidsCountrySelect,
   DateRangePicker,
-  Filter,
   Pagination,
   ProductFilter,
   SearchBar,
@@ -21,8 +20,11 @@ import { Button } from "../ui/button";
 import { TableDialog } from "./TableDialog";
 import Image from "next/image";
 import { columnHeaders, bankColumnHeaders } from "@/utils/data";
-import { ApiResponse, ILcs } from "@/types/type";
-import { convertDateToString, convertDateToYYYYMMDD } from "@/utils";
+import { ApiResponse, Country, ILcs } from "@/types/type";
+import { convertDateToString } from "@/utils";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getCountries } from "@/services/apis/helpers.api";
 
 interface TableDataCellProps {
   data?: string | number | Date | undefined;
@@ -30,8 +32,8 @@ interface TableDataCellProps {
 
 const TableDataCell = ({ data }: TableDataCellProps) => {
   return (
-    <TableCell className="px-1 py-1 max-w-[200px]">
-      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-lightGray">
+    <TableCell className="px-1 py-1 max-w-[180px]">
+      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-lightGray text-sm">
         {data !== undefined ? String(data) : "-"}
       </div>
     </TableCell>
@@ -47,11 +49,35 @@ export const RequestTable = ({
   data: ApiResponse<ILcs> | undefined;
   isLoading: boolean;
 }) => {
+  const [allCountries, setAllCountries] = useState<Country[]>([]);
+
+  const { data: countriesData } = useQuery({
+    queryKey: ["countries"],
+    queryFn: () => getCountries(),
+  });
+
+  useEffect(() => {
+    if (
+      countriesData &&
+      countriesData.success &&
+      countriesData.response &&
+      countriesData.response.length > 0
+    ) {
+      setAllCountries(countriesData.response);
+    }
+  }, [countriesData]);
+
+  const getCountryFlagByName = (countryName: string): string | undefined => {
+    const country = allCountries.find(
+      (c: Country) => c.name.toLowerCase() === countryName.toLowerCase()
+    );
+    return country ? country.flag : undefined;
+  };
   return (
     <div>
       <div className="rounded-md border px-4 py-4 bg-white">
         <div className="flex items-center justify-between w-full gap-x-2 mb-4">
-          <h2 className="text-[16px] font-semibold">
+          <h2 className="text-[16px] font-semibold text-[#1A1A26]">
             {isBank ? "Deals Received" : "Transaction Requests"}
           </h2>
 
@@ -59,14 +85,14 @@ export const RequestTable = ({
             {isBank && (
               <>
                 <ProductFilter />
-                <DashboardCountries />
+                <BidsCountrySelect />
               </>
             )}
             <DateRangePicker />
             <SearchBar />
             <div className="flex items-center gap-x-2">
-              <ListFilter />
-              <p>Filter</p>
+              <ListFilter className="size-4 text-[#1A1A26]" />
+              <p className="text-[14px] text-[#1A1A26]">Filter</p>
             </div>
             <Ellipsis className="mx-3" />
           </div>
@@ -81,7 +107,7 @@ export const RequestTable = ({
                         key={`${header}-${idx}`}
                         className="px-2 h-8 py-2"
                       >
-                        <div className="capitalize flex text-[#44444F] items-center gap-x-2 justify-center text-[13px]">
+                        <div className="capitalize flex text-[#44444F] items-center gap-x-2 justify-center text-[12px] font-semibold">
                           {header}
                           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
                             <ChevronUp className="size-4" />
@@ -94,7 +120,7 @@ export const RequestTable = ({
                         key={`${header}-${idx}`}
                         className="px-2 h-8 py-2"
                       >
-                        <div className="capitalize flex text-[#44444F]  items-center gap-x-2 justify-center text-sm">
+                        <div className="capitalize flex text-[#44444F]  items-center gap-x-2 justify-start text-[12px] font-semibold">
                           {header}
                           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
                             <ChevronUp className="size-4" />
@@ -125,15 +151,12 @@ export const RequestTable = ({
                       data={convertDateToString(item.lcPeriod.endDate)}
                     />
                     <TableDataCell data={item.lcType} />
-                    <TableCell className="px-1 py-1 max-w-[200px]">
+                    <TableCell className="px-1 py-1 max-w-[180px]">
                       <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                        <Image
-                          src="/images/flag.png"
-                          alt="country"
-                          width={100}
-                          height={100}
-                          className="object-cover size-5"
-                        />
+                        <p className="text-[16px]">
+                          {allCountries &&
+                            getCountryFlagByName(item.issuingBank.country)}
+                        </p>
                         <div className="truncate capitalize text-lightGray">
                           {item.issuingBank.bank}
                         </div>
@@ -167,15 +190,12 @@ export const RequestTable = ({
                       data={convertDateToString(item.lcPeriod?.endDate)}
                     />
                     <TableDataCell data={item.lcType} />
-                    <TableCell className="px-1 py-1 max-w-[300px]">
+                    <TableCell className="px-1 py-1 max-w-[180px]">
                       <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                        <Image
-                          src="/images/flag.png"
-                          alt="country"
-                          width={100}
-                          height={100}
-                          className="object-cover size-5"
-                        />
+                        <p className="text-[16px]">
+                          {allCountries &&
+                            getCountryFlagByName(item.issuingBank.country)}
+                        </p>
                         <div className="capitalize truncate text-lightGray">
                           {item.issuingBank.bank}
                         </div>

@@ -10,10 +10,15 @@ import { Button } from "@/components/ui/button";
 import { IBids, ILcs } from "@/types/type";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { convertDateToString, convertDateToYYYYMMDD } from "@/utils";
+import {
+  convertDateAndTimeToString,
+  convertDateToCommaString,
+  convertDateToYYYYMMDD,
+} from "@/utils";
 import { toast } from "sonner";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
 import { useAuth } from "@/context/AuthProvider";
+import { BidsSort } from "../helpers";
 
 const BidCard = ({ data, isBank }: { data: IBids; isBank?: boolean }) => {
   const queryClient = useQueryClient();
@@ -58,15 +63,15 @@ const BidCard = ({ data, isBank }: { data: IBids; isBank?: boolean }) => {
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Confirmation Rate</p>
           <p className="text-lg font-semibold text-text">
-            {data.confirmationPrice}% per annum
+            {data.amount}% per annum
           </p>
         </div>
 
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Discount Rate</p>
           <p className="text-lg font-semibold ">
-            {data.bidType?.includes("Discounting")
-              ? data.discountBaseRate + ".00" || "Applicable"
+            {data.discountBaseRate
+              ? "USD " + data.discountBaseRate + ".00"
               : "Not Applicable"}
           </p>
         </div>
@@ -74,9 +79,7 @@ const BidCard = ({ data, isBank }: { data: IBids; isBank?: boolean }) => {
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Discount Margin</p>
           <p className="text-lg font-semibold ">
-            {data.bidType?.includes("Discounting")
-              ? data.discountMargin + "%" || "Applicable"
-              : "Not Applicable"}
+            {data.discountMargin ? data.discountMargin + "%" : "Not Applicable"}
           </p>
         </div>
 
@@ -95,7 +98,7 @@ const BidCard = ({ data, isBank }: { data: IBids; isBank?: boolean }) => {
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Expiry</p>
           <p className="font-semibold text-lg">
-            {convertDateToYYYYMMDD(data.bidValidity)}
+            {convertDateToYYYYMMDD(data.validity)}
           </p>
         </div>
         {data.status === "Pending" && !isBank && (
@@ -165,7 +168,7 @@ const LCInfo = ({
         !noBorder && "border-b border-b-borderCol"
       }`}
     >
-      <p className="text-para text-sm">{label}</p>
+      <p className="text-para font-normal text-sm">{label}</p>
       <p className="capitalize font-semibold text-right text-sm max-w-[60%]">
         {value}
       </p>
@@ -189,7 +192,8 @@ export const TableDialog = ({
   });
 
   const { user } = useAuth();
-  const userBids = isBank && bids.filter((bid) => bid.bidBy === user._id);
+  const userBids =
+    isBank && user && bids.filter((bid) => bid.bidBy === user._id);
 
   return (
     <Dialog>
@@ -206,17 +210,19 @@ export const TableDialog = ({
           </DialogClose>
         </div>
 
-        <div className="overflow-y-hidden relative -mt-9 flex items-start justify-between h-full">
+        <div className="overflow-y-hidden relative flex items-start justify-between h-full">
           {/* Left Section */}
-          <div className="w-full pb-5 border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[75vh]">
+          <div className="w-full pb-5 border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[90vh] min-h-[85vh]">
             <div className="px-4 pt-5 bg-[#F5F7F9]">
               <h2 className="text-2xl font-semibold mb-1">
-                <span className="text-para font-medium">LC Amount:</span> USD{" "}
-                {(lcData && lcData.amount?.toLocaleString()) || ""}
+                <span className="text-para font-normal">LC Amount:</span> USD{" "}
+                {(lcData && lcData.amount?.toLocaleString()) + ".00" || ""}
               </h2>
               <p className="text-sm text-para">
                 Created at,{" "}
-                {lcData && convertDateToString(lcData.lcPeriod?.startDate)}, by{" "}
+                {lcData &&
+                  convertDateAndTimeToString(lcData.lcPeriod?.startDate)}
+                , by{" "}
                 <span className="text-text capitalize">
                   {(lcData && lcData.exporterInfo?.beneficiaryName) || ""}
                 </span>
@@ -236,7 +242,7 @@ export const TableDialog = ({
               />
               <LCInfo
                 label="Advising Bank"
-                value={(lcData && lcData.advisingBank?.bank) || ""}
+                value={(lcData && lcData.advisingBank?.bank) || "-"}
               />
               <LCInfo
                 label="Confirming Bank"
@@ -256,13 +262,13 @@ export const TableDialog = ({
               <LCInfo
                 label="LC Issuance (Expected)"
                 value={
-                  lcData && convertDateToYYYYMMDD(lcData.lcPeriod?.startDate)
+                  lcData && convertDateToCommaString(lcData.lcPeriod?.startDate)
                 }
               />
               <LCInfo
                 label="LC Expiry Date"
                 value={
-                  lcData && convertDateToYYYYMMDD(lcData.lcPeriod?.endDate)
+                  lcData && convertDateToCommaString(lcData.lcPeriod?.endDate)
                 }
               />
               <LCInfo
@@ -302,18 +308,15 @@ export const TableDialog = ({
             <div className="flex items-center justify-between w-full pt-5">
               <div className="flex items-center gap-x-2">
                 <p className="bg-primaryCol text-white font-semibold text-lg rounded-xl py-1 px-3">
-                  {isBank ? userBids.length : bids.length}
+                  {isBank ? userBids?.length : bids.length}
                 </p>
                 <p className="text-xl font-semibold">Bids recieved</p>
               </div>
 
               <div className="flex items-center gap-x-4">
-                <div className="flex items-center gap-x-1">
-                  <ArrowUpNarrowWide />
-                  <p>Sort</p>
-                </div>
-                <div className="flex items-center gap-x-1">
-                  <ListFilter />
+                <BidsSort />
+                <div className="flex items-center gap-x-1 text-sm">
+                  <ListFilter className="size-5" />
                   <p>Filter</p>
                 </div>
               </div>

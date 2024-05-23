@@ -9,7 +9,7 @@ const CountrySearch = () => {
       <input
         type="text"
         placeholder="Enter country name"
-        className="flex bg-[#F0F0F0] text-[#92929D] border border-[#E2E2EA] font-light w-full rounded-md placeholder:text-[13px] pr-5 h-8 max-w-[200px] bg-back ground px-3 py-2 text-sm placeholder:text-muted-foreground"
+        className="flex bg-[#F0F0F0]  text-[#92929D] border border-[#E2E2EA] font-light w-full rounded-md placeholder:text-[13px] pr-5 h-8 max-w-[200px] bg-back ground px-3 py-2 text-sm placeholder:text-muted-foreground"
       />
       <Search className="size-4 text-para absolute right-2 top-2" />
     </div>
@@ -138,7 +138,7 @@ export const LineCharts = () => {
 
   return (
     <div className="rounded-lg border border-borderCol py-4 px-5 w-full overflow-x-auto bg-white">
-      <div className="w-full flex items-center gap-x-2 justify-between">
+      <div className="w-full flex xl:flex-col   2xl:flex-row 2xl:tems-center gap-x-2 justify-between">
         <div className="flex items-center w-1/3">
           <h4 className="text-lg font-semibold w-full max-w-[100px]">
             Risk Price
@@ -147,7 +147,7 @@ export const LineCharts = () => {
             i
           </div>
         </div>
-        <div className="flex items-center justify-end gap-x-1 w-full">
+        <div className="flex items-center justify-end xl:justify-between 2xl:justify-end gap-x-1 w-full">
           <CountrySearch />
           <YearFilter />
           <Button variant="ghost" size="sm" className="text-para bg-[#F1F1F5] text-black font-light">

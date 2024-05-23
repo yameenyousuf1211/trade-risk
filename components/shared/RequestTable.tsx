@@ -148,13 +148,7 @@ export const RequestTable = ({
                       <TableBidStatus id={item._id} lcData={item} />
                     </TableCell>
                     <TableCell className="px-1 py-1 max-w-[200px]">
-                      <Button
-                        variant="ghost"
-                        className="center border border-borderCol rounded-md w-full px-1 py-2"
-                      >
-                        <Eye className="size-5" />
-                      </Button>
-                      {/* <TableDialog id="id"/>  */}
+                      <TableDialog lcId={item._id} bids={item.bids} isBank />
                     </TableCell>
                   </TableRow>
                 ))

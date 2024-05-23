@@ -44,6 +44,7 @@ const CompanyInfoPage = () => {
   const setValues = useRegisterStore((state) => state.setValues);
   const [phoneInput, setPhoneInput] = useState<string>("");
   const [allowSubmit, setAllowSubmit] = useState(false);
+  const [businessNature, setBusinessNature] = useState("");
 
   const corporateData =
     typeof window !== "undefined"
@@ -69,6 +70,7 @@ const CompanyInfoPage = () => {
         // @ts-ignore
         setValue(key, value);
       });
+      data && setBusinessNature(data.businessNature);
     }
   }, [corporateData]);
   useEffect(() => {
@@ -115,6 +117,14 @@ const CompanyInfoPage = () => {
   let phone = getValues("phone");
 
   useEffect(() => {}, [phoneInput]);
+
+  const handleNatureChange = (e: any) => {
+    const { value } = e.target;
+    // Remove digit characters
+    const nonDigitsOnly = value.replace(/\d/g, "");
+    setBusinessNature(nonDigitsOnly);
+    setValue("businessNature", nonDigitsOnly);
+  };
 
   return (
     <AuthLayout>
@@ -222,12 +232,29 @@ const CompanyInfoPage = () => {
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
             <div className="w-full relative">
-              <FloatingInput
+              {/* <FloatingInput
                 type="text"
+                inputMode="text"
                 name="businessNature"
                 placeholder="Nature of Business"
                 register={register}
-              />
+              /> */}
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  id="businessNature"
+                  className="z-[1] relative px-2.5 pb-2.5 pt-2.5 w-full text-sm text-lightGray bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
+                  placeholder=""
+                  value={businessNature}
+                  onChange={handleNatureChange}
+                />
+                <label
+                  htmlFor="businessNature"
+                  className="z-[1] absolute text-sm text-gray-400  duration-300 transform -translate-y-4 scale-75 top-2 origin-[0] bg-white  px-2 peer-focus:px-2 peer-focus:text-text peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
+                >
+                  Nature of Business
+                </label>
+              </div>
               {errors.businessNature && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.businessNature.message}

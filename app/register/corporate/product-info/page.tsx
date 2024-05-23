@@ -12,6 +12,69 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { TagsInput } from "react-tag-input-component";
 
+const AmountInput = ({
+  register,
+  setValue,
+  name,
+  value,
+  placeholder,
+}: {
+  register: any;
+  setValue: any;
+  name: string;
+  value: string;
+  placeholder: string;
+}) => {
+  const [currencyValue, setCurrencyValue] = useState(value || "");
+  const [rawValue, setRawValue] = useState(value || "");
+
+  const handleChange = (e: any) => {
+    const { value } = e.target;
+    const digitsOnly = value.replace(/\D/g, "");
+    if (digitsOnly) {
+      const formattedValue = parseInt(digitsOnly).toLocaleString();
+      setCurrencyValue(formattedValue);
+      setRawValue(digitsOnly);
+      setValue(name, digitsOnly);
+    } else {
+      setCurrencyValue("");
+      setRawValue("");
+      setValue(name, "");
+    }
+  };
+
+  const handleBlur = () => {
+    if (rawValue) {
+      const formattedValueWithCents = `${parseInt(
+        rawValue
+      ).toLocaleString()}.00`;
+      setCurrencyValue(formattedValueWithCents);
+    }
+  };
+
+  return (
+    <div className="relative w-full">
+      <input
+        type="text"
+        inputMode="numeric"
+        name={name}
+        {...register(name)}
+        value={currencyValue}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        className="z-[1] relative px-2.5 pb-2.5 pt-2.5 w-full text-sm text-lightGray bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
+        placeholder=""
+      />
+      <label
+        htmlFor={name}
+        className="pointer-events-none z-[1] absolute text-sm text-gray-400  duration-300 transform -translate-y-4 scale-75 top-2 origin-[0] bg-white  px-2 peer-focus:px-2 peer-focus:text-text peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
+      >
+        {placeholder}
+      </label>
+    </div>
+  );
+};
+
 const ProductInfoPage = () => {
   const router = useRouter();
   const setValues = useRegisterStore((state) => state.setValues);
@@ -127,12 +190,14 @@ const ProductInfoPage = () => {
               USD
             </div>
             <div className="w-full">
-              <FloatingInput
+              <AmountInput
                 register={register}
-                type="number"
-                inputMode="numeric"
+                setValue={setValue}
                 name="annualSalary"
                 placeholder="Annual Sales of your Company"
+                value={
+                  (productData && JSON.parse(productData)?.annualSalary) || ""
+                }
               />
             </div>
           </div>
@@ -149,12 +214,16 @@ const ProductInfoPage = () => {
               USD
             </div>
             <div className="w-full">
-              <FloatingInput
+              <AmountInput
                 register={register}
-                type="number"
-                inputMode="numeric"
+                setValue={setValue}
                 name="annualValueExports"
                 placeholder="Annual Value of Exports"
+                value={
+                  (productData &&
+                    JSON.parse(productData)?.annualValueExports) ||
+                  ""
+                }
               />
             </div>
           </div>
@@ -170,12 +239,16 @@ const ProductInfoPage = () => {
               USD
             </div>
             <div className="w-full">
-              <FloatingInput
+              <AmountInput
                 register={register}
-                type="number"
-                inputMode="numeric"
+                setValue={setValue}
                 name="annualValueImports"
                 placeholder="Annual Value of Imports"
+                value={
+                  (productData &&
+                    JSON.parse(productData)?.annualValueImports) ||
+                  ""
+                }
               />
             </div>
           </div>

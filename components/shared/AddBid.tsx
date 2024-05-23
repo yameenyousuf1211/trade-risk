@@ -157,7 +157,8 @@ export const AddBid = ({
             : status === "Add bid" && isBank
             ? "bg-[#1A1A26] text-white text-sm"
             : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
-        } rounded-md w-full p-2 capitalize hover:opacity-85`}
+        } rounded-md w-full p-2 capitalize hover:opacity-85 disabled:opacity-50 disabled:cursor-not-allowed`}
+        disabled={lcData?.status === "Expired"}
       >
         {triggerTitle || "Pending"}
       </DialogTrigger>

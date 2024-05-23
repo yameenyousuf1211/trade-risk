@@ -413,7 +413,7 @@ export const Sidebar = ({
           </div>
         </div>
         {/* {isBank && ( */}
-        <Button className="w-full bg-borderCol hover:bg-borderCol/90 text-[#696974]">
+        <Button className="mt-4 w-full bg-borderCol hover:bg-borderCol/90 text-[#696974]">
           View all requests
         </Button>
         {/* )} */}

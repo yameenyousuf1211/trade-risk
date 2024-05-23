@@ -13,8 +13,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { convertDateToString, convertDateToYYYYMMDD } from "@/utils";
 import { toast } from "sonner";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
+import { useAuth } from "@/context/AuthProvider";
 
-const BidCard = ({ data }: { data: IBids }) => {
+const BidCard = ({ data, isBank }: { data: IBids; isBank?: boolean }) => {
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation({
@@ -34,7 +35,7 @@ const BidCard = ({ data }: { data: IBids }) => {
       toast.success(`Bid ${status}`);
     }
   };
-  
+
   return (
     <div className="border border-borderCol py-5 px-3 rounded-lg">
       <div className="grid grid-cols-2 gap-y-4">
@@ -97,7 +98,7 @@ const BidCard = ({ data }: { data: IBids }) => {
             {convertDateToYYYYMMDD(data.bidValidity)}
           </p>
         </div>
-        {data.status === "Pending" && (
+        {data.status === "Pending" && !isBank && (
           <>
             <DialogClose id="close-button" className="hidden"></DialogClose>
             <Button
@@ -175,15 +176,20 @@ const LCInfo = ({
 export const TableDialog = ({
   lcId,
   bids,
+  isBank,
 }: {
   lcId: string;
   bids: IBids[];
+  isBank?: boolean;
 }) => {
   // Get LC
   const { data: lcData } = useQuery({
     queryKey: [`single-lc`, lcId],
     queryFn: () => fetchSingleLc(lcId),
   });
+
+  const { user } = useAuth();
+  const userBids = isBank && bids.filter((bid) => bid.bidBy === user._id);
 
   return (
     <Dialog>
@@ -296,7 +302,7 @@ export const TableDialog = ({
             <div className="flex items-center justify-between w-full pt-5">
               <div className="flex items-center gap-x-2">
                 <p className="bg-primaryCol text-white font-semibold text-lg rounded-xl py-1 px-3">
-                  {bids.length}
+                  {isBank ? userBids.length : bids.length}
                 </p>
                 <p className="text-xl font-semibold">Bids recieved</p>
               </div>
@@ -314,9 +320,17 @@ export const TableDialog = ({
             </div>
             {/* Bids */}
             <div className="flex flex-col gap-y-4 max-h-[65vh] overflow-y-auto overflow-x-hidden mt-5">
-              {bids &&
-                bids.length > 0 &&
-                bids.map((data: any) => <BidCard data={data} key={data._id} />)}
+              {isBank
+                ? userBids &&
+                  userBids.length > 0 &&
+                  userBids.map((data: any) => (
+                    <BidCard data={data} key={data._id} isBank />
+                  ))
+                : bids &&
+                  bids.length > 0 &&
+                  bids.map((data: any) => (
+                    <BidCard data={data} key={data._id} />
+                  ))}
             </div>
           </div>
         </div>

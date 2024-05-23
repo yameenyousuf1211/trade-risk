@@ -88,10 +88,10 @@ export const Step6 = ({
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full h-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
-        <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold">
+        <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           6
         </p>
-        <p className="font-semibold text-lg text-lightGray">{title}</p>
+        <p className="font-semibold text-[16px] text-lightGray">{title}</p>
       </div>
       {isDiscount && (
         <div className="border border-borderCol py-3 px-2 rounded-md mb-4 bg-[#F5F7F9]">
@@ -121,7 +121,7 @@ export const Step6 = ({
         </div>
       )}
       <div className="border border-borderCol py-3 px-2 rounded-md bg-[#F5F7F9]">
-        <p className="font-semibold ml-3 mb-2">Charges on account of</p>
+        <p className="font-semibold text-sm ml-3 mb-2">Charges on account of</p>
         <BgRadioInput
           id="account-beneficiary"
           label="Exporter/Supplier (Beneficiary)"
@@ -151,7 +151,7 @@ export const Step6 = ({
       </div>
 
       <div className="border border-borderCol py-3 px-2 rounded-md mt-5 bg-[#F5F7F9]">
-        <p className="font-semibold ml-3 mb-2">
+        <p className="font-semibold ml-3 mb-2 text-sm">
           {title == "Confirmation Charges"
             ? "Expected pricing"
             : "Expected charges"}
@@ -178,7 +178,7 @@ export const Step6 = ({
           id="expected-pricing"
           className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
         >
-          <p className="text-lightGray">Pricing Per Annum</p>
+          <p className="text-lightGray text-sm">Pricing Per Annum</p>
           <div className="flex items-center gap-x-2">
             <Button
               type="button"

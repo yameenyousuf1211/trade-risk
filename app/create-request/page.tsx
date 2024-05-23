@@ -101,9 +101,13 @@ const CreateRequestPage = () => {
         return toast.error(
           "Confirming bank country cannot be the same as issuing bank country"
         );
+      if (/^\d+$/.test(data.productDescription))
+        return toast.error("Product description cannot contain only digits");
       startLoading();
+      const { confirmingBank2, ...rest } = data;
+
       const reqData = {
-        ...data,
+        ...rest,
         lcType: "LC Confirmation",
         transhipment: data.transhipment === "yes" ? true : false,
         lcPeriod: {
@@ -142,9 +146,12 @@ const CreateRequestPage = () => {
       return toast.error(
         "Confirming bank country cannot be the same as issuing bank country"
       );
+    if (/^\d+$/.test(data.productDescription))
+      return toast.error("Product description cannot contain only digits");
     setLoader(true);
+    const { confirmingBank2, ...rest } = data;
     const reqData = {
-      ...data,
+      ...rest,
       lcType: "LC Confirmation",
       isDraft: "true",
       transhipment: data.transhipment === "yes" ? true : false,

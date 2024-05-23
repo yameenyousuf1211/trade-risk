@@ -84,6 +84,17 @@ export const confirmationSchema = z.lazy(() =>
           message: "Select exporter beneficiary country",
         }),
       }),
+      confirmingBank2: z
+        .object(
+          {
+            bank: z.string({ message: "Confirming bank name is required" }),
+            country: z.string({
+              message: "Confirming bank country is required",
+            }),
+          },
+          { message: "Confirming bank details is required" }
+        )
+        .optional(),
       confirmationInfo: z.object({
         behalfOf: z.enum(["Exporter", "Importer"], {
           message: "Select confirmation info",

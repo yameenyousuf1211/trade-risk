@@ -165,13 +165,13 @@ export const ProgressCharts = ({
           {/* <Image src="/images/info.png" alt="info" width={20} height={20} /> */}
         </div>
         {!isBank && (
-          <p className="w-10 h-8 center bg-[#eeecec] rounded-md px-4 text-lg font-semibold">
+          <p className="w-10 h-8 center bg-[#eeecec] rounded-md px-4 text-lg font-semibold mr-1">
             {maxValue}
           </p>
         )}
       </div>
       {/* Charts */}
-      <div className="flex items-center overflow-x-auto ">
+      <div className="flex items-center">
         {isLoading ? (
           <div className="w-full h-full center">
             <Loader />

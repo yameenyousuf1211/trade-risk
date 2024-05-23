@@ -143,10 +143,10 @@ export const Period = ({
   }, [valueChanged]);
 
   return (
-    <div className="flex items-start gap-x-4 my-5">
+    <div className="flex items-start gap-x-4 my-5 h-full">
       <div className="border border-borderCol py-3 px-2 rounded-md w-[60%] bg-[#F5F7F9]">
         <p className="font-semibold mb-2 ml-3">LC Period</p>
-        <div className="flex bg-white items-center gap-x-4 justify-between border border-borderCol rounded-md py-3 px-3 mb-3">
+        <div className="flex bg-white items-center gap-x-4 justify-between border border-borderCol rounded-md py-2 px-3 mb-3">
           <div className="w-full rounded-md flex items-center gap-x-2">
             <input
               type="radio"
@@ -157,7 +157,12 @@ export const Period = ({
               checked={lcIssueType === "yes"}
               onChange={handleRadioChange}
             />
-            <label htmlFor="date-lc-issued">Date LC Issued</label>
+            <label
+              htmlFor="date-lc-issued"
+              className="text-sm text-lightGray font-normal"
+            >
+              Date LC Issued
+            </label>
           </div>
           <div className="w-full rounded-md flex items-center gap-x-2">
             <input
@@ -169,7 +174,12 @@ export const Period = ({
               checked={lcIssueType === "no"}
               onChange={handleRadioChange}
             />
-            <label htmlFor="expected-date">Expected date of LC issuance</label>
+            <label
+              htmlFor="expected-date"
+              className="text-sm text-lightGray font-normal"
+            >
+              Expected date of LC issuance
+            </label>
           </div>
           {/* Popover for LC Period Date */}
           <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
@@ -178,6 +188,7 @@ export const Period = ({
                 variant={"outline"}
                 className="w-fit justify-start text-left font-normal border-none text-[#B5B5BE]"
                 id="period-lc-date"
+                disabled={!lcIssueType}
               >
                 {lcPeriodDate ? (
                   format(lcPeriodDate, "PPP")
@@ -216,7 +227,7 @@ export const Period = ({
           id="period-expiry-date"
           className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
         >
-          <p>LC Expiry Date</p>
+          <p className="text-sm text-lightGray font-normal">LC Expiry Date</p>
           {/* Popover for LC Expiry Date */}
           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
@@ -247,7 +258,7 @@ export const Period = ({
         </label>
       </div>
       {/* Port of Shipment */}
-      <div className="border border-borderCol py-3 px-2 rounded-md w-[40%] h-[185px] min-h-44 bg-[#F5F7F9]">
+      <div className="border border-borderCol py-3 px-2 rounded-md w-[40%] h-[178px] min-h-40 bg-[#F5F7F9]">
         <p className="font-semibold ml-3">Port of Shipment</p>
         <div className="flex flex-col gap-y-2 mt-2">
           <DDInput
@@ -324,8 +335,10 @@ export const Transhipment = ({
 
   return (
     <div className="w-full flex items-start gap-x-4 justify-between mt-4">
-      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-full">
-        <p className="font-semibold mb-2 ml-3">Transhipment Allowed</p>
+      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-44">
+        <p className="text-[16px] font-semibold mb-2 ml-3">
+          Transhipment Allowed
+        </p>
         <BgRadioInput
           id="transhipment-allowed-yes"
           label="Yes"
@@ -346,8 +359,8 @@ export const Transhipment = ({
         />
       </div>
 
-      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-full">
-        <p className="font-semibold mb-2 ml-3">
+      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-44">
+        <p className="text-[16px] font-semibold mb-2 ml-3">
           {isDiscount
             ? "Expected Date for Discounting"
             : "Expected Date to add Confirmation"}
@@ -356,7 +369,7 @@ export const Transhipment = ({
           id="expected-confirmation-date"
           className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between "
         >
-          <p>Select Date</p>
+          <p className="text-sm text-lightGray font-normal">Select Date</p>
           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -364,14 +377,14 @@ export const Transhipment = ({
                 className={cn(
                   "w-fit justify-start text-left font-normal border-none",
                   !expectedConfirmationDate &&
-                    "text-muted-foreground flex items-center justify-between w-fit"
+                    "text-muted-foreground flex items-center text-sm justify-between w-fit"
                 )}
                 id="expected-confirmation-date"
               >
                 {expectedConfirmationDate ? (
                   format(expectedConfirmationDate, "PPP")
                 ) : (
-                  <span>DD/MM/YYYY</span>
+                  <span className="text-sm">DD/MM/YYYY</span>
                 )}
                 <CalendarIcon className="ml-2 h-4 w-4" />
               </Button>
@@ -403,8 +416,8 @@ export const Transhipment = ({
                 : setValue("expectedConfirmationDate", nextWeekDate);
             }}
           >
-            <p className="text-white">Next week</p>
-            <p className="text-sm text-white/80 font-thin">
+            <p className="text-white text-[12px] font-semibold">Next week</p>
+            <p className="text-[10px] text-white/80 font-normal -mt-1">
               {" "}
               {format(nextWeekDate, "d MMMM")}
             </p>
@@ -420,8 +433,8 @@ export const Transhipment = ({
                 : setValue("expectedConfirmationDate", twoWeeksDate);
             }}
           >
-            <p className="text-white">Two Weeks</p>
-            <p className="text-sm text-white/80 font-thin">
+            <p className="text-white text-[12px] font-semibold">Two Weeks</p>
+            <p className="text-[10px] text-white/80 font-normal -mt-1">
               {" "}
               {format(twoWeeksDate, "d MMMM")}
             </p>
@@ -460,7 +473,6 @@ export const DiscountBanks = ({
 }) => {
   const [valueChanged, setValueChanged] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-
 
   let issuingCountry = getValues("issuingBank.country");
   let issuingBank = getValues("issuingBank.bank");
@@ -502,7 +514,7 @@ export const DiscountBanks = ({
     const confirmingCountry = getValues("confirmingBank.country");
     if (!advisingBank || !advisingCountry) {
       toast.error("Please select advising bank first");
-      setIsChecked(false); 
+      setIsChecked(false);
       return;
     }
     if (confirmingBank && confirmingCountry) {
@@ -595,7 +607,7 @@ export const DiscountBanks = ({
               className="accent-primaryCol"
               checked={isChecked}
               onChange={handleCheckboxChange}
-              />
+            />
             <label
               htmlFor="same-as-advising"
               className="ml-1  text-[12px] text-lightGray"

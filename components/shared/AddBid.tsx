@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { DatePicker, Loader } from "../helpers";
 import { Input } from "../ui/input";
 import Image from "next/image";
-import { convertDateToCommaString } from "@/utils";
+import { convertDateAndTimeToString, convertDateToCommaString } from "@/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { addBidTypes } from "@/validation/bids.validation";
@@ -54,8 +54,8 @@ export const AddBid = ({
   lcId,
   setIsAddNewBid,
   isCorporate,
-  bidId,
   isBank,
+  bidData,
 }: {
   isDiscount?: boolean;
   isInfo?: boolean;
@@ -65,7 +65,7 @@ export const AddBid = ({
   lcId: string;
   setIsAddNewBid?: any;
   isCorporate?: boolean;
-  bidId?: string;
+  bidData?: any;
   isBank?: boolean;
 }) => {
   const queryClient = useQueryClient();
@@ -78,12 +78,12 @@ export const AddBid = ({
     queryFn: () => fetchSingleLc(lcId),
   });
 
-  const { data: bidData, isLoading: isBidLoading } = useQuery({
-    queryKey: [`single-bid`, bidId],
-    queryFn: () => fetchSingleBid(bidId),
-    enabled: !!bidId,
-  });
-  // console.log(bidId);
+  // const { data: bidData, isLoading: isBidLoading } = useQuery({
+  //   queryKey: [`single-bid`, bidId],
+  //   queryFn: () => fetchSingleBid(bidId),
+  //   enabled: !!bidId,
+  // });
+
   const { mutateAsync } = useMutation({
     mutationFn: addBid,
     onSuccess: () => {
@@ -152,19 +152,25 @@ export const AddBid = ({
                 border &&
                 "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
               }`
+            : lcData && lcData.status === "Expired" && status === "Add bid"
+            ? "bg-[#1A1A26] text-white text-sm"
             : status === "Add bid" && !isBank
             ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
             : status === "Add bid" && isBank
             ? "bg-[#1A1A26] text-white text-sm"
             : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
-        } rounded-md w-full p-2 capitalize hover:opacity-85 disabled:opacity-50 disabled:cursor-not-allowed`}
-        disabled={lcData?.status === "Expired"}
+        } rounded-md w-full p-2 capitalize hover:opacity-85`}
+        disabled={lcData?.status === "Expired" && status === "Add bid"}
       >
-        {triggerTitle || "Pending"}
+        {lcData && lcData.status === "Expired" && status === "Add bid"
+          ? "Not Applicable"
+          : triggerTitle || "Pending"}
       </DialogTrigger>
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
-          <h2 className="text-lg font-semibold">{lcData?.lcType || ""}</h2>
+          <h2 className="text-lg font-semibold">
+            {lcData?.lcType + " Request" || ""}
+          </h2>
           <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>
             <X className="size-7" />
           </DialogClose>
@@ -182,8 +188,7 @@ export const AddBid = ({
                 <div className="pt-5 px-4 bg-bg">
                   <h2 className="text-2xl font-semibold mb-1">
                     <span className="text-para font-medium">LC Amount:</span>{" "}
-                    USD
-                    {lcData?.amount?.toLocaleString() || ""}
+                    USD {lcData?.amount?.toLocaleString() + ".00" || ""}
                   </h2>
                   <div className="h-[2px] w-full bg-neutral-800 mt-5" />
                 </div>
@@ -203,7 +208,7 @@ export const AddBid = ({
                   />
                   <LCInfo
                     label="LC Advising Bank"
-                    value={lcData?.advisingBank?.bank || ""}
+                    value={lcData?.advisingBank?.bank || "-"}
                   />
                   <LCInfo
                     label="Confirming Bank"
@@ -301,35 +306,59 @@ export const AddBid = ({
                 <div className="flex flex-col gap-y-2 py-4 px-4 mt-3 border border-borderCol rounded-lg">
                   <div className={status === "Expired" ? "opacity-50" : ""}>
                     <p className="text-sm text-para">Bid Number</p>
-                    <p className="font-semibold text-lg">100928</p>
+                    <p className="font-semibold text-lg">
+                      {bidData?._id?.substring(0, 6) || "100928"}
+                    </p>
                   </div>
 
                   <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="font-semibold text-lg">Habib Bank Limited</p>
-                    <p className="text-sm text-para">Pakistan</p>
+                    <p className="font-semibold text-lg capitalize">
+                      {bidData ? bidData.bidBy?.[0] : "Habib Bank Limited"}
+                    </p>
+                    <p className="text-sm text-para capitalize">
+                      {bidData ? bidData.bidBy?.[2] : "Pakistan"}
+                    </p>
                   </div>
 
                   <div className={status === "Expired" ? "opacity-50" : ""}>
                     <p className="text-sm text-para">Bid Submitted</p>
-                    <p className="font-semibold text-lg">Jan 9 2023, 23:59</p>
+                    <p className="font-semibold text-lg capitalize">
+                      {bidData
+                        ? convertDateAndTimeToString(bidData.createdAt)
+                        : "Jan 9 2023, 23:59"}
+                    </p>
                   </div>
 
                   <div className={status === "Expired" ? "opacity-50" : ""}>
                     <p className="text-sm text-para">Bid Expiry</p>
-                    <p className="font-semibold text-lg">Jan 9 2023, 23:59</p>
+                    <p className="font-semibold text-lg">
+                      {bidData
+                        ? convertDateAndTimeToString(bidData.bidValidity)
+                        : "Jan 9 2023, 23:59"}
+                    </p>
                   </div>
 
                   <div className={status === "Expired" ? "opacity-50" : ""}>
                     <p className="text-sm text-para">Confirmation Rate</p>
                     <p className="text-lg font-semibold text-text">
-                      1.75% per annum
+                      {bidData ? bidData.confirmationPrice : "1.75"}% per annum
                     </p>
                   </div>
 
                   <div className={status === "Expired" ? "opacity-50" : ""}>
                     <p className="text-sm text-para">Discounting Base Rate</p>
                     <p className="font-semibold text-lg">
-                      KIBOR + <span className="text-text">2.22% per annum</span>
+                      {bidData
+                        ? !bidData.discountBaseRate && "Not Applicable"
+                        : "KIBOR + "}
+                      <span className="text-text">
+                        {bidData
+                          ? bidData.discountBaseRate
+                            ? bidData.discountBaseRate + "% per annum"
+                            : ""
+                          : ""}
+                        {!bidData && "2.22 % per annum"}
+                      </span>
                     </p>
                   </div>
 
@@ -397,7 +426,7 @@ export const AddBid = ({
                     htmlFor="confirmation"
                     className="block font-semibold mb-2"
                   >
-                    Confirmation Pricing
+                    {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
                   </label>
                   <Input
                     type="number"

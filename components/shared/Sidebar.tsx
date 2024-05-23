@@ -43,7 +43,7 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-52">
       <p className="uppercase">
         {lcData.currency || "USD"}{" "}
-        {info.confirmationPrice?.toLocaleString() || "00" + ".00"}
+        {info.amount?.toLocaleString() + ".00" || "00"}
       </p>
       <p className="text-para font-medium mt-2">{info.userInfo?.name || ""}</p>
       <p className="text-para text-sm font-light truncate">
@@ -89,7 +89,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
                   Request #{data.refId}
                 </p>
                 <p className="capitalize text-lg font-semibold my-1">
-                  {data.issuingBank?.bank}
+                  {data.createdBy?.[0].name || ""}
                 </p>
 
                 <p className="text-sm flex items-center flex-wrap">
@@ -413,7 +413,7 @@ export const Sidebar = ({
           </div>
         </div>
         {/* {isBank && ( */}
-        <Button className="mt-4 w-full bg-borderCol hover:bg-borderCol/90 text-[#696974]">
+        <Button className="mt-4 w-full rounded-xl py-6 bg-borderCol hover:bg-borderCol/90 text-[#696974] text-[16px]">
           View all requests
         </Button>
         {/* )} */}

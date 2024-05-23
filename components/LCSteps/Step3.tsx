@@ -34,6 +34,8 @@ export const Step3 = ({
   let advisingBank = getValues("advisingBank.bank");
   let confirmingCountry = getValues("confirmingBank.country");
   let confirmingBank = getValues("confirmingBank.bank");
+  let confirming2Country = getValues("confirmingBank2.country");
+  let confirming2Bank = getValues("confirmingBank2.bank");
   let expectedDate = getValues("lcPeriod.expectedDate");
   let startDate = getValues("lcPeriod.startDate");
   let endDate = getValues("lcPeriod.endDate");
@@ -43,6 +45,7 @@ export const Step3 = ({
     issuingCountry = getValues("issuingBank.country");
     confirmingCountry = getValues("confirmingBank.country");
     advisingCountry = getValues("advisingBank.country");
+    confirming2Country = getValues("confirmingBank2.country");
   }, [valueChanged]);
 
   useEffect(() => {
@@ -81,10 +84,10 @@ export const Step3 = ({
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
-        <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold">
+        <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           3
         </p>
-        <p className="font-semibold text-lg text-lightGray">LC Details</p>
+        <p className="font-semibold text-[16px] text-lightGray">LC Details</p>
       </div>
       {/* Issuing Bank */}
       <div className="flex items-center justify-between w-full mb-3 gap-x-4">
@@ -210,8 +213,9 @@ export const Step3 = ({
               <p className="font-semibold">2.</p>
               <DDInput
                 label="Country"
-                id="confirmingBank.country"
+                id="confirmingBank2.country"
                 placeholder="Select a Country"
+                value={confirming2Bank}
                 data={countries}
                 setValue={setValue}
                 setValueChanged={setValueChanged}
@@ -220,8 +224,9 @@ export const Step3 = ({
             </div>
             <DDInput
               label="Bank"
-              id="confirmingBank.bank"
+              id="confirmingBank2.bank"
               placeholder="Select bank"
+              value={confirming2Bank}
               setValue={setValue}
               setValueChanged={setValueChanged}
               disabled={
@@ -236,14 +241,17 @@ export const Step3 = ({
                 confirmingBanks.response
               }
             />
-            <div className="absolute -top-2 right-0 bg-[#9797971A] center text-[#7E7E7E] rounded-full size-6 shadow-md z-10 cursor-pointer" onClick={() => setShowConfirmingBank(false)}>
+            <div
+              className="absolute -top-2 right-0 bg-[#9797971A] center text-[#7E7E7E] rounded-full size-6 shadow-md z-10 cursor-pointer"
+              onClick={() => setShowConfirmingBank(false)}
+            >
               <X className="size-5 text-red-500" />
             </div>
           </div>
         ) : (
           <div
             onClick={() => setShowConfirmingBank((prev: boolean) => !prev)}
-            className="cursor-pointer bg-white ml-4 center gap-x-3 border-2 border-dotted border-borderCol py-2 rounded-md mt-2"
+            className="cursor-pointer bg-white ml-4 center gap-x-3 border-2 border-dotted border-borderCol py-3 rounded-md mt-2"
           >
             <div className=" center p-1 border border-black rounded-full">
               <Plus className="size-4" />

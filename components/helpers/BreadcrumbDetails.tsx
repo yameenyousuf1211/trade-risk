@@ -49,7 +49,6 @@ export const BreadcrumbDetails = () => {
   const isConfirmationDiscounting = pathname === "/create-request/confirmation";
 
   const {
-    isLoading,
     data,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
@@ -81,9 +80,9 @@ export const BreadcrumbDetails = () => {
             <div className="flex items-center gap-x-2" key={`${crumb}-${idx}`}>
               <div className="flex gap-1 items-center">
                 {stepStatus[idx] && (
-                 <div>
-                  <CheckIcon color="#29C084" size={20}/>
-                 </div>
+                  <div>
+                    <CheckIcon color="#29C084" size={20} />
+                  </div>
                 )}
                 <BreadcrumbItem key={`${crumb}-${idx}`}>
                   <BreadcrumbList>{crumb}</BreadcrumbList>

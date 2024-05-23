@@ -74,7 +74,7 @@ export const DDInput = ({
   return (
     <label
       id={id}
-      className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+      className="border text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
     >
       <p className="text-lightGray">{label}</p>
       <Popover open={ddOpen} onOpenChange={setDdOpen}>
@@ -162,7 +162,7 @@ export const BgRadioInput = ({
       htmlFor={id}
       className={`px-3 py-4 w-full transition-colors duration-100 ${
         checked ? "bg-[#EEE9FE]" : "border border-borderCol bg-white"
-      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray `}
+      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
     >
       <input
         type="radio"

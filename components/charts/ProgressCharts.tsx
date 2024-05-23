@@ -154,7 +154,7 @@ export const ProgressCharts = ({
   return (
     <div
       className="bg-[white] rounded-lg border border-borderCol py-4 px-5 
-    2xl:max-w-[525px] w-full max-h-[550px]"
+    2xl:max- w-[525px] w-full max-h-[550px]"
     >
       <div className="flex items-center gap-x-2 justify-between mb-3 w-full">
         <div className="flex items-center gap-x-2">

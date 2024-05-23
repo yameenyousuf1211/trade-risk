@@ -62,10 +62,14 @@ export const Step6 = ({
   };
 
   const handleIncrement = () => {
+  
     const currentValue = isDiscount
       ? getValues("discountingInfo.pricePerAnnum") || "0"
       : getValues("confirmationInfo.pricePerAnnum") || "0";
     const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
+    if(Number(newValue) > 100) {
+      return;
+    }
     isDiscount
       ? setValue("discountingInfo.pricePerAnnum", newValue)
       : setValue("confirmationInfo.pricePerAnnum", newValue);
@@ -208,7 +212,7 @@ export const Step6 = ({
               variant="ghost"
               className="bg-none border-none text-lg"
               onClick={handleIncrement}
-            >
+              >
               +
             </Button>
           </div>

@@ -46,7 +46,7 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
         {info.amount?.toLocaleString() + ".00" || "00"}
       </p>
       <p className="text-para font-medium mt-2">{info.userInfo?.name || ""}</p>
-      <p className="text-para text-sm font-light truncate">
+      <p className="text-para text-sm font-light truncate capitalize">
         {info.userInfo?.country || "Pakistan"}
       </p>
       <div className="flex items-center gap-x-2 mt-2">

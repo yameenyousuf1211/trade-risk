@@ -22,7 +22,7 @@ import Image from "next/image";
 import { columnHeaders, bankColumnHeaders } from "@/utils/data";
 import { ApiResponse, Country, ILcs } from "@/types/type";
 import { convertDateToString } from "@/utils";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
 
@@ -33,13 +33,24 @@ interface TableDataCellProps {
 const TableDataCell = ({ data }: TableDataCellProps) => {
   return (
     <TableCell className="px-1 py-1 max-w-[180px]">
-      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-lightGray text-sm">
+      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-lightGray text-sm text-center">
         {data !== undefined ? String(data) : "-"}
       </div>
     </TableCell>
   );
 };
 
+type SortOrder = "asc" | "desc";
+
+interface ActiveColumn {
+  column: string;
+  order: SortOrder;
+}
+
+const sortOrder = {
+  ASCENDING: "asc" as SortOrder,
+  DESCENDING: "desc" as SortOrder,
+};
 export const RequestTable = ({
   isBank,
   data,
@@ -73,6 +84,93 @@ export const RequestTable = ({
     );
     return country ? country.flag : undefined;
   };
+
+  // const [activeColumns, setActiveColumns] = useState<ActiveColumn[]>([]);
+
+  // const handleColumnHeaderClick = (column: any) => {
+  //   console.log("column: ", column);
+  //   console.log("activeColumns: ", activeColumns);
+
+  //   const columnIndex = activeColumns.findIndex((col) => col.column === column);
+  //   console.log("columnIndex: ", columnIndex);
+  //   if (columnIndex === -1) {
+  //     setActiveColumns([
+  //       ...activeColumns,
+  //       { column, order: sortOrder.ASCENDING },
+  //     ]);
+  //   } else {
+  //     const updatedColumns = [...activeColumns];
+  //     updatedColumns[columnIndex].order =
+  //       updatedColumns[columnIndex].order === sortOrder.ASCENDING
+  //         ? sortOrder.DESCENDING
+  //         : sortOrder.ASCENDING;
+  //     setActiveColumns(updatedColumns);
+  //   }
+  // };
+
+  // const sortData = (data: any, columns: ActiveColumn[]) => {
+  //   return data.sort((a, b) => {
+  //     for (const { column, order } of columns) {
+  //       const valueA = a[column];
+  //       const valueB = b[column];
+
+  //       if (typeof valueA === "string" && typeof valueB === "string") {
+  //         const comparison = valueA.localeCompare(valueB);
+  //         if (comparison !== 0) {
+  //           return order === sortOrder.ASCENDING ? comparison : -comparison;
+  //         }
+  //       } else {
+  //         const comparison = valueA - valueB;
+  //         if (comparison !== 0) {
+  //           return order === sortOrder.ASCENDING ? comparison : -comparison;
+  //         }
+  //       }
+  //     }
+  //     return 0;
+  //   });
+  // };
+
+  // let sortedData: any = [];
+  // useEffect(() => {
+  //   sortedData = data && data.data ? sortData(data.data, activeColumns) : [];
+  // }, [activeColumns, data]);
+
+  // console.log("sortedDAat: ", sortedData);
+
+  // const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+
+  // const getNestedValue = (obj, path) => {
+  //   return path.split(".").reduce((acc, part) => acc && acc[part], obj);
+  // };
+
+  // const sortedData = React.useMemo(() => {
+  //   if (data && data.data) {
+  //     let sortableData = [...data.data];
+  //     if (sortConfig.key) {
+  //       sortableData.sort((a, b) => {
+  //         const aValue = getNestedValue(a, sortConfig.key);
+  //         const bValue = getNestedValue(b, sortConfig.key);
+  //         if (aValue < bValue) {
+  //           return sortConfig.direction === "asc" ? -1 : 1;
+  //         }
+  //         if (aValue > bValue) {
+  //           return sortConfig.direction === "asc" ? 1 : -1;
+  //         }
+  //         return 0;
+  //       });
+  //     }
+  //     return sortableData;
+  //   }
+  // }, [data, sortConfig]);
+
+  // const handleSort = (key) => {
+  //   let direction = "asc";
+  //   if (sortConfig.key === key && sortConfig.direction === "asc") {
+  //     direction = "desc";
+  //   }
+  //   setSortConfig({ key, direction });
+  // };
+
   return (
     <div>
       <div className="rounded-md border px-4 py-4 bg-white">
@@ -105,7 +203,7 @@ export const RequestTable = ({
                   ? bankColumnHeaders.map((header, idx) => (
                       <TableHead
                         key={`${header}-${idx}`}
-                        className="px-2 h-8 py-2"
+                        className="px-2 h-8 py-2  min-w-32"
                       >
                         <div className="capitalize flex text-[#44444F] items-center gap-x-2 justify-center text-[12px] font-semibold">
                           {header}
@@ -118,11 +216,14 @@ export const RequestTable = ({
                   : columnHeaders.map((header, idx) => (
                       <TableHead
                         key={`${header}-${idx}`}
-                        className="px-2 h-8 py-2"
+                        className="px-2 h-8 py-2 min-w-32"
                       >
-                        <div className="capitalize flex text-[#44444F]  items-center gap-x-2 justify-start text-[12px] font-semibold">
+                        <div className="capitalize flex text-[#44444F]  items-center gap-x-2 justify-center text-[12px] font-semibold">
                           {header}
-                          <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
+                          <div
+                            // onClick={() => handleSort(header)}
+                            className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer"
+                          >
                             <ChevronUp className="size-4" />
                           </div>
                         </div>
@@ -152,7 +253,7 @@ export const RequestTable = ({
                     />
                     <TableDataCell data={item.lcType} />
                     <TableCell className="px-1 py-1 max-w-[180px]">
-                      <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
+                      <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <p className="text-[16px]">
                           {allCountries &&
                             getCountryFlagByName(item.issuingBank.country)}
@@ -180,7 +281,9 @@ export const RequestTable = ({
                   <TableRow key={index} className="border-none ">
                     <TableCell className="px-1 py-1 min-w-[90px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                        <div className="truncate">{item.refId}</div>
+                        <div className="tex-sm truncate text-lightGray">
+                          {item.refId}
+                        </div>
                       </div>
                     </TableCell>
                     <TableDataCell
@@ -191,7 +294,7 @@ export const RequestTable = ({
                     />
                     <TableDataCell data={item.lcType} />
                     <TableCell className="px-1 py-1 max-w-[180px]">
-                      <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
+                      <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <p className="text-[16px]">
                           {allCountries &&
                             getCountryFlagByName(item.issuingBank.country)}

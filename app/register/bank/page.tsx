@@ -81,7 +81,6 @@ const BankRegisterPage = () => {
     if (procceed) setProceedErr(false);
   }, [procceed]);
 
-
   const [cities, setCities] = useState([]);
 
   const { data: citiesData } = useQuery({
@@ -126,7 +125,7 @@ const BankRegisterPage = () => {
             <div className="w-full relative">
               <FloatingInput
                 name="email"
-                placeholder="email"
+                placeholder="Email"
                 register={register}
               />
               {errors.email && (
@@ -319,7 +318,7 @@ const BankRegisterPage = () => {
               </Button>
             </Link>
             <Button
-              className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
+              className="w-full disabled:bg-[#5625F2]/30 disabled:text-white bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
               disabled={!isValid}
               type="button"

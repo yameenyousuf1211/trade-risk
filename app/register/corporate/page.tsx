@@ -97,6 +97,8 @@ const CompanyInfoPage = () => {
   const [cities, setCities] = useState([]);
   const [cityVal, setCityVal] = useState("");
   const [cityOpen, setCityOpen] = useState(false);
+  const [constitution, setConstitution] = useState("");
+  const [businessSector, setBusinessSector] = useState("");
 
   const { data: citiesData } = useQuery({
     queryKey: ["cities", isoCode],
@@ -154,11 +156,18 @@ const CompanyInfoPage = () => {
             </div>
             <div className="w-full relative">
               <Select
-                onValueChange={(value) =>
-                  setValue("constitution", value, { shouldValidate: true })
-                }
+                onValueChange={(value) => {
+                  setValue("constitution", value, { shouldValidate: true });
+                  setConstitution(value);
+                }}
               >
-                <SelectTrigger className="capitalize w-full py-5 px-4 text-gray-400">
+                <SelectTrigger
+                  className={`capitalize w-full py-5 px-4 ${
+                    corporateData || constitution
+                      ? "text-lightGray"
+                      : "text-gray-400"
+                  }`}
+                >
                   <SelectValue
                     className="capitalize"
                     placeholder={
@@ -234,13 +243,6 @@ const CompanyInfoPage = () => {
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
             <div className="w-full relative">
-              {/* <FloatingInput
-                type="text"
-                inputMode="text"
-                name="businessNature"
-                placeholder="Nature of Business"
-                register={register}
-              /> */}
               <div className="relative w-full">
                 <input
                   type="text"
@@ -265,11 +267,18 @@ const CompanyInfoPage = () => {
             </div>
             <div className="w-full relative">
               <Select
-                onValueChange={(value) =>
-                  setValue("businessType", value, { shouldValidate: true })
-                }
+                onValueChange={(value) => {
+                  setValue("businessType", value, { shouldValidate: true });
+                  setBusinessSector(value);
+                }}
               >
-                <SelectTrigger className="capitalize w-full py-5 px-4 text-gray-400">
+                <SelectTrigger
+                  className={`capitalize w-full py-5 px-4 ${
+                    corporateData || businessSector
+                      ? "text-lightGray"
+                      : "text-gray-400"
+                  }`}
+                >
                   <SelectValue
                     placeholder={
                       corporateData
@@ -279,7 +288,7 @@ const CompanyInfoPage = () => {
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Automotive">Automotive</SelectItem>
+                  <SelectItem value="Automotive" >Automotive</SelectItem>
                   <SelectItem value="Healthcare">Healthcare</SelectItem>
                   <SelectItem value="Technology">Technology</SelectItem>
                   <SelectItem value="Finance">Finance</SelectItem>
@@ -376,7 +385,9 @@ const CompanyInfoPage = () => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={cityOpen}
-                    className="capitalize w-full justify-between font-normal text-sm text-gray-400"
+                    className={`capitalize w-full justify-between font-normal text-sm ${
+                      cityVal ? "text-lightGray" : "text-gray-400"
+                    }`}
                     disabled={!cities || cities.length <= 0}
                   >
                     {cityVal

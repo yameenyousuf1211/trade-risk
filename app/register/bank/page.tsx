@@ -41,11 +41,14 @@ const BankRegisterPage = () => {
     setValue,
     handleSubmit,
     getValues,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    watch,
+    formState: { errors, isDirty, isValid },
+    trigger
   } = useForm<z.infer<typeof bankSchema>>({
     resolver: zodResolver(bankSchema),
     mode: "all",
   });
+  console.log(watch());
 
   const onSubmit: SubmitHandler<z.infer<typeof bankSchema>> = async (
     data: z.infer<typeof bankSchema>
@@ -72,13 +75,11 @@ const BankRegisterPage = () => {
   useEffect(() => {
     if (isValid && isDirty) setAllowSubmit(true);
     if (!isValid || !isDirty) setAllowSubmit(false);
-  }, [errors, isValid, isDirty]);
+  }, [errors, isValid, isDirty,]);
 
   useEffect(() => {
     if (procceed) setProceedErr(false);
   }, [procceed]);
-
-  console.log(procceed);
 
   const [cities, setCities] = useState([]);
 
@@ -124,7 +125,7 @@ const BankRegisterPage = () => {
             <div className="w-full relative">
               <FloatingInput
                 name="email"
-                placeholder="email"
+                placeholder="Email"
                 register={register}
               />
               {errors.email && (
@@ -228,6 +229,7 @@ const BankRegisterPage = () => {
                 setPhoneInput={setPhoneInput}
                 value={phoneInput}
                 setAllowSubmit={setAllowSubmit}
+                trigger={trigger}
               />
               {(phone === "" || phone === undefined) && errors.pocPhone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
@@ -316,9 +318,9 @@ const BankRegisterPage = () => {
               </Button>
             </Link>
             <Button
-              className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
+              className="w-full disabled:bg-[#5625F2]/30 disabled:text-white bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
-              disabled={!allowSubmit}
+              disabled={!isValid}
               type="button"
               onClick={(e) => {
                 if (procceed) handleSubmit(onSubmit)();

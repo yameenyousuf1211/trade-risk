@@ -42,7 +42,7 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">
-        <div className="2xl:w-5/6 w-4/5 p-4">
+        <div className="w-4/5 p-4">
           <h2 className="text-4xl font-semibold mb-5">My Bids</h2>
 
           {/* Data Table */}
@@ -72,7 +72,7 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
             <BankTable data={data} isLoading={isLoading} />
           </div>
         </div>
-        <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
+        <div className="w-1/5 max-w-[300px] sticky top-10 h-[80vh]">
           <Sidebar isBank={true} />
         </div>
       </div>

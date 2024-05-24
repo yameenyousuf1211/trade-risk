@@ -1,4 +1,5 @@
 "use client";
+import { register } from "module";
 import { useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -11,6 +12,7 @@ export const TelephoneInput = ({
   setPhoneInput,
   value,
   setAllowSubmit,
+  trigger
 }: {
   name: string;
   placeholder: string;
@@ -18,6 +20,8 @@ export const TelephoneInput = ({
   setPhoneInput?: any;
   value?: string;
   setAllowSubmit?: (allowSubmit: boolean) => void;
+  register?:any
+  trigger?:any
 }) => {
   const [val, setVal] = useState(value || undefined);
   const [selectedCountry, setSelectedCountry] = useState<string>("sa");
@@ -26,9 +30,9 @@ export const TelephoneInput = ({
     if (selectedCountry === country) {
       setSelectedCountry(country);
       setVal(val);
-      setValue(name, val);
+      setValue(name, val,{showValidate:true});
       setPhoneInput(val);
-      setAllowSubmit && setAllowSubmit(true);
+      trigger(name)
     } else {
       setSelectedCountry(country);
       setVal("");

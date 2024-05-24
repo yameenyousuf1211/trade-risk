@@ -27,9 +27,9 @@ export const BidsSort = () => {
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-x-1 text-sm">
         <ArrowUpNarrowWide className="size-5" />
-        <p className="text-sm">Sort</p>
+        <p className="text-sm font-roboto">Sort</p>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className="font-roboto">
         <DropdownMenuLabel>Rate</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>Highest to Lowest</DropdownMenuItem>

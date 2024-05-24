@@ -67,15 +67,15 @@ const DraftCard = ({
         <p className="text-sm">Request #{draft._id.substring(0, 5)}</p>
         <Button
           size="sm"
-          className="!py-0.5 h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#44444F] hover:text-white border border-[#44444F] text-[#44444F]"
+          className="!py-0.5 font-roboto h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#44444F] hover:text-white border border-[#44444F] text-[#44444F]"
           onClick={handleEditLC}
         >
           Edit request
         </Button>
       </div>
 
-      <p className="text-text text-[12px]">{draft.lcType}</p>
-      <p className="text-para text-[12px]">
+      <p className="font-roboto text-text text-[12px]">{draft.lcType}</p>
+      <p className="font-roboto text-para text-[12px]">
         Last updated:{" "}
         {convertDateToCommaString(draft.updatedAt! || draft.createdAt!)}
       </p>
@@ -84,7 +84,7 @@ const DraftCard = ({
           {draft.currency || "USD"} {draft.amount?.toLocaleString() + ".00"}
         </p>
         <Button
-          className="!py-0 h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"
+          className="!py-0 font-roboto h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"
           type="button"
           disabled={isPending}
           onClick={() => handleDelete(draft._id)}

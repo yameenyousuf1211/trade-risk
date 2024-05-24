@@ -218,7 +218,7 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={countryOpen}
-                  className="capitalize w-[230px] justify-between font-normal"
+                  className="font-roboto capitalize w-[230px] justify-between font-normal py-6"
                 >
                   {countryVal
                     ? countries?.find(
@@ -230,7 +230,7 @@ const CurrentBankingPage = () => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[230px] p-0">
-                <Command>
+                <Command className="font-roboto">
                   <CommandInput placeholder="Search country..." />
                   <CommandEmpty>No country found.</CommandEmpty>
                   <CommandGroup className="max-h-[300px] overflow-y-auto">
@@ -275,7 +275,7 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={bankOpen}
-                  className="capitalize w-[230px] justify-between truncate font-normal"
+                  className="capitalize font-roboto w-[230px] justify-between truncate font-normal py-6"
                   disabled={countryVal === ""}
                 >
                   {bankVal
@@ -288,7 +288,7 @@ const CurrentBankingPage = () => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[230px] p-0">
-                <Command>
+                <Command className="font-roboto">
                   <CommandInput placeholder="Search bank..." />
                   <CommandEmpty>No bank found.</CommandEmpty>
                   <CommandGroup className="max-h-[300px] overflow-y-auto">
@@ -332,7 +332,7 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={cityOpen}
-                  className="capitalize w-[230px] justify-between font-normal"
+                  className="capitalize font-roboto w-[230px] justify-between font-normal py-6"
                   disabled={countryVal === ""}
                 >
                   {cityVal
@@ -344,7 +344,7 @@ const CurrentBankingPage = () => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[230px] p-0">
-                <Command>
+                <Command className="font-roboto">
                   <CommandInput placeholder="Search city..." />
                   <CommandEmpty>No city found.</CommandEmpty>
                   <CommandGroup className="max-h-[300px] overflow-y-auto">
@@ -384,14 +384,14 @@ const CurrentBankingPage = () => {
               variant="ghost"
               type="button"
               onClick={handleBankAdd}
-              className="bg-[#F5F7F9] text-center font-semibold text-[16px] mt-4"
+              className="bg-[#F5F7F9] text-center font-semibold text-[16px] mt-4 py-5"
             >
               Add Bank
             </Button>
           </div>
 
           {/* Selected Details */}
-          <div className="col-span-2 border border-borderCol rounded-md h-60 overflow-y-auto w-full grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-3">
+          <div className="font-roboto col-span-2 border border-borderCol rounded-md h-64 overflow-y-auto w-full grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-3">
             {Object.keys(allBanks)
               .filter((country) => country !== "Pakistan")
               .map((country) => (
@@ -423,7 +423,7 @@ const CurrentBankingPage = () => {
         <div className="flex flex-col gap-y-2">
           <Button
             type="button"
-            className="disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
+            className="py-6 disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-xl"
             size="lg"
             disabled={isLoading || Object.keys(allBanks).length === 0}
             onClick={handleSubmit}

@@ -62,7 +62,7 @@ const AmountInput = ({
         value={currencyValue}
         onChange={handleChange}
         onBlur={handleBlur}
-        className="z-[1] relative px-2.5 pb-2.5 pt-2.5 w-full text-sm text-lightGray bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
+        className="z-[1] font-roboto relative px-2.5 pb-2.5 pt-2.5 w-full text-sm text-lightGray bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
         placeholder=""
       />
       <label
@@ -189,7 +189,7 @@ const ProductInfoPage = () => {
 
         <div className="w-full">
           <div className="flex items-center gap-x-2 w-full">
-            <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
+            <div className="border-[2px] font-roboto border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
               USD
             </div>
             <div className="w-full">
@@ -213,7 +213,7 @@ const ProductInfoPage = () => {
 
         <div className="w-full">
           <div className="flex items-center gap-x-2 w-full">
-            <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
+            <div className="border-[2px] font-roboto border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
               USD
             </div>
             <div className="w-full">
@@ -238,7 +238,7 @@ const ProductInfoPage = () => {
         </div>
         <div className="w-full">
           <div className="flex items-center gap-x-2 w-full">
-            <div className="border-[2px] border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
+            <div className="border-[2px] font-roboto border-primaryCol text-primaryCol rounded-lg w-16 h-12 center font-medium">
               USD
             </div>
             <div className="w-full">

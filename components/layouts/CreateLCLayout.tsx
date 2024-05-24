@@ -24,11 +24,11 @@ export default function AuthLayout({
             <div
               className={`${isRisk && "flex items-end w-full justify-between"}`}
             >
-              <p className="text-para text-[16px] mb-7">
+              <p className="text-para font-roboto text-[16px] mb-7">
                 Select a request type to start creating a new request
               </p>
               {isRisk && (
-                <Button className="bg-transparent text-para hover:bg-para hover:text-white rounded-lg py-1 border border-para">
+                <Button className="bg-transparent text-para hover:bg-para hover:text-white rounded-lg py-1 border border-para font-roboto">
                   Drafts (0)
                 </Button>
               )}

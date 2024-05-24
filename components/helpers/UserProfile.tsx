@@ -35,7 +35,7 @@ export const UserProfile = () => {
 
         <div>
           <h2 className="font-semibold capitalize">{user && user.name}</h2>
-          <p className="text-para text-sm capitalize">
+          <p className="text-para font-roboto text-sm capitalize">
             Trade Finance Solutions
           </p>
         </div>

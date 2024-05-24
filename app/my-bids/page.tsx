@@ -43,7 +43,7 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">
         <div className="w-4/5 p-4">
-          <h2 className="text-4xl font-semibold mb-5">My Bids</h2>
+          <h2 className="text-4xl font-semibold mb-5">My bids</h2>
 
           {/* Data Table */}
           <div className="bg-white rounded-md border border-borderCol px-4 py-4">

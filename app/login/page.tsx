@@ -46,7 +46,7 @@ export default function LoginPage() {
     <AuthLayout>
       <section className="max-w-md mx-auto w-full max-xs:px-4 z-10">
         <h2 className="font-bold text-5xl text-center">Sign In</h2>
-        <p className="text-para text-center mt-5">
+        <p className="text-para font-roboto font-normal text-center mt-5">
           Sign in using your registered credentials to start trading
         </p>
         <form
@@ -104,12 +104,15 @@ export default function LoginPage() {
               <input type="checkbox" id="remember" />
               <label
                 htmlFor="remember"
-                className="text-sm text-para leading-none"
+                className="text-sm font-roboto text-para leading-none"
               >
                 Remember Me
               </label>
             </div>
-            <Link href="/login/forgot-password" className="text-text text-sm">
+            <Link
+              href="/login/forgot-password"
+              className="text-text font-roboto text-sm"
+            >
               Forgot Password
             </Link>
           </div>
@@ -124,7 +127,7 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="text-para mt-10 text-sm text-center">
+        <p className="text-para font-roboto mt-10 text-sm text-center">
           Don&apos;t have a TradeRisk account?{" "}
           <Link href="/register" className="text-text font-medium">
             Register now

@@ -197,13 +197,13 @@ export const RequestTable = ({
         </div>
         <div className="max-h-[70vh] overflow-y-auto">
           <Table>
-            <TableHeader className="bg-[#F0F0F0] hover:bg-[#F0F0F0]/90 p-2 rounded-md">
-              <TableRow className="py-0">
+            <TableHeader className="rounded-md bg-[#F0F0F0] hover:bg-[#F0F0F0]/90 px-2">
+              <TableRow className="py-0 rounded-md">
                 {isBank
                   ? bankColumnHeaders.map((header, idx) => (
                       <TableHead
                         key={`${header}-${idx}`}
-                        className="px-2 h-8 py-2  min-w-32"
+                        className="font-roboto px-2 h-8 py-0.5 min-w-32"
                       >
                         <div className="capitalize flex text-[#44444F] items-center gap-x-2 justify-center text-[12px] font-semibold">
                           {header}
@@ -216,7 +216,7 @@ export const RequestTable = ({
                   : columnHeaders.map((header, idx) => (
                       <TableHead
                         key={`${header}-${idx}`}
-                        className="px-2 h-8 py-2 min-w-32"
+                        className="font-roboto rounded-md px-2 h-8 py-0.5 min-w-32"
                       >
                         <div className="capitalize flex text-[#44444F]  items-center gap-x-2 justify-center text-[12px] font-semibold">
                           {header}
@@ -244,7 +244,7 @@ export const RequestTable = ({
                 data.data &&
                 // @ts-ignore
                 data.data.map((item: ILcs, index: number) => (
-                  <TableRow key={index} className="border-none ">
+                  <TableRow key={index} className="border-none font-roboto">
                     <TableDataCell
                       data={convertDateToString(item.lcPeriod.startDate)}
                     />
@@ -278,7 +278,7 @@ export const RequestTable = ({
                 ))
               ) : data && data.data ? (
                 data.data.map((item: ILcs, index: number) => (
-                  <TableRow key={index} className="border-none ">
+                  <TableRow key={index} className="border-none font-roboto">
                     <TableCell className="px-1 py-1 min-w-[90px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <div className="tex-sm truncate text-lightGray">
@@ -315,7 +315,7 @@ export const RequestTable = ({
                         variant="ghost"
                         className="bg-[#F0F0F0] hover:bg-[#e7e7e7] border border-borderCol rounded-md w-full p-2"
                       >
-                        {item.bidsCount} Bid(s)
+                        {item.bidsCount} bid(s)
                       </Button>
                     </TableCell>
                     <TableCell className="px-1 py-1 max-w-[200px]">

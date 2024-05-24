@@ -95,7 +95,7 @@ export const BankTable = ({
                   {idx === 2 && isCorporate && (
                     <TableHead
                       key="Confirmation bank"
-                      className="px-2 h-8 py-2 min-w-40"
+                      className="font-roboto px-2 h-8 py-2 min-w-40"
                     >
                       <div className="flex items-center gap-x-2 justify-center text-[13px]">
                         Confirming Bank
@@ -109,7 +109,7 @@ export const BankTable = ({
                     key={`${header}-${idx}`}
                     className="px-2 h-8 py-2  min-w-40"
                   >
-                    <div className="capitalize flex items-center gap-x-2 justify-center text-[12px] text-lightGray">
+                    <div className="font-roboto capitalize flex items-center gap-x-2 justify-center text-[12px] text-lightGray">
                       {header}
                       <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
                         <ChevronUp className="size-4" />
@@ -127,7 +127,7 @@ export const BankTable = ({
               data &&
               data.data &&
               data.data.map((item, index) => (
-                <TableRow key={index} className="border-none ">
+                <TableRow key={index} className="border-none font-roboto">
                   <TableDataCell data={convertDateToString(item.createdAt)} />
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">

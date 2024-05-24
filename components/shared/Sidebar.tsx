@@ -45,8 +45,10 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
         {lcData.currency || "USD"}{" "}
         {info.amount?.toLocaleString() + ".00" || "00"}
       </p>
-      <p className="text-para font-medium mt-2">{info.userInfo?.name || ""}</p>
-      <p className="text-para text-sm font-light truncate capitalize">
+      <p className="font-roboto text-para font-medium mt-2">
+        {info.userInfo?.name || ""}
+      </p>
+      <p className="font-roboto text-para text-sm font-light truncate capitalize">
         {info.userInfo?.country || "Pakistan"}
       </p>
       <div className="flex items-center gap-x-2 mt-2">
@@ -84,7 +86,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
           <>
             <div className="px-3 py-2 flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
               {/* Data */}
-              <div>
+              <div className="font-roboto">
                 <p className="font-regular text-[#1A1A26] text-[14px]">
                   Request #{data.refId}
                 </p>
@@ -100,7 +102,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
                 <p className="text-neutral-900 font-medium text-sm mb-2">
                   {formatLeftDate(data.lcPeriod?.endDate) || ""}
                 </p>
-                <h3 className="text-xl font-semibold uppercase">
+                <h3 className="font-poppins text-xl font-semibold uppercase">
                   {data.currency ?? "USD"}{" "}
                   {data.amount?.toLocaleString() + ".00"}
                 </h3>
@@ -124,7 +126,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
               Request #{data.refId}
             </p>
 
-            <p className="text-sm flex items-center flex-wrap">
+            <p className="font-roboto text-sm flex items-center flex-wrap">
               <span className="text-text">{data.lcType}</span>
               <span className="text-para text-[10px] flex items-center">
                 <Dot />
@@ -135,13 +137,13 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
               {data.currency || "USD"} {data.amount?.toLocaleString() + ".00"}
             </h3>
             <div className="flex items-center justify-between gap-x-2">
-              <p className="text-gray-500 text-sm">
+              <p className="font-roboto text-gray-500 text-sm">
                 {pendingBids.length} bid
                 {pendingBids.length > 1 ? "s" : ""}
               </p>
               <Link
                 href="#"
-                className="text-sm text-primaryCol font-light underline"
+                className="font-roboto text-sm text-primaryCol font-light underline"
               >
                 View all
               </Link>
@@ -365,7 +367,7 @@ export const Sidebar = ({
       ) : (
         <div className="bg-primaryCol rounded-lg py-4 px-4 flex flex-col gap-y-4 items-center justify-center">
           <Select onValueChange={(val: string) => setGenerateType(val)}>
-            <SelectTrigger className="max-w-36 w-full mx-auto text-center bg-transparent border-none text-white text-sm ring-0 flex items-center justify-between">
+            <SelectTrigger className="font-roboto max-w-36 w-full mx-auto text-center bg-transparent border-none text-white text-sm ring-0 flex items-center justify-between">
               <p className="text-sm">Export</p>
               <SelectValue placeholder="CSV" className="text-sm" />
             </SelectTrigger>

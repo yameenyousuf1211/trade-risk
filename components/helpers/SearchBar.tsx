@@ -30,7 +30,7 @@ export const SearchBar = ({ initialValue }: { initialValue?: string }) => {
   }, [query, router, pathname, searchParams, createQueryString]);
 
   return (
-    <div className="flex items-center gap-x-2">
+    <div className="font-roboto flex items-center gap-x-2">
       <Search className="size-4 text-[#1A1A26]" />
       <input
         type="text"

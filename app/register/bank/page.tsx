@@ -41,11 +41,14 @@ const BankRegisterPage = () => {
     setValue,
     handleSubmit,
     getValues,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    watch,
+    formState: { errors, isDirty, isValid },
+    trigger
   } = useForm<z.infer<typeof bankSchema>>({
     resolver: zodResolver(bankSchema),
     mode: "all",
   });
+  console.log(watch());
 
   const onSubmit: SubmitHandler<z.infer<typeof bankSchema>> = async (
     data: z.infer<typeof bankSchema>
@@ -66,19 +69,25 @@ const BankRegisterPage = () => {
   const [procceed, setProceed] = useState(false);
   const [procceedErr, setProceedErr] = useState(false);
   const [phoneInput, setPhoneInput] = useState<string>("");
+  const [valueChanged,setValueChanged] = useState<boolean>(false)
 
   let phone = getValues("pocPhone");
 
   useEffect(() => {
     if (isValid && isDirty) setAllowSubmit(true);
     if (!isValid || !isDirty) setAllowSubmit(false);
-  }, [errors, isValid, isDirty]);
+  }, [errors, isValid, isDirty,]);
 
   useEffect(() => {
     if (procceed) setProceedErr(false);
   }, [procceed]);
+  useEffect(() => {
+    console.log("first")
+    if(valueChanged) {
+      setValueChanged(valueChanged)
+    }
+  },[valueChanged])
 
-  console.log(procceed);
 
   const [cities, setCities] = useState([]);
 
@@ -228,6 +237,7 @@ const BankRegisterPage = () => {
                 setPhoneInput={setPhoneInput}
                 value={phoneInput}
                 setAllowSubmit={setAllowSubmit}
+                trigger={trigger}
               />
               {(phone === "" || phone === undefined) && errors.pocPhone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
@@ -318,7 +328,7 @@ const BankRegisterPage = () => {
             <Button
               className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
-              disabled={!allowSubmit}
+              disabled={!isValid}
               type="button"
               onClick={(e) => {
                 if (procceed) handleSubmit(onSubmit)();

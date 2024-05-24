@@ -23,6 +23,7 @@ const PointContactPage = () => {
     setValue,
     handleSubmit,
     getValues,
+    trigger,
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<z.infer<typeof pointOfContractSchema>>({
     resolver: zodResolver(pointOfContractSchema),
@@ -115,6 +116,7 @@ const PointContactPage = () => {
               placeholder="pocPhone"
               setValue={setValue}
               setPhoneInput={setPhoneInput}
+              trigger={trigger}
               value={(contactData && JSON.parse(contactData).pocPhone) || ""}
             />
             {(phone === "" || phone === undefined) && errors.pocPhone && (

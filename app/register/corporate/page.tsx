@@ -56,6 +56,7 @@ const CompanyInfoPage = () => {
     setValue,
     getValues,
     handleSubmit,
+    trigger,
     formState: { errors, isValid, isDirty },
   } = useForm<z.infer<typeof companyInfoSchema>>({
     resolver: zodResolver(companyInfoSchema),
@@ -220,6 +221,7 @@ const CompanyInfoPage = () => {
                 placeholder="Telephone"
                 setValue={setValue}
                 setPhoneInput={setPhoneInput}
+                trigger={trigger}
                 value={(corporateData && JSON.parse(corporateData).phone) || ""}
               />
               {(phone === "" || phone === undefined) && errors.phone && (

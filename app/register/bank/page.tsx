@@ -69,7 +69,6 @@ const BankRegisterPage = () => {
   const [procceed, setProceed] = useState(false);
   const [procceedErr, setProceedErr] = useState(false);
   const [phoneInput, setPhoneInput] = useState<string>("");
-  const [valueChanged,setValueChanged] = useState<boolean>(false)
 
   let phone = getValues("pocPhone");
 
@@ -81,12 +80,6 @@ const BankRegisterPage = () => {
   useEffect(() => {
     if (procceed) setProceedErr(false);
   }, [procceed]);
-  useEffect(() => {
-    console.log("first")
-    if(valueChanged) {
-      setValueChanged(valueChanged)
-    }
-  },[valueChanged])
 
 
   const [cities, setCities] = useState([]);

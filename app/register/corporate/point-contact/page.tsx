@@ -197,7 +197,7 @@ const PointContactPage = () => {
           <Button
             className="disabled:bg-borderCol disabled:text-[#9f9faf] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
-            disabled={!allowSubmit}
+            disabled={!isValid}
           >
             Continue
           </Button>

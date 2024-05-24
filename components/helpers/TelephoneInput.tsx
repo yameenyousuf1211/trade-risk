@@ -28,7 +28,7 @@ export const TelephoneInput = ({
       setVal(val);
       setValue(name, val);
       setPhoneInput(val);
-      setAllowSubmit && setAllowSubmit(true);
+      // setAllowSubmit && setAllowSubmit(true);
     } else {
       setSelectedCountry(country);
       setVal("");

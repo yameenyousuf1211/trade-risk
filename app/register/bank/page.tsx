@@ -72,13 +72,12 @@ const BankRegisterPage = () => {
   useEffect(() => {
     if (isValid && isDirty) setAllowSubmit(true);
     if (!isValid || !isDirty) setAllowSubmit(false);
+    // console.log("isValid: ", isValid, "\tisDirty: ", isDirty);
   }, [errors, isValid, isDirty]);
 
   useEffect(() => {
     if (procceed) setProceedErr(false);
   }, [procceed]);
-
-  console.log(procceed);
 
   const [cities, setCities] = useState([]);
 
@@ -124,7 +123,7 @@ const BankRegisterPage = () => {
             <div className="w-full relative">
               <FloatingInput
                 name="email"
-                placeholder="email"
+                placeholder="Email"
                 register={register}
               />
               {errors.email && (
@@ -316,7 +315,7 @@ const BankRegisterPage = () => {
               </Button>
             </Link>
             <Button
-              className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
+              className="w-full disabled:bg-[#5625F2]/30 disabled:text-white bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
               disabled={!allowSubmit}
               type="button"

@@ -72,7 +72,9 @@ export const CountrySelect = ({
             variant="outline"
             role="combobox"
             aria-expanded={countryOpen}
-            className="capitalize w-full justify-between font-normal text-sm text-gray-400"
+            className={`capitalize w-full justify-between font-normal text-sm ${
+              countryVal ? "text-lightGray" : "text-gray-400"
+            } `}
           >
             {countryVal
               ? countries?.find(

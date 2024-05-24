@@ -95,7 +95,7 @@ export const BankTable = ({
                   {idx === 2 && isCorporate && (
                     <TableHead
                       key="Confirmation bank"
-                      className="px-2 h-8 py-2"
+                      className="px-2 h-8 py-2 min-w-40"
                     >
                       <div className="flex items-center gap-x-2 justify-center text-[13px]">
                         Confirming Bank
@@ -105,7 +105,10 @@ export const BankTable = ({
                       </div>
                     </TableHead>
                   )}
-                  <TableHead key={`${header}-${idx}`} className="px-2 h-8 py-2">
+                  <TableHead
+                    key={`${header}-${idx}`}
+                    className="px-2 h-8 py-2  min-w-40"
+                  >
                     <div className="capitalize flex items-center gap-x-2 justify-center text-[12px] text-lightGray">
                       {header}
                       <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">

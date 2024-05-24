@@ -19,16 +19,16 @@ const CountrySearch = () => {
 const YearFilter = () => {
   return (
     <div className="max-w-[200px] w-full border border-borderCol rounded-lg flex items-center justify-between py-0.5">
-      <div className="py-1 w-full bg-black text-white rounded-md text-center text-sm font-semibold ">
+      <div className="py-1 w-full bg-black text-white rounded-md text-center text-[12px] font-semibold ">
         90D
       </div>
-      <div className="py-1 w-full rounded-md text-center text-sm font-semibold text-para cursor-pointer">
+      <div className="py-1 w-full rounded-md text-center text-[12px] font-semibold text-para cursor-pointer">
         180D
       </div>
-      <div className="py-1 w-full rounded-md text-center text-sm font-semibold text-para cursor-pointer">
+      <div className="py-1 w-full rounded-md text-center text-[12px] font-semibold text-para cursor-pointer">
         1Y
       </div>
-      <div className="py-1 w-full rounded-md text-center text-sm font-semibold text-para cursor-pointer">
+      <div className="py-1 w-full rounded-md text-center text-[12px] font-semibold text-para cursor-pointer">
         2Y
       </div>
     </div>
@@ -150,7 +150,11 @@ export const LineCharts = () => {
         <div className="flex items-center justify-end gap-x-1 w-full">
           <CountrySearch />
           <YearFilter />
-          <Button variant="ghost" size="sm" className="text-para bg-[#F1F1F5] text-black font-light">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-para bg-[#F1F1F5] text-black font-light"
+          >
             View all
           </Button>
           <Settings className="size-5 text-para" />

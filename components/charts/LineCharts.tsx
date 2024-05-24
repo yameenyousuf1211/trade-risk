@@ -5,7 +5,7 @@ import { LineChart, Line } from "recharts";
 
 const CountrySearch = () => {
   return (
-    <div className="relative">
+    <div className="font-roboto relative">
       <input
         type="text"
         placeholder="Enter country name"
@@ -18,7 +18,7 @@ const CountrySearch = () => {
 
 const YearFilter = () => {
   return (
-    <div className="max-w-[200px] w-full border border-borderCol rounded-lg flex items-center justify-between py-0.5">
+    <div className="font-roboto max-w-[200px] w-full border border-borderCol rounded-lg flex items-center justify-between py-0.5">
       <div className="py-1 w-full bg-black text-white rounded-md text-center text-[12px] font-semibold ">
         90D
       </div>
@@ -54,7 +54,7 @@ const Chart = ({
   }[];
 }) => {
   return (
-    <div className="w-full rounded-lg border border-borderCol py-2 px-3">
+    <div className="font-roboto w-full rounded-lg border border-borderCol py-2 px-3">
       <div className="flex items-center gap-x-1 justify-between w-full">
         <div className="flex items-center gap-x-1">
           <Image
@@ -153,11 +153,11 @@ export const LineCharts = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="text-para bg-[#F1F1F5] text-black font-light"
+            className="font-roboto bg-[#F1F1F5] text-lightGray font-light"
           >
             View all
           </Button>
-          <Settings className="size-5 text-para" />
+          <Settings className="w-5 text-para" />
         </div>
       </div>
       {/* Charts */}

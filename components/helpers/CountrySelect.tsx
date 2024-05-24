@@ -72,7 +72,7 @@ export const CountrySelect = ({
             variant="outline"
             role="combobox"
             aria-expanded={countryOpen}
-            className={`capitalize w-full justify-between font-normal text-sm ${
+            className={`capitalize font-roboto w-full justify-between font-normal text-sm ${
               countryVal ? "text-lightGray" : "text-gray-400"
             } `}
           >
@@ -86,7 +86,7 @@ export const CountrySelect = ({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0">
-          <Command>
+          <Command className="font-roboto">
             <CommandInput placeholder="Search country..." />
             <CommandEmpty>No country found.</CommandEmpty>
             <CommandGroup className="max-h-[300px] overflow-y-auto">

@@ -26,7 +26,7 @@ export default function AuthLayout({
             </h1>
           </Link>
         </header>
-        <main className="bg-bg px-2 relative w-full min-h-[90vh] flex flex-col items-center justify-center py-10">
+        <main className="bg-bg px-2 relative w-full min-h-[92vh] flex flex-col items-center justify-start py-10 pt-20">
           {children}
           <Image
             src="/images/auth-bg.png"

@@ -168,7 +168,7 @@ const LCInfo = ({
         !noBorder && "border-b border-b-borderCol"
       }`}
     >
-      <p className="text-para font-normal text-sm">{label}</p>
+      <p className="font-roboto text-para font-normal text-sm">{label}</p>
       <p className="capitalize font-semibold text-right text-sm max-w-[60%]">
         {value}
       </p>
@@ -218,7 +218,7 @@ export const TableDialog = ({
                 <span className="text-para font-normal">LC Amount:</span> USD{" "}
                 {(lcData && lcData.amount?.toLocaleString()) + ".00" || ""}
               </h2>
-              <p className="text-sm text-para">
+              <p className="font-roboto text-sm text-para">
                 Created at,{" "}
                 {lcData &&
                   convertDateAndTimeToString(lcData.lcPeriod?.startDate)}

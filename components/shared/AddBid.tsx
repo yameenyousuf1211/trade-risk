@@ -159,7 +159,7 @@ export const AddBid = ({
             : status === "Add bid" && isBank
             ? "bg-[#1A1A26] text-white text-sm"
             : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
-        } rounded-md w-full p-2 capitalize hover:opacity-85`}
+        } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
         disabled={lcData?.status === "Expired" && status === "Add bid"}
       >
         {lcData && lcData.status === "Expired" && status === "Add bid"
@@ -305,7 +305,7 @@ export const AddBid = ({
                 {/* Bid info and status */}
                 <div className="flex flex-col gap-y-2 py-4 px-4 mt-3 border border-borderCol rounded-lg">
                   <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para">Bid Number</p>
+                    <p className="text-sm text-para font-roboto">Bid Number</p>
                     <p className="font-semibold text-lg">
                       {bidData?._id?.substring(0, 6) || "100928"}
                     </p>
@@ -315,13 +315,15 @@ export const AddBid = ({
                     <p className="font-semibold text-lg capitalize">
                       {bidData ? bidData.bidBy?.[0] : "Habib Bank Limited"}
                     </p>
-                    <p className="text-sm text-para capitalize">
+                    <p className="font-roboto text-sm text-para capitalize">
                       {bidData ? bidData.bidBy?.[2] : "Pakistan"}
                     </p>
                   </div>
 
                   <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para">Bid Submitted</p>
+                    <p className="text-sm text-para font-roboto">
+                      Bid Submitted
+                    </p>
                     <p className="font-semibold text-lg capitalize">
                       {bidData
                         ? convertDateAndTimeToString(bidData.createdAt)
@@ -330,7 +332,7 @@ export const AddBid = ({
                   </div>
 
                   <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para">Bid Expiry</p>
+                    <p className="text-sm text-para font-roboto">Bid Expiry</p>
                     <p className="font-semibold text-lg">
                       {bidData
                         ? convertDateAndTimeToString(bidData.bidValidity)
@@ -339,14 +341,18 @@ export const AddBid = ({
                   </div>
 
                   <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para">Confirmation Rate</p>
+                    <p className="text-sm text-para font-roboto">
+                      Confirmation Rate
+                    </p>
                     <p className="text-lg font-semibold text-text">
                       {bidData ? bidData.confirmationPrice : "1.75"}% per annum
                     </p>
                   </div>
 
                   <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para">Discounting Base Rate</p>
+                    <p className="text-sm text-para font-roboto">
+                      Discounting Base Rate
+                    </p>
                     <p className="font-semibold text-lg">
                       {bidData
                         ? !bidData.discountBaseRate && "Not Applicable"

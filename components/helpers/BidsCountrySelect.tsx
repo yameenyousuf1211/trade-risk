@@ -73,7 +73,7 @@ export const BidsCountrySelect = () => {
             variant="outline"
             role="combobox"
             aria-expanded={countryOpen}
-            className="capitalize justify-between font-normal text-sm text-[#1A1A26] w-[180px] border-none hover:bg-none outline-none focus:none"
+            className="font-roboto capitalize justify-between font-normal text-sm text-[#1A1A26] w-[180px] border-none hover:bg-none outline-none focus:none"
           >
             {countryVal
               ? countries?.find(
@@ -85,7 +85,7 @@ export const BidsCountrySelect = () => {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[220px] p-0">
-          <Command>
+          <Command className="font-roboto">
             <CommandInput placeholder="Search country..." />
             <CommandEmpty>No country found.</CommandEmpty>
             <CommandGroup className="max-h-[300px] overflow-y-auto">

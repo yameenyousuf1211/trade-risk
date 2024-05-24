@@ -23,7 +23,7 @@ import { z } from "zod";
 
 const CheckBoxInput = ({ label, id }: { label: string; id: string }) => {
   return (
-    <div className="flex items-center space-x-2 my-2">
+    <div className="font-roboto flex items-center space-x-2 my-2">
       <input type="checkbox" id={id} />
       <label htmlFor={id} className="text-sm text-[#44444F] leading-none">
         {label}
@@ -43,7 +43,7 @@ const BankRegisterPage = () => {
     getValues,
     watch,
     formState: { errors, isDirty, isValid },
-    trigger
+    trigger,
   } = useForm<z.infer<typeof bankSchema>>({
     resolver: zodResolver(bankSchema),
     mode: "all",
@@ -75,7 +75,7 @@ const BankRegisterPage = () => {
   useEffect(() => {
     if (isValid && isDirty) setAllowSubmit(true);
     if (!isValid || !isDirty) setAllowSubmit(false);
-  }, [errors, isValid, isDirty,]);
+  }, [errors, isValid, isDirty]);
 
   useEffect(() => {
     if (procceed) setProceedErr(false);
@@ -102,7 +102,7 @@ const BankRegisterPage = () => {
     <AuthLayout>
       <section className="max-w-[800px] mx-auto w-full max-xs:px-1 z-10">
         <h2 className="font-semibold text-3xl text-center">Register</h2>
-        <p className="text-para text-center mt-5">
+        <p className="font-roboto text-para text-center mt-5">
           Please fill in the form below to register your bank
         </p>
         <form
@@ -300,7 +300,7 @@ const BankRegisterPage = () => {
               </span>
             )}
           </div>
-          <p className="text-para text-sm">
+          <p className="font-roboto text-para text-sm">
             By signing up you agree that final confirmation to abide by the
             above and the transaction will be processed, (based on Legal rules
             and regulation of the country)

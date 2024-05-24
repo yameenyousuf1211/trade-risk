@@ -26,7 +26,7 @@ export const RegisterStepnav = ({ step }: { step: number }) => {
         </h1>
       </Link>
       {/* Nav */}
-      <nav className="flex items-center gap-x-16">
+      <nav className="flex font-roboto items-center gap-x-16">
         <div className="flex items-center gap-x-2">
           {!isInfoPage && (
             <Check strokeWidth={2.5} className="text-primaryCol size-5" />

@@ -210,7 +210,8 @@ input[type="number"] {
 }
 .rti--input {
   font-size: 14px !important;
-  max-width: 150px !important;
+  width: 100% !important;
+  /* max-width: 150px !important; */
   padding: 6px 8px !important;
 }
 .rti--input::placeholder {
@@ -223,7 +224,7 @@ input[type="checkbox"] {
   -moz-appearance: none;
   width: 17px;
   height: 17px;
-  border: 1px solid #29c084;
+  border: 1px solid gray;
   border-radius: 4px;
   position: relative;
   cursor: pointer;
@@ -235,6 +236,7 @@ input[type="checkbox"] {
 
 /* Style the checkbox when it's checked */
 input[type="checkbox"]:checked {
+  border: 1px solid #29c084;
   background-color: #29c084;
 }
 
@@ -255,7 +257,6 @@ input[type="checkbox"]:checked::after {
   -ms-transform: rotate(45deg);
   -o-transform: rotate(45deg);
 }
-
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;

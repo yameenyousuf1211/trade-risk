@@ -133,7 +133,7 @@ const CompanyInfoPage = () => {
     <AuthLayout>
       <section className="max-w-2xl mx-auto w-full max-xs:px-1 z-10 ">
         <h2 className="font-semibold text-3xl text-center">Company Info</h2>
-        <p className="text-para text-center mt-5">
+        <p className="text-para font-roboto text-center mt-5">
           Please add information about your company. This cannot be changed
           later.
         </p>
@@ -162,7 +162,7 @@ const CompanyInfoPage = () => {
                 }}
               >
                 <SelectTrigger
-                  className={`capitalize w-full py-5 px-4 ${
+                  className={`capitalize font-roboto w-full py-5 px-4 ${
                     corporateData || constitution
                       ? "text-lightGray"
                       : "text-gray-400"
@@ -177,7 +177,7 @@ const CompanyInfoPage = () => {
                     }
                   />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="font-roboto">
                   <SelectItem value="individual_proprietorship_co">
                     Individual/Proprietorship Co.
                   </SelectItem>
@@ -247,14 +247,16 @@ const CompanyInfoPage = () => {
                 <input
                   type="text"
                   id="businessNature"
-                  className="z-[1] relative px-2.5 pb-2.5 pt-2.5 w-full text-sm text-lightGray bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
+                  {...register("businessNature")}
+                  className="z-[1] relative px-2.5 pb-2.5 pt-2.5 w-full text-sm text-lightGray font-roboto bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
                   placeholder=""
                   value={businessNature}
+                  onKeyUp={(e) => e.target.value.replace(/\d/g, "")}
                   onChange={handleNatureChange}
                 />
                 <label
                   htmlFor="businessNature"
-                  className="z-[1] absolute text-sm text-gray-400  duration-300 transform -translate-y-4 scale-75 top-2 origin-[0] bg-white  px-2 peer-focus:px-2 peer-focus:text-text peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
+                  className="z-[1] font-roboto absolute text-sm text-gray-400  duration-300 transform -translate-y-4 scale-75 top-2 origin-[0] bg-white  px-2 peer-focus:px-2 peer-focus:text-text peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
                 >
                   Nature of Business
                 </label>
@@ -273,7 +275,7 @@ const CompanyInfoPage = () => {
                 }}
               >
                 <SelectTrigger
-                  className={`capitalize w-full py-5 px-4 ${
+                  className={`capitalize font-roboto w-full py-5 px-4 ${
                     corporateData || businessSector
                       ? "text-lightGray"
                       : "text-gray-400"
@@ -287,8 +289,8 @@ const CompanyInfoPage = () => {
                     }
                   />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Automotive" >Automotive</SelectItem>
+                <SelectContent className="font-roboto">
+                  <SelectItem value="Automotive">Automotive</SelectItem>
                   <SelectItem value="Healthcare">Healthcare</SelectItem>
                   <SelectItem value="Technology">Technology</SelectItem>
                   <SelectItem value="Finance">Finance</SelectItem>
@@ -385,7 +387,7 @@ const CompanyInfoPage = () => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={cityOpen}
-                    className={`capitalize w-full justify-between font-normal text-sm ${
+                    className={`capitalize font-roboto w-full justify-between font-normal text-sm ${
                       cityVal ? "text-lightGray" : "text-gray-400"
                     }`}
                     disabled={!cities || cities.length <= 0}
@@ -402,7 +404,7 @@ const CompanyInfoPage = () => {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0">
-                  <Command>
+                  <Command className="font-roboto">
                     <CommandInput placeholder="Search country..." />
                     <CommandEmpty>No city found.</CommandEmpty>
                     <CommandGroup className="max-h-[300px] overflow-y-auto">
@@ -457,7 +459,7 @@ const CompanyInfoPage = () => {
             />
             <label
               htmlFor="agree"
-              className="text-sm text-[#44444F] leading-none"
+              className="text-sm font-roboto text-[#44444F] leading-none"
             >
               I agree to TradeRisk&apos;s{" "}
               <span className="text-text">

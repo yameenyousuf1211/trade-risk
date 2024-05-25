@@ -4,10 +4,10 @@ import Image from "next/image";
 const AssessmentsPage = () => {
   return (
     <DashboardLayout>
-      {/* <div>
+      <div>
         <h2 className="text-5xl font-semibold">Coming Soon</h2>
-      </div> */}
-      <div className="center w-full h-[84vh]">
+      </div>
+      {/* <div className="center w-full h-[84vh]">
         <Image
           src="/images/risk-assess-dummy.png"
           alt="risk-participation"
@@ -24,7 +24,7 @@ const AssessmentsPage = () => {
           height={100}
           className="absolute"
         />
-      </div>
+      </div> */}
     </DashboardLayout>
   );
 };

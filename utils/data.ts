@@ -10,15 +10,26 @@ export const columnHeaders = [
   "Bids",
 ];
 
+// export const bankColumnHeaders = [
+//   "Deal Received",
+//   "Expires",
+//   "Product Type",
+//   "LC Issuing Bank",
+//   "Beneficiary",
+//   "LC applicant",
+//   "LC Amount",
+//   "Bids",
+// ];
+
 export const bankColumnHeaders = [
-  "Deal Received",
-  "Expires",
-  "Product Type",
-  "LC Issuing Bank",
-  "Beneficiary",
-  "LC applicant",
-  "LC Amount",
-  "Bids",
+  { name: "Deal Received", key: "lcPeriod.startDate" },
+  { name: "Expires", key: "lcPeriod.endDate" },
+  { name: "Product Type", key: "lcType" },
+  { name: "LC Issuing Bank", key: "issuingBank.bank" },
+  { name: "Beneficiary", key: "exporterInfo.beneficiaryName" },
+  { name: "LC applicant", key: "importerInfo.applicantName" },
+  { name: "LC Amount", key: "amount" },
+  { name: "Bids", key: "bids" },
 ];
 
 export const myBidsColumnHeaders = [

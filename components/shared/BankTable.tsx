@@ -21,7 +21,7 @@ import Image from "next/image";
 import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
 import { ApiResponse, Country, IBids } from "@/types/type";
-import { convertDateToString, convertDateToYYYYMMDD } from "@/utils";
+import { convertDateToString } from "@/utils";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
@@ -76,6 +76,7 @@ export const BankTable = ({
     <div className="">
       <div className="flex items-center justify-between hide-scrollbar overflow-x-auto xl:gap-x-2 mb-2">
         <div className="flex items-center gap-x-2">
+          {!isCorporate && <ProductFilter />}
           <BidsCountrySelect />
           <DateRangePicker />
         </div>

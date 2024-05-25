@@ -17,7 +17,11 @@ const RiskParticipationPage = () => {
           <Sidebar isBank={true} createMode />
         </div>
       </div> */}
-      <div className="center w-full h-[84vh]">
+
+      <div>
+        <h2 className="text-5xl font-semibold">Coming Soon</h2>
+      </div>
+      {/* <div className="center w-full h-[84vh]">
         <Image
           src="/images/risk-dummy.png"
           alt="risk-participation"
@@ -34,7 +38,7 @@ const RiskParticipationPage = () => {
           height={100}
           className="absolute"
         />
-      </div>
+      </div> */}
     </DashboardLayout>
   );
 };

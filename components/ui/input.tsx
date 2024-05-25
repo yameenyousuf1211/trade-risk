@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
 import { FieldValues, Path, UseFormRegister } from "react-hook-form";
 
@@ -32,10 +31,22 @@ const Input = <T extends FieldValues>({
   ...rest
 }: Props<T>) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // if (inputMode === 'numeric') {
+    //   const newValue = event.target.value.replace(/[^0-9.]/g, '');
+    //   event.target.value = newValue;
+    // }
+
     if (onChange) {
       onChange(event);
     }
   };
+
+  const handleBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // if (inputMode === 'numeric') {
+    //   event.target.value += '%';
+    // }
+  };
+
   return (
     <input
       {...rest}
@@ -45,13 +56,13 @@ const Input = <T extends FieldValues>({
         "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
-      
       max={max}
       {...register(name as Path<T>)}
       onChange={handleChange}
+      onBlur={handleBlur}
       onKeyUp={(event) => {
-        if (event.target?.value > 100) {
-          event.target.value = '100.0';
+        if (Number(event.target.value.replace('%', '')) > 100) {
+          event.target.value = '100.0%';
         }
       }}
     />

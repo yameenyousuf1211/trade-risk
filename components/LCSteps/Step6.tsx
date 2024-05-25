@@ -71,8 +71,8 @@ export const Step6 = ({
       return;
     }
     isDiscount
-      ? setValue("discountingInfo.pricePerAnnum", newValue)
-      : setValue("confirmationInfo.pricePerAnnum", newValue);
+      ? setValue("discountingInfo.pricePerAnnum", `${newValue}%`)
+      : setValue("confirmationInfo.pricePerAnnum", `${newValue}%`);
   };
 
   const handleDecrement = () => {
@@ -85,8 +85,8 @@ export const Step6 = ({
     // @ts-ignore
     newValue = newValue.toFixed(1);
     isDiscount
-      ? setValue("discountingInfo.pricePerAnnum", newValue)
-      : setValue("confirmationInfo.pricePerAnnum", newValue);
+      ? setValue("discountingInfo.pricePerAnnum", `${newValue}%`)
+      : setValue("confirmationInfo.pricePerAnnum", `${newValue}%`);
   };
 
   return (
@@ -183,7 +183,7 @@ export const Step6 = ({
           className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
         >
           <p className="text-lightGray text-sm">Pricing Per Annum</p>
-          <div className="flex items-center gap-x-2">
+          <div className="flex items-center gap-x-2 relative">
             <Button
               type="button"
               variant="ghost"
@@ -194,7 +194,7 @@ export const Step6 = ({
             </Button>
             <Input
               placeholder="Value (%)"
-              type="number"
+              type="text"
               inputMode="numeric"
               required
               max={100}
@@ -206,6 +206,7 @@ export const Step6 = ({
               register={register}
               className="border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
             />
+            {/* <div className="absolute right-2">%</div> */}
 
             <Button
               type="button"

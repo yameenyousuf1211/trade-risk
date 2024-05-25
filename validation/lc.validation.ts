@@ -102,9 +102,10 @@ export const confirmationSchema = z.lazy(() =>
         pricePerAnnum: z
           .string({ message: "Enter expected price per annum" })
           .nonempty("Enter expected price")
-          .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-            message: "Enter a valid number",
-          })
+          // .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+          //   message: "Enter a valid number",
+          // }
+        // )
           .refine((value) => parseFloat(value) <= 100, {
             message: "Price per annum must be less than 100",
           }),
@@ -147,9 +148,9 @@ export const discountingSchema = z.lazy(() =>
         pricePerAnnum: z
           .string({ message: "Enter expected price" })
           .nonempty("Enter expected price")
-          .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-            message: "Enter a valid number",
-          })
+          // .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+          //   message: "Enter a valid number",
+          // })
           .refine((value) => parseFloat(value) <= 100, {
             message: "Price per annum must be less than 100",
           }),
@@ -196,9 +197,9 @@ export const confirmationDiscountSchema = z.lazy(() =>
         pricePerAnnum: z
           .string({ message: "Enter expected price" })
           .nonempty("Enter expected price")
-          .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-            message: "Enter a valid number",
-          }),
+          // .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+          //   message: "Enter a valid number",
+          // }),
       }),
       discountingInfo: z.object({
         discountAtSight: z.enum(["yes", "no"], {
@@ -210,9 +211,9 @@ export const confirmationDiscountSchema = z.lazy(() =>
         pricePerAnnum: z
           .string({ message: "Enter expected price" })
           .nonempty("Enter expected price")
-          .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-            message: "Enter a valid number",
-          })
+          // .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+          //   message: "Enter a valid number",
+          // })
           .refine((value) => parseFloat(value) <= 100, {
             message: "Price per annum must be less than 100",
           }),

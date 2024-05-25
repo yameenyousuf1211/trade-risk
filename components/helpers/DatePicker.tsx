@@ -12,7 +12,13 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
 
-export const DatePicker = ({ setValue }: { setValue: any }) => {
+export const DatePicker = ({
+  setValue,
+  maxDate,
+}: {
+  setValue: any;
+  maxDate: Date | string | any;
+}) => {
   const [date, setDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -35,6 +41,7 @@ export const DatePicker = ({ setValue }: { setValue: any }) => {
       <PopoverContent className="p-0">
         <ValidatingCalendar
           initialDate={date}
+          maxDate={maxDate}
           onChange={(date) => {
             setDate(date);
             setValue("validity", date);

@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TableDialog } from "./TableDialog";
 
 const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   const queryClient = useQueryClient();
@@ -142,12 +143,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
                 {pendingBids.length > 1 ? "s" : ""}
               </p>
               {pendingBids.length > 1 && (
-                <Link
-                  href="#"
-                  className="font-roboto text-sm text-primaryCol font-light underline"
-                >
-                  View all
-                </Link>
+                <TableDialog bids={pendingBids} lcId={data._id} isViewAll />
               )}
             </div>
           </div>

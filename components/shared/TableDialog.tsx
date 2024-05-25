@@ -180,10 +180,12 @@ export const TableDialog = ({
   lcId,
   bids,
   isBank,
+  isViewAll,
 }: {
   lcId: string;
   bids: IBids[];
   isBank?: boolean;
+  isViewAll?: boolean;
 }) => {
   // Get LC
   const { data: lcData } = useQuery({
@@ -197,8 +199,14 @@ export const TableDialog = ({
 
   return (
     <Dialog>
-      <DialogTrigger className="center border border-borderCol rounded-md w-full px-1 py-2">
-        <Eye className="size-5" />
+      <DialogTrigger
+        className={`${
+          isViewAll
+            ? "font-roboto text-sm text-primaryCol font-light underline"
+            : "center border border-borderCol rounded-md w-full px-1 py-2"
+        }`}
+      >
+        {isViewAll ? <p>View all</p> : <Eye className="size-5" />}
       </DialogTrigger>
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">

@@ -25,11 +25,13 @@ export const ValidatingCalendar = ({
   onChange,
   onClose,
   isPast,
+  maxDate,
 }: {
   initialDate: Date | undefined;
   onChange: (date: Date) => void;
   onClose: any;
   isPast?: boolean;
+  maxDate?: Date | string | undefined;
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
@@ -39,12 +41,16 @@ export const ValidatingCalendar = ({
       return toast.error("Please dont select a date from future");
     if (!isPast && date < today)
       return toast.error("Please don't select a past date ");
-
+    if (maxDate) {
+      const max = new Date(maxDate);
+      if (date > max)
+        return toast.error("Please select a date that comes before bid expiry");
+    }
     setSelectedDate(date);
     onChange(date);
     onClose();
   };
-
+  
   return (
     <Calendar
       mode="single"

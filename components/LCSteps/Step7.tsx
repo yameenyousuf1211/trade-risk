@@ -71,7 +71,10 @@ export const Step7 = ({ register, step }: { register: any; step: number }) => {
   }, [selectedFiles, register]);
 
   return (
-    <div className="w-full border border-borderCol rounded-lg py-3 px-4 h-full">
+    <div
+      id="step7"
+      className="w-full border border-borderCol rounded-lg py-3 px-4 h-full"
+    >
       <div className="flex items-center gap-x-2 ml-2 mb-3">
         <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold text-sm">
           {step}

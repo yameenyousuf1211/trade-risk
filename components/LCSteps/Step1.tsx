@@ -23,7 +23,7 @@ export const Step1 = ({ register, type, setStepCompleted }: any) => {
   };
 
   return (
-    <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
+    <div id="step1" className="py-3 px-2 border border-borderCol rounded-lg w-full">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           1

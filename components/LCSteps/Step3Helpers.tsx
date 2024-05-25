@@ -25,11 +25,13 @@ export const ValidatingCalendar = ({
   onChange,
   onClose,
   isPast,
+  maxDate,
 }: {
   initialDate: Date | undefined;
   onChange: (date: Date) => void;
   onClose: any;
   isPast?: boolean;
+  maxDate?: Date | string | undefined;
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
@@ -39,12 +41,16 @@ export const ValidatingCalendar = ({
       return toast.error("Please dont select a date from future");
     if (!isPast && date < today)
       return toast.error("Please don't select a past date ");
-
+    if (maxDate) {
+      const max = new Date(maxDate);
+      if (date > max)
+        return toast.error("Please select a date that comes before bid expiry");
+    }
     setSelectedDate(date);
     onChange(date);
     onClose();
   };
-
+  
   return (
     <Calendar
       mode="single"
@@ -78,7 +84,6 @@ export const Period = ({
 
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
-  // const [portCountries, setPortCountries] = useState([]);
 
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],
@@ -120,14 +125,8 @@ export const Period = ({
     setValue("lcPeriod.expectedDate", e.target.value);
   };
 
-  // Function to update value in React Hook Form
   const updateValue = (name: string, value: any) => {
     setValue(name, value);
-  };
-
-  const handleSelectChange = (value: string) => {
-    setValue("shipmentPort.port", value);
-    setValueChanged((prev: boolean) => !prev);
   };
 
   useEffect(() => {
@@ -139,7 +138,9 @@ export const Period = ({
       setValue("lcPeriod.endDate", new Date(lcEndDate));
       setValue("expectedConfirmationDate", new Date(lcEndDate));
     }
-    setValue("lcPeriod.expectedDate", lcPeriodType === false ? "yes" : "no");
+    setValue("lcPeriod.expectedDate", lcPeriodType === true ? "yes" : "no");
+    lcPeriodType = getValues("lcPeriod.expectedDate");
+    lcStartDate && lcStartDate && setLcIssueType(lcPeriodType);
   }, [valueChanged]);
 
   return (
@@ -199,7 +200,7 @@ export const Period = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              {lcIssueType === "date-lc-issued" ? (
+              {lcIssueType === "yes" ? (
                 <ValidatingCalendar
                   initialDate={lcPeriodDate}
                   onChange={(date) => {

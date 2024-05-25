@@ -3,6 +3,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
+  BreadcrumbLink,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "../ui/button";
@@ -85,7 +86,9 @@ export const BreadcrumbDetails = () => {
                   </div>
                 )}
                 <BreadcrumbItem key={`${crumb}-${idx}`}>
-                  <BreadcrumbList>{crumb}</BreadcrumbList>
+                  <BreadcrumbLink href={`${pathname}#step${idx + 1}`}>
+                    {crumb}
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
               </div>
               {idx !== crumbs.length - 1 && <Separator />}

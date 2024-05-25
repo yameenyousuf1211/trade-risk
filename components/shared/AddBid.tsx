@@ -418,7 +418,10 @@ export const AddBid = ({
                     >
                       Bid Validity
                     </label>
-                    <DatePicker setValue={setValue} />
+                    <DatePicker
+                      setValue={setValue}
+                      maxDate={lcData?.lcPeriod?.endDate}
+                    />
                   </div>
                   {errors.validity && (
                     <span className="text-red-500 text-[12px]">

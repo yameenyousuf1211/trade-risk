@@ -46,6 +46,7 @@ export const Step3 = ({
     confirmingCountry = getValues("confirmingBank.country");
     advisingCountry = getValues("advisingBank.country");
     confirming2Country = getValues("confirmingBank2.country");
+    expectedDate = getValues("lcPeriod.expectedDate");
   }, [valueChanged]);
 
   useEffect(() => {
@@ -82,7 +83,10 @@ export const Step3 = ({
   });
 
   return (
-    <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
+    <div
+      id="step3"
+      className="py-3 px-2 border border-borderCol rounded-lg w-full"
+    >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           3
@@ -125,7 +129,15 @@ export const Step3 = ({
         </div>
         {showAdvisingBank ? (
           <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
-            <p className="font-semibold mb-2 ml-3">Advising Bank</p>
+            <div className="flex items-start justify-between">
+              <p className="font-semibold mb-2 ml-3">Advising Bank</p>
+              <p
+                className="bg-red-500 center text-white rounded-full size-6 shadow-md z-10 cursor-pointer mb-1"
+                onClick={() => setShowAdvisingBank(false)}
+              >
+                <X className="size-5 text-white" />
+              </p>
+            </div>
             <div className="flex flex-col gap-y-2">
               <DDInput
                 placeholder="Select a country"
@@ -242,10 +254,10 @@ export const Step3 = ({
               }
             />
             <div
-              className="absolute -top-2 right-0 bg-[#9797971A] center text-[#7E7E7E] rounded-full size-6 shadow-md z-10 cursor-pointer"
+              className="absolute top-3 -right-2 bg-red-500 center text-white rounded-full size-6 shadow-md z-10 cursor-pointer"
               onClick={() => setShowConfirmingBank(false)}
             >
-              <X className="size-5 text-red-500" />
+              <X className="size-5 text-white" />
             </div>
           </div>
         ) : (

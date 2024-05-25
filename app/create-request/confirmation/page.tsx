@@ -42,6 +42,7 @@ import useConfirmationDiscountingStore, {
 } from "@/store/confirmationDiscounting.store";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
+import { sendNotification } from "@/services/apis/notifications.api";
 
 const ConfirmationPage = () => {
   const {
@@ -137,10 +138,14 @@ const ConfirmationPage = () => {
       stopLoading();
       if (!success) return toast.error(response);
       else {
-        toast.success(response?.message);
+        toast.success("LC created successfully");
         setValues(
           getStateValues(useConfirmationDiscountingStore.getInitialState())
         );
+        // await sendNotification({
+        //   title: "New LC Confirmation & Discounting Request",
+        //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+        // });
         reset();
         router.push("/");
       }
@@ -285,7 +290,10 @@ const ConfirmationPage = () => {
           register={register}
         />
         {/* Step 2 */}
-        <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
+        <div
+          id="step2"
+          className="py-3 px-2 border border-borderCol rounded-lg w-full"
+        >
           <div className="flex items-center gap-x-2 justify-between mb-3">
             <div className="flex items-center gap-x-2 ml-3">
               <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
@@ -360,7 +368,10 @@ const ConfirmationPage = () => {
           </div>
         </div>
         {/* Step 3 */}
-        <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
+        <div
+          id="step3"
+          className="py-3 px-2 border border-borderCol rounded-lg w-full"
+        >
           <div className="flex items-center gap-x-2 ml-3 mb-3">
             <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
               3

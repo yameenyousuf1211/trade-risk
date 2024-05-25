@@ -44,13 +44,13 @@ export const ValidatingCalendar = ({
     if (maxDate) {
       const max = new Date(maxDate);
       if (date > max)
-        return toast.error("Please select a date that comes before bid expiry");
+        return toast.error("Please select a date that comes before LC expiry");
     }
     setSelectedDate(date);
     onChange(date);
     onClose();
   };
-  
+
   return (
     <Calendar
       mode="single"

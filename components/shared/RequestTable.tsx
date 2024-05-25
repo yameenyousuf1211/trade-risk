@@ -85,91 +85,16 @@ export const RequestTable = ({
     return country ? country.flag : undefined;
   };
 
-  // const [activeColumns, setActiveColumns] = useState<ActiveColumn[]>([]);
+  const [activeColumn, setActiveColumn] = useState("");
 
-  // const handleColumnHeaderClick = (column: any) => {
-  //   console.log("column: ", column);
-  //   console.log("activeColumns: ", activeColumns);
-
-  //   const columnIndex = activeColumns.findIndex((col) => col.column === column);
-  //   console.log("columnIndex: ", columnIndex);
-  //   if (columnIndex === -1) {
-  //     setActiveColumns([
-  //       ...activeColumns,
-  //       { column, order: sortOrder.ASCENDING },
-  //     ]);
-  //   } else {
-  //     const updatedColumns = [...activeColumns];
-  //     updatedColumns[columnIndex].order =
-  //       updatedColumns[columnIndex].order === sortOrder.ASCENDING
-  //         ? sortOrder.DESCENDING
-  //         : sortOrder.ASCENDING;
-  //     setActiveColumns(updatedColumns);
-  //   }
-  // };
-
-  // const sortData = (data: any, columns: ActiveColumn[]) => {
-  //   return data.sort((a, b) => {
-  //     for (const { column, order } of columns) {
-  //       const valueA = a[column];
-  //       const valueB = b[column];
-
-  //       if (typeof valueA === "string" && typeof valueB === "string") {
-  //         const comparison = valueA.localeCompare(valueB);
-  //         if (comparison !== 0) {
-  //           return order === sortOrder.ASCENDING ? comparison : -comparison;
-  //         }
-  //       } else {
-  //         const comparison = valueA - valueB;
-  //         if (comparison !== 0) {
-  //           return order === sortOrder.ASCENDING ? comparison : -comparison;
-  //         }
-  //       }
-  //     }
-  //     return 0;
-  //   });
-  // };
-
-  // let sortedData: any = [];
-  // useEffect(() => {
-  //   sortedData = data && data.data ? sortData(data.data, activeColumns) : [];
-  // }, [activeColumns, data]);
-
-  // console.log("sortedDAat: ", sortedData);
-
-  // const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
-
-  // const getNestedValue = (obj, path) => {
-  //   return path.split(".").reduce((acc, part) => acc && acc[part], obj);
-  // };
-
-  // const sortedData = React.useMemo(() => {
-  //   if (data && data.data) {
-  //     let sortableData = [...data.data];
-  //     if (sortConfig.key) {
-  //       sortableData.sort((a, b) => {
-  //         const aValue = getNestedValue(a, sortConfig.key);
-  //         const bValue = getNestedValue(b, sortConfig.key);
-  //         if (aValue < bValue) {
-  //           return sortConfig.direction === "asc" ? -1 : 1;
-  //         }
-  //         if (aValue > bValue) {
-  //           return sortConfig.direction === "asc" ? 1 : -1;
-  //         }
-  //         return 0;
-  //       });
-  //     }
-  //     return sortableData;
-  //   }
-  // }, [data, sortConfig]);
-
-  // const handleSort = (key) => {
-  //   let direction = "asc";
-  //   if (sortConfig.key === key && sortConfig.direction === "asc") {
-  //     direction = "desc";
-  //   }
-  //   setSortConfig({ key, direction });
-  // };
+  const handleSort = (key: string) => {
+    if (key === "bids") return;
+    setActiveColumn(key);
+    console.log(key);
+    // if (data && data.data) {
+    //   console.log(data.data);
+    // }
+  };
 
   return (
     <div>
@@ -202,12 +127,15 @@ export const RequestTable = ({
                 {isBank
                   ? bankColumnHeaders.map((header, idx) => (
                       <TableHead
-                        key={`${header}-${idx}`}
+                        key={`${header.name}-${idx}`}
                         className="font-roboto px-2 h-8 py-0.5 min-w-32"
                       >
                         <div className="capitalize flex text-[#44444F] items-center gap-x-2 justify-center text-[12px] font-semibold">
-                          {header}
-                          <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
+                          {header.name}
+                          <div
+                            onClick={() => handleSort(header.key)}
+                            className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer"
+                          >
                             <ChevronUp className="size-4" />
                           </div>
                         </div>

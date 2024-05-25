@@ -33,6 +33,7 @@ import { DisclaimerDialog, NumberInput } from "@/components/helpers";
 import useDiscountingStore, { getStateValues } from "@/store/discounting.store";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
+import { sendNotification } from "@/services/apis/notifications.api";
 
 const CreateDiscountPage = () => {
   const {
@@ -59,7 +60,7 @@ const CreateDiscountPage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
-  const [days, setDays] = useState<number>(0);
+  const [days, setDays] = useState<number>(1);
 
   // Edit Request
   const setValues = useDiscountingStore((state) => state.setValues);
@@ -152,8 +153,12 @@ const CreateDiscountPage = () => {
       stopLoading();
       if (!success) return toast.error(response);
       else {
+        toast.success("LC created successfully");
         setValues(getStateValues(useDiscountingStore.getInitialState()));
-        toast.success(response?.message);
+        // await sendNotification({
+        //   title: "New LC Discounting Request",
+        //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+        // });
         reset();
         router.push("/");
       }
@@ -325,7 +330,10 @@ const CreateDiscountPage = () => {
           register={register}
         />
         {/* Step 2 */}
-        <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
+        <div
+          id="step2"
+          className="py-3 px-2 border border-borderCol rounded-lg w-full"
+        >
           <div className="flex items-center gap-x-2 justify-between mb-3">
             <div className="flex items-center gap-x-2 ml-3">
               <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
@@ -423,7 +431,7 @@ const CreateDiscountPage = () => {
                     className="rounded-sm border border-para size-6 center mb-2"
                     onClick={() => {
                       setDays((prev) =>
-                        Number(prev) > 0 ? Number(prev) - 1 : 0
+                        Number(prev) > 1 ? Number(prev) - 1 : 1
                       );
                     }}
                   >
@@ -511,7 +519,10 @@ const CreateDiscountPage = () => {
         </div>
 
         {/* Step 3 */}
-        <div className="py-3 px-2 border border-borderCol rounded-lg w-full">
+        <div
+          id="step3"
+          className="py-3 px-2 border border-borderCol rounded-lg w-full"
+        >
           <div className="flex items-center gap-x-2 ml-3 mb-3">
             <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
               3

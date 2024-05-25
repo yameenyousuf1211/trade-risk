@@ -40,7 +40,7 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
     else return toast.success(`Bid ${status}`);
   };
   return (
-    <div className="border border-borderCol py-3 px-2 rounded-lg max-w-52">
+    <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
       <p className="uppercase">
         {lcData.currency || "USD"}{" "}
         {info.amount?.toLocaleString() + ".00" || "00"}
@@ -99,7 +99,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
                 </p>
 
                 <p className="text-para text-sm">Request Expiry</p>
-                <p className="text-neutral-900 font-medium text-sm mb-2">
+                <p className="text-red-500 font-medium text-sm mb-2">
                   {formatLeftDate(data.lcPeriod?.endDate) || ""}
                 </p>
                 <h3 className="font-poppins text-xl font-semibold uppercase">
@@ -141,18 +141,23 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
                 {pendingBids.length} bid
                 {pendingBids.length > 1 ? "s" : ""}
               </p>
-              <Link
-                href="#"
-                className="font-roboto text-sm text-primaryCol font-light underline"
-              >
-                View all
-              </Link>
+              {pendingBids.length > 1 && (
+                <Link
+                  href="#"
+                  className="font-roboto text-sm text-primaryCol font-light underline"
+                >
+                  View all
+                </Link>
+              )}
             </div>
           </div>
 
           {/* Slider cards*/}
           <div className="w-full">
-            <Swiper slidesPerView={1.2} spaceBetween={10}>
+            <Swiper
+              slidesPerView={pendingBids.length > 1 ? 1.2 : 1}
+              spaceBetween={10}
+            >
               {pendingBids.map((info: IBids) => (
                 <SwiperSlide key={info._id}>
                   <SliderCard info={info} lcData={data} key={info._id} />

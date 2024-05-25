@@ -78,7 +78,6 @@ export const Period = ({
 
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
-  // const [portCountries, setPortCountries] = useState([]);
 
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],
@@ -120,14 +119,8 @@ export const Period = ({
     setValue("lcPeriod.expectedDate", e.target.value);
   };
 
-  // Function to update value in React Hook Form
   const updateValue = (name: string, value: any) => {
     setValue(name, value);
-  };
-
-  const handleSelectChange = (value: string) => {
-    setValue("shipmentPort.port", value);
-    setValueChanged((prev: boolean) => !prev);
   };
 
   useEffect(() => {
@@ -139,7 +132,9 @@ export const Period = ({
       setValue("lcPeriod.endDate", new Date(lcEndDate));
       setValue("expectedConfirmationDate", new Date(lcEndDate));
     }
-    setValue("lcPeriod.expectedDate", lcPeriodType === false ? "yes" : "no");
+    setValue("lcPeriod.expectedDate", lcPeriodType === true ? "yes" : "no");
+    lcPeriodType = getValues("lcPeriod.expectedDate");
+    lcStartDate && lcStartDate && setLcIssueType(lcPeriodType);
   }, [valueChanged]);
 
   return (
@@ -199,7 +194,7 @@ export const Period = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              {lcIssueType === "date-lc-issued" ? (
+              {lcIssueType === "yes" ? (
                 <ValidatingCalendar
                   initialDate={lcPeriodDate}
                   onChange={(date) => {

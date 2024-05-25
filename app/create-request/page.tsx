@@ -28,6 +28,8 @@ import useConfirmationStore, { getStateValues } from "@/store/lc.store";
 import { Country } from "@/types/type";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
+import { sendNotification } from "@/services/apis/notifications.api";
+import { useAuth } from "@/context/AuthProvider";
 
 const CreateRequestPage = () => {
   const {
@@ -41,6 +43,8 @@ const CreateRequestPage = () => {
   } = useForm<z.infer<typeof confirmationSchema>>({
     resolver: zodResolver(confirmationSchema),
   });
+
+  const { user } = useAuth();
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
@@ -124,8 +128,12 @@ const CreateRequestPage = () => {
       stopLoading();
       if (!success) return toast.error(response);
       else {
+        // await sendNotification({
+        //   title: "New LC Confirmation Request",
+        //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+        // });
         setValues(getStateValues(useConfirmationStore.getInitialState()));
-        toast.success(response?.message);
+        toast.success("LC created successfully");
         reset();
         router.push("/");
       }

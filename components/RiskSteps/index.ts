@@ -1,3 +1,4 @@
+import { RiskStep2 } from "./RiskStep2";
 import { RiskStep3 } from "./RiskStep3";
 import { RiskStep8 } from "./RiskStep8";
 import { RiskStep7 } from "./RiskStep7";
@@ -12,6 +13,7 @@ export {
   RiskAgreement,
   RiskBanks,
   RiskStep1,
+  RiskStep2,
   RiskStep4,
   RiskStep5,
   RiskStep6,

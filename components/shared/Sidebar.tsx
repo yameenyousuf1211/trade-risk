@@ -356,7 +356,7 @@ export const Sidebar = ({
           <p className="text-white text-center font-semibold">
             Send a risk participation request to other banks
           </p>
-          <Link href="/risk-participation/funded" className="w-full">
+          <Link href="/risk-participation/create" className="w-full">
             <Button
               className="w-full text-[#255EF2] bg-white hover:bg-white/90 rounded-lg text-[16px]"
               size="lg"

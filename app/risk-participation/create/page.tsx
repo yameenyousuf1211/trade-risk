@@ -9,6 +9,7 @@ import {
   RiskStep7,
   RiskStep8,
   RiskStep3,
+  RiskStep2,
 } from "@/components/RiskSteps";
 import CreateLCLayout from "@/components/layouts/CreateLCLayout";
 import { Button } from "@/components/ui/button";
@@ -59,6 +60,7 @@ const RiskFundedPage = () => {
         <RiskBanks setValue={""} />
         <RiskAgreement />
         {/* <RiskStep1 /> */}
+        <RiskStep2 />
         <RiskStep3 countries={countries} flags={flags} />
         <RiskStep4
           register={() => console.log("hello")}

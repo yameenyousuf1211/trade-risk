@@ -132,7 +132,6 @@ export const Period = ({
     if (lcStartDate && lcEndDate) {
       setValue("lcPeriod.startDate", new Date(lcStartDate));
       setValue("lcPeriod.endDate", new Date(lcEndDate));
-      setValue("expectedConfirmationDate", new Date(lcEndDate));
     }
     setValue("lcPeriod.expectedDate", lcPeriodType === true ? "yes" : "no");
     lcPeriodType = getValues("lcPeriod.expectedDate");
@@ -300,9 +299,11 @@ export const Transhipment = ({
 }) => {
   const [expectedConfirmationDate, setExpectedConfirmationDate] =
     useState<Date>();
+
   let expectedDate = isDiscount
     ? getValues("expectedDiscountingDate")
     : getValues("expectedConfirmationDate");
+
   useEffect(() => {
     setExpectedConfirmationDate(expectedDate);
 

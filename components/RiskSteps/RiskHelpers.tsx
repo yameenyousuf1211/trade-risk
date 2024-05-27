@@ -298,6 +298,7 @@ export const BankRadioInput = ({
         id={id}
         value={value}
         name={name}
+        checked={checked}
         className="accent-[#255EF2] size-4"
         onChange={() => handleCheckChange(id)}
       />

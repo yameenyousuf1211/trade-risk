@@ -73,6 +73,8 @@ export const RiskStep3 = ({
     setExpectedCheckedState(newCheckedState);
   };
 
+  const [days, setDays] = useState<number | string>();
+
   const [paymentCheckedState, setPaymentCheckedState] = useState({
     "payment-sight": false,
     "payment-usance": false,
@@ -80,6 +82,8 @@ export const RiskStep3 = ({
   });
 
   const handlePaymentCheckChange = (id: string) => {
+    if (id === "payment-tenor") setDays(1);
+    else setDays("");
     const newCheckedState = {
       "payment-sight": id === "payment-sight",
       "payment-usance": id === "payment-usance",
@@ -87,8 +91,6 @@ export const RiskStep3 = ({
     };
     setPaymentCheckedState(newCheckedState);
   };
-
-  const [days, setDays] = useState<number>();
 
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
@@ -188,11 +190,10 @@ export const RiskStep3 = ({
                   <input
                     type="radio"
                     id="payment-tenor"
-                    value="yes"
+                    value={days}
                     name="payment"
                     className="accent-[#255EF2] size-4"
                     onChange={() => {
-                      setDays(1);
                       handlePaymentCheckChange("payment-tenor");
                     }}
                   />

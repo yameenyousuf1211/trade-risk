@@ -50,7 +50,7 @@ export default function LoginPage() {
         "BKOPYlgOw1eAWgeVCt8uZWCTAaBUd4ReGVd9Qfs2EtK_DvRXuI_LFQSiyxjMN8rg47BWP9_8drlyE0O1GXMP4ew"
       ),
     });
-
+    console.log(subscription);
     const authToken = arrayBufferToBase64(
       subscription.getKey("auth") as ArrayBuffer
     );

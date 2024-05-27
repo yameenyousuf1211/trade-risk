@@ -62,12 +62,11 @@ export const Step6 = ({
   };
 
   const handleIncrement = () => {
-  
     const currentValue = isDiscount
       ? getValues("discountingInfo.pricePerAnnum") || "0"
       : getValues("confirmationInfo.pricePerAnnum") || "0";
     const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
-    if(Number(newValue) > 100) {
+    if (Number(newValue) > 100) {
       return;
     }
     isDiscount
@@ -90,7 +89,10 @@ export const Step6 = ({
   };
 
   return (
-    <div id="step6" className="py-3 px-2 border border-borderCol rounded-lg w-full h-full">
+    <div
+      id="step6"
+      className="py-3 px-2 border border-borderCol rounded-lg w-full h-full"
+    >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           6
@@ -166,13 +168,13 @@ export const Step6 = ({
               id="select-base-rate"
               className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
             >
-              <p className="w-full text-lightGray">Select base rate</p>
+              <p className="w-full text-sm text-lightGray">Select base rate</p>
               <Input
                 id="select-base-rate"
                 type="text"
                 name="select-base-rate"
                 register={register}
-                className="block bg-none border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+                className="block bg-none text-sm border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                 placeholder="Select Value"
               />
             </label>
@@ -212,7 +214,7 @@ export const Step6 = ({
               variant="ghost"
               className="bg-none border-none text-lg"
               onClick={handleIncrement}
-              >
+            >
               +
             </Button>
           </div>

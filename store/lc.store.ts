@@ -1,4 +1,4 @@
-import { LcConfirmation, UseConfirmationStore } from "@/types/type";
+import { LcConfirmation, UseConfirmationStore } from "@/types/lc";
 import { create } from "zustand";
 
 type StateValues = Omit<UseConfirmationStore, "setValues">;
@@ -12,6 +12,10 @@ const useConfirmationStore = create<UseConfirmationStore>((set, get) => ({
     country: "",
   },
   issuingBank: {
+    bank: "",
+    country: "",
+  },
+  advisingBank: {
     bank: "",
     country: "",
   },
@@ -43,6 +47,7 @@ const useConfirmationStore = create<UseConfirmationStore>((set, get) => ({
     pricePerAnnum: "",
     advisingBank: "",
   },
+  extraInfo: "shipment",
   setValues: (values: Partial<LcConfirmation | null>) =>
     set((state) => ({ ...state, ...values })),
 }));

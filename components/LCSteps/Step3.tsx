@@ -27,6 +27,7 @@ export const Step3 = ({
 }) => {
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
+  const [showConfirmingBank2, setShowConfirmingBank2] = useState(false);
 
   let issuingCountry = getValues("issuingBank.country");
   let issuingBank = getValues("issuingBank.bank");
@@ -183,43 +184,52 @@ export const Step3 = ({
         )}
       </div>
       {/* Confirming Bank */}
+
       <div className="py-3 px-2 rounded-md border border-borderCol bg-[#F5F7F9]">
-        <p className="font-semibold">Confirming Bank</p>
-        <div className="flex items-center gap-x-3 w-full">
-          <div className="flex items-center gap-x-2 w-full">
-            <p className="font-semibold">1.</p>
+        <p className="font-semibold mb-2">Confirming Bank</p>
+        {showConfirmingBank && (
+          <div className="relative flex items-center gap-x-3 w-full">
+            <div className="flex items-center gap-x-2 w-full">
+              <p className="font-semibold">1.</p>
+              <DDInput
+                label="Country"
+                id="confirmingBank.country"
+                placeholder="Select a Country"
+                value={confirmingCountry}
+                data={countries}
+                setValue={setValue}
+                setValueChanged={setValueChanged}
+                flags={flags}
+              />
+            </div>
             <DDInput
-              label="Country"
-              id="confirmingBank.country"
-              placeholder="Select a Country"
-              value={confirmingCountry}
-              data={countries}
+              label="Bank"
+              id="confirmingBank.bank"
+              placeholder="Select bank"
+              value={confirmingBank}
               setValue={setValue}
               setValueChanged={setValueChanged}
-              flags={flags}
+              disabled={
+                !confirmingBanks ||
+                !confirmingBanks?.response ||
+                !confirmingBanks.success
+              }
+              data={
+                confirmingBanks &&
+                confirmingBanks.success &&
+                confirmingBanks.response
+              }
             />
+            <div
+              className="absolute top-3 -right-2 bg-red-500 center text-white rounded-full size-6 shadow-md z-10 cursor-pointer"
+              onClick={() => setShowConfirmingBank(false)}
+            >
+              <X className="size-5 text-white" />
+            </div>
           </div>
-          <DDInput
-            label="Bank"
-            id="confirmingBank.bank"
-            placeholder="Select bank"
-            value={confirmingBank}
-            setValue={setValue}
-            setValueChanged={setValueChanged}
-            disabled={
-              !confirmingBanks ||
-              !confirmingBanks?.response ||
-              !confirmingBanks.success
-            }
-            data={
-              confirmingBanks &&
-              confirmingBanks.success &&
-              confirmingBanks.response
-            }
-          />
-        </div>
+        )}
 
-        {showConfirmingBank ? (
+        {showConfirmingBank2 ? (
           <div className="relative flex items-center gap-x-3 w-full mt-3">
             <div className="flex items-center gap-x-2 w-full">
               <p className="font-semibold">2.</p>
@@ -255,14 +265,18 @@ export const Step3 = ({
             />
             <div
               className="absolute top-3 -right-2 bg-red-500 center text-white rounded-full size-6 shadow-md z-10 cursor-pointer"
-              onClick={() => setShowConfirmingBank(false)}
+              onClick={() => setShowConfirmingBank2(false)}
             >
               <X className="size-5 text-white" />
             </div>
           </div>
         ) : (
           <div
-            onClick={() => setShowConfirmingBank((prev: boolean) => !prev)}
+            onClick={() =>
+              showConfirmingBank
+                ? setShowConfirmingBank2(true)
+                : setShowConfirmingBank(true)
+            }
             className="cursor-pointer bg-white ml-4 center gap-x-3 border-2 border-dotted border-borderCol py-3 rounded-md mt-2"
           >
             <div className=" center p-1 border border-black rounded-full">

@@ -1,4 +1,4 @@
-import { LcDiscounting, UseDiscountingStore } from "@/types/type";
+import { LcDiscounting, UseDiscountingStore } from "@/types/lc";
 import { create } from "zustand";
 
 type StateValues = Omit<UseDiscountingStore, "setValues">;

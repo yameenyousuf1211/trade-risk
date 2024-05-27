@@ -143,3 +143,11 @@ export const convertDateAndTimeToString = (date: any) => {
 
   return `${month} ${day} ${year} ${hours}:${minutes}`;
 };
+
+export const calculateDaysLeft = (futureDate: any) => {
+  const currentDate = new Date();
+  const targetDate = new Date(futureDate);
+  const timeDifference = targetDate - currentDate;
+  const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+  return daysDifference > 0 ? daysDifference : 0;
+};

@@ -30,6 +30,7 @@ import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
+import { calculateDaysLeft } from "@/utils";
 
 const CreateRequestPage = () => {
   const {
@@ -49,6 +50,7 @@ const CreateRequestPage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
+  const [days, setDays] = useState<number>(1);
 
   const queryClient = useQueryClient();
   const setValues = useConfirmationStore((state) => state.setValues);
@@ -66,6 +68,11 @@ const CreateRequestPage = () => {
         }
         if (key === "lcPeriod.expectedDate") {
           setValue(key, value === true ? "yes" : "no");
+        }
+        if (key === "extraInfo") {
+          const daysLeft = calculateDaysLeft(value.dats);
+          setDays(daysLeft);
+          setValue("extraInfo", value.other);
         }
       });
     }
@@ -101,13 +108,25 @@ const CreateRequestPage = () => {
     data: z.infer<typeof confirmationSchema>
   ) => {
     if (proceed) {
-      if (data.issuingBank.country === data.confirmingBank.country)
+      if (
+        data.confirmingBank &&
+        data.issuingBank.country === data.confirmingBank.country
+      )
         return toast.error(
           "Confirming bank country cannot be the same as issuing bank country"
         );
       if (/^\d+$/.test(data.productDescription))
         return toast.error("Product description cannot contain only digits");
-      startLoading();
+
+      // startLoading();
+      const currentDate = new Date();
+      const futureDate = new Date(
+        currentDate.setDate(currentDate.getDate() + days)
+      );
+      let extraInfo;
+      if (data.paymentTerms === "usance-lc") {
+        extraInfo = { dats: futureDate, other: data.extraInfo };
+      }
       const { confirmingBank2, ...rest } = data;
 
       const reqData = {
@@ -118,25 +137,27 @@ const CreateRequestPage = () => {
           ...data.lcPeriod,
           expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
         },
+        ...(extraInfo && { extraInfo }),
       };
-      const { response, success } = confirmationData?._id
-        ? await onUpdateLC({
-            payload: reqData,
-            id: confirmationData?._id,
-          })
-        : await onCreateLC(reqData);
-      stopLoading();
-      if (!success) return toast.error(response);
-      else {
-        // await sendNotification({
-        //   title: "New LC Confirmation Request",
-        //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-        // });
-        setValues(getStateValues(useConfirmationStore.getInitialState()));
-        toast.success("LC created successfully");
-        reset();
-        router.push("/");
-      }
+      console.log(reqData);
+      // const { response, success } = confirmationData?._id
+      //   ? await onUpdateLC({
+      //       payload: reqData,
+      //       id: confirmationData?._id,
+      //     })
+      //   : await onCreateLC(reqData);
+      // stopLoading();
+      // if (!success) return toast.error(response);
+      // else {
+      //   // await sendNotification({
+      //   //   title: "New LC Confirmation Request",
+      //   //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+      //   // });
+      //   setValues(getStateValues(useConfirmationStore.getInitialState()));
+      //   toast.success("LC created successfully");
+      //   reset();
+      //   router.push("/");
+      // }
     } else {
       let openDisclaimerBtn = document.getElementById("open-disclaimer");
       // @ts-ignore
@@ -150,43 +171,56 @@ const CreateRequestPage = () => {
   const saveAsDraft: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data: z.infer<typeof confirmationSchema>
   ) => {
-    if (data.issuingBank.country === data.confirmingBank.country)
+    if (
+      data.confirmingBank &&
+      data.issuingBank.country === data.confirmingBank?.country
+    )
       return toast.error(
         "Confirming bank country cannot be the same as issuing bank country"
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
-    setLoader(true);
+    // setLoader(true);
+    const currentDate = new Date();
+    const futureDate = new Date(
+      currentDate.setDate(currentDate.getDate() + days)
+    );
+    let extraInfo;
+    if (data.paymentTerms === "usance-lc") {
+      extraInfo = { dats: futureDate, other: data.extraInfo };
+    }
+
     const { confirmingBank2, ...rest } = data;
     const reqData = {
       ...rest,
       lcType: "LC Confirmation",
-      isDraft: "true",
       transhipment: data.transhipment === "yes" ? true : false,
       lcPeriod: {
         ...data.lcPeriod,
         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
       },
+      ...(extraInfo && { extraInfo }),
     };
 
-    const { response, success } = confirmationData?._id
-      ? await onUpdateLC({
-          payload: reqData,
-          id: confirmationData?._id,
-        })
-      : await onCreateLC(reqData);
-    setLoader(false);
+    console.log(reqData);
+    // const { response, success } = confirmationData?._id
+    //   ? await onUpdateLC({
+    //       payload: reqData,
+    //       id: confirmationData?._id,
+    //     })
+    //   : await onCreateLC(reqData);
+    // setLoader(false);
 
-    if (!success) return toast.error(response);
-    else {
-      toast.success("LC saved as draft");
-      reset();
-      router.push("/");
-      setValues(getStateValues(useConfirmationStore.getInitialState()));
-      queryClient.invalidateQueries({
-        queryKey: ["fetch-lcs-drafts"],
-      });
-    }
+    // if (!success) return toast.error(response);
+    // else {
+    //   toast.success("LC saved as draft");
+    //   reset();
+    //   router.push("/");
+    //   setValues(getStateValues(useConfirmationStore.getInitialState()));
+    //   queryClient.invalidateQueries({
+    //     queryKey: ["fetch-lcs-drafts"],
+    //   });
+    // }
   };
 
   const [allCountries, setAllCountries] = useState<Country[]>([]);
@@ -248,6 +282,8 @@ const CreateRequestPage = () => {
           valueChanged={valueChanged}
           setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
+          days={days}
+          setDays={setDays}
         />
         <Step3
           register={register}

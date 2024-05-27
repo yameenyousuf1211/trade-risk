@@ -48,7 +48,7 @@ const BankRegisterPage = () => {
     resolver: zodResolver(bankSchema),
     mode: "all",
   });
-  console.log(watch());
+  // console.log(watch());
 
   const onSubmit: SubmitHandler<z.infer<typeof bankSchema>> = async (
     data: z.infer<typeof bankSchema>

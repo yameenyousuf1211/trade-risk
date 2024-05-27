@@ -21,6 +21,8 @@ export const Step2 = ({
   valueChanged,
   setValueChanged,
   setStepCompleted,
+  days,
+  setDays,
 }: {
   register: any;
   setValue: any;
@@ -28,6 +30,8 @@ export const Step2 = ({
   valueChanged?: any;
   setValueChanged?: any;
   setStepCompleted?: any;
+  days: number;
+  setDays: any;
 }) => {
   const { data: currency } = useQuery({
     queryKey: ["currency"],
@@ -42,6 +46,7 @@ export const Step2 = ({
     null
   );
   const [rawValue, setRawValue] = useState("");
+  const [showExtra, setShowExtra] = useState(false);
 
   const handleChange = (e: any) => {
     const { value } = e.target;
@@ -84,12 +89,35 @@ export const Step2 = ({
   });
 
   const handleCheckChange = (id: string) => {
+    if (id === "payment-usance") setShowExtra(true);
+    else setShowExtra(false);
     setCheckedState((prevState) => ({
       ...prevState,
       "payment-sight": id === "payment-sight",
       "payment-usance": id === "payment-usance",
       "payment-deferred": id === "payment-deferred",
       "payment-upas": id === "payment-upas",
+    }));
+  };
+
+  const [extraCheckedState, setExtraCheckedState] = useState({
+    "payment-shipment": false,
+    "payment-acceptance": false,
+    "payment-negotiation": false,
+    "payment-invoice": false,
+    "payment-extra-sight": false,
+    "payment-others": false,
+  });
+
+  const handleExtraCheckChange = (id: string) => {
+    setExtraCheckedState((prevState) => ({
+      ...prevState,
+      "payment-shipment": id === "payment-shipment",
+      "payment-acceptance": id === "payment-acceptance",
+      "payment-negotiation": id === "payment-negotiation",
+      "payment-invoice": id === "payment-invoice",
+      "payment-extra-sight": id === "payment-extra-sight",
+      "payment-others": id === "payment-others",
     }));
   };
 
@@ -100,7 +128,10 @@ export const Step2 = ({
   }, [amount, paymentTerms, valueChanged]);
 
   return (
-    <div id="step2" className="py-3 px-2 border border-borderCol rounded-lg w-full">
+    <div
+      id="step2"
+      className="py-3 px-2 border border-borderCol rounded-lg w-full"
+    >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           2
@@ -134,14 +165,6 @@ export const Step2 = ({
             </SelectContent>
           </Select>
 
-          {/* <Input
-            type="number"
-            inputMode="numeric"
-            name="amount"
-            register={register}
-            onChange={(e: any) => setCurrencyValue(e.target.value)}
-            className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0"
-          /> */}
           <input
             type="text"
             inputMode="numeric"
@@ -207,6 +230,121 @@ export const Step2 = ({
             handleCheckChange={handleCheckChange}
           />
         </div>
+        {/* Days input */}
+        {showExtra && (
+          <>
+            <div className="flex items-center gap-x-2 my-3 ml-2">
+              <div className="border-b-2 border-black flex items-center">
+                <input
+                  placeholder="enter days"
+                  inputMode="numeric"
+                  name="days"
+                  type="number"
+                  value={days}
+                  className="text-sm text-lightGray border-none focus-visible:ring-0 focus-visible:ring-offset-0 max-w-[150px] bg-[#F5F7F9] outline-none"
+                  onChange={(e: any) => setDays(e.target.value)}
+                />
+                <div className="flex items-center gap-x-1">
+                  <button
+                    type="button"
+                    className="rounded-sm border border-para size-6 center mb-2"
+                    onClick={() => {
+                      setDays((prev: any) => Number(prev) + 1);
+                    }}
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-sm border border-para size-6 center mb-2"
+                    onClick={() => {
+                      setDays((prev: any) =>
+                        Number(prev) > 1 ? Number(prev) - 1 : 1
+                      );
+                    }}
+                  >
+                    -
+                  </button>
+                </div>
+              </div>
+              <p className="font-semibold">days from</p>
+            </div>
+            <div className="flex items-center gap-x-3 justify-between">
+              <BgRadioInput
+                id="payment-shipment"
+                label="BL Date/Shipment Date"
+                name="extraInfo"
+                value="shipment"
+                register={register}
+                checked={extraCheckedState["payment-shipment"]}
+                handleCheckChange={handleExtraCheckChange}
+              />
+              <BgRadioInput
+                id="payment-acceptance"
+                label="Acceptance Date"
+                name="extraInfo"
+                value="acceptance"
+                register={register}
+                checked={extraCheckedState["payment-acceptance"]}
+                handleCheckChange={handleExtraCheckChange}
+              />
+            </div>
+            <div className="flex items-center gap-x-3 justify-between">
+              <BgRadioInput
+                id="payment-negotiation"
+                label="Negotiation Date"
+                name="extraInfo"
+                value="negotiation"
+                register={register}
+                checked={extraCheckedState["payment-negotiation"]}
+                handleCheckChange={handleExtraCheckChange}
+              />
+              <BgRadioInput
+                id="payment-invoice"
+                label="Invoice Date"
+                name="extraInfo"
+                value="invoice"
+                register={register}
+                checked={extraCheckedState["payment-invoice"]}
+                handleCheckChange={handleExtraCheckChange}
+              />
+              <BgRadioInput
+                id="payment-extra-sight"
+                label="Sight"
+                name="extraInfo"
+                value="sight"
+                register={register}
+                checked={extraCheckedState["payment-extra-sight"]}
+                handleCheckChange={handleExtraCheckChange}
+              />
+            </div>
+            <div
+              className={`flex bg-white items-end gap-x-5 px-3 py-4 w-full rounded-md mb-2 border border-borderCol ${
+                extraCheckedState["payment-others"] && "bg-[#EEE9FE]"
+              }`}
+            >
+              <label
+                htmlFor="payment-others"
+                className=" flex items-center gap-x-2 text-sm text-lightGray"
+              >
+                <input
+                  type="radio"
+                  name="extraInfo"
+                  value="others"
+                  id="payment-others"
+                  className="accent-primaryCol size-4"
+                  onChange={() => handleExtraCheckChange("payment-others")}
+                />
+                Others
+              </label>
+              <input
+                type="text"
+                name="ds"
+                className="text-sm bg-transparent !border-b-2 !border-b-neutral-300 rounded-none border-transparent focus-visible:ring-0 focus-visible:ring-offset-0 outline-none w-[80%]"
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

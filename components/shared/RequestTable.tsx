@@ -105,7 +105,6 @@ export const RequestTable = ({
 
     let sortedData: ILcs[] = [...tableData].sort((a, b) => {
       let valueA, valueB;
-
       switch (key) {
         case "LC Amount":
           valueA = a.amount;
@@ -132,13 +131,19 @@ export const RequestTable = ({
           valueB = b.bidsCount;
           break;
         case "Request":
+        case "Deal Received":
           valueA = a.lcPeriod.startDate;
           valueB = b.lcPeriod.startDate;
           break;
-          case "Expires":
+        case "Expires":
           valueA = a.lcPeriod.endDate;
           valueB = b.lcPeriod.endDate;
           break;
+        case "LC applicant":
+          valueA = a.importerInfo.applicantName;
+          valueB = b.importerInfo.applicantName;
+          break;
+
         default:
           return 0;
       }
@@ -182,11 +187,13 @@ export const RequestTable = ({
                       <TableHead
                         key={`${header}-${idx}`}
                         className="font-roboto px-2 h-8 py-0.5 min-w-32"
+                        onClick={() => handleSort(header)}
                       >
                         <div className="capitalize flex text-[#44444F] items-center gap-x-2 justify-center text-[12px] font-semibold">
                           {header}
                           <div
-                            className={`border border-primaryCol center rounded-full size-4  hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer`}
+                            className={`${sortedKey.includes(header) &&
+                              "bg-primaryCol text-white"} border border-primaryCol center rounded-full size-4  hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer`}
                           >
                             <ChevronUp className="size-4" />
                           </div>
@@ -224,7 +231,7 @@ export const RequestTable = ({
                 <div className="w-full h-full center">{/* <Loader /> */}</div>
               ) : isBank ? (
                 data &&
-                data.data &&
+                tableData &&
                 // @ts-ignore
                 tableData.map((item: ILcs, index: number) => (
                   <TableRow key={index} className="border-none font-roboto">

@@ -16,11 +16,11 @@ export const RiskStep6 = ({ register }: { register: any }) => {
   };
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
-      <div className="flex items-center gap-x-2 ml-3 mb-3">
-        <p className="size-6 rounded-full bg-[#255EF2] center text-white font-semibold">
+      <div className="flex items-center gap-x-2 ml-2 mb-3">
+        <p className="size-6 text-sm rounded-full bg-[#255EF2] center text-white font-semibold">
           6
         </p>
-        <p className="font-semibold text-lg text-lightGray">
+        <p className="font-semibold text-[16px] text-lightGray">
           Would you require to recieve
         </p>
       </div>
@@ -32,7 +32,7 @@ export const RiskStep6 = ({ register }: { register: any }) => {
               checkedState["highest-price-quoted"]
                 ? "bg-[#DCE5FD]"
                 : "border border-borderCol bg-white"
-            } rounded-md flex items-center gap-x-3 mb-2 text-lightGray `}
+            } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm`}
           >
             <input
               type="radio"
@@ -53,7 +53,7 @@ export const RiskStep6 = ({ register }: { register: any }) => {
               checkedState["all-prices-quoted"]
                 ? "bg-[#DCE5FD]"
                 : "border border-borderCol bg-white"
-            } rounded-md flex items-center gap-x-3 mb-2 text-lightGray `}
+            } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm`}
           >
             <input
               type="radio"

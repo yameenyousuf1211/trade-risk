@@ -3,8 +3,8 @@ import { useState } from "react";
 import { TagsInput } from "react-tag-input-component";
 
 export const RiskBanks = ({ setValue }: { setValue: any }) => {
-  const [products, setProducts] = useState([]);
-  const [productInput, setProductInput] = useState("");
+  const [banks, setBanks] = useState([]);
+  const [BankInput, setBankInput] = useState("");
 
   return (
     <div className="bg-white rounded-lg border border-borderCol py-4 px-4">
@@ -13,26 +13,26 @@ export const RiskBanks = ({ setValue }: { setValue: any }) => {
       </p>
       <div className="mt-3">
         <TagsInput
-          value={products}
+          value={banks}
           onChange={(val: any) => {
-            setProducts(val);
+            setBanks(val);
             // setValue("product", val.join(", "));
-            setProductInput("");
+            setBankInput("");
           }}
           onKeyUp={(e) => {
             if (e.key.length === 1) {
-              setProductInput((prev) => prev + e.key);
+              setBankInput((prev) => prev + e.key);
             }
           }}
           onBlur={(e: any) => {
-            if (productInput.length > 1) {
-              setProducts((prev) => [...prev, productInput]);
+            if (BankInput.length > 1) {
+              setBanks((prev) => [...prev, BankInput]);
               e.target.value = "";
             }
-            setProductInput("");
+            setBankInput("");
           }}
-          name="product"
-          placeHolder="Your Product(s)"
+          name="banks"
+          placeHolder="Select Bank(s)"
         />
       </div>
     </div>

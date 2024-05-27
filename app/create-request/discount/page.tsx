@@ -10,21 +10,7 @@ import {
   Step6,
   Step7,
 } from "@/components/LCSteps";
-import {
-  DiscountBanks,
-  Period,
-  Transhipment,
-} from "@/components/LCSteps/Step3Helpers";
-import { BgRadioInput } from "@/components/LCSteps/helpers";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { discountingSchema } from "@/validation/lc.validation";
@@ -34,10 +20,10 @@ import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { usePathname, useRouter } from "next/navigation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "@/components/ui/loader";
-import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
+import { getCountries } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Country } from "@/types/type";
-import { DisclaimerDialog, NumberInput } from "@/components/helpers";
+import { DisclaimerDialog } from "@/components/helpers";
 import useDiscountingStore, { getStateValues } from "@/store/discounting.store";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";

@@ -11,23 +11,9 @@ import {
   Step7,
   Step7Disounting,
 } from "@/components/LCSteps";
-import { BgRadioInput } from "@/components/LCSteps/helpers";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import {
-  DiscountBanks,
-  Period,
-  Transhipment,
-} from "@/components/LCSteps/Step3Helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
@@ -35,10 +21,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { confirmationDiscountSchema } from "@/validation/lc.validation";
 import Loader from "@/components/ui/loader";
 import useLoading from "@/hooks/useLoading";
-import { getCountries, getCurrenncy } from "@/services/apis/helpers.api";
+import { getCountries } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Country } from "@/types/type";
-import { DisclaimerDialog, NumberInput } from "@/components/helpers";
+import { DisclaimerDialog } from "@/components/helpers";
 import useConfirmationDiscountingStore, {
   getStateValues,
 } from "@/store/confirmationDiscounting.store";

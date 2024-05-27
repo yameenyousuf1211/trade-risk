@@ -31,20 +31,9 @@ const Input = <T extends FieldValues>({
   ...rest
 }: Props<T>) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // if (inputMode === 'numeric') {
-    //   const newValue = event.target.value.replace(/[^0-9.]/g, '');
-    //   event.target.value = newValue;
-    // }
-
     if (onChange) {
       onChange(event);
     }
-  };
-
-  const handleBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // if (inputMode === 'numeric') {
-    //   event.target.value += '%';
-    // }
   };
 
   return (
@@ -59,12 +48,6 @@ const Input = <T extends FieldValues>({
       max={max}
       {...register(name as Path<T>)}
       onChange={handleChange}
-      onBlur={handleBlur}
-      onKeyUp={(event) => {
-        if (Number(event.target.value.replace('%', '')) > 100) {
-          event.target.value = '100.0%';
-        }
-      }}
     />
   );
 };

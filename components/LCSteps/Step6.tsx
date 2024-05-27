@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { BgRadioInput, DDInput } from "./helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { cn } from "@/utils";
 
 export const Step6 = ({
   title,
@@ -45,11 +47,18 @@ export const Step6 = ({
   let pricePerAnnum = isDiscount
     ? getValues("discountingInfo.pricePerAnnum")
     : getValues("confirmationInfo.pricePerAnnum");
+  console.log(pricePerAnnum, "price");
   useEffect(() => {
     if (pricePerAnnum) {
       isDiscount
-        ? setValue("discountingInfo.pricePerAnnum", pricePerAnnum.toString())
-        : setValue("confirmationInfo.pricePerAnnum", pricePerAnnum.toString());
+        ? setValue(
+            "discountingInfo.pricePerAnnum",
+            `${pricePerAnnum.toString()}`
+          )
+        : setValue(
+            "confirmationInfo.pricePerAnnum",
+            `${pricePerAnnum.toString()}`
+          );
     }
   }, [valueChanged]);
 
@@ -62,12 +71,11 @@ export const Step6 = ({
   };
 
   const handleIncrement = () => {
-  
     const currentValue = isDiscount
       ? getValues("discountingInfo.pricePerAnnum") || "0"
       : getValues("confirmationInfo.pricePerAnnum") || "0";
     const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
-    if(Number(newValue) > 100) {
+    if (Number(newValue) > 100) {
       return;
     }
     isDiscount
@@ -192,7 +200,34 @@ export const Step6 = ({
             >
               -
             </Button>
-            <Input
+            <input
+              placeholder="Value (%)"
+              type="text"
+              inputMode="numeric"
+              className={cn(
+                "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0 "
+              )}
+              max={100}
+              {...register(
+                isDiscount
+                  ? "discountingInfo.pricePerAnnum"
+                  : "confirmationInfo.pricePerAnnum"
+              )}
+              onChange={(event) => {
+                const newValue = event.target.value.replace(/[^0-9.]/g, "");
+                event.target.value = newValue;
+              }}
+              onBlur={(event) => {
+              if(event.target.value.includes('%')) return
+                event.target.value += "%";
+              }}
+              onKeyUp={(event) => {
+                if (Number(event.target.value.replace("%", "")) > 100) {
+                  event.target.value = "100.0%";
+                }
+              }}
+            />
+            {/* <Input
               placeholder="Value (%)"
               type="text"
               inputMode="numeric"
@@ -205,15 +240,13 @@ export const Step6 = ({
               }
               register={register}
               className="border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
-            />
-            {/* <div className="absolute right-2">%</div> */}
-
+            /> */}
             <Button
               type="button"
               variant="ghost"
               className="bg-none border-none text-lg"
               onClick={handleIncrement}
-              >
+            >
               +
             </Button>
           </div>

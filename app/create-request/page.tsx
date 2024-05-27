@@ -114,7 +114,13 @@ const CreateRequestPage = () => {
           ...data.lcPeriod,
           expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
         },
+        confirmationInfo: {
+          ...data.confirmationInfo,
+          pricePerAnnum: parseInt(data.confirmationInfo.pricePerAnnum)
+        },
       };
+      console.log(data.confirmationInfo)
+
       const { response, success } = confirmationData?._id
         ? await onUpdateLC({
             payload: reqData,
@@ -158,6 +164,10 @@ const CreateRequestPage = () => {
       lcPeriod: {
         ...data.lcPeriod,
         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
+      },
+      confirmationInfo: {
+        ...data.confirmationInfo,
+        pricePerAnnum: parseInt(data.confirmationInfo.pricePerAnnum)
       },
     };
 

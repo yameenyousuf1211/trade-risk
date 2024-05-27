@@ -33,6 +33,7 @@ export const RiskStep5 = ({
           <p className="w-full text-lightGray">Name of Beneficiary</p>
           <Input
             type="text"
+            inputMode="text"
             name="importerInfo.applicantName"
             register={register}
             className="block bg-none text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"

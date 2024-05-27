@@ -126,6 +126,10 @@ const ConfirmationPage = () => {
           ...data.lcPeriod,
           expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
         },
+        confirmationInfo: {
+          ...data.confirmationInfo,
+          pricePerAnnum: parseInt(data.confirmationInfo.pricePerAnnum)
+        },
       };
 
       const { response, success } = confirmationData?._id
@@ -172,6 +176,10 @@ const ConfirmationPage = () => {
       lcPeriod: {
         ...data.lcPeriod,
         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
+      },
+      confirmationInfo: {
+        ...data.confirmationInfo,
+        pricePerAnnum: parseInt(data.confirmationInfo.pricePerAnnum)
       },
     };
     const { response, success } = confirmationData?._id

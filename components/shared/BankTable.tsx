@@ -21,7 +21,11 @@ import Image from "next/image";
 import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
 import { ApiResponse, Country, IBids } from "@/types/type";
-import { convertDateToString, convertDateToYYYYMMDD } from "@/utils";
+import {
+  compareValues,
+  convertDateToString,
+  convertDateToYYYYMMDD,
+} from "@/utils";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
@@ -48,6 +52,15 @@ export const BankTable = ({
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
 
   const [allCountries, setAllCountries] = useState<Country[]>([]);
+  const [tableData, setTableData] = useState<IBids[]>([]);
+
+  useEffect(() => {
+    console.log(data);
+    if (data && data?.data) {
+      console.log(data?.data, "DATA");
+      setTableData(data?.data);
+    }
+  }, [data]);
 
   const { data: countriesData } = useQuery({
     queryKey: ["countries"],
@@ -70,6 +83,41 @@ export const BankTable = ({
       (c: Country) => c.name.toLowerCase() === countryName.toLowerCase()
     );
     return country ? country.flag : undefined;
+  };
+
+  const [sortedKey, setSortedKey] = useState<string>("");
+
+  const handleSort = (key: string) => {
+    console.log(key);
+    setSortedKey(key);
+    let isDescending = sortedKey.includes(key);
+    setSortedKey(isDescending ? "" : key);
+    console.log(tableData);
+
+    let sortedData: IBids[] = [...tableData].sort((a, b) => {
+      let valueA, valueB;
+      switch (key) {
+        case "Date Submitted":
+          valueA = a.createdAt;
+          valueB = b.createdAt;
+          break;
+        case "Country of issuing bank":
+          valueA = a.lcInfo.bank;
+          valueB = b.lcInfo.bank;
+          break;
+        case "Confirmation Rate":
+          valueA = a.confirmationPrice;
+          valueB = b.confirmationPrice;
+          break;
+   
+        default:
+          return 0;
+      }
+
+      return compareValues(valueA, valueB, isDescending);
+    });
+
+    setTableData(sortedData);
   };
 
   return (
@@ -96,6 +144,7 @@ export const BankTable = ({
                     <TableHead
                       key="Confirmation bank"
                       className="font-roboto px-2 h-8 py-2 min-w-40"
+                      onClick={() => handleSort(header)}
                     >
                       <div className="flex items-center gap-x-2 justify-center text-[13px]">
                         Confirming Bank
@@ -108,6 +157,7 @@ export const BankTable = ({
                   <TableHead
                     key={`${header}-${idx}`}
                     className="px-2 h-8 py-2  min-w-40"
+                    onClick={() => handleSort(header)}
                   >
                     <div className="font-roboto capitalize flex items-center gap-x-2 justify-center text-[12px] text-lightGray">
                       {header}
@@ -126,7 +176,7 @@ export const BankTable = ({
             ) : (
               data &&
               data.data &&
-              data.data.map((item, index) => (
+              tableData.map((item, index) => (
                 <TableRow key={index} className="border-none font-roboto">
                   <TableDataCell data={convertDateToString(item.createdAt)} />
                   <TableCell className="px-1 py-1 max-w-[200px]">

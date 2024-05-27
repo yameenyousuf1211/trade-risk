@@ -218,7 +218,8 @@ export const Step6 = ({
                 event.target.value = newValue;
               }}
               onBlur={(event) => {
-              if(event.target.value.includes('%')) return
+                console.log(event.target.value)
+              if(event.target.value.includes('%') && event.target.value.length > 0) return
                 event.target.value += "%";
               }}
               onKeyUp={(event) => {

@@ -69,9 +69,7 @@ export const RequestTable = ({
   });
 
   useEffect(() => {
-    console.log(data);
     if (data && data?.data) {
-      console.log(data?.data, "DATA");
       setTableData(data?.data);
     }
   }, [data]);

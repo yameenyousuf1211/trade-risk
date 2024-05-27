@@ -222,10 +222,17 @@ export interface IBids {
     _id: string;
     country: string;
   };
+  lcInfo: ILcInfo | any;
+  confirmationPrice: string | number
   lc?: string[];
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
+}
+
+ILcInfo: {
+  country: string;
+  bank: string;
 }
 
 export interface IMyBids {

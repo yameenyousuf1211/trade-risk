@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { DateInput, DiscountBanks } from "./RiskHelpers";
+import { BankRadioInput, DateInput, DiscountBanks } from "./RiskHelpers";
 import { DDInput } from "../LCSteps/helpers";
 import { getAllPortData } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
@@ -47,6 +47,49 @@ export const RiskStep3 = ({
     setCheckedState(newCheckedState);
   };
 
+  const [discountedCheckedState, setDiscountedCheckedState] = useState({
+    "discounted-yes": false,
+    "discounted-no": false,
+  });
+
+  const handleDiscountedCheckChange = (id: string) => {
+    const newCheckedState = {
+      "discounted-yes": id === "discounted-yes",
+      "discounted-no": id === "discounted-no",
+    };
+    setDiscountedCheckedState(newCheckedState);
+  };
+
+  const [expectedCheckedState, setExpectedCheckedState] = useState({
+    "expected-yes": false,
+    "expected-no": false,
+  });
+
+  const handleExpectedCheckChange = (id: string) => {
+    const newCheckedState = {
+      "expected-yes": id === "expected-yes",
+      "expected-no": id === "expected-no",
+    };
+    setExpectedCheckedState(newCheckedState);
+  };
+
+  const [paymentCheckedState, setPaymentCheckedState] = useState({
+    "payment-sight": false,
+    "payment-usance": false,
+    "payment-tenor": false,
+  });
+
+  const handlePaymentCheckChange = (id: string) => {
+    const newCheckedState = {
+      "payment-sight": id === "payment-sight",
+      "payment-usance": id === "payment-usance",
+      "payment-tenor": id === "payment-tenor",
+    };
+    setPaymentCheckedState(newCheckedState);
+  };
+
+  const [days, setDays] = useState<number>();
+
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-4">
@@ -59,9 +102,139 @@ export const RiskStep3 = ({
       </div>
       <DiscountBanks countries={countries} flags={flags} />
 
+      <div className="relative flex items-center justify-between gap-x-3 w-full my-4">
+        <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-[274px]">
+          <p className="text-sm font-semibold mb-2 ml-2">
+            Is the LC Discounted?
+          </p>
+          <BankRadioInput
+            id="discounted-yes"
+            label="Yes"
+            name="discounted"
+            value="yes"
+            checked={discountedCheckedState["discounted-yes"]}
+            handleCheckChange={handleDiscountedCheckChange}
+          />
+          <BankRadioInput
+            id="discounted-no"
+            label="No"
+            name="discounted"
+            value="no"
+            checked={discountedCheckedState["discounted-no"]}
+            handleCheckChange={handleDiscountedCheckChange}
+          />
+        </div>
+
+        <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9]">
+          <p className="text-sm font-semibold mb-2 ml-2">
+            Is it expected to be discounted?
+          </p>
+          <BankRadioInput
+            id="expected-yes"
+            label="Yes"
+            name="expected"
+            value="yes"
+            checked={expectedCheckedState["expected-yes"]}
+            handleCheckChange={handleExpectedCheckChange}
+          />
+          <BankRadioInput
+            id="expected-no"
+            label="No"
+            name="expected"
+            value="no"
+            checked={expectedCheckedState["expected-no"]}
+            handleCheckChange={handleExpectedCheckChange}
+          />
+
+          <DateInput title="Expected Date of Discounting" noBorder />
+        </div>
+      </div>
+
       <div className="flex items-center justify-between gap-x-3 w-full my-4">
         <DateInput title="Date LC Issued / Expected Date of LC Issuance" />
         <DateInput title="LC Expiry Date" />
+      </div>
+
+      <div className="flex items-center justify-between gap-x-3 w-full my-4">
+        <div className="border border-borderCol pt-3 pb-1 px-2 rounded-md w-full bg-[#F5F7F9]">
+          <p className="text-sm font-semibold mb-2 ml-2">Payment Terms</p>
+          <div className="flex items-center gap-x-3 w-full justify-between">
+            <BankRadioInput
+              id="payment-sight"
+              label="Sight LC"
+              name="payment"
+              value="sight"
+              checked={paymentCheckedState["payment-sight"]}
+              handleCheckChange={handlePaymentCheckChange}
+            />
+            <BankRadioInput
+              id="payment-usance"
+              label="Usance LC"
+              name="payment"
+              value="usance"
+              checked={paymentCheckedState["payment-usance"]}
+              handleCheckChange={handlePaymentCheckChange}
+            />
+            <div className="w-full">
+              <label
+                htmlFor="payment-tenor"
+                className={`px-3 py-2.5 w-full transition-colors duration-100 ${
+                  paymentCheckedState["payment-tenor"]
+                    ? "bg-[#DCE5FD]"
+                    : "border border-borderCol bg-white"
+                } rounded-md flex items-center justify-between gap-x-3 mb-2 text-lightGray text-sm`}
+              >
+                <div className="flex gap-x-2 items-center">
+                  <input
+                    type="radio"
+                    id="payment-tenor"
+                    value="yes"
+                    name="payment"
+                    className="accent-[#255EF2] size-4"
+                    onChange={() => {
+                      setDays(1);
+                      handlePaymentCheckChange("payment-tenor");
+                    }}
+                  />
+                  Tenor LC
+                </div>
+                <div className="border-b border-black flex items-center">
+                  <input
+                    placeholder="enter days"
+                    inputMode="numeric"
+                    name="days"
+                    type="number"
+                    value={days}
+                    className="text-sm text-lightGray border-none max-w-[150px] bg-transparent outline-none"
+                    onChange={(e: any) => setDays(e.target.value)}
+                  />
+                  <div className="flex items-center gap-x-1">
+                    <button
+                      type="button"
+                      className="rounded-sm border border-para size-6 center mb-2"
+                      onClick={() => {
+                        setDays((prev: any) => Number(prev) + 1);
+                      }}
+                    >
+                      +
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded-sm border border-para size-6 center mb-2"
+                      onClick={() => {
+                        setDays((prev: any) =>
+                          Number(prev) > 1 ? Number(prev) - 1 : 1
+                        );
+                      }}
+                    >
+                      -
+                    </button>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
       {/* Transhipment */}
       <div className="flex items-center justify-between gap-x-3 w-full">
@@ -96,46 +269,22 @@ export const RiskStep3 = ({
           <p className="text-sm font-semibold mb-2 ml-3">
             Transhipment Allowed
           </p>
-          <div className="w-full">
-            <label
-              htmlFor="shipment-yes"
-              className={`px-3 py-4 w-full transition-colors duration-100 ${
-                checkedState["shipment-yes"]
-                  ? "bg-[#DCE5FD]"
-                  : "border border-borderCol bg-white"
-              } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm`}
-            >
-              <input
-                type="radio"
-                id="shipment-yes"
-                value="yes"
-                name="transhipment"
-                className="accent-[#255EF2] size-4"
-                onChange={() => handleCheckChange("shipment-yes")}
-              />
-              Yes
-            </label>
-          </div>
-          <div className="w-full">
-            <label
-              htmlFor="shipment-no"
-              className={`px-3 py-4 w-full transition-colors duration-100 ${
-                checkedState["shipment-no"]
-                  ? "bg-[#DCE5FD]"
-                  : "border border-borderCol bg-white"
-              } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm`}
-            >
-              <input
-                type="radio"
-                id="shipment-no"
-                value="no"
-                name="transhipment"
-                className="accent-[#255EF2] size-4"
-                onChange={() => handleCheckChange("shipment-no")}
-              />
-              No
-            </label>
-          </div>
+          <BankRadioInput
+            id="shipment-yes"
+            label="Yes"
+            name="transhipment"
+            value="yes"
+            checked={checkedState["shipment-yes"]}
+            handleCheckChange={handleCheckChange}
+          />
+          <BankRadioInput
+            id="shipment-no"
+            label="No"
+            name="transhipment"
+            value="no"
+            checked={checkedState["shipment-no"]}
+            handleCheckChange={handleCheckChange}
+          />
         </div>
       </div>
 

@@ -218,13 +218,23 @@ export const DiscountBanks = ({
   );
 };
 
-export const DateInput = ({ title }: { title: string }) => {
+export const DateInput = ({
+  title,
+  noBorder,
+}: {
+  title: string;
+  noBorder?: boolean;
+}) => {
   const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   return (
-    <div className="border border-borderCol pt-3 px-2 rounded-md w-full bg-[#F5F7F9]">
-      <p className="text-sm font-semibold mb-2 ml-3">{title}</p>
+    <div
+      className={`${
+        !noBorder && "border border-borderCol"
+      } pt-3 px-2 rounded-md w-full bg-[#F5F7F9]`}
+    >
+      <p className="text-sm font-semibold mb-2 ml-2">{title}</p>
       <label
         id="name"
         className="border border-borderCol bg-white p-1 px-3 rounded-md w-full flex items-center justify-between mb-2"
@@ -258,5 +268,40 @@ export const DateInput = ({ title }: { title: string }) => {
         </Popover>
       </label>
     </div>
+  );
+};
+
+export const BankRadioInput = ({
+  id,
+  label,
+  checked,
+  name,
+  value,
+  handleCheckChange,
+}: {
+  id: string;
+  label: string;
+  name: string;
+  value: string;
+  checked: boolean;
+  handleCheckChange: (id: string) => void;
+}) => {
+  return (
+    <label
+      htmlFor={id}
+      className={`px-3 py-4 w-full transition-colors duration-100 ${
+        checked ? "bg-[#DCE5FD]" : "border border-borderCol bg-white"
+      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm w-full`}
+    >
+      <input
+        type="radio"
+        id={id}
+        value={value}
+        name={name}
+        className="accent-[#255EF2] size-4"
+        onChange={() => handleCheckChange(id)}
+      />
+      {label}
+    </label>
   );
 };

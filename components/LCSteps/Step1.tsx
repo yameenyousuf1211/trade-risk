@@ -4,7 +4,6 @@ import { BgRadioInput } from "./helpers";
 import { useForm } from "react-hook-form";
 
 export const Step1 = ({ register, type, setStepCompleted }: any) => {
-  const { getValues } = useForm();
   const [checkedState, setCheckedState] = useState({
     "role-exporter": false,
     "role-importer": false,

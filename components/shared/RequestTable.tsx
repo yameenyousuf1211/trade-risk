@@ -182,7 +182,7 @@ export const RequestTable = ({
                     <TableDataCell data={item.lcType} />
                     <TableCell className="px-1 py-1 max-w-[180px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                        <p className="text-[16px]">
+                        <p className="text-[16px] emoji-font">
                           {allCountries &&
                             getCountryFlagByName(item.issuingBank.country)}
                         </p>
@@ -223,7 +223,7 @@ export const RequestTable = ({
                     <TableDataCell data={item.lcType} />
                     <TableCell className="px-1 py-1 max-w-[180px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                        <p className="text-[16px]">
+                        <p className="text-[16px] emoji-font">
                           {allCountries &&
                             getCountryFlagByName(item.issuingBank.country)}
                         </p>

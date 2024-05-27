@@ -13,6 +13,7 @@ import { useAuth } from "@/context/AuthProvider";
 export const UserProfile = () => {
   const hasNotifications = true;
   const { user } = useAuth();
+
   return (
     <div className="flex items-center gap-x-4">
       <div className="relative">
@@ -35,8 +36,8 @@ export const UserProfile = () => {
 
         <div>
           <h2 className="font-semibold capitalize">{user && user.name}</h2>
-          <p className="text-para font-roboto text-sm capitalize">
-            Trade Finance Solutions
+          <p className="text-para font-roboto text-sm ">
+            {user && (user.role === "corporate" ? user.bank : user.email)}
           </p>
         </div>
       </div>

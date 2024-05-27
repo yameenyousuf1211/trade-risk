@@ -13,11 +13,7 @@ import { format, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import {
-  getAllPortData,
-  getBanks,
-  getPorts,
-} from "@/services/apis/helpers.api";
+import { getAllPortData, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 
 export const ValidatingCalendar = ({
@@ -25,11 +21,13 @@ export const ValidatingCalendar = ({
   onChange,
   onClose,
   isPast,
+  maxDate,
 }: {
   initialDate: Date | undefined;
   onChange: (date: Date) => void;
   onClose: any;
   isPast?: boolean;
+  maxDate?: Date | string | undefined;
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
@@ -39,7 +37,11 @@ export const ValidatingCalendar = ({
       return toast.error("Please dont select a date from future");
     if (!isPast && date < today)
       return toast.error("Please don't select a past date ");
-
+    if (maxDate) {
+      const max = new Date(maxDate);
+      if (date > max)
+        return toast.error("Please select a date that comes before LC expiry");
+    }
     setSelectedDate(date);
     onChange(date);
     onClose();
@@ -78,7 +80,6 @@ export const Period = ({
 
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
-  // const [portCountries, setPortCountries] = useState([]);
 
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],
@@ -120,14 +121,8 @@ export const Period = ({
     setValue("lcPeriod.expectedDate", e.target.value);
   };
 
-  // Function to update value in React Hook Form
   const updateValue = (name: string, value: any) => {
     setValue(name, value);
-  };
-
-  const handleSelectChange = (value: string) => {
-    setValue("shipmentPort.port", value);
-    setValueChanged((prev: boolean) => !prev);
   };
 
   useEffect(() => {
@@ -139,7 +134,9 @@ export const Period = ({
       setValue("lcPeriod.endDate", new Date(lcEndDate));
       setValue("expectedConfirmationDate", new Date(lcEndDate));
     }
-    setValue("lcPeriod.expectedDate", lcPeriodType === false ? "yes" : "no");
+    setValue("lcPeriod.expectedDate", lcPeriodType === true ? "yes" : "no");
+    lcPeriodType = getValues("lcPeriod.expectedDate");
+    lcStartDate && lcStartDate && setLcIssueType(lcPeriodType);
   }, [valueChanged]);
 
   return (
@@ -199,7 +196,7 @@ export const Period = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              {lcIssueType === "date-lc-issued" ? (
+              {lcIssueType === "yes" ? (
                 <ValidatingCalendar
                   initialDate={lcPeriodDate}
                   onChange={(date) => {
@@ -451,201 +448,6 @@ export const Transhipment = ({
           className="bg-white border border-borderCol placeholder:text-para resize-none focus-visible:ring-0 focus-visible:ring-offset-0 "
           rows={4}
         />
-      </div>
-    </div>
-  );
-};
-
-export const DiscountBanks = ({
-  countries,
-  setValue,
-  getValues,
-  flags,
-  value,
-  valueSetter,
-}: {
-  countries: string[];
-  flags: string[];
-  setValue: any;
-  getValues: any;
-  value?: any;
-  valueSetter?: any;
-}) => {
-  const [valueChanged, setValueChanged] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
-
-  let issuingCountry = getValues("issuingBank.country");
-  let issuingBank = getValues("issuingBank.bank");
-  let advisingCountry = getValues("advisingBank.country");
-  let advisingBank = getValues("advisingBank.bank");
-  let confirmingCountry = getValues("confirmingBank.country");
-  let confirmingBank = getValues("confirmingBank.bank");
-
-  useEffect(() => {
-    issuingCountry = getValues("issuingBank.country");
-    issuingBank = getValues("issuingBank.bank");
-    advisingCountry = getValues("advisingBank.country");
-    advisingBank = getValues("advisingBank.bank");
-    confirmingCountry = getValues("confirmingBank.country");
-  }, [valueChanged, value]);
-
-  const { data: issuingBanks } = useQuery({
-    queryKey: ["issuing-banks", issuingCountry],
-    queryFn: () => getBanks(issuingCountry),
-    enabled: !!issuingCountry,
-  });
-
-  const { data: advisingBanks } = useQuery({
-    queryKey: ["advising-banks", advisingCountry],
-    queryFn: () => getBanks(advisingCountry),
-    enabled: !!advisingCountry,
-  });
-
-  const { data: confirmingBanks } = useQuery({
-    queryKey: ["confirming-banks", confirmingCountry],
-    queryFn: () => getBanks(confirmingCountry),
-    enabled: !!confirmingCountry,
-  });
-
-  const handleSameAsAdvisingBank = () => {
-    const advisingCountry = getValues("advisingBank.country");
-    const advisingBank = getValues("advisingBank.bank");
-    const confirmingBank = getValues("confirmingBank.bank");
-    const confirmingCountry = getValues("confirmingBank.country");
-    if (!advisingBank || !advisingCountry) {
-      toast.error("Please select advising bank first");
-      setIsChecked(false);
-      return;
-    }
-    if (confirmingBank && confirmingCountry) {
-      setValue("confirmingBank.country", undefined);
-      setValue("confirmingBank.bank", undefined);
-    } else {
-      setValue("confirmingBank.country", advisingCountry);
-      setValue("confirmingBank.bank", advisingBank);
-    }
-    setValueChanged(!valueChanged);
-  };
-
-  const handleCheckboxChange = (e) => {
-    setIsChecked(e.target.checked);
-    handleSameAsAdvisingBank();
-  };
-
-  return (
-    <div className="flex items-center justify-between w-full mb-3 gap-x-4 flex-wrap xl:flex-nowrap">
-      {/* Issuing Bank */}
-      <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
-        <p className="font-semibold mb-2 ml-3">Issuing Bank</p>
-        <div className="flex flex-col gap-y-2">
-          <DDInput
-            placeholder="Select a country"
-            label="Country"
-            id="issuingBank.country"
-            value={issuingCountry}
-            data={countries}
-            flags={flags}
-            setValue={setValue}
-            setValueChanged={setValueChanged}
-          />
-          <DDInput
-            placeholder="Select bank"
-            label="Bank"
-            id="issuingBank.bank"
-            value={issuingBank}
-            setValue={setValue}
-            setValueChanged={setValueChanged}
-            disabled={
-              !issuingBanks || !issuingBanks?.response || !issuingBanks.success
-            }
-            data={
-              issuingBanks && issuingBanks.success && issuingBanks?.response
-            }
-          />
-        </div>
-      </div>
-      {/* Advising Bank */}
-      <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
-        <p className="font-semibold mb-2 ml-3">Advising Bank</p>
-        <div className="flex flex-col gap-y-2">
-          <DDInput
-            placeholder="Select a country"
-            label="Country"
-            id="advisingBank.country"
-            value={advisingCountry}
-            data={countries}
-            flags={flags}
-            setValue={setValue}
-            setValueChanged={setValueChanged}
-          />
-          <DDInput
-            placeholder="Select bank"
-            label="Bank"
-            id="advisingBank.bank"
-            value={advisingBank}
-            setValue={setValue}
-            setValueChanged={setValueChanged}
-            disabled={
-              !advisingBanks ||
-              !advisingBanks?.response ||
-              !advisingBanks.success
-            }
-            data={
-              advisingBanks && advisingBanks.success && advisingBanks.response
-            }
-          />
-        </div>
-      </div>
-      {/* Confirming Bank */}
-      <div className="border border-borderCol rounded-md py-3 px-2 w-full bg-[#F5F7F9]">
-        <div className="flex items-center gap-x-2 justify-between mb-2 px-3 xl:px-0">
-          <p className="font-semibold">Confirming Bank</p>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="same-as-advising"
-              className="accent-primaryCol"
-              checked={isChecked}
-              onChange={handleCheckboxChange}
-            />
-            <label
-              htmlFor="same-as-advising"
-              className="ml-1  text-[12px] text-lightGray"
-            >
-              Same as advising bank
-            </label>
-          </div>
-        </div>
-        <div className="flex flex-col gap-y-2">
-          <DDInput
-            placeholder="Select a country"
-            label="Country"
-            value={confirmingCountry}
-            id="confirmingBank.country"
-            data={countries}
-            flags={flags}
-            setValue={setValue}
-            setValueChanged={setValueChanged}
-          />
-          <DDInput
-            placeholder="Select bank"
-            label="Bank"
-            id="confirmingBank.bank"
-            value={confirmingBank}
-            setValue={setValue}
-            setValueChanged={setValueChanged}
-            disabled={
-              !confirmingBanks ||
-              !confirmingBanks?.response ||
-              !confirmingBanks.success
-            }
-            data={
-              confirmingBanks &&
-              confirmingBanks.success &&
-              confirmingBanks.response
-            }
-          />
-        </div>
       </div>
     </div>
   );

@@ -1,9 +1,9 @@
+"use client";
 import Image from "next/image";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { X } from "lucide-react";
-import { useEffect, useState } from "react";
 import { formatFileSize } from "@/utils";
-import { filter } from "d3-array";
+import { X } from "lucide-react";
 
 const FileCard = ({
   file,
@@ -40,7 +40,7 @@ const FileCard = ({
   );
 };
 
-export const Step7 = ({ register, step }: { register: any; step: number }) => {
+export const RiskStep7 = () => {
   const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,23 +68,20 @@ export const Step7 = ({ register, step }: { register: any; step: number }) => {
         });
       });
     }
-  }, [selectedFiles, register]);
+  }, [selectedFiles]);
 
   return (
-    <div
-      id="step7"
-      className="w-full border border-borderCol rounded-lg py-3 px-4 h-full"
-    >
-      <div className="flex items-center gap-x-2 ml-2 mb-3">
-        <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold text-sm">
-          {step}
+    <div className="h-full py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
+      <div className="flex items-center gap-x-2 ml-3 mb-3">
+        <p className="size-6 rounded-full bg-[#255EF2] center text-white font-semibold text-sm">
+          7
         </p>
         <p className="font-semibold text-[16px] text-lightGray">Attachments</p>
       </div>
-
       <p className="font-semibold ml-3 text-sm">
         Add Documents (PDF,JPG,PNG,TIFF)
       </p>
+
       <div className="bg-[#F5F7F9] p-1 mt-2 rounded-md">
         <label
           htmlFor="attachment-input"
@@ -105,7 +102,7 @@ export const Step7 = ({ register, step }: { register: any; step: number }) => {
               height={27}
             />
           </div>
-          <p className="text-lg font-semibold text-lightGray mt-4">
+          <p className="font-semibold text-lightGray mt-4">
             Drag your files here
           </p>
           <p className="text-lightGray">or click to select from your device</p>

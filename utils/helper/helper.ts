@@ -144,6 +144,7 @@ export const convertDateAndTimeToString = (date: any) => {
   return `${month} ${day} ${year} ${hours}:${minutes}`;
 };
 
+<<<<<<< HEAD
 export const compareValues = (a: any, b: any, isDescending: boolean): number => {
   if (typeof a === "string" && typeof b === "string") {
     return isDescending ? b.localeCompare(a) : a.localeCompare(b);
@@ -155,4 +156,12 @@ export const compareValues = (a: any, b: any, isDescending: boolean): number => 
     return isDescending ? b.getTime() - a.getTime() : a.getTime() - b.getTime();
   }
   return 0;
+=======
+export const calculateDaysLeft = (futureDate: any) => {
+  const currentDate = new Date();
+  const targetDate = new Date(futureDate);
+  const timeDifference = targetDate - currentDate;
+  const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+  return daysDifference > 0 ? daysDifference : 0;
+>>>>>>> danish-edit
 };

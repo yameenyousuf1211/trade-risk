@@ -10,7 +10,6 @@ const api = axios.create({
   baseURL: 'http://128.199.30.51:8080/api'
 });
 // http://128.199.30.51:8080/api
-
 api.interceptors.request.use(
   async (config) => {
     const accessToken = getAccessToken();

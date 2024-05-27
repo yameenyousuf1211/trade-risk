@@ -14,12 +14,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/context/AuthProvider";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { registerGCMToken } from "@/services/apis/notifications.api";
+import {
+  arrayBufferToBase64,
+  urlBase64ToUint8Array,
+} from "@/utils/helper/service-worker";
 export default function LoginPage() {
   const router = useRouter();
   const { setUser } = useAuth();
   const [showPass, setShowPass] = useState(false);
 
-  const { mutateAsync, status } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: onLogin,
   });
 
@@ -31,15 +36,51 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
+  const [notificationPermission, setNotificationPermission] = useState(
+    typeof window !== "undefined" ? Notification.permission : ""
+  );
+
+  const registerServiceWorker = async () => {
+    const register = await navigator.serviceWorker.register(
+      "/service-worker.js"
+    );
+    const subscription = await register.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(
+        "BKOPYlgOw1eAWgeVCt8uZWCTAaBUd4ReGVd9Qfs2EtK_DvRXuI_LFQSiyxjMN8rg47BWP9_8drlyE0O1GXMP4ew"
+      ),
+    });
+    console.log(subscription);
+    const authToken = arrayBufferToBase64(
+      subscription.getKey("auth") as ArrayBuffer
+    );
+    const hashKey = arrayBufferToBase64(
+      subscription.getKey("p256dh") as ArrayBuffer
+    );
+    if (subscription) {
+      const gcmToken = await registerGCMToken({
+        endpoint: subscription.endpoint,
+        expirationTime: subscription.expirationTime,
+        authToken,
+        hashKey,
+      });
+    }
+  };
+
   const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (data) => {
     const { response, success } = await mutateAsync(data);
-    // console.log(response);
-    if (success == false) return toast.error(response as string);
-    if (success == true) {
+    if (success) {
+      // const permission = await Notification.requestPermission();
+      // setNotificationPermission(permission);
+      // if (permission === "granted") {
+      //   if ("serviceWorker" in navigator) {
+      //     await registerServiceWorker();
+      //   }
+      // }
       setUser(response.data.user);
       toast.success("Login successfull");
       router.push(response.data.user.role === "corporate" ? "/" : "/dashboard");
-    }
+    } else return toast.error(response as string);
   };
 
   return (

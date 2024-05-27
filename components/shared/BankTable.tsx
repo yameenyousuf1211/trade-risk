@@ -28,7 +28,7 @@ import {
 } from "@/utils";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getCountries } from "@/services/apis/helpers.api";
+import { getCountries } from "../../services/apis/helpers.api";
 
 const TableDataCell = ({ data }: { data: string | number }) => {
   return (
@@ -124,7 +124,7 @@ export const BankTable = ({
     <div className="">
       <div className="flex items-center justify-between hide-scrollbar overflow-x-auto xl:gap-x-2 mb-2">
         <div className="flex items-center gap-x-2">
-          <ProductFilter />
+          {!isCorporate && <ProductFilter />}
           <BidsCountrySelect />
           <DateRangePicker />
         </div>
@@ -186,7 +186,7 @@ export const BankTable = ({
                           getCountryFlagByName(item.lcInfo?.[2]?.country)}
                       </p>
                       <div className="truncate text-lightGray capitalize">
-                        {item.lcInfo?.[2]?.bank || ""}
+                        {item.lcInfo?.[2]?.country || ""}
                       </div>
                     </div>
                   </TableCell>

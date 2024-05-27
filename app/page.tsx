@@ -55,7 +55,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
             isLoading={isLoading}
           />
         </div>
-        <div className="w-1/5 max-w-[300px] sticky top-10 h-[88vh]">
+        <div className="w-1/5 w-[100%]  sticky top-10 h-[88vh]">
           <Sidebar isBank={false} />
         </div>
       </div>

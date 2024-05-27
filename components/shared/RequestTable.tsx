@@ -21,7 +21,7 @@ import { TableDialog } from "./TableDialog";
 import Image from "next/image";
 import { columnHeaders, bankColumnHeaders } from "@/utils/data";
 import { ApiResponse, Country, ILcs } from "@/types/type";
-import { convertDateToString } from "@/utils";
+import { compareValues, convertDateToString } from "@/utils";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
@@ -61,11 +61,20 @@ export const RequestTable = ({
   isLoading: boolean;
 }) => {
   const [allCountries, setAllCountries] = useState<Country[]>([]);
+  const [tableData, setTableData] = useState<ILcs[]>([]);
 
   const { data: countriesData } = useQuery({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
   });
+
+  useEffect(() => {
+    console.log(data);
+    if (data && data?.data) {
+      console.log(data?.data, "DATA");
+      setTableData(data?.data);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (
@@ -85,91 +94,60 @@ export const RequestTable = ({
     return country ? country.flag : undefined;
   };
 
-  // const [activeColumns, setActiveColumns] = useState<ActiveColumn[]>([]);
+  const [sortedKey, setSortedKey] = useState<string>("");
 
-  // const handleColumnHeaderClick = (column: any) => {
-  //   console.log("column: ", column);
-  //   console.log("activeColumns: ", activeColumns);
+  const handleSort = (key: string) => {
+    console.log(key);
+    setSortedKey(key);
+    let isDescending = sortedKey.includes(key);
+    setSortedKey(isDescending ? "" : key);
+    console.log(tableData);
 
-  //   const columnIndex = activeColumns.findIndex((col) => col.column === column);
-  //   console.log("columnIndex: ", columnIndex);
-  //   if (columnIndex === -1) {
-  //     setActiveColumns([
-  //       ...activeColumns,
-  //       { column, order: sortOrder.ASCENDING },
-  //     ]);
-  //   } else {
-  //     const updatedColumns = [...activeColumns];
-  //     updatedColumns[columnIndex].order =
-  //       updatedColumns[columnIndex].order === sortOrder.ASCENDING
-  //         ? sortOrder.DESCENDING
-  //         : sortOrder.ASCENDING;
-  //     setActiveColumns(updatedColumns);
-  //   }
-  // };
+    let sortedData: ILcs[] = [...tableData].sort((a, b) => {
+      let valueA, valueB;
 
-  // const sortData = (data: any, columns: ActiveColumn[]) => {
-  //   return data.sort((a, b) => {
-  //     for (const { column, order } of columns) {
-  //       const valueA = a[column];
-  //       const valueB = b[column];
+      switch (key) {
+        case "LC Amount":
+          valueA = a.amount;
+          valueB = b.amount;
+          break;
+        case "Beneficiary":
+          valueA = a.exporterInfo.beneficiaryName;
+          valueB = b.exporterInfo.beneficiaryName;
+          break;
+        case "Ref no":
+          valueA = a.refId;
+          valueB = b.refId;
+          break;
+        case "LC Issuing Bank":
+          valueA = a.issuingBank.country;
+          valueB = b.issuingBank.country;
+          break;
+        case "Product Type":
+          valueA = a.lcType;
+          valueB = b.lcType;
+          break;
+        case "Bids":
+          valueA = a.bidsCount;
+          valueB = b.bidsCount;
+          break;
+        case "Request":
+          valueA = a.lcPeriod.startDate;
+          valueB = b.lcPeriod.startDate;
+          break;
+          case "Expires":
+          valueA = a.lcPeriod.endDate;
+          valueB = b.lcPeriod.endDate;
+          break;
+        default:
+          return 0;
+      }
 
-  //       if (typeof valueA === "string" && typeof valueB === "string") {
-  //         const comparison = valueA.localeCompare(valueB);
-  //         if (comparison !== 0) {
-  //           return order === sortOrder.ASCENDING ? comparison : -comparison;
-  //         }
-  //       } else {
-  //         const comparison = valueA - valueB;
-  //         if (comparison !== 0) {
-  //           return order === sortOrder.ASCENDING ? comparison : -comparison;
-  //         }
-  //       }
-  //     }
-  //     return 0;
-  //   });
-  // };
+      return compareValues(valueA, valueB, isDescending);
+    });
 
-  // let sortedData: any = [];
-  // useEffect(() => {
-  //   sortedData = data && data.data ? sortData(data.data, activeColumns) : [];
-  // }, [activeColumns, data]);
-
-  // console.log("sortedDAat: ", sortedData);
-
-  // const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
-
-  // const getNestedValue = (obj, path) => {
-  //   return path.split(".").reduce((acc, part) => acc && acc[part], obj);
-  // };
-
-  // const sortedData = React.useMemo(() => {
-  //   if (data && data.data) {
-  //     let sortableData = [...data.data];
-  //     if (sortConfig.key) {
-  //       sortableData.sort((a, b) => {
-  //         const aValue = getNestedValue(a, sortConfig.key);
-  //         const bValue = getNestedValue(b, sortConfig.key);
-  //         if (aValue < bValue) {
-  //           return sortConfig.direction === "asc" ? -1 : 1;
-  //         }
-  //         if (aValue > bValue) {
-  //           return sortConfig.direction === "asc" ? 1 : -1;
-  //         }
-  //         return 0;
-  //       });
-  //     }
-  //     return sortableData;
-  //   }
-  // }, [data, sortConfig]);
-
-  // const handleSort = (key) => {
-  //   let direction = "asc";
-  //   if (sortConfig.key === key && sortConfig.direction === "asc") {
-  //     direction = "desc";
-  //   }
-  //   setSortConfig({ key, direction });
-  // };
+    setTableData(sortedData);
+  };
 
   return (
     <div>
@@ -207,7 +185,9 @@ export const RequestTable = ({
                       >
                         <div className="capitalize flex text-[#44444F] items-center gap-x-2 justify-center text-[12px] font-semibold">
                           {header}
-                          <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
+                          <div
+                            className={`border border-primaryCol center rounded-full size-4  hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer`}
+                          >
                             <ChevronUp className="size-4" />
                           </div>
                         </div>
@@ -221,8 +201,11 @@ export const RequestTable = ({
                         <div className="capitalize flex text-[#44444F]  items-center gap-x-2 justify-center text-[12px] font-semibold">
                           {header}
                           <div
-                            // onClick={() => handleSort(header)}
-                            className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer"
+                            onClick={() => handleSort(header)}
+                            className={`border border-primaryCol center rounded-full size-4 ${
+                              sortedKey.includes(header) &&
+                              "bg-primaryCol text-white"
+                            } hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer`}
                           >
                             <ChevronUp className="size-4" />
                           </div>
@@ -243,7 +226,7 @@ export const RequestTable = ({
                 data &&
                 data.data &&
                 // @ts-ignore
-                data.data.map((item: ILcs, index: number) => (
+                tableData.map((item: ILcs, index: number) => (
                   <TableRow key={index} className="border-none font-roboto">
                     <TableDataCell
                       data={convertDateToString(item.lcPeriod.startDate)}
@@ -276,8 +259,8 @@ export const RequestTable = ({
                     </TableCell>
                   </TableRow>
                 ))
-              ) : data && data.data ? (
-                data.data.map((item: ILcs, index: number) => (
+              ) : tableData && tableData ? (
+                tableData.map((item: ILcs, index: number) => (
                   <TableRow key={index} className="border-none font-roboto">
                     <TableCell className="px-1 py-1 min-w-[90px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">

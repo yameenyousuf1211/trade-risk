@@ -102,14 +102,23 @@ export const BankTable = ({
           valueB = b.createdAt;
           break;
         case "Country of issuing bank":
-          valueA = a.lcInfo.bank;
-          valueB = b.lcInfo.bank;
+          valueA = a.lcInfo.country;
+          valueB = b.lcInfo.country;
           break;
         case "Confirmation Rate":
           valueA = a.confirmationPrice;
           valueB = b.confirmationPrice;
           break;
-   
+        case "Minimum Charges":
+          valueA = a.confirmationPrice;
+          valueB = b.confirmationPrice;
+          break;
+
+        case "Confirmation bank":
+          valueA = a.confirmationPrice;
+          valueB = b.confirmationPrice;
+          break;
+
         default:
           return 0;
       }
@@ -144,7 +153,7 @@ export const BankTable = ({
                     <TableHead
                       key="Confirmation bank"
                       className="font-roboto px-2 h-8 py-2 min-w-40"
-                      onClick={() => handleSort(header)}
+                      onClick={() => handleSort("Confirmation bank")}
                     >
                       <div className="flex items-center gap-x-2 justify-center text-[13px]">
                         Confirming Bank

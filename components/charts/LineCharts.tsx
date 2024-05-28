@@ -138,15 +138,15 @@ export const LineCharts = () => {
 
   return (
     <div className="rounded-lg border border-borderCol py-4 px-5 w-full overflow-x-auto bg-white relative">
-      {/* <div className="center absolute top-0 left-0 bg-gray-300/40 w-full h-full z-10">
-        <Image
-          src="/gif/coming.gif"
+<div className="center absolute top-0 left-0 backdrop-blur-[3px]	 bg-white/30 w-full h-full z-10">
+        <img
+        src="https://static.wixstatic.com/media/b3ae7c_44c1408d9e894c46920f514df033f75e~mv2_d_1500_1200_s_2.gif"
           alt="coming-soon"
-          width={100}
-          height={100}
-          className="pointer-events-none"
+          // width={100}
+          // height={100}
+          className="pointer-events-none object-cover w-[250px ] h-[250px]"
         />
-      </div> */}
+      </div>
       <div className="w-full flex xl:flex-col 2xl:flex-row 2xl:tems-center  gap-x-2 justify-between">
         <div className="flex items-center w-1/3">
           <h4 className="text-lg font-semibold w-full max-w-[100px]">

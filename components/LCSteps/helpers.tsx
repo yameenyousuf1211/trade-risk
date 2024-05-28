@@ -83,7 +83,9 @@ export const DDInput = ({
             variant="outline"
             role="combobox"
             aria-expanded={ddOpen}
-            className="capitalize w-fit border-none justify-between font-normal text-sm text-gray-500"
+            className={`capitalize w-fit border-none justify-between font-normal text-sm ${
+              value ? "text-black" : "text-gray-500"
+            }`}
             disabled={disabled}
           >
             {ddVal
@@ -128,7 +130,9 @@ export const DDInput = ({
                           : "opacity-0"
                       )}
                     />
-                    {flags && <span className="mr-2 emoji-font">{flags[idx]}</span>}
+                    {flags && (
+                      <span className="mr-2 emoji-font">{flags[idx]}</span>
+                    )}
                     {country}
                   </CommandItem>
                 ))}

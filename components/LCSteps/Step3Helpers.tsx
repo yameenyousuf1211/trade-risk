@@ -182,7 +182,9 @@ export const Period = ({
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
-                className="w-fit justify-start text-left font-normal border-none text-[#B5B5BE]"
+                className={`w-fit justify-start text-left font-normal border-none ${
+                  lcPeriodDate ? "text-black" : "text-[#B5B5BE]"
+                }`}
                 id="period-lc-date"
                 disabled={!lcIssueType}
               >
@@ -229,7 +231,9 @@ export const Period = ({
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
-                className="w-fit justify-start text-left font-normal border-none text-[#B5B5BE]"
+                className={`w-fit justify-start text-left font-normal border-none ${
+                  lcExpiryDate ? "text-black" : "text-[#B5B5BE]"
+                }`}
                 id="period-expiry-date"
               >
                 {lcExpiryDate ? (

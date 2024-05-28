@@ -72,7 +72,9 @@ export const CountrySelect = ({
             variant="outline"
             role="combobox"
             aria-expanded={countryOpen}
-            className="capitalize w-full justify-between font-normal text-sm text-gray-400"
+            className={`capitalize font-roboto w-full justify-between font-normal text-sm ${
+              countryVal ? "text-lightGray" : "text-gray-400"
+            } `}
           >
             {countryVal
               ? countries?.find(
@@ -84,7 +86,7 @@ export const CountrySelect = ({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0">
-          <Command>
+          <Command className="font-roboto">
             <CommandInput placeholder="Search country..." />
             <CommandEmpty>No country found.</CommandEmpty>
             <CommandGroup className="max-h-[300px] overflow-y-auto">
@@ -115,7 +117,7 @@ export const CountrySelect = ({
                           : "opacity-0"
                       )}
                     />
-                    <span className="mr-2">{flags[idx]}</span>
+                    <span className="mr-2 emoji-font">{flags[idx]}</span>
                     {country}
                   </CommandItem>
                 ))}

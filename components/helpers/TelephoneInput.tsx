@@ -1,7 +1,9 @@
 "use client";
+import { register } from "module";
 import { useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+// import 'react-phone-input-2/lib/material.css'
 
 export const TelephoneInput = ({
   name,
@@ -10,6 +12,7 @@ export const TelephoneInput = ({
   setPhoneInput,
   value,
   setAllowSubmit,
+  trigger
 }: {
   name: string;
   placeholder: string;
@@ -17,23 +20,36 @@ export const TelephoneInput = ({
   setPhoneInput?: any;
   value?: string;
   setAllowSubmit?: (allowSubmit: boolean) => void;
+  register?:any
+  trigger?:any
 }) => {
   const [val, setVal] = useState(value || undefined);
+  const [selectedCountry, setSelectedCountry] = useState<string>("sa");
 
-  const handleChange = (val: any) => {
-    setVal(val);
-    setValue(name, val);
-    setPhoneInput(val);
-    setAllowSubmit && setAllowSubmit(true);
+  const handleChange = (val: any, country: string) => {
+    if (selectedCountry === country) {
+      setSelectedCountry(country);
+      setVal(val);
+      setValue(name, val,{showValidate:true});
+      setPhoneInput(val);
+      trigger(name)
+    } else {
+      setSelectedCountry(country);
+      setVal("");
+      setValue(name, "");
+      setPhoneInput("");
+    }
   };
   return (
     <div className="w-full">
       <PhoneInput
         enableSearch
-        country={"sa"}
+        country={selectedCountry}
         value={val}
         placeholder={placeholder}
-        onChange={handleChange}
+        onChange={(e, countryObj) => {
+          handleChange(e, countryObj?.countryCode);
+        }}
         countryCodeEditable={false}
         onBlur={() => {
           setAllowSubmit && setAllowSubmit(true);

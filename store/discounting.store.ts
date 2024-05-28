@@ -1,4 +1,4 @@
-import { LcDiscounting, UseDiscountingStore } from "@/types/type";
+import { LcDiscounting, UseDiscountingStore } from "@/types/lc";
 import { create } from "zustand";
 
 type StateValues = Omit<UseDiscountingStore, "setValues">;
@@ -7,7 +7,7 @@ const useConfirmationStore = create<UseDiscountingStore>((set, get) => ({
   _id: "",
   amount: "",
   currency: "",
-  paymentTerms: "sight-lc",
+  paymentTerms: "Sight LC",
   confirmingBank: {
     bank: "",
     country: "",

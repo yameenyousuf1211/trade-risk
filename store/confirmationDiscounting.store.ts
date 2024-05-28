@@ -1,7 +1,7 @@
 import {
   LcConfrimationDiscounting,
   UseConfrimationDiscountingStore,
-} from "@/types/type";
+} from "@/types/lc";
 import { create } from "zustand";
 
 type StateValues = Omit<UseConfrimationDiscountingStore, "setValues">;
@@ -11,7 +11,7 @@ const useConfirmationStore = create<UseConfrimationDiscountingStore>(
     _id: "",
     amount: "",
     currency: "",
-    paymentTerms: "sight-lc",
+    paymentTerms: "Sight LC",
     confirmingBank: {
       bank: "",
       country: "",
@@ -56,6 +56,7 @@ const useConfirmationStore = create<UseConfrimationDiscountingStore>(
       behalfOf: "",
       pricePerAnnum: "",
     },
+    extraInfo: "shipment",
     setValues: (values: Partial<LcConfrimationDiscounting | null>) =>
       set((state) => ({ ...state, ...values })),
   })

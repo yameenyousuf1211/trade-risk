@@ -39,7 +39,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">
-        <div className="2xl:w-5/6 w-4/5 p-4">
+        <div className="w-4/5 p-2 xl:p-4">
           <h2 className="text-4xl font-semibold mb-5 capitalize">
             Welcome, {user && user.name}
           </h2>
@@ -55,7 +55,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
             isLoading={isLoading}
           />
         </div>
-        <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
+        <div className="w-1/5 w-[1 00%] mb-5  sticky top-10 h-[88vh]">
           <Sidebar isBank={false} />
         </div>
       </div>

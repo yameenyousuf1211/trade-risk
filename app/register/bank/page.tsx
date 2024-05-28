@@ -7,13 +7,6 @@ import {
 import { FloatingInput } from "@/components/helpers/FloatingInput";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { Button } from "@/components/ui/button";
-import {
-  SelectItem,
-  Select,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { onRegister } from "@/services/apis";
 import { getCities } from "@/services/apis/helpers.api";
 import { bankSchema } from "@/validation";
@@ -26,11 +19,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { isDirty, z } from "zod";
+import { z } from "zod";
 
 const CheckBoxInput = ({ label, id }: { label: string; id: string }) => {
   return (
-    <div className="flex items-center space-x-2 my-2">
+    <div className="font-roboto flex items-center space-x-2 my-2">
       <input type="checkbox" id={id} />
       <label htmlFor={id} className="text-sm text-[#44444F] leading-none">
         {label}
@@ -48,36 +41,45 @@ const BankRegisterPage = () => {
     setValue,
     handleSubmit,
     getValues,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    watch,
+    formState: { errors, isDirty, isValid },
+    trigger,
   } = useForm<z.infer<typeof bankSchema>>({
     resolver: zodResolver(bankSchema),
     mode: "all",
   });
+  // console.log(watch());
 
   const onSubmit: SubmitHandler<z.infer<typeof bankSchema>> = async (
     data: z.infer<typeof bankSchema>
   ) => {
+    if (!procceed)
+      return toast.error("Please view and sign the agreement first");
     const { response, success } = await onRegister(data);
     if (!success) return toast.error(response);
-    console.log("Email = ", response?.data?.email);
-    console.log("Password = ", response?.data?.password);
-    if (success) {
+    else {
       toast.success("Account Register successfully");
       router.push("/register/complete");
+      console.log("Email = ", response?.data?.email);
+      console.log("Password = ", response?.data?.password);
     }
   };
 
   const [isoCode, setIsoCode] = useState("");
   const [procceed, setProceed] = useState(false);
+  const [procceedErr, setProceedErr] = useState(false);
   const [phoneInput, setPhoneInput] = useState<string>("");
 
   let phone = getValues("pocPhone");
 
   useEffect(() => {
-    console.log("isValid: ", isValid, "\tisDirty: ", isDirty);
     if (isValid && isDirty) setAllowSubmit(true);
     if (!isValid || !isDirty) setAllowSubmit(false);
   }, [errors, isValid, isDirty]);
+
+  useEffect(() => {
+    if (procceed) setProceedErr(false);
+  }, [procceed]);
 
   const [cities, setCities] = useState([]);
 
@@ -100,7 +102,7 @@ const BankRegisterPage = () => {
     <AuthLayout>
       <section className="max-w-[800px] mx-auto w-full max-xs:px-1 z-10">
         <h2 className="font-semibold text-3xl text-center">Register</h2>
-        <p className="text-para text-center mt-5">
+        <p className="font-roboto text-para text-center mt-5">
           Please fill in the form below to register your bank
         </p>
         <form
@@ -123,7 +125,7 @@ const BankRegisterPage = () => {
             <div className="w-full relative">
               <FloatingInput
                 name="email"
-                placeholder="email"
+                placeholder="Email"
                 register={register}
               />
               {errors.email && (
@@ -227,6 +229,7 @@ const BankRegisterPage = () => {
                 setPhoneInput={setPhoneInput}
                 value={phoneInput}
                 setAllowSubmit={setAllowSubmit}
+                trigger={trigger}
               />
               {(phone === "" || phone === undefined) && errors.pocPhone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
@@ -266,29 +269,38 @@ const BankRegisterPage = () => {
           </div>
 
           {/* PDF */}
-          <div className="flex items-center justify-between gap-x-2 border border-borderCol p-2 rounded-lg">
-            <div className="flex items-center gap-x-2 ">
-              <Button type="button" className="bg-red-200 p-1 hover:bg-red-300">
-                <Image
-                  src="/images/pdf.png"
-                  alt="pdf"
-                  width={500}
-                  height={500}
-                  className="size-8"
-                />
-              </Button>
-              <span className="text-[#50B5FF] underline text-sm">
-                <DisclaimerDialog
-                  title="Click to view and sign the agreement"
-                  className="underline"
-                  setProceed={setProceed}
-                />
-              </span>
+          <div>
+            <div className="flex items-center justify-between gap-x-2 border border-borderCol p-2 rounded-lg">
+              <div className="flex items-center gap-x-2 ">
+                <Button
+                  type="button"
+                  className="bg-red-200 p-1 hover:bg-red-300"
+                >
+                  <Image
+                    src="/images/pdf.png"
+                    alt="pdf"
+                    width={500}
+                    height={500}
+                    className="size-8"
+                  />
+                </Button>
+                <span className="text-[#50B5FF] underline text-sm">
+                  <DisclaimerDialog
+                    title="Click to view and sign the agreement"
+                    className="underline"
+                    setProceed={setProceed}
+                  />
+                </span>
+              </div>
+              {procceed && <Check className="text-[#29C084]" strokeWidth={3} />}
             </div>
-            {procceed && <Check className="text-[#29C084]" strokeWidth={3} />}
+            {procceedErr && (
+              <span className="mt-1 absolute text-[11px] text-red-500">
+                Please view and sign the agreement first
+              </span>
+            )}
           </div>
-
-          <p className="text-para text-sm">
+          <p className="font-roboto text-para text-sm">
             By signing up you agree that final confirmation to abide by the
             above and the transaction will be processed, (based on Legal rules
             and regulation of the country)
@@ -306,10 +318,14 @@ const BankRegisterPage = () => {
               </Button>
             </Link>
             <Button
-              className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
+              className="w-full disabled:bg-[#5625F2]/30 disabled:text-white bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
               size="lg"
-              disabled={!allowSubmit}
-              type="submit"
+              disabled={!isValid}
+              type="button"
+              onClick={(e) => {
+                if (procceed) handleSubmit(onSubmit)();
+                else setProceedErr(true);
+              }}
             >
               Get Started
             </Button>

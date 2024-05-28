@@ -3,6 +3,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
+  BreadcrumbLink,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "../ui/button";
@@ -49,7 +50,6 @@ export const BreadcrumbDetails = () => {
   const isConfirmationDiscounting = pathname === "/create-request/confirmation";
 
   const {
-    isLoading,
     data,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
@@ -81,12 +81,14 @@ export const BreadcrumbDetails = () => {
             <div className="flex items-center gap-x-2" key={`${crumb}-${idx}`}>
               <div className="flex gap-1 items-center">
                 {stepStatus[idx] && (
-                 <div>
-                  <CheckIcon color="#29C084" size={20}/>
-                 </div>
+                  <div>
+                    <CheckIcon color="#29C084" size={20} />
+                  </div>
                 )}
                 <BreadcrumbItem key={`${crumb}-${idx}`}>
-                  <BreadcrumbList>{crumb}</BreadcrumbList>
+                  <BreadcrumbLink href={`${pathname}#step${idx + 1}`}>
+                    {crumb}
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
               </div>
               {idx !== crumbs.length - 1 && <Separator />}

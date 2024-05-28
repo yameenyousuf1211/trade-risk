@@ -5,11 +5,11 @@ import { LineChart, Line } from "recharts";
 
 const CountrySearch = () => {
   return (
-    <div className="relative">
+    <div className="font-roboto relative">
       <input
         type="text"
         placeholder="Enter country name"
-        className="flex bg-[#F0F0F0] text-[#92929D] border border-[#E2E2EA] font-light w-full rounded-md placeholder:text-[13px] pr-5 h-8 max-w-[200px] bg-back ground px-3 py-2 text-sm placeholder:text-muted-foreground"
+        className="flex bg-[#F0F0F0]  text-[#92929D] border border-[#E2E2EA] font-light w-full rounded-md placeholder:text-[13px] pr-5 h-8 max-w-[200px] bg-back ground px-3 py-2 text-sm placeholder:text-muted-foreground"
       />
       <Search className="size-4 text-para absolute right-2 top-2" />
     </div>
@@ -18,17 +18,17 @@ const CountrySearch = () => {
 
 const YearFilter = () => {
   return (
-    <div className="max-w-[200px] w-full border border-borderCol rounded-lg flex items-center justify-between py-0.5">
-      <div className="py-1 w-full bg-black text-white rounded-md text-center text-sm font-semibold ">
+    <div className="font-roboto max-w-[200px] w-full border border-borderCol rounded-lg flex items-center justify-between py-0.5">
+      <div className="py-1 w-full bg-black text-white rounded-md text-center text-[12px] font-semibold ">
         90D
       </div>
-      <div className="py-1 w-full rounded-md text-center text-sm font-semibold text-para cursor-pointer">
+      <div className="py-1 w-full rounded-md text-center text-[12px] font-semibold text-para cursor-pointer">
         180D
       </div>
-      <div className="py-1 w-full rounded-md text-center text-sm font-semibold text-para cursor-pointer">
+      <div className="py-1 w-full rounded-md text-center text-[12px] font-semibold text-para cursor-pointer">
         1Y
       </div>
-      <div className="py-1 w-full rounded-md text-center text-sm font-semibold text-para cursor-pointer">
+      <div className="py-1 w-full rounded-md text-center text-[12px] font-semibold text-para cursor-pointer">
         2Y
       </div>
     </div>
@@ -54,7 +54,7 @@ const Chart = ({
   }[];
 }) => {
   return (
-    <div className="w-full rounded-lg border border-borderCol py-2 px-3">
+    <div className="font-roboto w-full rounded-lg border border-borderCol py-2 px-3">
       <div className="flex items-center gap-x-1 justify-between w-full">
         <div className="flex items-center gap-x-1">
           <Image
@@ -137,8 +137,17 @@ export const LineCharts = () => {
   ];
 
   return (
-    <div className="rounded-lg border border-borderCol py-4 px-5 w-full overflow-x-auto bg-white">
-      <div className="w-full flex items-center gap-x-2 justify-between">
+    <div className="rounded-lg border border-borderCol py-4 px-5 w-full overflow-x-auto bg-white relative">
+<div className="center absolute top-0 left-0 backdrop-blur-[3px]	 bg-white/30 w-full h-full z-10">
+        <img
+        src="https://static.wixstatic.com/media/b3ae7c_44c1408d9e894c46920f514df033f75e~mv2_d_1500_1200_s_2.gif"
+          alt="coming-soon"
+          // width={100}
+          // height={100}
+          className="pointer-events-none object-cover w-[250px ] h-[250px]"
+        />
+      </div>
+      <div className="w-full flex xl:flex-col 2xl:flex-row 2xl:tems-center  gap-x-2 justify-between">
         <div className="flex items-center w-1/3">
           <h4 className="text-lg font-semibold w-full max-w-[100px]">
             Risk Price
@@ -147,13 +156,17 @@ export const LineCharts = () => {
             i
           </div>
         </div>
-        <div className="flex items-center justify-end gap-x-1 w-full">
+        <div className="flex items-center justify-end xl:justify-between 2xl:justify-end gap-x-1 w-full">
           <CountrySearch />
           <YearFilter />
-          <Button variant="ghost" size="sm" className="text-para bg-[#F1F1F5] text-black font-light">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="font-roboto bg-[#F1F1F5] text-lightGray font-light"
+          >
             View all
           </Button>
-          <Settings className="size-5 text-para" />
+          <Settings className="w-5 text-para" />
         </div>
       </div>
       {/* Charts */}

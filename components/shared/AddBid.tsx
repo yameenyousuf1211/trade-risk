@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { DatePicker, Loader } from "../helpers";
 import { Input } from "../ui/input";
 import Image from "next/image";
-import { convertDateToCommaString } from "@/utils";
+import { convertDateAndTimeToString, convertDateToCommaString } from "@/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { addBidTypes } from "@/validation/bids.validation";
@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { ChangeEvent, useState } from "react";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
 import { useAuth } from "@/context/AuthProvider";
+import { cn } from "@/lib/utils";
 
 const LCInfo = ({
   label,
@@ -54,7 +55,8 @@ export const AddBid = ({
   lcId,
   setIsAddNewBid,
   isCorporate,
-  bidId,
+  isBank,
+  bidData,
 }: {
   isDiscount?: boolean;
   isInfo?: boolean;
@@ -64,7 +66,8 @@ export const AddBid = ({
   lcId: string;
   setIsAddNewBid?: any;
   isCorporate?: boolean;
-  bidId?: string;
+  bidData?: any;
+  isBank?: boolean;
 }) => {
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
@@ -76,12 +79,41 @@ export const AddBid = ({
     queryFn: () => fetchSingleLc(lcId),
   });
 
-  const { data: bidData, isLoading: isBidLoading } = useQuery({
-    queryKey: [`single-bid`, bidId],
-    queryFn: () => fetchSingleBid(bidId),
-    enabled: !!bidId,
-  });
-  // console.log(bidId);
+  // const { data: bidData, isLoading: isBidLoading } = useQuery({
+  //   queryKey: [`single-bid`, bidId],
+  //   queryFn: () => fetchSingleBid(bidId),
+  //   enabled: !!bidId,
+  // });
+
+  //   <input
+  //   placeholder="Value (%)"
+  //   type="text"
+  //   inputMode="numeric"
+  //   className={cn(
+  //     "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0 "
+  //   )}
+  //   max={100}
+  //   {...register(
+  //     isDiscount
+  //       ? "discountingInfo.pricePerAnnum"
+  //       : "confirmationInfo.pricePerAnnum"
+  //   )}
+  //   onChange={(event) => {
+  //     const newValue = event.target.value.replace(/[^0-9.]/g, "");
+  //     event.target.value = newValue;
+  //   }}
+  //   onBlur={(event) => {
+  //     console.log(event.target.value)
+  //   if(event.target.value.includes('%') || event.target.value.length === 0) return
+  //     event.target.value += "%";
+  //   }}
+  //   onKeyUp={(event) => {
+  //     if (Number(event.target.value.replace("%", "")) > 100) {
+  //       event.target.value = "100.0%";
+  //     }
+  //   }}
+  // />
+
   const { mutateAsync } = useMutation({
     mutationFn: addBid,
     onSuccess: () => {
@@ -122,6 +154,7 @@ export const AddBid = ({
           discountBaseRate,
         }
       : baseData;
+
     const { success, response } = await mutateAsync(reqData);
 
     if (!success) return toast.error(response);
@@ -147,19 +180,29 @@ export const AddBid = ({
               }`
             : status === "Expired"
             ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
-                border && "border border-[#7E7E7E] bg-transparent"
+                border &&
+                "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
               }`
-            : status === "Add bid"
+            : lcData && lcData.status === "Expired" && status === "Add bid"
+            ? "bg-[#1A1A26] text-white text-sm"
+            : status === "Add bid" && !isBank
             ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
+            : status === "Add bid" && isBank
+            ? "bg-[#1A1A26] text-white text-sm"
             : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
-        } rounded-md w-full p-2 capitalize hover:opacity-85`}
+        } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
+        disabled={lcData?.status === "Expired" && status === "Add bid"}
       >
-        {triggerTitle || "Pending"}
+        {lcData && lcData.status === "Expired" && status === "Add bid"
+          ? "Not Applicable"
+          : triggerTitle || "Pending"}
       </DialogTrigger>
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
-          <h2 className="text-lg font-semibold">{lcData?.lcType || ""}</h2>
-          <DialogClose onClick={() => setIsAddNewBid(false)}>
+          <h2 className="text-lg font-semibold">
+            {lcData?.lcType + " Request" || ""}
+          </h2>
+          <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>
             <X className="size-7" />
           </DialogClose>
         </div>
@@ -176,8 +219,7 @@ export const AddBid = ({
                 <div className="pt-5 px-4 bg-bg">
                   <h2 className="text-2xl font-semibold mb-1">
                     <span className="text-para font-medium">LC Amount:</span>{" "}
-                    USD
-                    {lcData?.amount || ""}
+                    USD {lcData?.amount?.toLocaleString() + ".00" || ""}
                   </h2>
                   <div className="h-[2px] w-full bg-neutral-800 mt-5" />
                 </div>
@@ -197,7 +239,7 @@ export const AddBid = ({
                   />
                   <LCInfo
                     label="LC Advising Bank"
-                    value={lcData?.advisingBank?.bank || ""}
+                    value={lcData?.advisingBank?.bank || "-"}
                   />
                   <LCInfo
                     label="Confirming Bank"
@@ -287,43 +329,73 @@ export const AddBid = ({
           </div>
 
           {/* Right Section */}
-          <div className="w-full h-full flex flex-col justify-start px-5">
+          <div className="w-full h-full flex flex-col justify-start px-5 overflow-y-auto max-h-[75vh]">
             <p className="text-xl font-semibold pt-5">Bid</p>
             {isInfo ? (
               <>
                 {/* Bid info and status */}
                 <div className="flex flex-col gap-y-2 py-4 px-4 mt-3 border border-borderCol rounded-lg">
                   <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para">Bid Number</p>
-                    <p className="font-semibold text-lg">100928</p>
-                  </div>
-
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="font-semibold text-lg">Habib Bank Limited</p>
-                    <p className="text-sm text-para">Pakistan</p>
-                  </div>
-
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para">Bid Submitted</p>
-                    <p className="font-semibold text-lg">Jan 9 2023, 23:59</p>
-                  </div>
-
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para">Bid Expiry</p>
-                    <p className="font-semibold text-lg">Jan 9 2023, 23:59</p>
-                  </div>
-
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para">Confirmation Rate</p>
-                    <p className="text-lg font-semibold text-text">
-                      1.75% per annum
+                    <p className="text-sm text-para font-roboto">Bid Number</p>
+                    <p className="font-semibold text-lg">
+                      {bidData?._id?.substring(0, 6) || "100928"}
                     </p>
                   </div>
 
                   <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para">Discounting Base Rate</p>
+                    <p className="font-semibold text-lg capitalize">
+                      {bidData ? bidData.bidBy?.[0] : "Habib Bank Limited"}
+                    </p>
+                    <p className="font-roboto text-sm text-para capitalize">
+                      {bidData ? bidData.bidBy?.[2] : "Pakistan"}
+                    </p>
+                  </div>
+
+                  <div className={status === "Expired" ? "opacity-50" : ""}>
+                    <p className="text-sm text-para font-roboto">
+                      Bid Submitted
+                    </p>
+                    <p className="font-semibold text-lg capitalize">
+                      {bidData
+                        ? convertDateAndTimeToString(bidData.createdAt)
+                        : "Jan 9 2023, 23:59"}
+                    </p>
+                  </div>
+
+                  <div className={status === "Expired" ? "opacity-50" : ""}>
+                    <p className="text-sm text-para font-roboto">Bid Expiry</p>
                     <p className="font-semibold text-lg">
-                      KIBOR + <span className="text-text">2.22% per annum</span>
+                      {bidData
+                        ? convertDateAndTimeToString(bidData.bidValidity)
+                        : "Jan 9 2023, 23:59"}
+                    </p>
+                  </div>
+
+                  <div className={status === "Expired" ? "opacity-50" : ""}>
+                    <p className="text-sm text-para font-roboto">
+                      Confirmation Rate
+                    </p>
+                    <p className="text-lg font-semibold text-text">
+                      {bidData ? bidData.confirmationPrice : "1.75"}% per annum
+                    </p>
+                  </div>
+
+                  <div className={status === "Expired" ? "opacity-50" : ""}>
+                    <p className="text-sm text-para font-roboto">
+                      Discounting Base Rate
+                    </p>
+                    <p className="font-semibold text-lg">
+                      {bidData
+                        ? !bidData.discountBaseRate && "Not Applicable"
+                        : "KIBOR + "}
+                      <span className="text-text">
+                        {bidData
+                          ? bidData.discountBaseRate
+                            ? bidData.discountBaseRate + "% per annum"
+                            : ""
+                          : ""}
+                        {!bidData && "2.22 % per annum"}
+                      </span>
                     </p>
                   </div>
 
@@ -377,7 +449,10 @@ export const AddBid = ({
                     >
                       Bid Validity
                     </label>
-                    <DatePicker setValue={setValue} />
+                    <DatePicker
+                      setValue={setValue}
+                      maxDate={lcData?.lcPeriod?.endDate}
+                    />
                   </div>
                   {errors.validity && (
                     <span className="text-red-500 text-[12px]">
@@ -391,14 +466,38 @@ export const AddBid = ({
                     htmlFor="confirmation"
                     className="block font-semibold mb-2"
                   >
-                    Confirmation Pricing
+                    {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
                   </label>
-                  <Input
-                    type="number"
-                    name="confirmationPrice"
-                    register={register}
+                  <input
                     placeholder="Enter your pricing (%)"
-                    id="confirmation"
+                    type="text"
+                    inputMode="numeric"
+                    className={cn(
+                      "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    )}
+                    max={100}
+                    {...register("confirmationPrice")}
+                    onChange={(event) => {
+                      const newValue = event.target.value.replace(
+                        /[^0-9.]/g,
+                        ""
+                      );
+                      event.target.value = newValue;
+                      setValue("confirmationPrice", newValue);
+                    }}
+                    onBlur={(event: ChangeEvent<HTMLInputElement>) => {
+                      if (
+                        event.target.value.includes("%") ||
+                        event.target.value.length === 0
+                      )
+                        return;
+                      event.target.value += "%";
+                    }}
+                    onKeyUp={(event: any) => {
+                      if (Number(event.target.value.replace("%", "")) > 100) {
+                        event.target.value = "100.0%";
+                      }
+                    }}
                   />
                   {errors.confirmationPrice && (
                     <span className="text-red-500 text-[12px]">
@@ -436,12 +535,33 @@ export const AddBid = ({
                       <input
                         type="text"
                         placeholder="Margin (%)"
+                        inputMode="numeric"
                         id="margin"
                         value={discountMargin}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                          setDiscountMargin(e.target.value)
-                        }
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                          const newValue = e.target.value.replace(
+                            /[^0-9.]/g,
+                            ""
+                          );
+                          e.target.value = newValue;
+                          setDiscountMargin(newValue);
+                        }}
+                        onBlur={(event: ChangeEvent<HTMLInputElement>) => {
+                          if (
+                            event.target.value.includes("%") ||
+                            event.target.value.length === 0
+                          )
+                            return;
+                          event.target.value += "%";
+                        }}
+                        onKeyUp={(event: any) => {
+                          if (
+                            Number(event.target.value.replace("%", "")) > 100
+                          ) {
+                            event.target.value = "100.0%";
+                          }
+                        }}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       />
                     </div>
                   </div>

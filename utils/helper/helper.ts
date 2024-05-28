@@ -30,22 +30,29 @@ export const convertDateToYYYYMMDD = (date: any) => {
 };
 
 export const formatLeftDate = (date: any) => {
-  const jsDate = new Date(date);
-  const daysLeftInYear = differenceInDays(endOfYear(jsDate), jsDate);
+  const targetDate = new Date(date);
+  const currentDate = new Date();
+
+  const daysUntilTarget = Math.ceil(
+    (targetDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
   const formattedDate = `${format(
     date,
     "dd MMM yyyy"
-  )} (${daysLeftInYear} days left)`;
+  )} (${daysUntilTarget} days left)`;
 
   return formattedDate;
 };
 
 export const formatLeftDays = (date: any) => {
-  const jsDate = new Date(date);
-  const daysLeftInYear = differenceInDays(endOfYear(jsDate), jsDate);
-  const formattedDate = `${daysLeftInYear}d left`;
+  const targetDate = new Date(date);
+  const currentDate = new Date();
 
-  return formattedDate;
+  const daysUntilTarget = Math.ceil(
+    (targetDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  return `${daysUntilTarget}d left`;
 };
 
 export const formatFileSize = (size: number): string => {
@@ -106,4 +113,58 @@ export const convertDateToCommaString = (date: any) => {
   const day = String(jsDate.getDate()).padStart(2, "0");
 
   return `${month} ${day}, ${year}`;
+};
+
+export const convertDateAndTimeToString = (date: any) => {
+  const jsDate = new Date(date);
+  // console.log("Parsed Date object:", jsDate);
+
+  const year = jsDate.getFullYear();
+
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const month = monthNames[jsDate.getMonth()];
+  const day = String(jsDate.getDate()).padStart(2, "0");
+  const hours = String(jsDate.getHours()).padStart(2, "0");
+  const minutes = String(jsDate.getMinutes()).padStart(2, "0");
+
+  return `${month} ${day} ${year} ${hours}:${minutes}`;
+};
+
+export const compareValues = (
+  a: any,
+  b: any,
+  isDescending: boolean
+): number => {
+  if (typeof a === "string" && typeof b === "string") {
+    return isDescending ? b.localeCompare(a) : a.localeCompare(b);
+  }
+  if (typeof a === "number" && typeof b === "number") {
+    return isDescending ? b - a : a - b;
+  }
+  if (a instanceof Date && b instanceof Date) {
+    return isDescending ? b.getTime() - a.getTime() : a.getTime() - b.getTime();
+  }
+  return 0;
+};
+
+export const calculateDaysLeft = (futureDate: any) => {
+  const currentDate = new Date();
+  const targetDate = new Date(futureDate);
+  const timeDifference = targetDate - currentDate;
+  const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+  return daysDifference > 0 ? daysDifference : 0;
 };

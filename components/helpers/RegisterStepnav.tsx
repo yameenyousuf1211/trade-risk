@@ -15,7 +15,7 @@ export const RegisterStepnav = ({ step }: { step: number }) => {
       {/* Logo */}
       <Link href="/login" className="flex items-center justify-center gap-2">
         <Image
-          src="/images/logo.png"
+          src="/images/logo.svg"
           alt="logo"
           width={50}
           height={50}
@@ -26,7 +26,7 @@ export const RegisterStepnav = ({ step }: { step: number }) => {
         </h1>
       </Link>
       {/* Nav */}
-      <nav className="flex items-center gap-x-16">
+      <nav className="flex font-roboto items-center gap-x-16">
         <div className="flex items-center gap-x-2">
           {!isInfoPage && (
             <Check strokeWidth={2.5} className="text-primaryCol size-5" />

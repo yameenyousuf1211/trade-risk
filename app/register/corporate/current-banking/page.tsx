@@ -3,7 +3,7 @@ import CorporateStepLayout from "@/components/layouts/CorporateStepLayout";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -17,15 +17,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useEffect, useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useRegisterStore, { getStateValues } from "@/store/register.store";
 import { onRegister } from "@/services/apis";
 import { toast } from "sonner";
-import { getBanks, getCities, getCountries } from "@/services/apis/helpers.api";
+import { getBanks, getCities } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import useLoading from "@/hooks/useLoading";
 import { Country } from "@/types/type";
+import { bankCountries } from "@/utils/data";
 
 interface Bank {
   country: string;
@@ -68,28 +69,21 @@ const CurrentBankingPage = () => {
   const [bankOpen, setBankOpen] = useState(false);
   const [bankVal, setBankVal] = useState("");
 
-  const [allCountries, setAllCountries] = useState<Country[]>([]);
+  const [allCountries, setAllCountries] = useState<Country[]>(bankCountries);
   const [countries, setCountries] = useState([]);
   const [flags, setFlags] = useState([]);
   const [isoCode, setIsoCode] = useState("");
   const [cities, setCities] = useState([]);
 
-  // Fetch the countries and sort them
   useEffect(() => {
-    const fetchCountries = async () => {
-      const { response } = await getCountries();
-      setAllCountries(response);
-      const fetchedCountries = response?.map((country: Country) => {
-        return country.name;
-      });
-      setCountries(fetchedCountries);
-      const fetchedFlags = response?.map((country: Country) => {
-        return country.flag;
-      });
-      setFlags(fetchedFlags);
-    };
-
-    fetchCountries();
+    const fetchedCountries = allCountries?.map((country: Country) => {
+      return country.name;
+    });
+    setCountries(fetchedCountries);
+    const fetchedFlags = allCountries?.map((country: Country) => {
+      return country.flag;
+    });
+    setFlags(fetchedFlags);
   }, []);
 
   const setCountryCode = (selectedCountry: string) => {
@@ -209,7 +203,7 @@ const CurrentBankingPage = () => {
     <CorporateStepLayout
       step={3}
       title="Current Banking"
-      text="Add the banks you have facilities with, so that they can be notified of any requests you add. This list can also be edited later."
+      text={`Add the banks you have facilities with, so that they can be notified of any requests you add. \nThis list can also be edited later.`}
     >
       <div className="max-w-[800px] w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5">
         <h2 className="text-lg font-semibold">Add your current banks</h2>
@@ -224,19 +218,19 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={countryOpen}
-                  className="w-[230px] justify-between"
+                  className="font-roboto capitalize w-[230px] justify-between font-normal py-6"
                 >
                   {countryVal
                     ? countries?.find(
                         (country: string) =>
                           country.toLowerCase() === countryVal.toLowerCase()
                       )
-                    : "Select country..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    : "Select country*"}
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[230px] p-0">
-                <Command>
+                <Command className="font-roboto">
                   <CommandInput placeholder="Search country..." />
                   <CommandEmpty>No country found.</CommandEmpty>
                   <CommandGroup className="max-h-[300px] overflow-y-auto">
@@ -281,7 +275,7 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={bankOpen}
-                  className="w-[230px] justify-between truncate"
+                  className="capitalize font-roboto w-[230px] justify-between truncate font-normal py-6"
                   disabled={countryVal === ""}
                 >
                   {bankVal
@@ -289,12 +283,12 @@ const CurrentBankingPage = () => {
                         (bank: string) =>
                           bank.toLowerCase() === bankVal.toLowerCase()
                       )
-                    : "Select bank..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    : "Select bank*"}
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[230px] p-0">
-                <Command>
+                <Command className="font-roboto">
                   <CommandInput placeholder="Search bank..." />
                   <CommandEmpty>No bank found.</CommandEmpty>
                   <CommandGroup className="max-h-[300px] overflow-y-auto">
@@ -338,19 +332,19 @@ const CurrentBankingPage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={cityOpen}
-                  className="w-[230px] justify-between"
+                  className="capitalize font-roboto w-[230px] justify-between font-normal py-6"
                   disabled={countryVal === ""}
                 >
                   {cityVal
                     ? cityVal
                     : countryVal
-                    ? "Select city..."
-                    : "Select city..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    ? "Select city*"
+                    : "Select city*"}
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[230px] p-0">
-                <Command>
+                <Command className="font-roboto">
                   <CommandInput placeholder="Search city..." />
                   <CommandEmpty>No city found.</CommandEmpty>
                   <CommandGroup className="max-h-[300px] overflow-y-auto">
@@ -390,14 +384,14 @@ const CurrentBankingPage = () => {
               variant="ghost"
               type="button"
               onClick={handleBankAdd}
-              className="bg-[#F5F7F9] text-center font-semibold text-[16px] mt-4"
+              className="bg-[#F5F7F9] text-center font-semibold text-[16px] mt-4 py-5"
             >
               Add Bank
             </Button>
           </div>
 
           {/* Selected Details */}
-          <div className="col-span-2 border border-borderCol rounded-md h-60 overflow-y-auto w-full grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-3">
+          <div className="font-roboto col-span-2 border border-borderCol rounded-md h-64 overflow-y-auto w-full grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-3">
             {Object.keys(allBanks)
               .filter((country) => country !== "Pakistan")
               .map((country) => (
@@ -429,7 +423,7 @@ const CurrentBankingPage = () => {
         <div className="flex flex-col gap-y-2">
           <Button
             type="button"
-            className="disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
+            className="py-6 disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-xl"
             size="lg"
             disabled={isLoading || Object.keys(allBanks).length === 0}
             onClick={handleSubmit}

@@ -24,12 +24,12 @@ export const Filter = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-x-2">
+      <DropdownMenuTrigger className="font-roboto flex items-center gap-x-2">
         {" "}
         <ListFilter />
         <p>Filter</p>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className="font-roboto">
         <DropdownMenuItem onClick={() => handleFilter("")}>
           All
         </DropdownMenuItem>

@@ -23,6 +23,7 @@ const PointContactPage = () => {
     setValue,
     handleSubmit,
     getValues,
+    trigger,
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<z.infer<typeof pointOfContractSchema>>({
     resolver: zodResolver(pointOfContractSchema),
@@ -40,7 +41,6 @@ const PointContactPage = () => {
     if (contactData) {
       const data = JSON.parse(contactData);
       data && setValues(data);
-      console.log(data);
       Object.entries(data).forEach(([key, value]) => {
         // @ts-ignore
         setValue(key, value);
@@ -101,7 +101,7 @@ const PointContactPage = () => {
             <FloatingInput
               register={register}
               name="pocEmail"
-              placeholder="Company Email"
+              placeholder="POC Email"
               type="email"
             />
             {errors.pocEmail && (
@@ -116,6 +116,7 @@ const PointContactPage = () => {
               placeholder="pocPhone"
               setValue={setValue}
               setPhoneInput={setPhoneInput}
+              trigger={trigger}
               value={(contactData && JSON.parse(contactData).pocPhone) || ""}
             />
             {(phone === "" || phone === undefined) && errors.pocPhone && (
@@ -157,7 +158,7 @@ const PointContactPage = () => {
           </div>
         </div>
 
-        <div className="w-full">
+        <div className="w-full font-roboto">
           <label
             htmlFor="pdf-file"
             className="flex items-center justify-between border border-borderCol py-4 rounded-md px-4 cursor-pointer"
@@ -166,7 +167,7 @@ const PointContactPage = () => {
               <Paperclip className="text-gray-500 size-4" />
               <p className="text-sm">Upload authorization letter</p>
             </div>
-            <p className="center gap-x-1 relative text-sm text-[#333]">
+            <p className="center gap-x-1 relative text-sm text-[#92929D]">
               {pdfFile && (
                 <div
                   className="bg-red-500 text-white size-4 rounded-full center text-[12px] z-20"
@@ -196,7 +197,7 @@ const PointContactPage = () => {
           <Button
             className="disabled:bg-borderCol disabled:text-[#9f9faf] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
-            disabled={!allowSubmit}
+            disabled={!isValid}
           >
             Continue
           </Button>
@@ -205,7 +206,7 @@ const PointContactPage = () => {
             <Button
               type="button"
               variant="ghost"
-              className="text-para text-[16px] w-full"
+              className="text-lightGray text-[16px] w-full"
             >
               Previous
             </Button>

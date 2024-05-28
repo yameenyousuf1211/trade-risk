@@ -17,17 +17,18 @@ import {
   SearchBar,
 } from "../helpers";
 import { Button } from "../ui/button";
-import Image from "next/image";
 import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
-import { ApiResponse, IBids } from "@/types/type";
-import { convertDateToString, convertDateToYYYYMMDD } from "@/utils";
-import { useState } from "react";
+import { ApiResponse, Country, IBids } from "@/types/type";
+import { compareValues, convertDateToString } from "@/utils";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getCountries } from "../../services/apis/helpers.api";
 
 const TableDataCell = ({ data }: { data: string | number }) => {
   return (
     <TableCell className="px-1 py-1 max-w-[200px]">
-      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-center text-lightGray">
+      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-center text-sm text-lightGray">
         {data}
       </div>
     </TableCell>
@@ -44,12 +45,92 @@ export const BankTable = ({
   isCorporate?: boolean;
 }) => {
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
-  console.log(data);
+
+  const [allCountries, setAllCountries] = useState<Country[]>([]);
+  const [tableData, setTableData] = useState<IBids[]>([]);
+
+  useEffect(() => {
+    if (data && data?.data) {
+      setTableData(data?.data);
+    }
+  }, [data]);
+
+  const { data: countriesData } = useQuery({
+    queryKey: ["countries"],
+    queryFn: () => getCountries(),
+  });
+
+  useEffect(() => {
+    if (
+      countriesData &&
+      countriesData.success &&
+      countriesData.response &&
+      countriesData.response.length > 0
+    ) {
+      setAllCountries(countriesData.response);
+    }
+  }, [countriesData]);
+
+  const getCountryFlagByName = (countryName: string): string | undefined => {
+    const country = allCountries.find(
+      (c: Country) => c.name.toLowerCase() === countryName.toLowerCase()
+    );
+    return country ? country.flag : undefined;
+  };
+
+  const [sortedKey, setSortedKey] = useState<string>("");
+
+  const handleSort = (key: string) => {
+    console.log(key);
+    setSortedKey(key);
+    let isDescending = sortedKey.includes(key);
+    setSortedKey(isDescending ? "" : key);
+    console.log(tableData);
+
+    let sortedData: IBids[] = [...tableData].sort((a, b) => {
+      let valueA, valueB;
+      switch (key) {
+        case "Date Submitted":
+          valueA = a.createdAt;
+          valueB = b.createdAt;
+          break;
+        case "Country of issuing bank":
+          valueA = a.lcInfo.country;
+          valueB = b.lcInfo.country;
+          break;
+        case "Confirmation Rate":
+          valueA = a.confirmationPrice;
+          valueB = b.confirmationPrice;
+          break;
+        case "Discount Margin":
+          valueA = a.discountMargin;
+          valueB = b.discountMargin;
+          break;
+        case "Minimum Charges":
+          valueA = a.confirmationPrice;
+          valueB = b.confirmationPrice;
+          break;
+
+        case "Confirmation bank":
+          valueA = a.confirmationPrice;
+          valueB = b.confirmationPrice;
+          break;
+
+        default:
+          return 0;
+      }
+
+      return compareValues(valueA, valueB, isDescending);
+    });
+
+    setTableData(sortedData);
+  };
+
   return (
     <div className="">
-      <div className="flex items-center justify-between gap-x-2 mb-2">
+      <div className="flex items-center justify-between hide-scrollbar overflow-x-auto xl:gap-x-2 mb-2">
         <div className="flex items-center gap-x-2">
-          <ProductFilter />
+          {!isCorporate && <ProductFilter />}
           <BidsCountrySelect />
           <DateRangePicker />
         </div>
@@ -64,14 +145,34 @@ export const BankTable = ({
           <TableHeader className="bg-[#F0F0F0] hover:bg-[#F0F0F0]/90 p-2 rounded-lg">
             <TableRow className="py-0">
               {myBidsColumnHeaders.map((header, idx) => (
-                <TableHead key={`${header}-${idx}`} className="px-2 h-8 py-2">
-                  <div className="flex items-center gap-x-2 justify-center text-[13px]">
-                    {header}
-                    <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
-                      <ChevronUp className="size-4" />
+                <>
+                  {idx === 2 && isCorporate && (
+                    <TableHead
+                      key="Confirmation bank"
+                      className="font-roboto px-2 h-8 py-2 min-w-44"
+                      onClick={() => handleSort("Confirmation bank")}
+                    >
+                      <div className="flex items-center gap-x-2 justify-center text-[13px]">
+                        Confirming Bank
+                        <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
+                          <ChevronUp className="size-4" />
+                        </div>
+                      </div>
+                    </TableHead>
+                  )}
+                  <TableHead
+                    key={`${header}-${idx}`}
+                    className="px-2 h-8 py-2  min-w-44"
+                    onClick={() => handleSort(header)}
+                  >
+                    <div className="font-roboto capitalize flex items-center gap-x-2 justify-center text-[12px] text-lightGray">
+                      {header}
+                      <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
+                        <ChevronUp className="size-4" />
+                      </div>
                     </div>
-                  </div>
-                </TableHead>
+                  </TableHead>
+                </>
               ))}
             </TableRow>
           </TableHeader>
@@ -81,23 +182,33 @@ export const BankTable = ({
             ) : (
               data &&
               data.data &&
-              data.data.map((item, index) => (
-                <TableRow key={index} className="border-none ">
+              tableData.map((item, index) => (
+                <TableRow key={index} className="border-none font-roboto">
                   <TableDataCell data={convertDateToString(item.createdAt)} />
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                      <Image
-                        src="/images/flag.png"
-                        alt="country"
-                        width={100}
-                        height={100}
-                        className="object-cover size-5"
-                      />
+                      <p className="text-[16px] emoji-font">
+                        {allCountries &&
+                          getCountryFlagByName(item.lcInfo?.[2]?.country)}
+                      </p>
                       <div className="truncate text-lightGray capitalize">
-                        {item.lcInfo?.[2]?.bank || ""}
+                        {item.lcInfo?.[2]?.country || ""}
                       </div>
                     </div>
                   </TableCell>
+                  {isCorporate && (
+                    <TableCell className="px-1 py-1 max-w-[200px]">
+                      <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
+                        <p className="text-[16px]">
+                          {allCountries &&
+                            getCountryFlagByName(item.bidBy?.[2])}
+                        </p>
+                        <div className="truncate text-lightGray capitalize">
+                          {item.bidBy?.[0] || ""}
+                        </div>
+                      </div>
+                    </TableCell>
+                  )}
                   <TableDataCell
                     data={
                       item.confirmationPrice.toLocaleString() + ".00 %" || ""
@@ -131,6 +242,7 @@ export const BankTable = ({
                         setIsAddNewBid={setIsAddNewBid}
                         isDiscount={item.bidType.includes("Discount")}
                         border
+                        bidData={item}
                         lcId={item.lc[0]}
                         isCorporate={isCorporate}
                       />

@@ -35,10 +35,10 @@ export const Header = () => {
   }, [data]);
 
   return (
-    <header className="relative 2xl:px-20 px-10 flex items-center justify-between gap-x-2 ">
-      <div className="flex items-center gap-x-2 py-4">
+    <header className="relative 2xl:px-20 px-6 xl:px-10 flex items-center justify-between gap-x-2 ">
+      <div className="flex flex-col xl:flex-row items-center gap-x-2 py-4">
         <Image
-          src="/images/logo.png"
+          src="/images/logo.svg"
           alt="logo"
           width={500}
           height={500}
@@ -48,7 +48,7 @@ export const Header = () => {
           <span className="font-semibold">Trade</span>Risk
         </Link>
       </div>
-      <nav className="flex items-center gap-x-20">
+      <nav className="flex items-center gap-x-4 lg:gap-x-10 xl:gap-x-20">
         {user && user.role === "bank" ? (
           <>
             <div className="relative py-6">
@@ -134,16 +134,16 @@ export const Header = () => {
             </div>
             <div className="relative py-6">
               <Link
-                href="/corporate-bids"
+                href="/corporate-bids?filter=LC Confirmation"
                 className={`${
-                  pathname === "/my-bids"
+                  pathname.includes("/corporate-bids")
                     ? "text-primaryCol"
                     : "hover:text-primaryCol transition-colors duration-150"
                 }  font-semibold`}
               >
                 My Bids
               </Link>
-              {pathname === "/corporate-bids" && (
+              {pathname.includes("/corporate-bids") && (
                 <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />
               )}
             </div>

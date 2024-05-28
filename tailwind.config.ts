@@ -59,9 +59,13 @@ const config = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      fontFamily: {
+        roboto: ["var(--font-roboto)"],
+        poppins: ["var(--font-poppins)"],
+      },
       screens: {
         xs: "450px",
-        xh: {'raw': '(min-height: 1200px)'}
+        xh: { raw: "(min-height: 1200px)" },
       },
       borderRadius: {
         lg: "var(--radius)",

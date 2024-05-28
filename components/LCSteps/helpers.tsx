@@ -74,7 +74,7 @@ export const DDInput = ({
   return (
     <label
       id={id}
-      className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+      className="border text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
     >
       <p className="text-lightGray">{label}</p>
       <Popover open={ddOpen} onOpenChange={setDdOpen}>
@@ -83,7 +83,9 @@ export const DDInput = ({
             variant="outline"
             role="combobox"
             aria-expanded={ddOpen}
-            className="capitalize w-fit border-none justify-between font-normal text-sm text-gray-500"
+            className={`capitalize w-fit border-none justify-between font-normal text-sm ${
+              value ? "text-black" : "text-gray-500"
+            }`}
             disabled={disabled}
           >
             {ddVal
@@ -128,7 +130,9 @@ export const DDInput = ({
                           : "opacity-0"
                       )}
                     />
-                    {flags && <span className="mr-2">{flags[idx]}</span>}
+                    {flags && (
+                      <span className="mr-2 emoji-font">{flags[idx]}</span>
+                    )}
                     {country}
                   </CommandItem>
                 ))}
@@ -162,7 +166,7 @@ export const BgRadioInput = ({
       htmlFor={id}
       className={`px-3 py-4 w-full transition-colors duration-100 ${
         checked ? "bg-[#EEE9FE]" : "border border-borderCol bg-white"
-      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray `}
+      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
     >
       <input
         type="radio"

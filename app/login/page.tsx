@@ -14,12 +14,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/context/AuthProvider";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { registerGCMToken } from "@/services/apis/notifications.api";
+import {
+  arrayBufferToBase64,
+  urlBase64ToUint8Array,
+} from "@/utils/helper/service-worker";
 export default function LoginPage() {
   const router = useRouter();
   const { setUser } = useAuth();
   const [showPass, setShowPass] = useState(false);
 
-  const { mutateAsync, status } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: onLogin,
   });
 
@@ -31,22 +36,58 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
+  const [notificationPermission, setNotificationPermission] = useState(
+    typeof window !== "undefined" ? Notification.permission : ""
+  );
+
+  const registerServiceWorker = async () => {
+    const register = await navigator.serviceWorker.register(
+      "/service-worker.js"
+    );
+    const subscription = await register.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(
+        "BKOPYlgOw1eAWgeVCt8uZWCTAaBUd4ReGVd9Qfs2EtK_DvRXuI_LFQSiyxjMN8rg47BWP9_8drlyE0O1GXMP4ew"
+      ),
+    });
+    console.log(subscription);
+    const authToken = arrayBufferToBase64(
+      subscription.getKey("auth") as ArrayBuffer
+    );
+    const hashKey = arrayBufferToBase64(
+      subscription.getKey("p256dh") as ArrayBuffer
+    );
+    if (subscription) {
+      const gcmToken = await registerGCMToken({
+        endpoint: subscription.endpoint,
+        expirationTime: subscription.expirationTime,
+        authToken,
+        hashKey,
+      });
+    }
+  };
+
   const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (data) => {
     const { response, success } = await mutateAsync(data);
-    // console.log(response);
-    if (success == false) return toast.error(response as string);
-    if (success == true) {
+    if (success) {
+      // const permission = await Notification.requestPermission();
+      // setNotificationPermission(permission);
+      // if (permission === "granted") {
+      //   if ("serviceWorker" in navigator) {
+      //     await registerServiceWorker();
+      //   }
+      // }
       setUser(response.data.user);
       toast.success("Login successfull");
       router.push(response.data.user.role === "corporate" ? "/" : "/dashboard");
-    }
+    } else return toast.error(response as string);
   };
 
   return (
     <AuthLayout>
       <section className="max-w-md mx-auto w-full max-xs:px-4 z-10">
         <h2 className="font-bold text-5xl text-center">Sign In</h2>
-        <p className="text-para text-center mt-5">
+        <p className="text-para font-roboto font-normal text-center mt-5">
           Sign in using your registered credentials to start trading
         </p>
         <form
@@ -71,13 +112,13 @@ export default function LoginPage() {
             <input
               type={showPass ? "text" : "password"}
               id="password"
-              className="block px-2.5 pb-2.5 pt-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
+              className="block px-2.5 pb-2.5 pt-2.5 w-full text-sm text-lightGray bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
               placeholder=""
               {...register("password")}
             />
             <label
               htmlFor="password"
-              className="absolute text-sm text-gray-500  duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white  px-2 peer-focus:px-2 peer-focus:text-text peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
+              className="absolute text-sm text-gray-400  duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white  px-2 peer-focus:px-2 peer-focus:text-text peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
             >
               Password
             </label>
@@ -104,12 +145,15 @@ export default function LoginPage() {
               <input type="checkbox" id="remember" />
               <label
                 htmlFor="remember"
-                className="text-sm text-para leading-none"
+                className="text-sm font-roboto text-para leading-none"
               >
                 Remember Me
               </label>
             </div>
-            <Link href="/login/forgot-password" className="text-text text-sm">
+            <Link
+              href="/login/forgot-password"
+              className="text-text font-roboto text-sm"
+            >
               Forgot Password
             </Link>
           </div>
@@ -124,7 +168,7 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="text-para mt-10 text-sm text-center">
+        <p className="text-para font-roboto mt-10 text-sm text-center">
           Don&apos;t have a TradeRisk account?{" "}
           <Link href="/register" className="text-text font-medium">
             Register now

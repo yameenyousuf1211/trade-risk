@@ -24,10 +24,10 @@ export const ProductFilter = () => {
 
   return (
     <Select onValueChange={(val: string) => handleFilter(val)}>
-      <SelectTrigger className="w-[150px] border-none outline-none focus:none">
-        <SelectValue placeholder="Product Type" />
+      <SelectTrigger className="font-roboto w-[180px] border-none outline-none focus:none">
+        <SelectValue placeholder="Product type" />
       </SelectTrigger>
-      <SelectContent className="">
+      <SelectContent className="font-roboto">
         <SelectItem value="LC Confirmation">LC Confirmation</SelectItem>
         <SelectItem value="LC Discounting">LC Discounting</SelectItem>
         <SelectItem value="LC Confirmation & Discounting">

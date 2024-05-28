@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Noto Color Emoji";
+  src: url("/NotoColorEmoji-Regular.ttf");
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -122,6 +127,11 @@
   -ms-transform: translate(-50%, -50%);
   -o-transform: translate(-50%, -50%);
 }
+.emoji-font {
+  font-family: "Noto Color Emoji", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
 /* For WebKit-based browsers (Chrome, Safari, Opera) */
 input::-webkit-outer-spin-button,
@@ -206,10 +216,12 @@ input[type="number"] {
 }
 .rti--tag {
   font-size: 12px !important;
+  background: #f4f4f4 !important;
 }
 .rti--input {
   font-size: 14px !important;
-  max-width: 150px !important;
+  width: 100% !important;
+  /* max-width: 150px !important; */
   padding: 6px 8px !important;
 }
 .rti--input::placeholder {
@@ -222,7 +234,7 @@ input[type="checkbox"] {
   -moz-appearance: none;
   width: 17px;
   height: 17px;
-  border: 1px solid #29c084;
+  border: 1px solid gray;
   border-radius: 4px;
   position: relative;
   cursor: pointer;
@@ -234,6 +246,7 @@ input[type="checkbox"] {
 
 /* Style the checkbox when it's checked */
 input[type="checkbox"]:checked {
+  border: 1px solid #29c084;
   background-color: #29c084;
 }
 
@@ -253,4 +266,14 @@ input[type="checkbox"]:checked::after {
   -moz-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   -o-transform: rotate(45deg);
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge, and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

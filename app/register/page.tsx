@@ -19,7 +19,7 @@ export default function RegisterPage() {
     <AuthLayout>
       <section className="max-w-xl mx-auto w-full max-xs:px-4 z-10">
         <h2 className="font-bold text-5xl text-center">Register</h2>
-        <p className="text-para text-center mt-5">
+        <p className="text-para font-roboto text-center mt-5">
           Please select your business entity{" "}
         </p>
 

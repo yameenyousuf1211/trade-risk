@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { BgRadioInput, DDInput } from "./helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { cn } from "@/utils";
 
 export const Step6 = ({
   title,
@@ -45,11 +47,18 @@ export const Step6 = ({
   let pricePerAnnum = isDiscount
     ? getValues("discountingInfo.pricePerAnnum")
     : getValues("confirmationInfo.pricePerAnnum");
+  console.log(pricePerAnnum, "price");
   useEffect(() => {
     if (pricePerAnnum) {
       isDiscount
-        ? setValue("discountingInfo.pricePerAnnum", pricePerAnnum.toString())
-        : setValue("confirmationInfo.pricePerAnnum", pricePerAnnum.toString());
+        ? setValue(
+            "discountingInfo.pricePerAnnum",
+            `${pricePerAnnum.toString()}`
+          )
+        : setValue(
+            "confirmationInfo.pricePerAnnum",
+            `${pricePerAnnum.toString()}`
+          );
     }
   }, [valueChanged]);
 
@@ -66,9 +75,12 @@ export const Step6 = ({
       ? getValues("discountingInfo.pricePerAnnum") || "0"
       : getValues("confirmationInfo.pricePerAnnum") || "0";
     const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
+    if (Number(newValue) > 100) {
+      return;
+    }
     isDiscount
-      ? setValue("discountingInfo.pricePerAnnum", newValue)
-      : setValue("confirmationInfo.pricePerAnnum", newValue);
+      ? setValue("discountingInfo.pricePerAnnum", `${newValue}%`)
+      : setValue("confirmationInfo.pricePerAnnum", `${newValue}%`);
   };
 
   const handleDecrement = () => {
@@ -81,17 +93,20 @@ export const Step6 = ({
     // @ts-ignore
     newValue = newValue.toFixed(1);
     isDiscount
-      ? setValue("discountingInfo.pricePerAnnum", newValue)
-      : setValue("confirmationInfo.pricePerAnnum", newValue);
+      ? setValue("discountingInfo.pricePerAnnum", `${newValue}%`)
+      : setValue("confirmationInfo.pricePerAnnum", `${newValue}%`);
   };
 
   return (
-    <div className="py-3 px-2 border border-borderCol rounded-lg w-full h-full">
+    <div
+      id="step6"
+      className="py-3 px-2 border border-borderCol rounded-lg w-full h-full"
+    >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
-        <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold">
+        <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           6
         </p>
-        <p className="font-semibold text-lg text-lightGray">{title}</p>
+        <p className="font-semibold text-[16px] text-lightGray">{title}</p>
       </div>
       {isDiscount && (
         <div className="border border-borderCol py-3 px-2 rounded-md mb-4 bg-[#F5F7F9]">
@@ -121,7 +136,7 @@ export const Step6 = ({
         </div>
       )}
       <div className="border border-borderCol py-3 px-2 rounded-md bg-[#F5F7F9]">
-        <p className="font-semibold ml-3 mb-2">Charges on account of</p>
+        <p className="font-semibold text-sm ml-3 mb-2">Charges on account of</p>
         <BgRadioInput
           id="account-beneficiary"
           label="Exporter/Supplier (Beneficiary)"
@@ -151,7 +166,7 @@ export const Step6 = ({
       </div>
 
       <div className="border border-borderCol py-3 px-2 rounded-md mt-5 bg-[#F5F7F9]">
-        <p className="font-semibold ml-3 mb-2">
+        <p className="font-semibold ml-3 mb-2 text-sm">
           {title == "Confirmation Charges"
             ? "Expected pricing"
             : "Expected charges"}
@@ -162,13 +177,13 @@ export const Step6 = ({
               id="select-base-rate"
               className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
             >
-              <p className="w-full text-lightGray">Select base rate</p>
+              <p className="w-full text-sm text-lightGray">Select base rate</p>
               <Input
                 id="select-base-rate"
                 type="text"
                 name="select-base-rate"
                 register={register}
-                className="block bg-none border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+                className="block bg-none text-sm border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                 placeholder="Select Value"
               />
             </label>
@@ -178,8 +193,8 @@ export const Step6 = ({
           id="expected-pricing"
           className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
         >
-          <p className="text-lightGray">Pricing Per Annum</p>
-          <div className="flex items-center gap-x-2">
+          <p className="text-lightGray text-sm">Pricing Per Annum</p>
+          <div className="flex items-center gap-x-2 relative">
             <Button
               type="button"
               variant="ghost"
@@ -188,9 +203,37 @@ export const Step6 = ({
             >
               -
             </Button>
-            <Input
+            <input
               placeholder="Value (%)"
-              type="number"
+              type="text"
+              inputMode="numeric"
+              className={cn(
+                "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0 "
+              )}
+              max={100}
+              {...register(
+                isDiscount
+                  ? "discountingInfo.pricePerAnnum"
+                  : "confirmationInfo.pricePerAnnum"
+              )}
+              onChange={(event) => {
+                const newValue = event.target.value.replace(/[^0-9.]/g, "");
+                event.target.value = newValue;
+              }}
+              onBlur={(event) => {
+                console.log(event.target.value)
+              if(event.target.value.includes('%') || event.target.value.length === 0) return
+                event.target.value += "%";
+              }}
+              onKeyUp={(event) => {
+                if (Number(event.target.value.replace("%", "")) > 100) {
+                  event.target.value = "100.0%";
+                }
+              }}
+            />
+            {/* <Input
+              placeholder="Value (%)"
+              type="text"
               inputMode="numeric"
               required
               max={100}
@@ -201,8 +244,7 @@ export const Step6 = ({
               }
               register={register}
               className="border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
-            />
-
+            /> */}
             <Button
               type="button"
               variant="ghost"

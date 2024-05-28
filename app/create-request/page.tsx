@@ -27,6 +27,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useConfirmationStore, { getStateValues } from "@/store/lc.store";
 import { Country } from "@/types/type";
 import useStepStore from "@/store/lcsteps.store";
+import { bankCountries } from "@/utils/data";
+import { sendNotification } from "@/services/apis/notifications.api";
+import { useAuth } from "@/context/AuthProvider";
+import { calculateDaysLeft } from "@/utils";
 
 const CreateRequestPage = () => {
   const {
@@ -40,10 +44,12 @@ const CreateRequestPage = () => {
   } = useForm<z.infer<typeof confirmationSchema>>({
     resolver: zodResolver(confirmationSchema),
   });
+
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
+  const [days, setDays] = useState<number>(1);
 
   const queryClient = useQueryClient();
   const setValues = useConfirmationStore((state) => state.setValues);
@@ -55,12 +61,33 @@ const CreateRequestPage = () => {
     if (confirmationData && confirmationData?._id) {
       Object.entries(confirmationData).forEach(([key, value]) => {
         // @ts-ignore
-        setValue(key, value);
+        if (typeof value === "number") {
+          // @ts-ignore
+          setValue(key, value);
+        }
+        if (typeof value === "string" && value.length > 0) {
+          // @ts-ignore
+          setValue(key, value);
+        }
+        if (typeof value === "object" && value !== null) {
+          const keys = Object.keys(value);
+          const hasOnlyEmptyValues = keys.every((k) => value[k] === "");
+
+          if (!hasOnlyEmptyValues) {
+            // @ts-ignore
+            setValue(key, value);
+          }
+        }
         if (key === "transhipment") {
           setValue(key, value === true ? "yes" : "no");
         }
         if (key === "lcPeriod.expectedDate") {
           setValue(key, value === true ? "yes" : "no");
+        }
+        if (key === "extraInfo") {
+          const daysLeft = calculateDaysLeft(value.dats);
+          setDays(daysLeft);
+          setValue("extraInfo", value.other);
         }
       });
     }
@@ -96,20 +123,38 @@ const CreateRequestPage = () => {
     data: z.infer<typeof confirmationSchema>
   ) => {
     if (proceed) {
+      if (
+        data.confirmingBank &&
+        data.issuingBank.country === data.confirmingBank.country
+      )
+        return toast.error(
+          "Confirming bank country cannot be the same as issuing bank country"
+        );
+      if (/^\d+$/.test(data.productDescription))
+        return toast.error("Product description cannot contain only digits");
+
       startLoading();
+      const currentDate = new Date();
+      const futureDate = new Date(
+        currentDate.setDate(currentDate.getDate() + days)
+      );
+      let extraInfo;
+      if (data.paymentTerms === "Usance LC") {
+        extraInfo = { dats: futureDate, other: data.extraInfo };
+      }
+      const { confirmingBank2, ...rest } = data;
+
       const reqData = {
-        ...data,
+        ...rest,
         lcType: "LC Confirmation",
         transhipment: data.transhipment === "yes" ? true : false,
-        shipmentPort: {
-          country: data.shipmentPort.country,
-          port: "Jeddah",
-        },
         lcPeriod: {
           ...data.lcPeriod,
           expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
         },
+        ...(extraInfo && { extraInfo }),
       };
+
       const { response, success } = confirmationData?._id
         ? await onUpdateLC({
             payload: reqData,
@@ -119,8 +164,12 @@ const CreateRequestPage = () => {
       stopLoading();
       if (!success) return toast.error(response);
       else {
+        // await sendNotification({
+        //   title: "New LC Confirmation Request",
+        //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+        // });
         setValues(getStateValues(useConfirmationStore.getInitialState()));
-        toast.success(response?.message);
+        toast.success("LC created successfully");
         reset();
         router.push("/");
       }
@@ -137,20 +186,36 @@ const CreateRequestPage = () => {
   const saveAsDraft: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data: z.infer<typeof confirmationSchema>
   ) => {
+    if (
+      data.confirmingBank &&
+      data.issuingBank.country === data.confirmingBank?.country
+    )
+      return toast.error(
+        "Confirming bank country cannot be the same as issuing bank country"
+      );
+    if (/^\d+$/.test(data.productDescription))
+      return toast.error("Product description cannot contain only digits");
     setLoader(true);
+    const currentDate = new Date();
+    const futureDate = new Date(
+      currentDate.setDate(currentDate.getDate() + days)
+    );
+    let extraInfo;
+    if (data.paymentTerms === "Usance LC") {
+      extraInfo = { dats: futureDate, other: data.extraInfo };
+    }
+
+    const { confirmingBank2, ...rest } = data;
     const reqData = {
-      ...data,
+      ...rest,
       lcType: "LC Confirmation",
-      isDraft: "true",
       transhipment: data.transhipment === "yes" ? true : false,
-      shipmentPort: {
-        country: data.shipmentPort.country,
-        port: "Jeddah",
-      },
       lcPeriod: {
         ...data.lcPeriod,
         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
       },
+      ...(extraInfo && { extraInfo }),
+      draft: "true",
     };
 
     const { response, success } = confirmationData?._id
@@ -165,6 +230,7 @@ const CreateRequestPage = () => {
     else {
       toast.success("LC saved as draft");
       reset();
+      router.push("/");
       setValues(getStateValues(useConfirmationStore.getInitialState()));
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs-drafts"],
@@ -175,6 +241,9 @@ const CreateRequestPage = () => {
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [countries, setCountries] = useState([]);
   const [flags, setFlags] = useState([]);
+
+  const countryNames = bankCountries.map((country) => country.name);
+  const countryFlags = bankCountries.map((country) => country.flag);
 
   const { data: countriesData } = useQuery({
     queryKey: ["countries"],
@@ -218,9 +287,9 @@ const CreateRequestPage = () => {
   };
 
   return (
-    <CreateLCLayout>
+    <CreateLCLayout isRisk={false}>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
-      <Step1 register={register} setStepCompleted={handleStepCompletion} />
+        <Step1 register={register} setStepCompleted={handleStepCompletion} />
         <Step2
           register={register}
           setValue={setValue}
@@ -228,13 +297,15 @@ const CreateRequestPage = () => {
           valueChanged={valueChanged}
           setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
+          days={days}
+          setDays={setDays}
         />
         <Step3
           register={register}
           setValue={setValue}
-          countries={countries}
+          countries={countryNames}
           getValues={getValues}
-          flags={flags}
+          flags={countryFlags}
           valueChanged={valueChanged}
           setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
@@ -267,7 +338,7 @@ const CreateRequestPage = () => {
             valueChanged={valueChanged}
             setStepCompleted={handleStepCompletion}
           />
-          <Step7 register={register} step={7}  />
+          <Step7 register={register} step={7} />
         </div>
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">

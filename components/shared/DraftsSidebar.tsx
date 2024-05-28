@@ -7,7 +7,7 @@ import {
   fetchSingleLc,
 } from "@/services/apis/lcs.api";
 import { Loader } from "../helpers";
-import { convertDateToYYYYMMDD } from "@/utils";
+import { convertDateToCommaString } from "@/utils";
 import { useAuth } from "@/context/AuthProvider";
 import { toast } from "sonner";
 import { usePathname } from "next/navigation";
@@ -52,7 +52,6 @@ const DraftCard = ({
   );
 
   const handleEditLC = async () => {
-    // @ts-ignore
     try {
       const response = await fetchSingleLc(draft?._id);
       console.log("response: ", response);
@@ -63,30 +62,29 @@ const DraftCard = ({
   };
 
   return (
-    <div className={`${noBorder ? "" : "border-b border-borderCol"} pb-4 py-2`}>
+    <div className={`${noBorder ? "" : "border-b border-borderCol"} pb-2 py-2`}>
       <div className="flex items-center w-full justify-between gap-x-1">
         <p className="text-sm">Request #{draft._id.substring(0, 5)}</p>
         <Button
           size="sm"
-          className="!py-0.5 h-8 px-2 text-sm bg-transparent hover:bg-[#44444F] hover:text-white border border-[#44444F] text-[#44444F]"
+          className="!py-0.5 font-roboto h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#44444F] hover:text-white border border-[#44444F] text-[#44444F]"
           onClick={handleEditLC}
         >
           Edit request
         </Button>
       </div>
 
-      <p className="text-text">{draft.lcType}</p>
-      <p className="text-para text-sm">
+      <p className="font-roboto text-text text-[12px]">{draft.lcType}</p>
+      <p className="font-roboto text-para text-[12px]">
         Last updated:{" "}
-        {convertDateToYYYYMMDD(draft.updatedAt! || draft.createdAt!)}
+        {convertDateToCommaString(draft.updatedAt! || draft.createdAt!)}
       </p>
       <div className="flex items-center w-full justify-between gap-x-1 mt-2">
-        <p className="text-xl font-semibold uppercase">
-          {draft.currency || "USD"} {draft.amount?.toLocaleString()}
+        <p className="text-[16px] font-semibold uppercase">
+          {draft.currency || "USD"} {draft.amount?.toLocaleString() + ".00"}
         </p>
         <Button
-          size="sm"
-          className="!py-0.5 h-8 px-2 text-sm bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"
+          className="!py-0 font-roboto h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"
           type="button"
           disabled={isPending}
           onClick={() => handleDelete(draft._id)}
@@ -98,7 +96,7 @@ const DraftCard = ({
   );
 };
 
-export const DraftsSidebar = () => {
+export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
   const { user } = useAuth();
   const pathname = usePathname();
   const isConfirmation = pathname === "/create-request";
@@ -139,7 +137,7 @@ export const DraftsSidebar = () => {
       ) : (
         data && (
           <>
-            <h4 className="text-lg font-medium mb-3">
+            <h4 className="text-[16px] font-semibold mb-3">
               Drafts ({(filteredData && filteredData.length) || 0})
             </h4>
 

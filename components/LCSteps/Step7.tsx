@@ -25,7 +25,7 @@ const FileCard = ({
           />
         </Button>
         <div>
-          <p className="text-lightGray">{file[0]?.name}</p>
+          <p className="text-lightGray text-sm">{file[0]?.name}</p>
           <p className="text-[12px] text-para">
             {file[0]?.type.split("/")[1].toUpperCase()},{" "}
             {formatFileSize(file[0]?.size)}
@@ -71,32 +71,46 @@ export const Step7 = ({ register, step }: { register: any; step: number }) => {
   }, [selectedFiles, register]);
 
   return (
-    <div className="w-full border border-borderCol rounded-lg py-3 px-4 h-full">
-      <div className="flex items-center gap-x-2 ml-3 mb-3">
-        <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold">
+    <div
+      id="step7"
+      className="w-full border border-borderCol rounded-lg py-3 px-4 h-full"
+    >
+      <div className="flex items-center gap-x-2 ml-2 mb-3">
+        <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold text-sm">
           {step}
         </p>
-        <p className="font-semibold text-lg text-lightGray">Attachments</p>
+        <p className="font-semibold text-[16px] text-lightGray">Attachments</p>
       </div>
 
-      <p className="font-semibold">Add Documents (PDF,JPG,PNG,TIFF)</p>
-      <label
-        htmlFor="attachment-input"
-        className="cursor-pointer flex flex-col justify-center items-center border-4 border-borderCol border-dotted py-4 rounded-md mt-2 bg-[#F5F7F9]"
-      >
-        <input
-          id="attachment-input"
-          type="file"
-          onChange={handleFileChange}
-          multiple
-          style={{ display: "none" }}
-        />
-        <Image src="/images/attachment.png" alt="att" width={25} height={25} />
-        <p className="text-lg font-semibold text-lightGray mt-4">
-          Drag your files here
-        </p>
-        <p className="text-lightGray">or click to select from your device</p>
-      </label>
+      <p className="font-semibold ml-3 text-sm">
+        Add Documents (PDF,JPG,PNG,TIFF)
+      </p>
+      <div className="bg-[#F5F7F9] p-1 mt-2 rounded-md">
+        <label
+          htmlFor="attachment-input"
+          className="cursor-pointer flex flex-col justify-center items-center border-4 border-borderCol border-dotted py-4 rounded-md bg-[#F5F7F9]"
+        >
+          <input
+            id="attachment-input"
+            type="file"
+            onChange={handleFileChange}
+            multiple
+            style={{ display: "none" }}
+          />
+          <div className="size-12 bg-white center rounded-full shadow-sm">
+            <Image
+              src="/images/attachment.svg"
+              alt="att"
+              width={27}
+              height={27}
+            />
+          </div>
+          <p className="text-lg font-semibold text-lightGray mt-4">
+            Drag your files here
+          </p>
+          <p className="text-lightGray">or click to select from your device</p>
+        </label>
+      </div>
 
       {/* Display selected files */}
       {selectedFiles && (

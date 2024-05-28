@@ -59,6 +59,17 @@ export const getCurrenncy = async () => {
   }
 };
 
+export const getAllPortData = async () => {
+  try {
+    const { data } = await api.get(`/country/ports/details`);
+
+    return { success: true, response: data.data };
+  } catch (error) {
+    console.error(error);
+    return { success: false, response: (error as any).response.data.message };
+  }
+};
+
 export const getPorts = async (country: string) => {
   try {
     const capitalizedCountry = capitalizeWords(country);
@@ -73,7 +84,7 @@ export const getPorts = async (country: string) => {
   }
 };
 
-function capitalizeWords(str: string) {
+export function capitalizeWords(str: string) {
   const words = str.split(" ");
 
   const capitalizedWords = words.map((word) => {

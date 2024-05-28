@@ -154,7 +154,7 @@ export const ProgressCharts = ({
   return (
     <div
       className="bg-[white] rounded-lg border border-borderCol py-4 px-5 
-    2xl:max-w-[525px] w-full max-h-[550px]"
+    2xl:max- w-[525px] max-h-[550px]"
     >
       <div className="flex items-center gap-x-2 justify-between mb-3 w-full">
         <div className="flex items-center gap-x-2">
@@ -165,13 +165,13 @@ export const ProgressCharts = ({
           {/* <Image src="/images/info.png" alt="info" width={20} height={20} /> */}
         </div>
         {!isBank && (
-          <p className="w-10 h-8 center bg-[#eeecec] rounded-md px-4 text-lg font-semibold">
+          <p className="w-10 h-8 center bg-[#eeecec] rounded-md px-4 text-lg font-semibold mr-1">
             {maxValue}
           </p>
         )}
       </div>
       {/* Charts */}
-      <div className="flex items-center overflow-x-auto ">
+      <div className="flex items-center">
         {isLoading ? (
           <div className="w-full h-full center">
             <Loader />
@@ -181,7 +181,7 @@ export const ProgressCharts = ({
             <Chart
               value={accepted}
               bg="#E0F2EF"
-              color="#49E2B4"
+              color={accepted === 0 ? "#e3f5f2" : "#49E2B4"}
               title="accepted"
               maxValue={maxValue}
               isBank={isBank}
@@ -189,7 +189,7 @@ export const ProgressCharts = ({
             <Chart
               value={rejected}
               bg="#FFE6E6"
-              color="#FF0000"
+              color={rejected === 0 ? "#FFE5E5" : "#FF0000"}
               title="rejected"
               maxValue={maxValue}
               isBank={isBank}
@@ -197,7 +197,7 @@ export const ProgressCharts = ({
             <Chart
               value={expired}
               bg="#F6EBE7"
-              color="#FF7939"
+              color={expired === 0 ? "#F6EAE6" : "#FF7939"}
               title="expired"
               maxValue={maxValue}
               isBank={isBank}
@@ -205,7 +205,7 @@ export const ProgressCharts = ({
             <Chart
               value={pending}
               bg="#DDE9FA"
-              color="#0062FF"
+              color={pending === 0 ? "#DBE8FB" : "#0062FF"}
               title="pending"
               maxValue={maxValue}
               isBank={isBank}

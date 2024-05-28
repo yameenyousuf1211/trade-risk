@@ -33,7 +33,6 @@ export const Step7Disounting = ({
   });
 
   const handleCheckDiscountChange = (id: string) => {
-    console.log(id)
     setCheckedState((prevState) => ({
       ...prevState,
       "disc-discount-yes": id === "disc-discount-yes",
@@ -51,7 +50,10 @@ export const Step7Disounting = ({
   const handleIncrement = () => {
     const currentValue = getValues("discountingInfo.pricePerAnnum") || "0";
     const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
-    setValue("discountingInfo.pricePerAnnum", newValue);
+    if (Number(newValue) > 100) {
+      return;
+    }
+    setValue("discountingInfo.pricePerAnnum", `${newValue}%`);
   };
 
   const handleDecrement = () => {
@@ -61,7 +63,7 @@ export const Step7Disounting = ({
     if (newValue < 0) newValue = 0;
     // @ts-ignore
     newValue = newValue.toFixed(1);
-    setValue("discountingInfo.pricePerAnnum", newValue);
+    setValue("discountingInfo.pricePerAnnum", `${newValue}%`);
   };
 
   return (
@@ -122,7 +124,7 @@ export const Step7Disounting = ({
 
         <label
           id="expected-pricing"
-          className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
+          className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
         >
           <p className="text-lightGray">Per Annum(%)</p>
           <div className="flex items-center gap-x-2">
@@ -134,12 +136,39 @@ export const Step7Disounting = ({
             >
               -
             </Button>
-            <Input
+            {/* <Input
               placeholder="Value (%)"
               type="string"
               name="discountingInfo.pricePerAnnum"
               register={register}
               className="border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
+            /> */}
+            <input
+              placeholder="Value (%)"
+              type="text"
+              inputMode="numeric"
+              className="border-none text-[13px] outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
+              max={100}
+              {...register("discountingInfo.pricePerAnnum")}
+              onChange={(event) => {
+                const newValue = event.target.value.replace(/[^0-9.]/g, "");
+                event.target.value = newValue;
+              }}
+              onBlur={(event) => {
+                console.log(event.target.value.length);
+                if (
+                  event.target.value.includes("%") ||
+                  event.target.value.length === 0
+                ) {
+                  return;
+                }
+                event.target.value += "%";
+              }}
+              onKeyUp={(event) => {
+                if (Number(event.target.value.replace("%", "")) > 100) {
+                  event.target.value = "100.0%";
+                }
+              }}
             />
             <Button
               type="button"

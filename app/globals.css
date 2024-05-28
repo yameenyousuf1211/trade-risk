@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Noto Color Emoji";
+  src: url("/NotoColorEmoji-Regular.ttf");
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -121,6 +126,11 @@
   -moz-transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   -o-transform: translate(-50%, -50%);
+}
+.emoji-font {
+  font-family: "Noto Color Emoji", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 /* For WebKit-based browsers (Chrome, Safari, Opera) */

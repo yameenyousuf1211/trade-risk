@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 const numberToText = require("number-to-text");
@@ -125,6 +124,7 @@ export const Step2 = ({
     if (amount && paymentTerms) {
       setStepCompleted(1, true);
     }
+    if (paymentTerms === "Usance LC") setShowExtra(true);
   }, [amount, paymentTerms, valueChanged]);
 
   return (
@@ -197,7 +197,7 @@ export const Step2 = ({
             id="payment-sight"
             label="Sight LC"
             name="paymentTerms"
-            value="sight-lc"
+            value="Sight LC"
             register={register}
             checked={checkedState["payment-sight"]}
             handleCheckChange={handleCheckChange}
@@ -206,7 +206,7 @@ export const Step2 = ({
             id="payment-usance"
             label="Usance LC"
             name="paymentTerms"
-            value="usance-lc"
+            value="Usance LC"
             register={register}
             checked={checkedState["payment-usance"]}
             handleCheckChange={handleCheckChange}
@@ -215,7 +215,7 @@ export const Step2 = ({
             id="payment-deferred"
             label="Deferred LC"
             name="paymentTerms"
-            value="deferred-lc"
+            value="Deferred LC"
             register={register}
             checked={checkedState["payment-deferred"]}
             handleCheckChange={handleCheckChange}
@@ -224,7 +224,7 @@ export const Step2 = ({
             id="payment-upas"
             label="UPAS LC (Usance payment at sight)"
             name="paymentTerms"
-            value="upas-lc"
+            value="UPAS LC"
             register={register}
             checked={checkedState["payment-upas"]}
             handleCheckChange={handleCheckChange}

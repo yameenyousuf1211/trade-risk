@@ -190,7 +190,7 @@ export const BankTable = ({
                   <TableDataCell data={convertDateToString(item.createdAt)} />
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                      <p className="text-[16px]">
+                      <p className="text-[16px] emoji-font">
                         {allCountries &&
                           getCountryFlagByName(item.lcInfo?.[2]?.country)}
                       </p>

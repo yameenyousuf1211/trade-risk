@@ -15,6 +15,7 @@ export const Step3 = ({
   valueChanged,
   setValueChanged,
   setStepCompleted,
+  isDiscount,
 }: {
   register: any;
   setValue: any;
@@ -24,6 +25,7 @@ export const Step3 = ({
   valueChanged?: boolean;
   setValueChanged?: any;
   setStepCompleted?: any;
+  isDiscount?: boolean;
 }) => {
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
@@ -62,6 +64,11 @@ export const Step3 = ({
       productDescription
     ) {
       setStepCompleted(2, true);
+    }
+    if (confirmingCountry) setShowConfirmingBank(true);
+    if (advisingCountry) {
+      console.log(advisingCountry)
+      setShowAdvisingBank(true);
     }
   }, [valueChanged]);
 
@@ -299,6 +306,7 @@ export const Step3 = ({
         register={register}
         setValue={setValue}
         valueChanged={valueChanged}
+        isDiscount={isDiscount}
       />
     </div>
   );

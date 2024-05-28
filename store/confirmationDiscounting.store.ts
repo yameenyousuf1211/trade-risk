@@ -11,7 +11,7 @@ const useConfirmationStore = create<UseConfrimationDiscountingStore>(
     _id: "",
     amount: "",
     currency: "",
-    paymentTerms: "sight-lc",
+    paymentTerms: "Sight LC",
     confirmingBank: {
       bank: "",
       country: "",

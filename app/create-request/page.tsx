@@ -45,7 +45,6 @@ const CreateRequestPage = () => {
     resolver: zodResolver(confirmationSchema),
   });
 
-  const { user } = useAuth();
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
@@ -62,7 +61,23 @@ const CreateRequestPage = () => {
     if (confirmationData && confirmationData?._id) {
       Object.entries(confirmationData).forEach(([key, value]) => {
         // @ts-ignore
-        setValue(key, value);
+        if (typeof value === "number") {
+          // @ts-ignore
+          setValue(key, value);
+        }
+        if (typeof value === "string" && value.length > 0) {
+          // @ts-ignore
+          setValue(key, value);
+        }
+        if (typeof value === "object" && value !== null) {
+          const keys = Object.keys(value);
+          const hasOnlyEmptyValues = keys.every((k) => value[k] === "");
+
+          if (!hasOnlyEmptyValues) {
+            // @ts-ignore
+            setValue(key, value);
+          }
+        }
         if (key === "transhipment") {
           setValue(key, value === true ? "yes" : "no");
         }
@@ -118,13 +133,13 @@ const CreateRequestPage = () => {
       if (/^\d+$/.test(data.productDescription))
         return toast.error("Product description cannot contain only digits");
 
-      // startLoading();
+      startLoading();
       const currentDate = new Date();
       const futureDate = new Date(
         currentDate.setDate(currentDate.getDate() + days)
       );
       let extraInfo;
-      if (data.paymentTerms === "usance-lc") {
+      if (data.paymentTerms === "Usance LC") {
         extraInfo = { dats: futureDate, other: data.extraInfo };
       }
       const { confirmingBank2, ...rest } = data;
@@ -139,25 +154,25 @@ const CreateRequestPage = () => {
         },
         ...(extraInfo && { extraInfo }),
       };
-      console.log(reqData);
-      // const { response, success } = confirmationData?._id
-      //   ? await onUpdateLC({
-      //       payload: reqData,
-      //       id: confirmationData?._id,
-      //     })
-      //   : await onCreateLC(reqData);
-      // stopLoading();
-      // if (!success) return toast.error(response);
-      // else {
-      //   // await sendNotification({
-      //   //   title: "New LC Confirmation Request",
-      //   //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-      //   // });
-      //   setValues(getStateValues(useConfirmationStore.getInitialState()));
-      //   toast.success("LC created successfully");
-      //   reset();
-      //   router.push("/");
-      // }
+
+      const { response, success } = confirmationData?._id
+        ? await onUpdateLC({
+            payload: reqData,
+            id: confirmationData?._id,
+          })
+        : await onCreateLC(reqData);
+      stopLoading();
+      if (!success) return toast.error(response);
+      else {
+        // await sendNotification({
+        //   title: "New LC Confirmation Request",
+        //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+        // });
+        setValues(getStateValues(useConfirmationStore.getInitialState()));
+        toast.success("LC created successfully");
+        reset();
+        router.push("/");
+      }
     } else {
       let openDisclaimerBtn = document.getElementById("open-disclaimer");
       // @ts-ignore
@@ -180,13 +195,13 @@ const CreateRequestPage = () => {
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
-    // setLoader(true);
+    setLoader(true);
     const currentDate = new Date();
     const futureDate = new Date(
       currentDate.setDate(currentDate.getDate() + days)
     );
     let extraInfo;
-    if (data.paymentTerms === "usance-lc") {
+    if (data.paymentTerms === "Usance LC") {
       extraInfo = { dats: futureDate, other: data.extraInfo };
     }
 
@@ -200,27 +215,27 @@ const CreateRequestPage = () => {
         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
       },
       ...(extraInfo && { extraInfo }),
+      draft: "true",
     };
 
-    console.log(reqData);
-    // const { response, success } = confirmationData?._id
-    //   ? await onUpdateLC({
-    //       payload: reqData,
-    //       id: confirmationData?._id,
-    //     })
-    //   : await onCreateLC(reqData);
-    // setLoader(false);
+    const { response, success } = confirmationData?._id
+      ? await onUpdateLC({
+          payload: reqData,
+          id: confirmationData?._id,
+        })
+      : await onCreateLC(reqData);
+    setLoader(false);
 
-    // if (!success) return toast.error(response);
-    // else {
-    //   toast.success("LC saved as draft");
-    //   reset();
-    //   router.push("/");
-    //   setValues(getStateValues(useConfirmationStore.getInitialState()));
-    //   queryClient.invalidateQueries({
-    //     queryKey: ["fetch-lcs-drafts"],
-    //   });
-    // }
+    if (!success) return toast.error(response);
+    else {
+      toast.success("LC saved as draft");
+      reset();
+      router.push("/");
+      setValues(getStateValues(useConfirmationStore.getInitialState()));
+      queryClient.invalidateQueries({
+        queryKey: ["fetch-lcs-drafts"],
+      });
+    }
   };
 
   const [allCountries, setAllCountries] = useState<Country[]>([]);

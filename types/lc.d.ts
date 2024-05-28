@@ -22,7 +22,7 @@ interface ImporterInfo {
 type TransactionData = {
   participantRole: "exporter" | "importer";
   amount: string;
-  paymentTerms: "sight-lc" | "usance-lc" | "deferred-lc" | "upas-lc";
+  paymentTerms: "Sight LC" | "Usance LC" | "Deferred LC" | "UPAS LC";
   currency: string;
   issuingBank: Bank;
   advisingBank: Bank;

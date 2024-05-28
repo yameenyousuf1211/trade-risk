@@ -132,7 +132,6 @@ export const Period = ({
     if (lcStartDate && lcEndDate) {
       setValue("lcPeriod.startDate", new Date(lcStartDate));
       setValue("lcPeriod.endDate", new Date(lcEndDate));
-      setValue("expectedConfirmationDate", new Date(lcEndDate));
     }
     setValue("lcPeriod.expectedDate", lcPeriodType === true ? "yes" : "no");
     lcPeriodType = getValues("lcPeriod.expectedDate");
@@ -300,9 +299,11 @@ export const Transhipment = ({
 }) => {
   const [expectedConfirmationDate, setExpectedConfirmationDate] =
     useState<Date>();
+
   let expectedDate = isDiscount
     ? getValues("expectedDiscountingDate")
     : getValues("expectedConfirmationDate");
+
   useEffect(() => {
     setExpectedConfirmationDate(expectedDate);
 
@@ -329,6 +330,13 @@ export const Transhipment = ({
   const currentDate = new Date();
   const nextWeekDate = addDays(currentDate, 7);
   const twoWeeksDate = addDays(currentDate, 14);
+
+  const [showDescErr, setShowDescErr] = useState(false);
+
+  const handleDescChange = (desc: string) => {
+    if (/^\d+$/.test(desc)) setShowDescErr(true);
+    else setShowDescErr(false);
+  };
 
   return (
     <div className="w-full flex items-start gap-x-4 justify-between mt-4">
@@ -440,10 +448,18 @@ export const Transhipment = ({
       </div>
 
       <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-full">
-        <p className="font-semibold mb-2 ml-3">Product Description</p>
+        <div className="mb-2 flex items-center gap-x-2">
+          <p className="font-semibold ml-3">Product Description</p>
+          {showDescErr && (
+            <span className="text-red-500 text-[12px]">
+              Only digits are not allowed
+            </span>
+          )}
+        </div>
         <Textarea
           name="productDescription"
           register={register}
+          onChange={(e) => handleDescChange(e.target.value)}
           placeholder="Enter the description of the product (being imported under this LC)"
           className="bg-white border border-borderCol placeholder:text-para resize-none focus-visible:ring-0 focus-visible:ring-offset-0 "
           rows={4}

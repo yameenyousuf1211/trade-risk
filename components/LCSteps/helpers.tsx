@@ -128,7 +128,7 @@ export const DDInput = ({
                           : "opacity-0"
                       )}
                     />
-                    {flags && <span className="mr-2">{flags[idx]}</span>}
+                    {flags && <span className="mr-2 emoji-font">{flags[idx]}</span>}
                     {country}
                   </CommandItem>
                 ))}

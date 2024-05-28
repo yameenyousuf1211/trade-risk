@@ -7,7 +7,7 @@ const useConfirmationStore = create<UseDiscountingStore>((set, get) => ({
   _id: "",
   amount: "",
   currency: "",
-  paymentTerms: "sight-lc",
+  paymentTerms: "Sight LC",
   confirmingBank: {
     bank: "",
     country: "",

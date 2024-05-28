@@ -58,8 +58,23 @@ const CreateDiscountPage = () => {
   useEffect(() => {
     if (discountingData && discountingData?._id) {
       Object.entries(discountingData).forEach(([key, value]) => {
-        // @ts-ignore
-        setValue(key, value);
+        if (typeof value === "number") {
+          // @ts-ignore
+          setValue(key, value);
+        }
+        if (typeof value === "string" && value.length > 0) {
+          // @ts-ignore
+          setValue(key, value);
+        }
+        if (typeof value === "object" && value !== null) {
+          const keys = Object.keys(value);
+          const hasOnlyEmptyValues = keys.every((k) => value[k] === "");
+
+          if (!hasOnlyEmptyValues) {
+            // @ts-ignore
+            setValue(key, value);
+          }
+        }
         if (key === "transhipment") {
           setValue(key, value === true ? "yes" : "no");
         }
@@ -105,7 +120,8 @@ const CreateDiscountPage = () => {
     data: z.infer<typeof discountingSchema>
   ) => {
     if (proceed) {
-      if (!days) return toast.error("Please select days from");
+      if (data.paymentTerms === "Usance LC" && !days)
+        return toast.error("Please select days from");
 
       const currentDate = new Date();
       const futureDate = new Date(
@@ -120,9 +136,9 @@ const CreateDiscountPage = () => {
         );
       if (/^\d+$/.test(data.productDescription))
         return toast.error("Product description cannot contain only digits");
-      // startLoading();
+      startLoading();
       let extraInfo;
-      if (data.paymentTerms === "usance-lc") {
+      if (data.paymentTerms === "Usance LC") {
         extraInfo = { dats: futureDate, other: data.extraInfo };
       }
 
@@ -138,25 +154,24 @@ const CreateDiscountPage = () => {
         ...(extraInfo && { extraInfo }),
       };
 
-      console.log(reqData);
-      // const { response, success } = discountingData?._id
-      //   ? await onUpdateLC({
-      //       payload: reqData,
-      //       id: discountingData?._id,
-      //     })
-      //   : await onCreateLC(reqData);
-      // stopLoading();
-      // if (!success) return toast.error(response);
-      // else {
-      //   toast.success("LC created successfully");
-      //   setValues(getStateValues(useDiscountingStore.getInitialState()));
-      //   // await sendNotification({
-      //   //   title: "New LC Discounting Request",
-      //   //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-      //   // });
-      //   reset();
-      //   router.push("/");
-      // }
+      const { response, success } = discountingData?._id
+        ? await onUpdateLC({
+            payload: reqData,
+            id: discountingData?._id,
+          })
+        : await onCreateLC(reqData);
+      stopLoading();
+      if (!success) return toast.error(response);
+      else {
+        toast.success("LC created successfully");
+        setValues(getStateValues(useDiscountingStore.getInitialState()));
+        // await sendNotification({
+        //   title: "New LC Discounting Request",
+        //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+        // });
+        reset();
+        router.push("/");
+      }
     } else {
       let openDisclaimerBtn = document.getElementById("open-disclaimer");
       // @ts-ignore
@@ -170,7 +185,8 @@ const CreateDiscountPage = () => {
   const saveAsDraft: SubmitHandler<z.infer<typeof discountingSchema>> = async (
     data: z.infer<typeof discountingSchema>
   ) => {
-    if (!days) return toast.error("Please select days from");
+    if (data.paymentTerms === "Usance LC" && !days)
+      return toast.error("Please select days from");
     const currentDate = new Date();
     const futureDate = new Date(
       currentDate.setDate(currentDate.getDate() + days)
@@ -184,9 +200,9 @@ const CreateDiscountPage = () => {
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
-    // setLoader(true);
+    setLoader(true);
     let extraInfo;
-    if (data.paymentTerms === "usance-lc") {
+    if (data.paymentTerms === "Usance LC") {
       extraInfo = { dats: futureDate, other: data.extraInfo };
     }
     const { confirmingBank2, ...rest } = data;
@@ -200,27 +216,27 @@ const CreateDiscountPage = () => {
         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
       },
       ...(extraInfo && { extraInfo }),
-      isDraft: "true",
+      draft: "true",
     };
-    console.log(reqData);
-    // const { response, success } = discountingData?._id
-    //   ? await onUpdateLC({
-    //       payload: reqData,
-    //       id: discountingData?._id,
-    //     })
-    //   : await onCreateLC(reqData);
 
-    // setLoader(false);
-    // if (!success) return toast.error(response);
-    // else {
-    //   toast.success("LC saved as draft");
-    //   setValues(getStateValues(useDiscountingStore.getInitialState()));
-    //   reset();
-    //   router.push("/");
-    //   queryClient.invalidateQueries({
-    //     queryKey: ["fetch-lcs-drafts"],
-    //   });
-    // }
+    const { response, success } = discountingData?._id
+      ? await onUpdateLC({
+          payload: reqData,
+          id: discountingData?._id,
+        })
+      : await onCreateLC(reqData);
+
+    setLoader(false);
+    if (!success) return toast.error(response);
+    else {
+      toast.success("LC saved as draft");
+      setValues(getStateValues(useDiscountingStore.getInitialState()));
+      reset();
+      router.push("/");
+      queryClient.invalidateQueries({
+        queryKey: ["fetch-lcs-drafts"],
+      });
+    }
   };
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [countries, setCountries] = useState([]);
@@ -297,6 +313,7 @@ const CreateDiscountPage = () => {
           valueChanged={valueChanged}
           setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
+          isDiscount
         />
 
         <Step4

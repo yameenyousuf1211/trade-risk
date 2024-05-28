@@ -6,7 +6,7 @@ type StateValues = Omit<UseConfirmationStore, "setValues">;
 const useConfirmationStore = create<UseConfirmationStore>((set, get) => ({
   amount: "",
   currency: "",
-  paymentTerms: "sight-lc",
+  paymentTerms: "Sight LC",
   confirmingBank: {
     bank: "",
     country: "",

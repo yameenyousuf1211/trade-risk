@@ -239,7 +239,7 @@ export const generalLcSchema = z.object({
     .refine((value) => /^\d+$/.test(value), {
       message: "Enter a valid number",
     }),
-  paymentTerms: z.enum(["sight-lc", "usance-lc", "deferred-lc", "upas-lc"], {
+  paymentTerms: z.enum(["Sight LC", "Usance LC", "Deferred LC", "UPAS LC"], {
     message: "Select a payment term",
   }),
   currency: z.string({ message: "Currency is required" }).default("USD"),

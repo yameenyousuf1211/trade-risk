@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { ChangeEvent, useState } from "react";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
 import { useAuth } from "@/context/AuthProvider";
+import { cn } from "@/lib/utils";
 
 const LCInfo = ({
   label,
@@ -84,6 +85,35 @@ export const AddBid = ({
   //   enabled: !!bidId,
   // });
 
+  //   <input
+  //   placeholder="Value (%)"
+  //   type="text"
+  //   inputMode="numeric"
+  //   className={cn(
+  //     "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0 "
+  //   )}
+  //   max={100}
+  //   {...register(
+  //     isDiscount
+  //       ? "discountingInfo.pricePerAnnum"
+  //       : "confirmationInfo.pricePerAnnum"
+  //   )}
+  //   onChange={(event) => {
+  //     const newValue = event.target.value.replace(/[^0-9.]/g, "");
+  //     event.target.value = newValue;
+  //   }}
+  //   onBlur={(event) => {
+  //     console.log(event.target.value)
+  //   if(event.target.value.includes('%') || event.target.value.length === 0) return
+  //     event.target.value += "%";
+  //   }}
+  //   onKeyUp={(event) => {
+  //     if (Number(event.target.value.replace("%", "")) > 100) {
+  //       event.target.value = "100.0%";
+  //     }
+  //   }}
+  // />
+
   const { mutateAsync } = useMutation({
     mutationFn: addBid,
     onSuccess: () => {
@@ -124,6 +154,7 @@ export const AddBid = ({
           discountBaseRate,
         }
       : baseData;
+
     const { success, response } = await mutateAsync(reqData);
 
     if (!success) return toast.error(response);
@@ -437,12 +468,36 @@ export const AddBid = ({
                   >
                     {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
                   </label>
-                  <Input
-                    type="number"
-                    name="confirmationPrice"
-                    register={register}
+                  <input
                     placeholder="Enter your pricing (%)"
-                    id="confirmation"
+                    type="text"
+                    inputMode="numeric"
+                    className={cn(
+                      "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    )}
+                    max={100}
+                    {...register("confirmationPrice")}
+                    onChange={(event) => {
+                      const newValue = event.target.value.replace(
+                        /[^0-9.]/g,
+                        ""
+                      );
+                      event.target.value = newValue;
+                      setValue("confirmationPrice", newValue);
+                    }}
+                    onBlur={(event: ChangeEvent<HTMLInputElement>) => {
+                      if (
+                        event.target.value.includes("%") ||
+                        event.target.value.length === 0
+                      )
+                        return;
+                      event.target.value += "%";
+                    }}
+                    onKeyUp={(event: any) => {
+                      if (Number(event.target.value.replace("%", "")) > 100) {
+                        event.target.value = "100.0%";
+                      }
+                    }}
                   />
                   {errors.confirmationPrice && (
                     <span className="text-red-500 text-[12px]">
@@ -480,12 +535,33 @@ export const AddBid = ({
                       <input
                         type="text"
                         placeholder="Margin (%)"
+                        inputMode="numeric"
                         id="margin"
                         value={discountMargin}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                          setDiscountMargin(e.target.value)
-                        }
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                          const newValue = e.target.value.replace(
+                            /[^0-9.]/g,
+                            ""
+                          );
+                          e.target.value = newValue;
+                          setDiscountMargin(newValue);
+                        }}
+                        onBlur={(event: ChangeEvent<HTMLInputElement>) => {
+                          if (
+                            event.target.value.includes("%") ||
+                            event.target.value.length === 0
+                          )
+                            return;
+                          event.target.value += "%";
+                        }}
+                        onKeyUp={(event: any) => {
+                          if (
+                            Number(event.target.value.replace("%", "")) > 100
+                          ) {
+                            event.target.value = "100.0%";
+                          }
+                        }}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       />
                     </div>
                   </div>

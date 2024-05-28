@@ -7,14 +7,14 @@ const AssessmentsPage = () => {
       {/* <div>
         <h2 className="text-5xl font-semibold">Coming Soon</h2>
       </div> */}
-      <div className="center w-full h-[84vh]">
+      <div className="center w-full h-[80vh]">
         
         <Image
           src="/images/risk-assess-dummy.png"
           alt="risk-participation"
           width={1000}
           height={1000}
-          className=" w-full h-[85vh] object-contain"
+          className=" w-full h-[80vh] object-contain"
         />
       </div>
       <div className="center absolute top-0 left-0 backdrop-blur-[3px]	 bg-white/30 w-full h-full z-10">

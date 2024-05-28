@@ -17,15 +17,10 @@ import {
   SearchBar,
 } from "../helpers";
 import { Button } from "../ui/button";
-import Image from "next/image";
 import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
 import { ApiResponse, Country, IBids } from "@/types/type";
-import {
-  compareValues,
-  convertDateToString,
-  convertDateToYYYYMMDD,
-} from "@/utils";
+import { compareValues, convertDateToString } from "@/utils";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "../../services/apis/helpers.api";
@@ -55,9 +50,7 @@ export const BankTable = ({
   const [tableData, setTableData] = useState<IBids[]>([]);
 
   useEffect(() => {
-    console.log(data);
     if (data && data?.data) {
-      console.log(data?.data, "DATA");
       setTableData(data?.data);
     }
   }, [data]);
@@ -109,6 +102,10 @@ export const BankTable = ({
           valueA = a.confirmationPrice;
           valueB = b.confirmationPrice;
           break;
+        case "Discount Margin":
+          valueA = a.discountMargin;
+          valueB = b.discountMargin;
+          break;
         case "Minimum Charges":
           valueA = a.confirmationPrice;
           valueB = b.confirmationPrice;
@@ -152,7 +149,7 @@ export const BankTable = ({
                   {idx === 2 && isCorporate && (
                     <TableHead
                       key="Confirmation bank"
-                      className="font-roboto px-2 h-8 py-2 min-w-40"
+                      className="font-roboto px-2 h-8 py-2 min-w-44"
                       onClick={() => handleSort("Confirmation bank")}
                     >
                       <div className="flex items-center gap-x-2 justify-center text-[13px]">
@@ -165,7 +162,7 @@ export const BankTable = ({
                   )}
                   <TableHead
                     key={`${header}-${idx}`}
-                    className="px-2 h-8 py-2  min-w-40"
+                    className="px-2 h-8 py-2  min-w-44"
                     onClick={() => handleSort(header)}
                   >
                     <div className="font-roboto capitalize flex items-center gap-x-2 justify-center text-[12px] text-lightGray">

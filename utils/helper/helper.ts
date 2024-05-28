@@ -168,3 +168,4 @@ export const calculateDaysLeft = (futureDate: any) => {
   const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
   return daysDifference > 0 ? daysDifference : 0;
 };
+

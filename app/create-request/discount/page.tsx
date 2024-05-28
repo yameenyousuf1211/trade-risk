@@ -39,7 +39,7 @@ const CreateDiscountPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof discountingSchema>>({
-    resolver: zodResolver(discountingSchema),
+    // resolver: zodResolver(discountingSchema),
   });
 
   const queryClient = useQueryClient();
@@ -117,66 +117,75 @@ const CreateDiscountPage = () => {
   const [proceed, setProceed] = useState(false);
 
   const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async (
-    data: z.infer<typeof discountingSchema>
+    data
   ) => {
-    if (proceed) {
-      if (data.paymentTerms === "Usance LC" && !days)
-        return toast.error("Please select days from");
+    const validationResult = discountingSchema.safeParse(data);
+    if (validationResult.success) {
+      if (proceed) {
+        if (data.paymentTerms === "Usance LC" && !days)
+          return toast.error("Please select days from");
 
-      const currentDate = new Date();
-      const futureDate = new Date(
-        currentDate.setDate(currentDate.getDate() + days)
-      );
-      if (
-        data.confirmingBank &&
-        data.issuingBank.country === data.confirmingBank.country
-      )
-        return toast.error(
-          "Confirming bank country cannot be the same as issuing bank country"
+        const currentDate = new Date();
+        const futureDate = new Date(
+          currentDate.setDate(currentDate.getDate() + days)
         );
-      if (/^\d+$/.test(data.productDescription))
-        return toast.error("Product description cannot contain only digits");
-      startLoading();
-      let extraInfo;
-      if (data.paymentTerms === "Usance LC") {
-        extraInfo = { dats: futureDate, other: data.extraInfo };
-      }
+        if (
+          data.confirmingBank &&
+          data.issuingBank.country === data.confirmingBank.country
+        )
+          return toast.error(
+            "Confirming bank country cannot be the same as issuing bank country"
+          );
+        if (/^\d+$/.test(data.productDescription))
+          return toast.error("Product description cannot contain only digits");
+        startLoading();
+        let extraInfo;
+        if (data.paymentTerms === "Usance LC") {
+          extraInfo = { dats: futureDate, other: data.extraInfo };
+        }
 
-      const { confirmingBank2, ...rest } = data;
-      const reqData = {
-        ...rest,
-        transhipment: data.transhipment === "yes" ? true : false,
-        lcType: "LC Discounting",
-        lcPeriod: {
-          ...data.lcPeriod,
-          expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
-        },
-        ...(extraInfo && { extraInfo }),
-      };
+        const { confirmingBank2, ...rest } = data;
+        const reqData = {
+          ...rest,
+          transhipment: data.transhipment === "yes" ? true : false,
+          lcType: "LC Discounting",
+          lcPeriod: {
+            ...data.lcPeriod,
+            expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
+          },
+          ...(extraInfo && { extraInfo }),
+        };
 
-      const { response, success } = discountingData?._id
-        ? await onUpdateLC({
-            payload: reqData,
-            id: discountingData?._id,
-          })
-        : await onCreateLC(reqData);
-      stopLoading();
-      if (!success) return toast.error(response);
-      else {
-        toast.success("LC created successfully");
-        setValues(getStateValues(useDiscountingStore.getInitialState()));
-        // await sendNotification({
-        //   title: "New LC Discounting Request",
-        //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-        // });
-        reset();
-        router.push("/");
+        const { response, success } = discountingData?._id
+          ? await onUpdateLC({
+              payload: reqData,
+              id: discountingData?._id,
+            })
+          : await onCreateLC(reqData);
+        stopLoading();
+        if (!success) return toast.error(response);
+        else {
+          toast.success("LC created successfully");
+          setValues(getStateValues(useDiscountingStore.getInitialState()));
+          // await sendNotification({
+          //   title: "New LC Discounting Request",
+          //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+          // });
+          reset();
+          router.push("/");
+        }
+      } else {
+        let openDisclaimerBtn = document.getElementById("open-disclaimer");
+        // @ts-ignore
+        openDisclaimerBtn.click();
+        setProceed(true);
       }
     } else {
-      let openDisclaimerBtn = document.getElementById("open-disclaimer");
-      // @ts-ignore
-      openDisclaimerBtn.click();
-      setProceed(true);
+      if (validationResult.error && validationResult.error.errors.length > 0) {
+        validationResult.error.errors.forEach((error) => {
+          toast.error(`Validation Error: ${error.message}`);
+        });
+      }
     }
   };
 

@@ -9,7 +9,7 @@ export default function AuthLayout({
   return (
     <div>
       <div>
-        <header className="border-b border-neutral-200 py-4 px-2  bg-white">
+        <header className="border-b border-neutral-200 h-[10vh] flex justify-center items-center py-4 px-2  bg-white">
           <Link
             href="/login"
             className="flex items-center justify-center gap-2"
@@ -26,7 +26,7 @@ export default function AuthLayout({
             </h1>
           </Link>
         </header>
-        <main className="bg-bg px-2 relative w-full min-h-[92vh] flex flex-col items-center justify-start py-10 pt-20">
+        <main className="bg-bg px-2 relative w-full min-h-[90vh] flex flex-col items-center justify-start py-10 pt-20">
           {children}
           <Image
             src="/images/auth-bg.png"

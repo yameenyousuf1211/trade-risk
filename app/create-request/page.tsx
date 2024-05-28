@@ -30,7 +30,7 @@ import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
-import { calculateDaysLeft } from "@/utils";
+import { calculateDaysLeft, hasValue } from "@/utils";
 
 const CreateRequestPage = () => {
   const {
@@ -93,34 +93,33 @@ const CreateRequestPage = () => {
   }, [confirmationData]);
 
   // Show errors
-  useEffect(() => {
-    if (errors) {
-      const showNestedErrors = (errorsObj: any, parentKey = "") => {
-        Object.keys(errorsObj)
-          .reverse()
-          .forEach((key) => {
-            const errorMessage =
-              errorsObj[key as keyof typeof errorsObj]?.message;
+  // useEffect(() => {
+  //   if (errors) {
+  //     const showNestedErrors = (errorsObj: any, parentKey = "") => {
+  //       Object.keys(errorsObj)
+  //         .reverse()
+  //         .forEach((key) => {
+  //           const errorMessage =
+  //             errorsObj[key as keyof typeof errorsObj]?.message;
 
-            if (errorMessage) {
-              // const fieldName = parentKey ? `${parentKey}.${key}` : key;
-              toast.error(`${errorMessage}`);
-            } else if (typeof errorsObj[key] === "object") {
-              showNestedErrors(errorsObj[key], key);
-            }
-          });
-      };
+  //           if (errorMessage) {
+  //             // const fieldName = parentKey ? `${parentKey}.${key}` : key;
+  //             toast.error(`${errorMessage}`);
+  //           } else if (typeof errorsObj[key] === "object") {
+  //             showNestedErrors(errorsObj[key], key);
+  //           }
+  //         });
+  //     };
 
-      showNestedErrors(errors);
-    }
-  }, [errors]);
+  //     showNestedErrors(errors);
+  //   }
+  // }, [errors]);
 
   const [proceed, setProceed] = useState(false);
 
   const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data
   ) => {
-    // Validate the data against the schema
     const validationResult = confirmationSchema.safeParse(data);
 
     // Check if validation was successful

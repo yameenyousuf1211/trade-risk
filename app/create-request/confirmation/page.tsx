@@ -42,7 +42,7 @@ const ConfirmationPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof confirmationDiscountSchema>>({
-    resolver: zodResolver(confirmationDiscountSchema),
+    // resolver: zodResolver(confirmationDiscountSchema),
   });
 
   const queryClient = useQueryClient();
@@ -94,90 +94,99 @@ const ConfirmationPage = () => {
   }, [confirmationData]);
 
   // Show errors
-  useEffect(() => {
-    if (errors) {
-      const showNestedErrors = (errorsObj: any, parentKey = "") => {
-        Object.keys(errorsObj)
-          .reverse()
-          .forEach((key) => {
-            const errorMessage =
-              errorsObj[key as keyof typeof errorsObj]?.message;
+  // useEffect(() => {
+  //   if (errors) {
+  //     const showNestedErrors = (errorsObj: any, parentKey = "") => {
+  //       Object.keys(errorsObj)
+  //         .reverse()
+  //         .forEach((key) => {
+  //           const errorMessage =
+  //             errorsObj[key as keyof typeof errorsObj]?.message;
 
-            if (errorMessage) {
-              // const fieldName = parentKey ? `${parentKey}.${key}` : key;
-              toast.error(`${errorMessage}`);
-            } else if (typeof errorsObj[key] === "object") {
-              showNestedErrors(errorsObj[key], key);
-            }
-          });
-      };
+  //           if (errorMessage) {
+  //             // const fieldName = parentKey ? `${parentKey}.${key}` : key;
+  //             toast.error(`${errorMessage}`);
+  //           } else if (typeof errorsObj[key] === "object") {
+  //             showNestedErrors(errorsObj[key], key);
+  //           }
+  //         });
+  //     };
 
-      showNestedErrors(errors);
-    }
-  }, [errors]);
+  //     showNestedErrors(errors);
+  //   }
+  // }, [errors]);
 
   const [proceed, setProceed] = useState(false);
 
   const onSubmit: SubmitHandler<
     z.infer<typeof confirmationDiscountSchema>
-  > = async (data: z.infer<typeof confirmationDiscountSchema>) => {
-    if (proceed) {
-      if (
-        data.confirmingBank &&
-        data.issuingBank.country === data.confirmingBank.country
-      )
-        return toast.error(
-          "Confirming bank country cannot be the same as issuing bank country"
+  > = async (data) => {
+    const validationResult = confirmationDiscountSchema.safeParse(data);
+    if (validationResult.success) {
+      if (proceed) {
+        if (
+          data.confirmingBank &&
+          data.issuingBank.country === data.confirmingBank.country
+        )
+          return toast.error(
+            "Confirming bank country cannot be the same as issuing bank country"
+          );
+        if (/^\d+$/.test(data.productDescription))
+          return toast.error("Product description cannot contain only digits");
+        startLoading();
+        const currentDate = new Date();
+        const futureDate = new Date(
+          currentDate.setDate(currentDate.getDate() + days)
         );
-      if (/^\d+$/.test(data.productDescription))
-        return toast.error("Product description cannot contain only digits");
-      startLoading();
-      const currentDate = new Date();
-      const futureDate = new Date(
-        currentDate.setDate(currentDate.getDate() + days)
-      );
 
-      let extraInfo;
-      if (data.paymentTerms === "Usance LC") {
-        extraInfo = { dats: futureDate, other: data.extraInfo };
-      }
+        let extraInfo;
+        if (data.paymentTerms === "Usance LC") {
+          extraInfo = { dats: futureDate, other: data.extraInfo };
+        }
 
-      const { confirmingBank2, ...rest } = data;
-      const reqData = {
-        ...rest,
-        transhipment: data.transhipment === "yes" ? true : false,
-        lcType: "LC Confirmation & Discounting",
-        lcPeriod: {
-          ...data.lcPeriod,
-          expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
-        },
-        ...(extraInfo && { extraInfo }),
-      };
-      const { response, success } = confirmationData?._id
-        ? await onUpdateLC({
-            payload: reqData,
-            id: confirmationData?._id,
-          })
-        : await onCreateLC(reqData);
-      stopLoading();
-      if (!success) return toast.error(response);
-      else {
-        toast.success("LC created successfully");
-        setValues(
-          getStateValues(useConfirmationDiscountingStore.getInitialState())
-        );
-        // await sendNotification({
-        //   title: "New LC Confirmation & Discounting Request",
-        //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-        // });
-        reset();
-        router.push("/");
+        const { confirmingBank2, ...rest } = data;
+        const reqData = {
+          ...rest,
+          transhipment: data.transhipment === "yes" ? true : false,
+          lcType: "LC Confirmation & Discounting",
+          lcPeriod: {
+            ...data.lcPeriod,
+            expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
+          },
+          ...(extraInfo && { extraInfo }),
+        };
+        const { response, success } = confirmationData?._id
+          ? await onUpdateLC({
+              payload: reqData,
+              id: confirmationData?._id,
+            })
+          : await onCreateLC(reqData);
+        stopLoading();
+        if (!success) return toast.error(response);
+        else {
+          toast.success("LC created successfully");
+          setValues(
+            getStateValues(useConfirmationDiscountingStore.getInitialState())
+          );
+          // await sendNotification({
+          //   title: "New LC Confirmation & Discounting Request",
+          //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+          // });
+          reset();
+          router.push("/");
+        }
+      } else {
+        let openDisclaimerBtn = document.getElementById("open-disclaimer");
+        // @ts-ignore
+        openDisclaimerBtn.click();
+        setProceed(true);
       }
     } else {
-      let openDisclaimerBtn = document.getElementById("open-disclaimer");
-      // @ts-ignore
-      openDisclaimerBtn.click();
-      setProceed(true);
+      if (validationResult.error && validationResult.error.errors.length > 0) {
+        validationResult.error.errors.forEach((error) => {
+          toast.error(`Validation Error: ${error.message}`);
+        });
+      }
     }
   };
 

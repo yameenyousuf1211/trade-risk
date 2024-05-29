@@ -32,7 +32,6 @@ export const Step3 = ({
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
   const [showConfirmingBank2, setShowConfirmingBank2] = useState(false);
- 
 
   let issuingCountry = getValues("issuingBank.country");
   let issuingBank = getValues("issuingBank.bank");
@@ -56,16 +55,7 @@ export const Step3 = ({
   }, [valueChanged]);
 
   useEffect(() => {
-    if (
-      issuingCountry &&
-      issuingBank &&
-      confirmingBank &&
-      confirmingCountry &&
-      startDate &&
-      endDate &&
-      expectedDate &&
-      productDescription
-    ) {
+    if (issuingCountry && issuingBank) {
       setStepCompleted(2, true);
     }
     if (confirmingCountry) setShowConfirmingBank(true);

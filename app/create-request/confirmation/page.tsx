@@ -85,9 +85,9 @@ const ConfirmationPage = () => {
           setValue(key, value === true ? "yes" : "no");
         }
         if (key === "extraInfo") {
-          const daysLeft = calculateDaysLeft(value.dats);
+          const daysLeft = calculateDaysLeft(value?.dats);
           setDays(daysLeft);
-          setValue("extraInfo", value.other);
+          setValue("extraInfo", value?.other);
         }
       });
     }

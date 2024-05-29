@@ -30,7 +30,7 @@ import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
-import { calculateDaysLeft, hasValue } from "@/utils";
+import { calculateDaysLeft } from "@/utils";
 
 const CreateRequestPage = () => {
   const {
@@ -39,6 +39,7 @@ const CreateRequestPage = () => {
     getValues,
     reset,
     watch,
+    trigger,
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof confirmationSchema>>({});
@@ -385,12 +386,18 @@ const CreateRequestPage = () => {
   const handleStepCompletion = (index: number, status: boolean) => {
     setStepStatus(index, status);
   };
+  console.log(getValues());
 
   return (
     <CreateLCLayout isRisk={false}>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
-        <Step1 register={register} setStepCompleted={handleStepCompletion} />
+        <Step1
+          watch={watch}
+          register={register}
+          setStepCompleted={handleStepCompletion}
+        />
         <Step2
+          watch={watch}
           register={register}
           setValue={setValue}
           getValues={getValues}
@@ -401,6 +408,7 @@ const CreateRequestPage = () => {
           setDays={setDays}
         />
         <Step3
+          watch={watch}
           register={register}
           setValue={setValue}
           countries={countryNames}
@@ -431,6 +439,7 @@ const CreateRequestPage = () => {
         />
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6
+            watch={watch}
             register={register}
             setValue={setValue}
             getValues={getValues}

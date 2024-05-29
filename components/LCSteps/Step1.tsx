@@ -1,25 +1,17 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BgRadioInput } from "./helpers";
 import { useForm } from "react-hook-form";
 
-export const Step1 = ({ register, type, setStepCompleted }: any) => {
-  const [checkedState, setCheckedState] = useState({
-    "role-exporter": false,
-    "role-importer": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    const newCheckedState = {
-      "role-exporter": id === "role-exporter",
-      "role-importer": id === "role-importer",
-    };
-    setCheckedState(newCheckedState);
-
-    const isStepComplete =
-      newCheckedState["role-exporter"] || newCheckedState["role-importer"];
-    setStepCompleted(0, isStepComplete);
-  };
+export const Step1 = ({
+  register,
+  watch,
+  setStepCompleted,
+}: any) => {
+  const participantRole = watch("participantRole");
+  useEffect(() => {
+    setStepCompleted(0, participantRole);
+  }, [participantRole]);
 
   return (
     <div
@@ -40,8 +32,7 @@ export const Step1 = ({ register, type, setStepCompleted }: any) => {
         name="participantRole"
         value="exporter"
         register={register}
-        checked={checkedState["role-exporter"]}
-        handleCheckChange={handleCheckChange}
+        checked={participantRole === "exporter"}
       />
       <BgRadioInput
         id="role-importer"
@@ -49,8 +40,7 @@ export const Step1 = ({ register, type, setStepCompleted }: any) => {
         name="participantRole"
         value="importer"
         register={register}
-        checked={checkedState["role-importer"]}
-        handleCheckChange={handleCheckChange}
+        checked={participantRole === "importer"}
       />
     </div>
   );

@@ -39,6 +39,7 @@ const ConfirmationPage = () => {
     setValue,
     getValues,
     reset,
+    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof confirmationDiscountSchema>>({
@@ -147,6 +148,7 @@ const ConfirmationPage = () => {
         const { confirmingBank2, ...rest } = data;
         const reqData = {
           ...rest,
+          currency: data?.currency ? data?.currency : "usd",
           transhipment: data.transhipment === "yes" ? true : false,
           lcType: "LC Confirmation & Discounting",
           lcPeriod: {
@@ -231,6 +233,7 @@ const ConfirmationPage = () => {
     const { confirmingBank2, ...rest } = data;
     const reqData = {
       ...rest,
+      currency: data?.currency ? data?.currency : "usd",
       transhipment: data.transhipment === "yes" ? true : false,
       lcType: "LC Confirmation & Discounting",
       lcPeriod: {
@@ -329,11 +332,12 @@ const ConfirmationPage = () => {
     <CreateLCLayout isRisk={false}>
       <form className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white">
         <Step1
-          type="discount"
           setStepCompleted={handleStepCompletion}
           register={register}
+          watch={watch}
         />
         <Step2
+          watch={watch}
           register={register}
           setValue={setValue}
           getValues={getValues}
@@ -344,6 +348,7 @@ const ConfirmationPage = () => {
           setDays={setDays}
         />
         <Step3
+          watch={watch}
           register={register}
           setValue={setValue}
           countries={countryNames}
@@ -366,8 +371,8 @@ const ConfirmationPage = () => {
         <Step5
           register={register}
           isConfirmation
-          countries={countries}
-          flags={flags}
+          countries={countryNames}
+          flags={countryFlags}
           setValue={setValue}
           getValues={getValues}
           valueChanged={valueChanged}
@@ -377,6 +382,7 @@ const ConfirmationPage = () => {
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6
+            watch={watch}
             register={register}
             title="Confirmation Info"
             getValues={getValues}
@@ -385,6 +391,7 @@ const ConfirmationPage = () => {
             valueChanged={valueChanged}
           />
           <Step7Disounting
+            watch={watch}
             getValues={getValues}
             setValue={setValue}
             register={register}

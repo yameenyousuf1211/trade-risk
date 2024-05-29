@@ -151,7 +151,6 @@ export const BgRadioInput = ({
   name,
   value,
   register,
-  handleCheckChange,
 }: {
   id: string;
   label: string;
@@ -159,7 +158,6 @@ export const BgRadioInput = ({
   value: string | boolean;
   checked: boolean;
   register?: any;
-  handleCheckChange: (id: string) => void;
 }) => {
   return (
     <label
@@ -174,7 +172,6 @@ export const BgRadioInput = ({
         value={value}
         {...register(name)}
         className="accent-primaryCol size-4"
-        onChange={() => handleCheckChange(id)}
       />
       {label}
     </label>

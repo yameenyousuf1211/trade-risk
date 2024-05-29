@@ -34,7 +34,7 @@ const companyInfoSchema = z.object({
     .min(1, "*Address is required"),
   phone: z
     .string({ message: "*Phone number is required" })
-    .min(9, "*Provide a valid phone number")
+    .min(4, "*Phone number is required")
     .max(15)
     .refine((value) => /^\d+(\.\d+)?$/.test(value), {
       message: "*Enter a valid number",
@@ -81,7 +81,7 @@ const pointOfContractSchema = z.object({
     .email("*Must be a valid email."),
   pocPhone: z
     .string({ message: "*POC phone is required" })
-    .min(4, "*POC Phone is required.")
+    .min(4, "*POC Phone number is required")
     .refine((value) => /^\d+(\.\d+)?$/.test(value), {
       message: "*Enter a valid number",
     }),
@@ -137,7 +137,7 @@ const bankSchema = z.object({
   // accountCity: z.string({ message: "*Select city" }).nonempty("*Select city"),
   pocPhone: z
     .string({ message: "*POC Phone number is required" })
-    .min(9, "*Provide a valid phone number")
+    .min(4, "*POC Phone number is required")
     .refine((value) => /^\d+(\.\d+)?$/.test(value), {
       message: "*Enter a valid number",
     }),

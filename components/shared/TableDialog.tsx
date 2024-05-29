@@ -254,7 +254,7 @@ export const TableDialog = ({
               />
               <LCInfo
                 label="Confirming Bank"
-                value={(lcData && lcData.confirmingBank?.bank) || ""}
+                value={(lcData && lcData.confirmingBank?.bank) || "-"}
               />
               <LCInfo
                 label="Payments Terms"

@@ -94,29 +94,6 @@ const ConfirmationPage = () => {
     setValueChanged(!valueChanged);
   }, [confirmationData]);
 
-  // Show errors
-  // useEffect(() => {
-  //   if (errors) {
-  //     const showNestedErrors = (errorsObj: any, parentKey = "") => {
-  //       Object.keys(errorsObj)
-  //         .reverse()
-  //         .forEach((key) => {
-  //           const errorMessage =
-  //             errorsObj[key as keyof typeof errorsObj]?.message;
-
-  //           if (errorMessage) {
-  //             // const fieldName = parentKey ? `${parentKey}.${key}` : key;
-  //             toast.error(`${errorMessage}`);
-  //           } else if (typeof errorsObj[key] === "object") {
-  //             showNestedErrors(errorsObj[key], key);
-  //           }
-  //         });
-  //     };
-
-  //     showNestedErrors(errors);
-  //   }
-  // }, [errors]);
-
   const [proceed, setProceed] = useState(false);
 
   const onSubmit: SubmitHandler<

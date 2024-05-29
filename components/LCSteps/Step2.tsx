@@ -216,7 +216,8 @@ export const Step2 = ({
                     type="button"
                     className="rounded-sm border border-para size-6 center mb-2"
                     onClick={() => {
-                      setDays((prev: any) => Number(prev) + 1);
+                      if (days >= 999) return;
+                      else setDays((prev: any) => Number(prev) + 1);
                     }}
                   >
                     +
@@ -225,9 +226,11 @@ export const Step2 = ({
                     type="button"
                     className="rounded-sm border border-para size-6 center mb-2"
                     onClick={() => {
-                      setDays((prev: any) =>
-                        Number(prev) > 1 ? Number(prev) - 1 : 1
-                      );
+                      if (days >= 999) return;
+                      else
+                        setDays((prev: any) =>
+                          Number(prev) > 1 ? Number(prev) - 1 : 1
+                        );
                     }}
                   >
                     -

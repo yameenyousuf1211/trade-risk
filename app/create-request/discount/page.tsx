@@ -54,7 +54,7 @@ const CreateDiscountPage = () => {
   // Edit Request
   const setValues = useDiscountingStore((state) => state.setValues);
   const discountingData = useDiscountingStore((state) => state);
-  const { setStepStatus } = useStepStore(); // Access setStepStatus
+  const { setStepStatus } = useStepStore();
 
   useEffect(() => {
     if (discountingData && discountingData?._id) {
@@ -91,29 +91,6 @@ const CreateDiscountPage = () => {
     }
     setValueChanged(!valueChanged);
   }, [discountingData]);
-
-  // Showing errors
-  useEffect(() => {
-    if (errors) {
-      const showNestedErrors = (errorsObj: any, parentKey = "") => {
-        Object.keys(errorsObj)
-          .reverse()
-          .forEach((key) => {
-            const errorMessage =
-              errorsObj[key as keyof typeof errorsObj]?.message;
-
-            if (errorMessage) {
-              // const fieldName = parentKey ? `${parentKey}.${key}` : key;
-              toast.error(`${errorMessage}`);
-            } else if (typeof errorsObj[key] === "object") {
-              showNestedErrors(errorsObj[key], key);
-            }
-          });
-      };
-
-      showNestedErrors(errors);
-    }
-  }, [errors]);
 
   const [proceed, setProceed] = useState(false);
 

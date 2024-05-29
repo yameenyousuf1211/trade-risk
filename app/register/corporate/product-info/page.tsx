@@ -38,7 +38,7 @@ const AmountInput = ({
       setCurrencyValue(formattedValue);
       setRawValue(digitsOnly);
       setValue(name, digitsOnly);
-      trigger();
+      trigger(name);
     } else {
       setCurrencyValue("");
       setRawValue("");

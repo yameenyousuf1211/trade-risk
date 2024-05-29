@@ -34,45 +34,6 @@ export const RiskStep3 = ({
     }
   }, [portsData]);
 
-  const [checkedState, setCheckedState] = useState({
-    "shipment-yes": false,
-    "shipment-no": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    const newCheckedState = {
-      "shipment-yes": id === "shipment-yes",
-      "shipment-no": id === "shipment-no",
-    };
-    setCheckedState(newCheckedState);
-  };
-
-  const [discountedCheckedState, setDiscountedCheckedState] = useState({
-    "discounted-yes": false,
-    "discounted-no": false,
-  });
-
-  const handleDiscountedCheckChange = (id: string) => {
-    const newCheckedState = {
-      "discounted-yes": id === "discounted-yes",
-      "discounted-no": id === "discounted-no",
-    };
-    setDiscountedCheckedState(newCheckedState);
-  };
-
-  const [expectedCheckedState, setExpectedCheckedState] = useState({
-    "expected-yes": false,
-    "expected-no": false,
-  });
-
-  const handleExpectedCheckChange = (id: string) => {
-    const newCheckedState = {
-      "expected-yes": id === "expected-yes",
-      "expected-no": id === "expected-no",
-    };
-    setExpectedCheckedState(newCheckedState);
-  };
-
   const [days, setDays] = useState<number | string>();
 
   const [paymentCheckedState, setPaymentCheckedState] = useState({
@@ -114,16 +75,14 @@ export const RiskStep3 = ({
             label="Yes"
             name="discounted"
             value="yes"
-            checked={discountedCheckedState["discounted-yes"]}
-            handleCheckChange={handleDiscountedCheckChange}
+            checked={false}
           />
           <BankRadioInput
             id="discounted-no"
             label="No"
             name="discounted"
             value="no"
-            checked={discountedCheckedState["discounted-no"]}
-            handleCheckChange={handleDiscountedCheckChange}
+            checked={false}
           />
         </div>
 
@@ -136,16 +95,14 @@ export const RiskStep3 = ({
             label="Yes"
             name="expected"
             value="yes"
-            checked={expectedCheckedState["expected-yes"]}
-            handleCheckChange={handleExpectedCheckChange}
+            checked={false}
           />
           <BankRadioInput
             id="expected-no"
             label="No"
             name="expected"
             value="no"
-            checked={expectedCheckedState["expected-no"]}
-            handleCheckChange={handleExpectedCheckChange}
+            checked={false}
           />
 
           <DateInput title="Expected Date of Discounting" noBorder />
@@ -166,16 +123,14 @@ export const RiskStep3 = ({
               label="Sight LC"
               name="payment"
               value="sight"
-              checked={paymentCheckedState["payment-sight"]}
-              handleCheckChange={handlePaymentCheckChange}
+              checked={false}
             />
             <BankRadioInput
               id="payment-usance"
               label="Usance LC"
               name="payment"
               value="usance"
-              checked={paymentCheckedState["payment-usance"]}
-              handleCheckChange={handlePaymentCheckChange}
+              checked={false}
             />
             <div className="w-full">
               <label
@@ -251,7 +206,6 @@ export const RiskStep3 = ({
               data={portCountries}
               disabled={portCountries.length <= 0}
               flags={flags}
-              //   setValueChanged={setValueChanged}
             />
             <DDInput
               id="shipmentPort.port"
@@ -259,7 +213,6 @@ export const RiskStep3 = ({
               //   value={shipmentPort}
               placeholder="Select port"
               setValue={() => ""}
-              //   setValueChanged={setValueChanged}
               //   disabled={!ports || ports.length === 0}
               //   data={ports}
               disabled
@@ -275,16 +228,14 @@ export const RiskStep3 = ({
             label="Yes"
             name="transhipment"
             value="yes"
-            checked={checkedState["shipment-yes"]}
-            handleCheckChange={handleCheckChange}
+            checked={false}
           />
           <BankRadioInput
             id="shipment-no"
             label="No"
             name="transhipment"
             value="no"
-            checked={checkedState["shipment-no"]}
-            handleCheckChange={handleCheckChange}
+            checked={false}
           />
         </div>
       </div>

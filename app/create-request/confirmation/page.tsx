@@ -11,7 +11,6 @@ import {
   Step7,
   Step7Disounting,
 } from "@/components/LCSteps";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -34,24 +33,15 @@ import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 
 const ConfirmationPage = () => {
-  const {
-    register,
-    setValue,
-    getValues,
-    reset,
-    watch,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<z.infer<typeof confirmationDiscountSchema>>({
-    // resolver: zodResolver(confirmationDiscountSchema),
-  });
+  const { register, setValue, getValues, reset, watch, handleSubmit } = useForm<
+    z.infer<typeof confirmationDiscountSchema>
+  >({});
 
   const queryClient = useQueryClient();
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
 
-  const [valueChanged, setValueChanged] = useState<boolean>(false);
   const [days, setDays] = useState<number>(1);
 
   const setValues = useConfirmationDiscountingStore((state) => state.setValues);
@@ -91,7 +81,6 @@ const ConfirmationPage = () => {
         }
       });
     }
-    setValueChanged(!valueChanged);
   }, [confirmationData]);
 
   const [proceed, setProceed] = useState(false);
@@ -111,7 +100,7 @@ const ConfirmationPage = () => {
           );
         if (/^\d+$/.test(data.productDescription))
           return toast.error("Product description cannot contain only digits");
-        startLoading();
+        // startLoading();
         const currentDate = new Date();
         const futureDate = new Date(
           currentDate.setDate(currentDate.getDate() + days)
@@ -146,26 +135,27 @@ const ConfirmationPage = () => {
         delete reqData.createdAt;
         // @ts-ignore
         delete reqData.updatedAt;
-        const { response, success } = confirmationData?._id
-          ? await onUpdateLC({
-              payload: reqData,
-              id: confirmationData?._id,
-            })
-          : await onCreateLC(reqData);
-        stopLoading();
-        if (!success) return toast.error(response);
-        else {
-          toast.success("LC created successfully");
-          setValues(
-            getStateValues(useConfirmationDiscountingStore.getInitialState())
-          );
-          // await sendNotification({
-          //   title: "New LC Confirmation & Discounting Request",
-          //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-          // });
-          reset();
-          router.push("/");
-        }
+        console.log(reqData);
+        // const { response, success } = confirmationData?._id
+        //   ? await onUpdateLC({
+        //       payload: reqData,
+        //       id: confirmationData?._id,
+        //     })
+        //   : await onCreateLC(reqData);
+        // stopLoading();
+        // if (!success) return toast.error(response);
+        // else {
+        //   toast.success("LC created successfully");
+        //   setValues(
+        //     getStateValues(useConfirmationDiscountingStore.getInitialState())
+        //   );
+        //   // await sendNotification({
+        //   //   title: "New LC Confirmation & Discounting Request",
+        //   //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+        //   // });
+        //   reset();
+        //   router.push("/");
+        // }
       } else {
         let openDisclaimerBtn = document.getElementById("open-disclaimer");
         // @ts-ignore
@@ -317,9 +307,6 @@ const ConfirmationPage = () => {
           watch={watch}
           register={register}
           setValue={setValue}
-          getValues={getValues}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
           days={days}
           setDays={setDays}
@@ -329,21 +316,16 @@ const ConfirmationPage = () => {
           register={register}
           setValue={setValue}
           countries={countryNames}
-          getValues={getValues}
           flags={countryFlags}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
         />
         <Step4
           register={register}
           countries={countries}
           setValue={setValue}
-          getValues={getValues}
           flags={flags}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
+          watch={watch}
         />
         <Step5
           register={register}
@@ -351,10 +333,8 @@ const ConfirmationPage = () => {
           countries={countryNames}
           flags={countryFlags}
           setValue={setValue}
-          getValues={getValues}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
+          watch={watch}
         />
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
@@ -362,17 +342,13 @@ const ConfirmationPage = () => {
             watch={watch}
             register={register}
             title="Confirmation Info"
-            getValues={getValues}
             setValue={setValue}
-            setStepCompleted={handleStepCompletion}
-            valueChanged={valueChanged}
           />
           <Step7Disounting
             watch={watch}
             getValues={getValues}
             setValue={setValue}
             register={register}
-            valueChanged={valueChanged}
           />
         </div>
         <Step7 register={register} step={8} />

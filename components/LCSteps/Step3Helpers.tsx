@@ -51,6 +51,7 @@ export const ValidatingCalendar = ({
     <Calendar
       mode="single"
       selected={selectedDate}
+      // @ts-ignore
       onSelect={handleDateSelect}
       initialFocus
     />
@@ -59,24 +60,18 @@ export const ValidatingCalendar = ({
 
 export const Period = ({
   setValue,
-  getValues,
-  countries,
+  watch,
   flags,
-  valueChanged,
-  setValueChanged,
 }: {
   setValue: any;
-  getValues: any;
-  countries: string[];
+  watch: any;
   flags: string[];
-  valueChanged?: boolean;
-  setValueChanged?: any;
 }) => {
-  let shipmentCountry = getValues("shipmentPort.country");
-  let shipmentPort = getValues("shipmentPort.port");
-  let lcStartDate = getValues("lcPeriod.startDate");
-  let lcEndDate = getValues("lcPeriod.endDate");
-  let lcPeriodType = getValues("lcPeriod.expectedDate");
+  let shipmentCountry = watch("shipmentPort.country");
+  let shipmentPort = watch("shipmentPort.port");
+  let lcStartDate = watch("lcPeriod.startDate");
+  let lcEndDate = watch("lcPeriod.endDate");
+  let lcPeriodType = watch("lcPeriod.expectedDate");
 
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
@@ -126,17 +121,15 @@ export const Period = ({
   };
 
   useEffect(() => {
-    shipmentCountry = getValues("shipmentPort.country");
     setLcPeriodDate(lcStartDate);
     setLcExpiryDate(lcEndDate);
-    if (lcStartDate && lcEndDate) {
-      setValue("lcPeriod.startDate", new Date(lcStartDate));
-      setValue("lcPeriod.endDate", new Date(lcEndDate));
-    }
+    // if (lcStartDate && lcEndDate) {
+    //   setValue("lcPeriod.startDate", new Date(lcStartDate));
+    //   setValue("lcPeriod.endDate", new Date(lcEndDate));
+    // }
     setValue("lcPeriod.expectedDate", lcPeriodType === true ? "yes" : "no");
-    lcPeriodType = getValues("lcPeriod.expectedDate");
     lcStartDate && lcStartDate && setLcIssueType(lcPeriodType);
-  }, [valueChanged]);
+  }, [lcStartDate, lcEndDate]);
 
   return (
     <div className="flex items-start gap-x-4 my-5 h-full">
@@ -270,7 +263,6 @@ export const Period = ({
             data={portCountries}
             disabled={portCountries.length <= 0}
             flags={flags}
-            setValueChanged={setValueChanged}
           />
           <DDInput
             id="shipmentPort.port"
@@ -278,7 +270,6 @@ export const Period = ({
             value={shipmentPort}
             placeholder="Select port"
             setValue={setValue}
-            setValueChanged={setValueChanged}
             disabled={!ports || ports.length === 0}
             data={ports}
           />
@@ -292,15 +283,11 @@ export const Transhipment = ({
   register,
   setValue,
   isDiscount,
-  getValues,
-  valueChanged,
   watch,
 }: {
   register: any;
   setValue: any;
   isDiscount?: boolean;
-  getValues?: any;
-  valueChanged?: boolean;
   watch: any;
 }) => {
   const transhipment = watch("transhipment");
@@ -308,18 +295,18 @@ export const Transhipment = ({
     useState<Date>();
 
   let expectedDate = isDiscount
-    ? getValues("expectedDiscountingDate")
-    : getValues("expectedConfirmationDate");
+    ? watch("expectedDiscountingDate")
+    : watch("expectedConfirmationDate");
 
-  useEffect(() => {
-    setExpectedConfirmationDate(expectedDate);
+  // useEffect(() => {
+  //   setExpectedConfirmationDate(expectedDate);
 
-    if (expectedDate) {
-      isDiscount
-        ? setValue("expectedDiscountingDate", new Date(expectedDate))
-        : setValue("expectedConfirmationDate", new Date(expectedDate));
-    }
-  }, [valueChanged]);
+  //   if (expectedDate) {
+  //     isDiscount
+  //       ? setValue("expectedDiscountingDate", new Date(expectedDate))
+  //       : setValue("expectedConfirmationDate", new Date(expectedDate));
+  //   }
+  // }, [expectedDate]);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const currentDate = new Date();

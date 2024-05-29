@@ -4,17 +4,13 @@ import { DDInput } from "../LCSteps/helpers";
 
 export const RiskStep4 = ({
   register,
-  setValueChanged,
   countries,
   flags,
-  valueChanged,
   setValue,
 }: {
   register: any;
-  setValueChanged: any;
   countries: string[];
   flags: string[];
-  valueChanged: boolean;
   setValue: any;
 }) => {
   return (
@@ -39,7 +35,6 @@ export const RiskStep4 = ({
             register={register}
             className="text-sm block bg-none text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Enter name"
-            onChange={() => setValueChanged(!valueChanged)}
           />
         </label>
         <DDInput
@@ -49,7 +44,6 @@ export const RiskStep4 = ({
           data={countries}
           setValue={setValue}
           flags={flags}
-          setValueChanged={setValueChanged}
         />
       </div>
     </div>

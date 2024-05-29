@@ -10,18 +10,6 @@ export const IssuanceStep2 = ({
   countries: string[];
   flags: string[];
 }) => {
-  const [checkedState, setCheckedState] = useState({
-    "issue-lg-yes": false,
-    "issue-lg-no": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    const newCheckedState = {
-      "issue-lg-yes": id === "issue-lg-yes",
-      "issue-lg-no": id === "issue-lg-no",
-    };
-    setCheckedState(newCheckedState);
-  };
   return (
     <div
       id="step2"
@@ -47,7 +35,6 @@ export const IssuanceStep2 = ({
               flags={flags}
               //   value={importerCountry}
               setValue={() => ""}
-              //   setValueChanged={setValueChanged}
             />
 
             <DDInput
@@ -58,7 +45,6 @@ export const IssuanceStep2 = ({
               disabled={true}
               //   value={importerCountry}
               setValue={() => ""}
-              //   setValueChanged={setValueChanged}
             />
           </div>
         </div>
@@ -75,8 +61,7 @@ export const IssuanceStep2 = ({
               value="yes"
               // register={register}
               register={() => ""}
-              checked={checkedState["issue-lg-yes"]}
-              handleCheckChange={handleCheckChange}
+              checked={false}
             />
             <BgRadioInput
               id="issue-lg-no"
@@ -85,8 +70,7 @@ export const IssuanceStep2 = ({
               value="no"
               // register={register}
               register={() => ""}
-              checked={checkedState["issue-lg-no"]}
-              handleCheckChange={handleCheckChange}
+              checked={false}
             />
           </div>
           <label

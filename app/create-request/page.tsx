@@ -11,7 +11,6 @@ import {
   Step6,
   Step7,
 } from "@/components/LCSteps";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect, useState } from "react";
@@ -23,37 +22,27 @@ import Loader from "../../components/ui/loader";
 import { usePathname, useRouter } from "next/navigation";
 import { getCountries } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
 import useConfirmationStore, { getStateValues } from "@/store/lc.store";
 import { Country } from "@/types/type";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
 import { sendNotification } from "@/services/apis/notifications.api";
-import { useAuth } from "@/context/AuthProvider";
 import { calculateDaysLeft } from "@/utils";
 
 const CreateRequestPage = () => {
-  const {
-    register,
-    setValue,
-    getValues,
-    reset,
-    watch,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<z.infer<typeof confirmationSchema>>({});
+  const { register, setValue, reset, watch, handleSubmit } = useForm<
+    z.infer<typeof confirmationSchema>
+  >({});
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
-  const [valueChanged, setValueChanged] = useState<boolean>(false);
   const [days, setDays] = useState<number>(1);
 
   const queryClient = useQueryClient();
   const setValues = useConfirmationStore((state) => state.setValues);
   const confirmationData = useConfirmationStore((state) => state);
-  const { setStepStatus } = useStepStore(); // Access setStepStatus
-  const stepStatus = useStepStore((state) => state.stepStatus);
+  const { setStepStatus } = useStepStore();
 
   useEffect(() => {
     if (confirmationData && confirmationData?._id) {
@@ -89,7 +78,6 @@ const CreateRequestPage = () => {
         }
       });
     }
-    setValueChanged(!valueChanged);
   }, [confirmationData]);
 
   const [proceed, setProceed] = useState(false);
@@ -102,7 +90,6 @@ const CreateRequestPage = () => {
     // Check if validation was successful
     if (validationResult.success) {
       const validatedData = validationResult.data;
-      console.log(proceed, "proceed");
       if (proceed) {
         if (
           data.confirmingBank &&
@@ -313,9 +300,6 @@ const CreateRequestPage = () => {
           watch={watch}
           register={register}
           setValue={setValue}
-          getValues={getValues}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
           days={days}
           setDays={setDays}
@@ -325,20 +309,14 @@ const CreateRequestPage = () => {
           register={register}
           setValue={setValue}
           countries={countryNames}
-          getValues={getValues}
           flags={countryFlags}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
         />
         <Step4
           register={register}
           setValue={setValue}
           countries={countries}
-          getValues={getValues}
           flags={flags}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           watch={watch}
           setStepCompleted={handleStepCompletion}
         />
@@ -346,19 +324,16 @@ const CreateRequestPage = () => {
           register={register}
           setValue={setValue}
           countries={countries}
-          getValues={getValues}
           flags={flags}
           setStepCompleted={handleStepCompletion}
+          watch={watch}
         />
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6
             watch={watch}
             register={register}
             setValue={setValue}
-            getValues={getValues}
             title="Confirmation Charges"
-            valueChanged={valueChanged}
-            setStepCompleted={handleStepCompletion}
           />
           <Step7 register={register} step={7} />
         </div>

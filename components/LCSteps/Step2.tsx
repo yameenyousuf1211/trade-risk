@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BgRadioInput } from "./helpers";
 import {
   Select,
@@ -16,9 +16,6 @@ require("number-to-text/converters/en-us");
 export const Step2 = ({
   register,
   setValue,
-  getValues,
-  valueChanged,
-  setValueChanged,
   setStepCompleted,
   days,
   setDays,
@@ -26,9 +23,6 @@ export const Step2 = ({
 }: {
   register: any;
   setValue: any;
-  getValues: any;
-  valueChanged?: any;
-  setValueChanged?: any;
   setStepCompleted?: any;
   days: number;
   setDays: any;
@@ -40,18 +34,12 @@ export const Step2 = ({
   });
 
   let amount = watch("amount");
-  let currencyVal = getValues("currency");
-  // let paymentTerms = getValues("paymentTerms");
-  // let extraInfo = getValues("extraInfo");
-
+  let currencyVal = watch("currency");
   let paymentTerms = watch("paymentTerms");
   let extraInfo = watch("extraInfo");
 
-  const [currencyValue, setCurrencyValue] = useState<string | number | null>(
-    null
-  );
+  const [currencyValue, setCurrencyValue] = useState<string | number>(amount);
   const [rawValue, setRawValue] = useState("");
-  const [showExtra, setShowExtra] = useState(false);
   const [otherValue, setOtherValue] = useState("");
 
   const handleChange = (e: any) => {
@@ -85,14 +73,13 @@ export const Step2 = ({
       setCurrencyValue(amount);
       setRawValue(amount);
     }
-    extraInfo = getValues("extraInfo");
-  }, [valueChanged]);
+  }, [amount]);
 
   useEffect(() => {
     if (amount && paymentTerms) {
       setStepCompleted(1, true);
     }
-  }, [amount, paymentTerms, valueChanged]);
+  }, [amount, paymentTerms]);
 
   return (
     <div
@@ -111,7 +98,6 @@ export const Step2 = ({
           <Select
             onValueChange={(value) => {
               setValue("currency", value);
-              setValueChanged((prev: boolean) => !prev);
             }}
           >
             <SelectTrigger className="w-[100px] bg-borderCol/80">

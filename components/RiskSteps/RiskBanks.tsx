@@ -26,7 +26,7 @@ export const RiskBanks = ({ setValue }: { setValue: any }) => {
           }}
           onBlur={(e: any) => {
             if (BankInput.length > 1) {
-              setBanks((prev) => [...prev, BankInput]);
+              setBanks((prev: any) => [...prev, BankInput]);
               e.target.value = "";
             }
             setBankInput("");

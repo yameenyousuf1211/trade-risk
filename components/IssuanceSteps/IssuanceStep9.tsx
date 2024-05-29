@@ -1,23 +1,6 @@
-import React, { useState } from "react";
 import { BgRadioInput } from "../LCSteps/helpers";
 
 export const IssuanceStep9 = () => {
-  const [checkedState, setCheckedState] = useState({
-    "lowest-price": false,
-    "all-prices": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    const newCheckedState = {
-      "lowest-price": id === "lowest-price",
-      "all-prices": id === "all-prices",
-    };
-    setCheckedState(newCheckedState);
-
-    // const isStepComplete =
-    //   newCheckedState["role-exporter"] || newCheckedState["role-importer"];
-    // setStepCompleted(0, isStepComplete);
-  };
   return (
     <div
       id="step9"
@@ -37,20 +20,16 @@ export const IssuanceStep9 = () => {
           label="Lowest Price Quoted"
           name="quotes"
           value="lowest-price"
-          // register={register}
           register={() => ""}
-          checked={checkedState["lowest-price"]}
-          handleCheckChange={handleCheckChange}
+          checked={false}
         />
         <BgRadioInput
           id="all-prices"
           label="All Prices Quoted"
           name="quotes"
           value="all-prices"
-          // register={register}
           register={() => ""}
-          checked={checkedState["all-prices"]}
-          handleCheckChange={handleCheckChange}
+          checked={false}
         />
       </div>
     </div>

@@ -22,8 +22,6 @@ import { useEffect, useState } from "react";
 const RiskFundedPage = () => {
   const { startLoading, stopLoading, isLoading } = useLoading();
 
-  const [valueChanged, setValueChanged] = useState<boolean>(false);
-
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [countries, setCountries] = useState([]);
   const [flags, setFlags] = useState([]);
@@ -64,19 +62,15 @@ const RiskFundedPage = () => {
         <RiskStep3 countries={countries} flags={flags} />
         <RiskStep4
           register={() => console.log("hello")}
-          setValueChanged={setValueChanged}
           countries={countries}
           flags={flags}
-          valueChanged={valueChanged}
           setValue={() => console.log("hello")}
         />
         <RiskStep5
           register={() => console.log("hello")}
           setValue={() => console.log("hello")}
-          setValueChanged={setValueChanged}
           countries={countries}
           flags={flags}
-          valueChanged={valueChanged}
         />
         <RiskStep6 register={() => console.log("hello")} />
         <div className="relative flex items-center justify-between w-full h-full gap-x-2">

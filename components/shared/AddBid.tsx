@@ -8,7 +8,6 @@ import {
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker, Loader } from "../helpers";
-import { Input } from "../ui/input";
 import Image from "next/image";
 import { convertDateAndTimeToString, convertDateToCommaString } from "@/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -16,11 +15,10 @@ import { z } from "zod";
 import { addBidTypes } from "@/validation/bids.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addBid, fetchSingleBid } from "@/services/apis/bids.api";
+import { addBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
 import { ChangeEvent, useState } from "react";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
-import { useAuth } from "@/context/AuthProvider";
 import { cn } from "@/lib/utils";
 
 const LCInfo = ({
@@ -72,7 +70,6 @@ export const AddBid = ({
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
-  const { user } = useAuth();
   // Get LC
   const { data: lcData, isLoading } = useQuery({
     queryKey: [`single-lc`, lcId],

@@ -11,7 +11,6 @@ import {
   Step7,
 } from "@/components/LCSteps";
 import { useEffect, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { discountingSchema } from "@/validation/lc.validation";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -31,24 +30,15 @@ import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 
 const CreateDiscountPage = () => {
-  const {
-    register,
-    setValue,
-    getValues,
-    reset,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<z.infer<typeof discountingSchema>>({
-    // resolver: zodResolver(discountingSchema),
-  });
+  const { register, setValue, reset, handleSubmit, watch } = useForm<
+    z.infer<typeof discountingSchema>
+  >({});
 
   const queryClient = useQueryClient();
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
-  const [valueChanged, setValueChanged] = useState<boolean>(false);
   const [days, setDays] = useState<number>(1);
 
   // Edit Request
@@ -89,7 +79,6 @@ const CreateDiscountPage = () => {
         }
       });
     }
-    setValueChanged(!valueChanged);
   }, [discountingData]);
 
   const [proceed, setProceed] = useState(false);
@@ -116,7 +105,7 @@ const CreateDiscountPage = () => {
           );
         if (/^\d+$/.test(data.productDescription))
           return toast.error("Product description cannot contain only digits");
-        startLoading();
+        // startLoading();
         let extraInfo;
         if (data.paymentTerms === "Usance LC") {
           extraInfo = { dats: futureDate, other: data.extraInfo };
@@ -146,25 +135,25 @@ const CreateDiscountPage = () => {
         delete reqData.createdAt;
         // @ts-ignore
         delete reqData.updatedAt;
-
-        const { response, success } = discountingData?._id
-          ? await onUpdateLC({
-              payload: reqData,
-              id: discountingData?._id,
-            })
-          : await onCreateLC(reqData);
-        stopLoading();
-        if (!success) return toast.error(response);
-        else {
-          toast.success("LC created successfully");
-          setValues(getStateValues(useDiscountingStore.getInitialState()));
-          // await sendNotification({
-          //   title: "New LC Discounting Request",
-          //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-          // });
-          reset();
-          router.push("/");
-        }
+        console.log(reqData);
+        // const { response, success } = discountingData?._id
+        //   ? await onUpdateLC({
+        //       payload: reqData,
+        //       id: discountingData?._id,
+        //     })
+        //   : await onCreateLC(reqData);
+        // stopLoading();
+        // if (!success) return toast.error(response);
+        // else {
+        //   toast.success("LC created successfully");
+        //   setValues(getStateValues(useDiscountingStore.getInitialState()));
+        //   // await sendNotification({
+        //   //   title: "New LC Discounting Request",
+        //   //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+        //   // });
+        //   reset();
+        //   router.push("/");
+        // }
       } else {
         let openDisclaimerBtn = document.getElementById("open-disclaimer");
         // @ts-ignore
@@ -315,9 +304,6 @@ const CreateDiscountPage = () => {
           watch={watch}
           register={register}
           setValue={setValue}
-          getValues={getValues}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
           days={days}
           setDays={setDays}
@@ -327,10 +313,7 @@ const CreateDiscountPage = () => {
           register={register}
           setValue={setValue}
           countries={countryNames}
-          getValues={getValues}
           flags={countryFlags}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
           isDiscount
         />
@@ -339,20 +322,16 @@ const CreateDiscountPage = () => {
           register={register}
           setValue={setValue}
           countries={countries}
-          getValues={getValues}
           flags={flags}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
+          watch={watch}
         />
         <Step5
           register={register}
           countries={countries}
           flags={flags}
           setValue={setValue}
-          getValues={getValues}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
+          watch={watch}
           setStepCompleted={handleStepCompletion}
         />
 
@@ -363,9 +342,6 @@ const CreateDiscountPage = () => {
             title="Discounting Info"
             isDiscount
             setValue={setValue}
-            getValues={getValues}
-            valueChanged={valueChanged}
-            setStepCompleted={handleStepCompletion}
           />
           <Step7 register={register} step={7} />
         </div>

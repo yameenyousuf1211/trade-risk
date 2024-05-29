@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
 export const RiskStep2 = () => {
@@ -20,53 +19,6 @@ export const RiskStep2 = () => {
   });
 
   const [isFunded, setIsFunded] = useState(false);
-
-  const [checkedState, setCheckedState] = useState({
-    funded: false,
-    "non-funded": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    if (id === "funded") setIsFunded(true);
-    else setIsFunded(false);
-    const newCheckedState = {
-      funded: id === "funded",
-      "non-funded": id === "non-funded",
-    };
-    setCheckedState(newCheckedState);
-  };
-
-  const [returnState, setReturnState] = useState({
-    "return-per-annum": false,
-    "return-fixed": false,
-  });
-
-  const handleReturnChange = (id: string) => {
-    const newCheckedState = {
-      "return-per-annum": id === "return-per-annum",
-      "return-fixed": id === "return-fixed",
-    };
-    setReturnState(newCheckedState);
-  };
-
-  const [transactionState, setTransactionState] = useState({
-    "transaction-confirmation": false,
-    "transaction-avalization": false,
-    "transaction-supply": false,
-    "transaction-discounting": false,
-    "transaction-trade": false,
-  });
-
-  const handleTransactionChange = (id: string) => {
-    const newCheckedState = {
-      "transaction-confirmation": id === "transaction-confirmation",
-      "transaction-avalization": id === "transaction-avalization",
-      "transaction-supply": id === "transaction-supply",
-      "transaction-discounting": id === "transaction-discounting",
-      "transaction-trade": id === "transaction-trade",
-    };
-    setTransactionState(newCheckedState);
-  };
 
   const [currencyValue, setCurrencyValue] = useState<string | number>();
   const [rawValue, setRawValue] = useState("");
@@ -107,7 +59,7 @@ export const RiskStep2 = () => {
 
   const handleDecrement = () => {
     const currentValue = pricePerAnnum || "0";
-    let newValue = parseFloat(currentValue) - 0.5;
+    let newValue: any = parseFloat(currentValue) - 0.5;
 
     if (newValue < 0) newValue = 0;
     // @ts-ignore
@@ -130,16 +82,14 @@ export const RiskStep2 = () => {
           label="Non-Funded"
           name="type"
           value="non-funded"
-          checked={checkedState["non-funded"] || (!isFunded && true)}
-          handleCheckChange={handleCheckChange}
+          checked={false}
         />
         <BankRadioInput
           id="funded"
           label="Funded"
           name="type"
           value="funded"
-          checked={checkedState["funded"]}
-          handleCheckChange={handleCheckChange}
+          checked={false}
         />
       </div>
       {/* Transaction Fields */}
@@ -154,40 +104,35 @@ export const RiskStep2 = () => {
             label="LC Confirmation"
             name="transaction"
             value="transaction-confirmation"
-            checked={transactionState["transaction-confirmation"]}
-            handleCheckChange={handleTransactionChange}
+            checked={false}
           />
           <BankRadioInput
             id="transaction-avalization"
             label="Avalization"
             name="transaction"
             value="transaction-avalization"
-            checked={transactionState["transaction-avalization"]}
-            handleCheckChange={handleTransactionChange}
+            checked={false}
           />
           <BankRadioInput
             id="transaction-supply"
             label="Supply Chain Finance"
             name="transaction"
             value="transaction-supply"
-            checked={transactionState["transaction-supply"]}
-            handleCheckChange={handleTransactionChange}
+            checked={false}
           />
           <BankRadioInput
             id="transaction-discounting"
             label="LC Discounting"
             name="transaction"
             value="transaction-discounting"
-            checked={transactionState["transaction-discounting"]}
-            handleCheckChange={handleTransactionChange}
+            checked={false}
           />
           <BankRadioInput
             id="transaction-trade"
             label="Trade Loan"
             name="transaction"
             value="transaction-trade"
-            checked={transactionState["transaction-trade"]}
-            handleCheckChange={handleTransactionChange}
+            checked={false}
           />
         </div>
         <div className={`flex ${isFunded && "flex-col"} gap-2 gap-y-3 my-2`}>
@@ -237,16 +182,14 @@ export const RiskStep2 = () => {
                 label="% per annum"
                 name="return"
                 value="per-annum"
-                checked={returnState["return-per-annum"]}
-                handleCheckChange={handleReturnChange}
+                checked={false}
               />
               <BankRadioInput
                 id="return-fixed"
                 label="% (Fixed)"
                 name="return"
                 value="fixed"
-                checked={returnState["return-fixed"]}
-                handleCheckChange={handleReturnChange}
+                checked={false}
               />
               {!isFunded && (
                 <div className="bg-white rounded-lg py-3 px-3 w-[80%] flex items-center justify-between gap-x-2">
@@ -256,7 +199,7 @@ export const RiskStep2 = () => {
                     className="bg-transparent outline-none w-[80%] text-sm"
                     placeholder="Enter Value"
                     max={100}
-                    onKeyUp={(event) => {
+                    onKeyUp={(event: any) => {
                       if (event.target?.value > 100) {
                         event.target.value = "100.0";
                       }
@@ -280,7 +223,7 @@ export const RiskStep2 = () => {
                       name="select-base-rate"
                       className="block bg-none text-sm border-none outline-none w-[100px]"
                       placeholder="Select Value"
-                      onKeyUp={(event) => {
+                      onKeyUp={(event: any) => {
                         if (event.target?.value > 100) {
                           event.target.value = "100.0";
                         }
@@ -311,7 +254,7 @@ export const RiskStep2 = () => {
                         max={100}
                         className="border-none outline-none text-sm max-w-[70px] w-fit"
                         onChange={(e) => setPricePerAnnum(e.target.value)}
-                        onKeyUp={(event) => {
+                        onKeyUp={(event: any) => {
                           if (event.target?.value > 100) {
                             event.target.value = "100.0";
                           }
@@ -347,7 +290,7 @@ export const RiskStep2 = () => {
               className="bg-transparent outline-none w-[80%] text-sm"
               placeholder="Value"
               max={100}
-              onKeyUp={(event) => {
+              onKeyUp={(event: any) => {
                 if (event.target?.value > 100) {
                   event.target.value = "100.0";
                 }

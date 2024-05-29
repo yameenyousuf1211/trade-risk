@@ -7,14 +7,12 @@ export const Step7Disounting = ({
   register,
   setValue,
   getValues,
-  valueChanged,
   watch,
 }: {
   register: any;
   setValue: any;
   getValues: any;
-  valueChanged?: any;
-  watch?: any;
+  watch: any;
 }) => {
   const discountAtSight = watch("discountingInfo.discountAtSight");
   const behalfOf = watch("discountingInfo.behalfOf");
@@ -24,7 +22,7 @@ export const Step7Disounting = ({
     if (pricePerAnnum) {
       setValue("discountingInfo.pricePerAnnum", pricePerAnnum.toString());
     }
-  }, [valueChanged]);
+  }, [pricePerAnnum]);
 
   const handleIncrement = () => {
     const currentValue = getValues("discountingInfo.pricePerAnnum") || "0";
@@ -101,7 +99,7 @@ export const Step7Disounting = ({
           id="expected-pricing"
           className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
         >
-          <p className="text-lightGray">Per Annum(%)</p>
+          <p className="text-lightGray text-sm">Per Annum(%)</p>
           <div className="flex items-center gap-x-2">
             <Button
               type="button"
@@ -132,7 +130,7 @@ export const Step7Disounting = ({
                 }
                 event.target.value += "%";
               }}
-              onKeyUp={(event:any) => {
+              onKeyUp={(event: any) => {
                 if (Number(event.target.value.replace("%", "")) > 100) {
                   event.target.value = "100.0%";
                 }

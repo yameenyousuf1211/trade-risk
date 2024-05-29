@@ -16,6 +16,7 @@ export const Step3 = ({
   setValueChanged,
   setStepCompleted,
   isDiscount,
+  watch,
 }: {
   register: any;
   setValue: any;
@@ -26,6 +27,7 @@ export const Step3 = ({
   setValueChanged?: any;
   setStepCompleted?: any;
   isDiscount?: boolean;
+  watch: any;
 }) => {
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
@@ -53,21 +55,11 @@ export const Step3 = ({
   }, [valueChanged]);
 
   useEffect(() => {
-    if (
-      issuingCountry &&
-      issuingBank &&
-      confirmingBank &&
-      confirmingCountry &&
-      startDate &&
-      endDate &&
-      expectedDate &&
-      productDescription
-    ) {
+    if (issuingCountry && issuingBank) {
       setStepCompleted(2, true);
     }
     if (confirmingCountry) setShowConfirmingBank(true);
     if (advisingCountry) {
-      console.log(advisingCountry)
       setShowAdvisingBank(true);
     }
   }, [valueChanged]);
@@ -302,6 +294,7 @@ export const Step3 = ({
         setValueChanged={setValueChanged}
       />
       <Transhipment
+        watch={watch}
         getValues={getValues}
         register={register}
         setValue={setValue}

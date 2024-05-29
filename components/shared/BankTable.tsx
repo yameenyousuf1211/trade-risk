@@ -72,20 +72,20 @@ export const BankTable = ({
   }, [countriesData]);
 
   const getCountryFlagByName = (countryName: string): string | undefined => {
-    const country = allCountries.find(
-      (c: Country) => c.name.toLowerCase() === countryName.toLowerCase()
-    );
-    return country ? country.flag : undefined;
+    if (countryName) {
+      const country = allCountries.find(
+        (c: Country) => c.name.toLowerCase() === countryName.toLowerCase()
+      );
+      return country ? country.flag : undefined;
+    }
   };
 
   const [sortedKey, setSortedKey] = useState<string>("");
 
   const handleSort = (key: string) => {
-    console.log(key);
     setSortedKey(key);
     let isDescending = sortedKey.includes(key);
     setSortedKey(isDescending ? "" : key);
-    console.log(tableData);
 
     let sortedData: IBids[] = [...tableData].sort((a, b) => {
       let valueA, valueB;
@@ -102,6 +102,10 @@ export const BankTable = ({
           valueA = a.confirmationPrice;
           valueB = b.confirmationPrice;
           break;
+        case "Discounting Rate":
+          valueA = a.discountBaseRate;
+          valueB = b.discountBaseRate;
+          break;
         case "Discount Margin":
           valueA = a.discountMargin;
           valueB = b.discountMargin;
@@ -110,10 +114,14 @@ export const BankTable = ({
           valueA = a.confirmationPrice;
           valueB = b.confirmationPrice;
           break;
+        case "Country of issuing bank":
+          valueA = a.lcInfo?.[1]?.country;
+          valueB = b.lcInfo?.[1]?.country;
+          break;
 
         case "Confirmation bank":
-          valueA = a.confirmationPrice;
-          valueB = b.confirmationPrice;
+          valueA = a.bidBy?.[0];
+          valueB = b.bidBy?.[0];
           break;
 
         default:
@@ -189,10 +197,10 @@ export const BankTable = ({
                     <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                       <p className="text-[16px] emoji-font">
                         {allCountries &&
-                          getCountryFlagByName(item.lcInfo?.[2]?.country)}
+                          getCountryFlagByName(item.lcInfo?.[1]?.country)}
                       </p>
                       <div className="truncate text-lightGray capitalize">
-                        {item.lcInfo?.[2]?.country || ""}
+                        {item.lcInfo?.[1]?.country || ""}
                       </div>
                     </div>
                   </TableCell>

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { BgRadioInput, DDInput } from "./helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
 import { cn } from "@/utils";
 
 export const Step6 = ({
@@ -11,43 +10,30 @@ export const Step6 = ({
   register,
   setValue,
   getValues,
-  isConfirmation,
   valueChanged,
-  getStateValues,
   setStepCompleted,
+  watch,
 }: {
   title: string;
   isDiscount?: boolean;
   register: any;
   setValue: any;
   getValues: any;
-  isConfirmation?: boolean;
   valueChanged?: boolean;
-  getStateValues?: any;
   setStepCompleted?: any;
+  watch: any;
 }) => {
-  const [checkedState, setCheckedState] = useState({
-    "account-beneficiary": false,
-    "account-importer": false,
-  });
+  const behalfOf = watch(
+    isDiscount ? "discountingInfo.behalfOf" : "confirmationInfo.behalfOf"
+  );
+  const discountAtSight = watch(
+    isDiscount ? "discountingInfo.discountAtSight" : "discountAtSight"
+  );
 
-  const handleCheckChange = (id: string) => {
-    setCheckedState((prevState) => ({
-      ...prevState,
-      "account-beneficiary": id === "account-beneficiary",
-      "account-importer": id === "account-importer",
-    }));
-    setStepCompleted(5, true);
-  };
-
-  const [checkedDiscountState, setCheckedDiscountState] = useState({
-    "discount-yes": false,
-    "discount-no": false,
-  });
   let pricePerAnnum = isDiscount
     ? getValues("discountingInfo.pricePerAnnum")
     : getValues("confirmationInfo.pricePerAnnum");
-  console.log(pricePerAnnum, "price");
+
   useEffect(() => {
     if (pricePerAnnum) {
       isDiscount
@@ -61,14 +47,6 @@ export const Step6 = ({
           );
     }
   }, [valueChanged]);
-
-  const handleCheckDiscountChange = (id: string) => {
-    setCheckedDiscountState((prevState) => ({
-      ...prevState,
-      "discount-yes": id === "discount-yes",
-      "discount-no": id === "discount-no",
-    }));
-  };
 
   const handleIncrement = () => {
     const currentValue = isDiscount
@@ -119,8 +97,7 @@ export const Step6 = ({
             }
             value="yes"
             register={register}
-            checked={checkedDiscountState["discount-yes"]}
-            handleCheckChange={handleCheckDiscountChange}
+            checked={discountAtSight === "yes"}
           />
           <BgRadioInput
             id="discount-no"
@@ -130,8 +107,7 @@ export const Step6 = ({
             }
             value="no"
             register={register}
-            checked={checkedDiscountState["discount-no"]}
-            handleCheckChange={handleCheckDiscountChange}
+            checked={discountAtSight === "no"}
           />
         </div>
       )}
@@ -147,8 +123,7 @@ export const Step6 = ({
           }
           value="Exporter"
           register={register}
-          checked={checkedState["account-beneficiary"]}
-          handleCheckChange={handleCheckChange}
+          checked={behalfOf === "Exporter"}
         />
         <BgRadioInput
           id="account-importer"
@@ -160,8 +135,7 @@ export const Step6 = ({
           }
           value="Importer"
           register={register}
-          checked={checkedState["account-importer"]}
-          handleCheckChange={handleCheckChange}
+          checked={behalfOf === "Importer"}
         />
       </div>
 
@@ -174,14 +148,15 @@ export const Step6 = ({
         {isDiscount && (
           <div className="mb-3 bg-white">
             <label
-              id="select-base-rate"
+              id="selectBaseRate"
               className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
             >
               <p className="w-full text-sm text-lightGray">Select base rate</p>
               <Input
-                id="select-base-rate"
-                type="text"
-                name="select-base-rate"
+                id="selectBaseRate"
+                inputMode="numeric"
+                type="number"
+                name="selectBaseRate"
                 register={register}
                 className="block bg-none text-sm border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                 placeholder="Select Value"
@@ -221,30 +196,19 @@ export const Step6 = ({
                 event.target.value = newValue;
               }}
               onBlur={(event) => {
-                console.log(event.target.value)
-              if(event.target.value.includes('%') || event.target.value.length === 0) return
+                if (
+                  event.target.value.includes("%") ||
+                  event.target.value.length === 0
+                )
+                  return;
                 event.target.value += "%";
               }}
-              onKeyUp={(event) => {
+              onKeyUp={(event: any) => {
                 if (Number(event.target.value.replace("%", "")) > 100) {
                   event.target.value = "100.0%";
                 }
               }}
             />
-            {/* <Input
-              placeholder="Value (%)"
-              type="text"
-              inputMode="numeric"
-              required
-              max={100}
-              name={
-                isDiscount
-                  ? "discountingInfo.pricePerAnnum"
-                  : "confirmationInfo.pricePerAnnum"
-              }
-              register={register}
-              className="border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
-            /> */}
             <Button
               type="button"
               variant="ghost"

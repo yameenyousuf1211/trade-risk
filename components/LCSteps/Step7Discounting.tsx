@@ -8,37 +8,16 @@ export const Step7Disounting = ({
   setValue,
   getValues,
   valueChanged,
+  watch,
 }: {
   register: any;
   setValue: any;
   getValues: any;
   valueChanged?: any;
+  watch?: any;
 }) => {
-  const [checkedState, setCheckedState] = useState({
-    "account-beneficiary": false,
-    "account-importer": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    setCheckedState((prevState) => ({
-      ...prevState,
-      "account-beneficiary": id === "disc-account-beneficiary",
-      "account-importer": id === "disc-account-importer",
-    }));
-  };
-
-  const [checkedDiscountState, setCheckedDiscountState] = useState({
-    "disc-discount-yes": false,
-    "disc-discount-no": false,
-  });
-
-  const handleCheckDiscountChange = (id: string) => {
-    setCheckedState((prevState) => ({
-      ...prevState,
-      "disc-discount-yes": id === "disc-discount-yes",
-      "disc-discount-no": id === "disc-discount-no",
-    }));
-  };
+  const discountAtSight = watch("discountingInfo.discountAtSight");
+  const behalfOf = watch("discountingInfo.behalfOf");
 
   let pricePerAnnum = getValues("discountingInfo.pricePerAnnum");
   useEffect(() => {
@@ -78,22 +57,20 @@ export const Step7Disounting = ({
       <div className="border border-borderCol py-3 px-2 rounded-md mb-4 bg-[#F5F7F9]">
         <p className="font-semibold ml-3 mb-2">Discount at sight</p>
         <BgRadioInput
-          id="disc-discount-yes"
+          id="discount-yes"
           label="Yes"
           name="discountingInfo.discountAtSight"
           value="yes"
           register={register}
-          checked={checkedDiscountState["disc-discount-yes"]}
-          handleCheckChange={handleCheckDiscountChange}
+          checked={discountAtSight === "yes"}
         />
         <BgRadioInput
-          id="disc-discount-no"
+          id="discount-no"
           label="No"
           name="discountingInfo.discountAtSight"
           value="no"
           register={register}
-          checked={checkedDiscountState["disc-discount-no"]}
-          handleCheckChange={handleCheckDiscountChange}
+          checked={discountAtSight === "no"}
         />
       </div>
 
@@ -105,8 +82,7 @@ export const Step7Disounting = ({
           name="discountingInfo.behalfOf"
           value="Exporter"
           register={register}
-          checked={checkedState["account-beneficiary"]}
-          handleCheckChange={handleCheckChange}
+          checked={behalfOf === "Exporter"}
         />
         <BgRadioInput
           id="disc-account-importer"
@@ -114,8 +90,7 @@ export const Step7Disounting = ({
           name="discountingInfo.behalfOf"
           value="Importer"
           register={register}
-          checked={checkedState["account-importer"]}
-          handleCheckChange={handleCheckChange}
+          checked={behalfOf === "Importer"}
         />
       </div>
 
@@ -136,13 +111,6 @@ export const Step7Disounting = ({
             >
               -
             </Button>
-            {/* <Input
-              placeholder="Value (%)"
-              type="string"
-              name="discountingInfo.pricePerAnnum"
-              register={register}
-              className="border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
-            /> */}
             <input
               placeholder="Value (%)"
               type="text"
@@ -164,7 +132,7 @@ export const Step7Disounting = ({
                 }
                 event.target.value += "%";
               }}
-              onKeyUp={(event) => {
+              onKeyUp={(event:any) => {
                 if (Number(event.target.value.replace("%", "")) > 100) {
                   event.target.value = "100.0%";
                 }

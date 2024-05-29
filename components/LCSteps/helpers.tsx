@@ -83,7 +83,9 @@ export const DDInput = ({
             variant="outline"
             role="combobox"
             aria-expanded={ddOpen}
-            className="capitalize w-fit border-none justify-between font-normal text-sm text-gray-500"
+            className={`capitalize w-fit border-none justify-between font-normal text-sm ${
+              value ? "text-black" : "text-gray-500"
+            }`}
             disabled={disabled}
           >
             {ddVal
@@ -128,7 +130,9 @@ export const DDInput = ({
                           : "opacity-0"
                       )}
                     />
-                    {flags && <span className="mr-2">{flags[idx]}</span>}
+                    {flags && (
+                      <span className="mr-2 emoji-font">{flags[idx]}</span>
+                    )}
                     {country}
                   </CommandItem>
                 ))}
@@ -147,7 +151,6 @@ export const BgRadioInput = ({
   name,
   value,
   register,
-  handleCheckChange,
 }: {
   id: string;
   label: string;
@@ -155,7 +158,6 @@ export const BgRadioInput = ({
   value: string | boolean;
   checked: boolean;
   register?: any;
-  handleCheckChange: (id: string) => void;
 }) => {
   return (
     <label
@@ -170,7 +172,6 @@ export const BgRadioInput = ({
         value={value}
         {...register(name)}
         className="accent-primaryCol size-4"
-        onChange={() => handleCheckChange(id)}
       />
       {label}
     </label>

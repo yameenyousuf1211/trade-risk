@@ -48,7 +48,7 @@ const BankRegisterPage = () => {
     resolver: zodResolver(bankSchema),
     mode: "all",
   });
-  console.log(watch());
+  // console.log(watch());
 
   const onSubmit: SubmitHandler<z.infer<typeof bankSchema>> = async (
     data: z.infer<typeof bankSchema>
@@ -231,7 +231,7 @@ const BankRegisterPage = () => {
                 setAllowSubmit={setAllowSubmit}
                 trigger={trigger}
               />
-              {(phone === "" || phone === undefined) && errors.pocPhone && (
+              {errors.pocPhone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.pocPhone.message}
                 </span>

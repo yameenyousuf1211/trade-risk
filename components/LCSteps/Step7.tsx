@@ -25,7 +25,7 @@ const FileCard = ({
           />
         </Button>
         <div>
-          <p className="text-lightGray">{file[0]?.name}</p>
+          <p className="text-lightGray text-sm">{file[0]?.name}</p>
           <p className="text-[12px] text-para">
             {file[0]?.type.split("/")[1].toUpperCase()},{" "}
             {formatFileSize(file[0]?.size)}
@@ -51,7 +51,7 @@ export const Step7 = ({ register, step }: { register: any; step: number }) => {
           Array.from(fileList).some((f) => f.name === file.name)
         );
       });
-      setSelectedFiles((prevFiles) => [...(prevFiles ?? []), newFiles]);
+      setSelectedFiles((prevFiles: any) => [...(prevFiles ?? []), newFiles]);
     }
   };
 

@@ -83,7 +83,8 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
     <>
       {isBank ? (
         showData &&
-        data.status !== "Expired" && (
+        data.status !== "Expired" &&
+        data.status === "Add bid" && (
           <>
             <div className="px-3 py-2 flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
               {/* Data */}
@@ -356,7 +357,7 @@ export const Sidebar = ({
           <p className="text-white text-center font-semibold">
             Send a risk participation request to other banks
           </p>
-          <Link href="/risk-participation/funded" className="w-full">
+          <Link href="/risk-participation/create" className="w-full">
             <Button
               className="w-full text-[#255EF2] bg-white hover:bg-white/90 rounded-lg text-[16px]"
               size="lg"

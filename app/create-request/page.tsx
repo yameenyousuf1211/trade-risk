@@ -30,6 +30,7 @@ import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
+import { calculateDaysLeft } from "@/utils";
 
 const CreateRequestPage = () => {
   const {
@@ -38,17 +39,16 @@ const CreateRequestPage = () => {
     getValues,
     reset,
     watch,
+    trigger,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.infer<typeof confirmationSchema>>({
-    resolver: zodResolver(confirmationSchema),
-  });
+  } = useForm<z.infer<typeof confirmationSchema>>({});
 
-  const { user } = useAuth();
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
   const [valueChanged, setValueChanged] = useState<boolean>(false);
+  const [days, setDays] = useState<number>(1);
 
   const queryClient = useQueryClient();
   const setValues = useConfirmationStore((state) => state.setValues);
@@ -60,12 +60,33 @@ const CreateRequestPage = () => {
     if (confirmationData && confirmationData?._id) {
       Object.entries(confirmationData).forEach(([key, value]) => {
         // @ts-ignore
-        setValue(key, value);
+        if (typeof value === "number") {
+          // @ts-ignore
+          setValue(key, value);
+        }
+        if (typeof value === "string" && value.length > 0) {
+          // @ts-ignore
+          setValue(key, value);
+        }
+        if (typeof value === "object" && value !== null) {
+          const keys = Object.keys(value);
+          const hasOnlyEmptyValues = keys.every((k) => value[k] === "");
+
+          if (!hasOnlyEmptyValues) {
+            // @ts-ignore
+            setValue(key, value);
+          }
+        }
         if (key === "transhipment") {
           setValue(key, value === true ? "yes" : "no");
         }
         if (key === "lcPeriod.expectedDate") {
           setValue(key, value === true ? "yes" : "no");
+        }
+        if (key === "extraInfo") {
+          const daysLeft = calculateDaysLeft(value.dats);
+          setDays(daysLeft);
+          setValue("extraInfo", value.other);
         }
       });
     }
@@ -73,101 +94,230 @@ const CreateRequestPage = () => {
   }, [confirmationData]);
 
   // Show errors
-  useEffect(() => {
-    if (errors) {
-      const showNestedErrors = (errorsObj: any, parentKey = "") => {
-        Object.keys(errorsObj)
-          .reverse()
-          .forEach((key) => {
-            const errorMessage =
-              errorsObj[key as keyof typeof errorsObj]?.message;
+  // useEffect(() => {
+  //   if (errors) {
+  //     const showNestedErrors = (errorsObj: any, parentKey = "") => {
+  //       Object.keys(errorsObj)
+  //         .reverse()
+  //         .forEach((key) => {
+  //           const errorMessage =
+  //             errorsObj[key as keyof typeof errorsObj]?.message;
 
-            if (errorMessage) {
-              // const fieldName = parentKey ? `${parentKey}.${key}` : key;
-              toast.error(`${errorMessage}`);
-            } else if (typeof errorsObj[key] === "object") {
-              showNestedErrors(errorsObj[key], key);
-            }
-          });
-      };
+  //           if (errorMessage) {
+  //             // const fieldName = parentKey ? `${parentKey}.${key}` : key;
+  //             toast.error(`${errorMessage}`);
+  //           } else if (typeof errorsObj[key] === "object") {
+  //             showNestedErrors(errorsObj[key], key);
+  //           }
+  //         });
+  //     };
 
-      showNestedErrors(errors);
-    }
-  }, [errors]);
+  //     showNestedErrors(errors);
+  //   }
+  // }, [errors]);
 
   const [proceed, setProceed] = useState(false);
 
   const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
-    data: z.infer<typeof confirmationSchema>
+    data
   ) => {
-    if (proceed) {
-      if (data.issuingBank.country === data.confirmingBank.country)
-        return toast.error(
-          "Confirming bank country cannot be the same as issuing bank country"
-        );
-      if (/^\d+$/.test(data.productDescription))
-        return toast.error("Product description cannot contain only digits");
-      startLoading();
-      const { confirmingBank2, ...rest } = data;
+    const validationResult = confirmationSchema.safeParse(data);
 
-      const reqData = {
-        ...rest,
-        lcType: "LC Confirmation",
-        transhipment: data.transhipment === "yes" ? true : false,
-        lcPeriod: {
-          ...data.lcPeriod,
-          expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
-        },
-      };
-      const { response, success } = confirmationData?._id
-        ? await onUpdateLC({
-            payload: reqData,
-            id: confirmationData?._id,
-          })
-        : await onCreateLC(reqData);
-      stopLoading();
-      if (!success) return toast.error(response);
-      else {
-        // await sendNotification({
-        //   title: "New LC Confirmation Request",
-        //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-        // });
-        setValues(getStateValues(useConfirmationStore.getInitialState()));
-        toast.success("LC created successfully");
-        reset();
-        router.push("/");
+    // Check if validation was successful
+    if (validationResult.success) {
+      const validatedData = validationResult.data;
+      console.log(proceed, "proceed");
+      if (proceed) {
+        if (
+          data.confirmingBank &&
+          data.issuingBank.country === data.confirmingBank.country
+        )
+          return toast.error(
+            "Confirming bank country cannot be the same as issuing bank country"
+          );
+        if (/^\d+$/.test(data.productDescription))
+          return toast.error("Product description cannot contain only digits");
+
+        startLoading();
+        const currentDate = new Date();
+        const futureDate = new Date(
+          currentDate.setDate(currentDate.getDate() + days)
+        );
+        let extraInfo;
+        if (data.paymentTerms === "Usance LC") {
+          extraInfo = { dats: futureDate, other: data.extraInfo };
+        }
+        const { confirmingBank2, ...rest } = data;
+
+        const reqData = {
+          ...rest,
+          currency: data?.currency ? data?.currency : "usd",
+          lcType: "LC Confirmation",
+          transhipment: data.transhipment === "yes" ? true : false,
+          lcPeriod: {
+            ...data.lcPeriod,
+            expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
+          },
+          ...(extraInfo && { extraInfo }),
+        };
+
+        // @ts-ignore
+        delete reqData._id;
+        // @ts-ignore
+        delete reqData.refId;
+        // @ts-ignore
+        delete reqData.createdBy;
+        // @ts-ignore
+        delete reqData.status;
+        // @ts-ignore
+        delete reqData.createdAt;
+        // @ts-ignore
+        delete reqData.updatedAt;
+        const { response, success } = confirmationData?._id
+          ? await onUpdateLC({
+              payload: reqData,
+              id: confirmationData?._id,
+            })
+          : await onCreateLC(reqData);
+        stopLoading();
+        if (!success) return toast.error(response);
+        else {
+          // await sendNotification({
+          //   title: "New LC Confirmation Request",
+          //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+          // });
+          setValues(getStateValues(useConfirmationStore.getInitialState()));
+          toast.success("LC created successfully");
+          reset();
+          router.push("/");
+        }
+      } else {
+        let openDisclaimerBtn = document.getElementById("open-disclaimer");
+        // @ts-ignore
+        openDisclaimerBtn.click();
+        setProceed(true);
       }
     } else {
-      let openDisclaimerBtn = document.getElementById("open-disclaimer");
-      // @ts-ignore
-      openDisclaimerBtn.click();
-      setProceed(true);
+      if (validationResult.error && validationResult.error.errors.length > 0) {
+        validationResult.error.errors.forEach((error) => {
+          toast.error(`Validation Error: ${error.message}`);
+        });
+      }
     }
   };
+
+  // const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
+  //   data: z.infer<typeof confirmationSchema>
+  // ) => {
+
+  //   if (proceed) {
+  //     if (
+  //       data.confirmingBank &&
+  //       data.issuingBank.country === data.confirmingBank.country
+  //     )
+  //       return toast.error(
+  //         "Confirming bank country cannot be the same as issuing bank country"
+  //       );
+  //     if (/^\d+$/.test(data.productDescription))
+  //       return toast.error("Product description cannot contain only digits");
+
+  //     startLoading();
+  //     const currentDate = new Date();
+  //     const futureDate = new Date(
+  //       currentDate.setDate(currentDate.getDate() + days)
+  //     );
+  //     let extraInfo;
+  //     if (data.paymentTerms === "Usance LC") {
+  //       extraInfo = { dats: futureDate, other: data.extraInfo };
+  //     }
+  //     const { confirmingBank2, ...rest } = data;
+
+  //     const reqData = {
+  //       ...rest,
+  //       lcType: "LC Confirmation",
+  //       transhipment: data.transhipment === "yes" ? true : false,
+  //       lcPeriod: {
+  //         ...data.lcPeriod,
+  //         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
+  //       },
+  //       ...(extraInfo && { extraInfo }),
+  //     };
+
+  //     const { response, success } = confirmationData?._id
+  //       ? await onUpdateLC({
+  //           payload: reqData,
+  //           id: confirmationData?._id,
+  //         })
+  //       : await onCreateLC(reqData);
+  //     stopLoading();
+  //     if (!success) return toast.error(response);
+  //     else {
+  //       // await sendNotification({
+  //       //   title: "New LC Confirmation Request",
+  //       //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+  //       // });
+  //       setValues(getStateValues(useConfirmationStore.getInitialState()));
+  //       toast.success("LC created successfully");
+  //       reset();
+  //       router.push("/");
+  //     }
+  //   } else {
+  //     let openDisclaimerBtn = document.getElementById("open-disclaimer");
+  //     // @ts-ignore
+  //     openDisclaimerBtn.click();
+  //     setProceed(true);
+  //   }
+  // };
 
   const [loader, setLoader] = useState(false);
 
   const saveAsDraft: SubmitHandler<z.infer<typeof confirmationSchema>> = async (
     data: z.infer<typeof confirmationSchema>
   ) => {
-    if (data.issuingBank.country === data.confirmingBank.country)
+    if (
+      data.confirmingBank &&
+      data.issuingBank.country === data.confirmingBank?.country
+    )
       return toast.error(
         "Confirming bank country cannot be the same as issuing bank country"
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
     setLoader(true);
+    const currentDate = new Date();
+    const futureDate = new Date(
+      currentDate.setDate(currentDate.getDate() + days)
+    );
+    let extraInfo;
+    if (data.paymentTerms === "Usance LC") {
+      extraInfo = { dats: futureDate, other: data.extraInfo };
+    }
+
     const { confirmingBank2, ...rest } = data;
     const reqData = {
       ...rest,
+      currency: data?.currency ? data?.currency : "usd",
       lcType: "LC Confirmation",
-      isDraft: "true",
       transhipment: data.transhipment === "yes" ? true : false,
       lcPeriod: {
         ...data.lcPeriod,
         expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
       },
+      ...(extraInfo && { extraInfo }),
+      draft: "true",
     };
+    // @ts-ignore
+    delete reqData._id;
+    // @ts-ignore
+    delete reqData.refId;
+    // @ts-ignore
+    delete reqData.createdBy;
+    // @ts-ignore
+    delete reqData.status;
+    // @ts-ignore
+    delete reqData.createdAt;
+    // @ts-ignore
+    delete reqData.updatedAt;
 
     const { response, success } = confirmationData?._id
       ? await onUpdateLC({
@@ -236,20 +386,29 @@ const CreateRequestPage = () => {
   const handleStepCompletion = (index: number, status: boolean) => {
     setStepStatus(index, status);
   };
+  console.log(getValues());
 
   return (
     <CreateLCLayout isRisk={false}>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
-        <Step1 register={register} setStepCompleted={handleStepCompletion} />
+        <Step1
+          watch={watch}
+          register={register}
+          setStepCompleted={handleStepCompletion}
+        />
         <Step2
+          watch={watch}
           register={register}
           setValue={setValue}
           getValues={getValues}
           valueChanged={valueChanged}
           setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
+          days={days}
+          setDays={setDays}
         />
         <Step3
+          watch={watch}
           register={register}
           setValue={setValue}
           countries={countryNames}
@@ -280,6 +439,7 @@ const CreateRequestPage = () => {
         />
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6
+            watch={watch}
             register={register}
             setValue={setValue}
             getValues={getValues}

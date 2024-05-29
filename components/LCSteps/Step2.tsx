@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 const numberToText = require("number-to-text");
@@ -21,6 +20,9 @@ export const Step2 = ({
   valueChanged,
   setValueChanged,
   setStepCompleted,
+  days,
+  setDays,
+  watch,
 }: {
   register: any;
   setValue: any;
@@ -28,20 +30,29 @@ export const Step2 = ({
   valueChanged?: any;
   setValueChanged?: any;
   setStepCompleted?: any;
+  days: number;
+  setDays: any;
+  watch: any;
 }) => {
   const { data: currency } = useQuery({
     queryKey: ["currency"],
     queryFn: () => getCurrenncy(),
   });
 
-  let amount = getValues("amount");
+  let amount = watch("amount");
   let currencyVal = getValues("currency");
-  let paymentTerms = getValues("paymentTerms");
+  // let paymentTerms = getValues("paymentTerms");
+  // let extraInfo = getValues("extraInfo");
+
+  let paymentTerms = watch("paymentTerms");
+  let extraInfo = watch("extraInfo");
 
   const [currencyValue, setCurrencyValue] = useState<string | number | null>(
     null
   );
   const [rawValue, setRawValue] = useState("");
+  const [showExtra, setShowExtra] = useState(false);
+  const [otherValue, setOtherValue] = useState("");
 
   const handleChange = (e: any) => {
     const { value } = e.target;
@@ -74,24 +85,8 @@ export const Step2 = ({
       setCurrencyValue(amount);
       setRawValue(amount);
     }
+    extraInfo = getValues("extraInfo");
   }, [valueChanged]);
-
-  const [checkedState, setCheckedState] = useState({
-    "payment-sight": false,
-    "payment-usance": false,
-    "payment-deferred": false,
-    "payment-upas": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    setCheckedState((prevState) => ({
-      ...prevState,
-      "payment-sight": id === "payment-sight",
-      "payment-usance": id === "payment-usance",
-      "payment-deferred": id === "payment-deferred",
-      "payment-upas": id === "payment-upas",
-    }));
-  };
 
   useEffect(() => {
     if (amount && paymentTerms) {
@@ -100,7 +95,10 @@ export const Step2 = ({
   }, [amount, paymentTerms, valueChanged]);
 
   return (
-    <div id="step2" className="py-3 px-2 border border-borderCol rounded-lg w-full">
+    <div
+      id="step2"
+      className="py-3 px-2 border border-borderCol rounded-lg w-full"
+    >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           2
@@ -134,14 +132,6 @@ export const Step2 = ({
             </SelectContent>
           </Select>
 
-          {/* <Input
-            type="number"
-            inputMode="numeric"
-            name="amount"
-            register={register}
-            onChange={(e: any) => setCurrencyValue(e.target.value)}
-            className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0"
-          /> */}
           <input
             type="text"
             inputMode="numeric"
@@ -174,39 +164,154 @@ export const Step2 = ({
             id="payment-sight"
             label="Sight LC"
             name="paymentTerms"
-            value="sight-lc"
+            value="Sight LC"
             register={register}
-            checked={checkedState["payment-sight"]}
-            handleCheckChange={handleCheckChange}
+            checked={paymentTerms === "Sight LC"}
           />
           <BgRadioInput
             id="payment-usance"
             label="Usance LC"
             name="paymentTerms"
-            value="usance-lc"
+            value="Usance LC"
             register={register}
-            checked={checkedState["payment-usance"]}
-            handleCheckChange={handleCheckChange}
+            checked={paymentTerms === "Usance LC"}
           />
           <BgRadioInput
             id="payment-deferred"
             label="Deferred LC"
             name="paymentTerms"
-            value="deferred-lc"
+            value="Deferred LC"
             register={register}
-            checked={checkedState["payment-deferred"]}
-            handleCheckChange={handleCheckChange}
+            checked={paymentTerms === "Deferred LC"}
           />
           <BgRadioInput
             id="payment-upas"
             label="UPAS LC (Usance payment at sight)"
             name="paymentTerms"
-            value="upas-lc"
+            value="UPAS LC"
             register={register}
-            checked={checkedState["payment-upas"]}
-            handleCheckChange={handleCheckChange}
+            checked={paymentTerms === "UPAS LC"}
           />
         </div>
+        {/* Days input */}
+        {paymentTerms === "Usance LC" && (
+          <>
+            <div className="flex items-center gap-x-2 my-3 ml-2">
+              <div className="border-b-2 border-black flex items-center">
+                <input
+                  placeholder="enter days"
+                  inputMode="numeric"
+                  name="days"
+                  type="number"
+                  max={3}
+                  value={days}
+                  className="text-sm text-lightGray border-none focus-visible:ring-0 focus-visible:ring-offset-0 max-w-[150px] bg-[#F5F7F9] outline-none"
+                  onChange={(e: any) => {
+                    if (e.target.value > 999) return;
+                    else setDays(e.target.value);
+                  }}
+                />
+                <div className="flex items-center gap-x-1">
+                  <button
+                    type="button"
+                    className="rounded-sm border border-para size-6 center mb-2"
+                    onClick={() => {
+                      setDays((prev: any) => Number(prev) + 1);
+                    }}
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-sm border border-para size-6 center mb-2"
+                    onClick={() => {
+                      setDays((prev: any) =>
+                        Number(prev) > 1 ? Number(prev) - 1 : 1
+                      );
+                    }}
+                  >
+                    -
+                  </button>
+                </div>
+              </div>
+              <p className="font-semibold">days from</p>
+            </div>
+            <div className="flex items-center gap-x-3 justify-between">
+              <BgRadioInput
+                id="payment-shipment"
+                label="BL Date/Shipment Date"
+                name="extraInfo"
+                value="shipment"
+                register={register}
+                checked={extraInfo === "shipment"}
+              />
+              <BgRadioInput
+                id="payment-acceptance"
+                label="Acceptance Date"
+                name="extraInfo"
+                value="acceptance"
+                register={register}
+                checked={extraInfo === "acceptance"}
+              />
+            </div>
+            <div className="flex items-center gap-x-3 justify-between">
+              <BgRadioInput
+                id="payment-negotiation"
+                label="Negotiation Date"
+                name="extraInfo"
+                value="negotiation"
+                register={register}
+                checked={extraInfo === "negotiation"}
+              />
+              <BgRadioInput
+                id="payment-invoice"
+                label="Invoice Date"
+                name="extraInfo"
+                value="invoice"
+                register={register}
+                checked={extraInfo === "invoice"}
+              />
+              <BgRadioInput
+                id="payment-extra-sight"
+                label="Sight"
+                name="extraInfo"
+                value="sight"
+                register={register}
+                checked={extraInfo === "sight"}
+              />
+            </div>
+            <div
+              className={`flex bg-white items-end gap-x-5 px-3 py-4 w-full rounded-md mb-2 border border-borderCol ${
+                extraInfo === "others" && "!bg-[#EEE9FE]"
+              }`}
+            >
+              <label
+                htmlFor="payment-others"
+                className=" flex items-center gap-x-2 text-sm text-lightGray"
+              >
+                <input
+                  type="radio"
+                  name="extraInfo"
+                  value="others"
+                  {...register("extraInfo")}
+                  id="payment-others"
+                  checked={extraInfo === "others"}
+                  className="accent-primaryCol size-4"
+                  // onChange={() => handleExtraCheckChange("payment-others")}
+                />
+                Others
+              </label>
+              <input
+                type="text"
+                name="ds"
+                value={otherValue}
+                onChange={(e: any) => setOtherValue(e.target.value)}
+                className="text-sm bg-transparent !border-b-2 !border-b-neutral-300 rounded-none border-transparent focus-visible:ring-0 focus-visible:ring-offset-0 outline-none w-[80%]"
+                disabled={extraInfo !== "others"}
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ import { TableDialog } from "./TableDialog";
 import Image from "next/image";
 import { columnHeaders, bankColumnHeaders } from "@/utils/data";
 import { ApiResponse, Country, ILcs } from "@/types/type";
-import { convertDateToString } from "@/utils";
+import { compareValues, convertDateToString } from "@/utils";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
@@ -61,11 +61,18 @@ export const RequestTable = ({
   isLoading: boolean;
 }) => {
   const [allCountries, setAllCountries] = useState<Country[]>([]);
+  const [tableData, setTableData] = useState<ILcs[]>([]);
 
   const { data: countriesData } = useQuery({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
   });
+
+  useEffect(() => {
+    if (data && data?.data) {
+      setTableData(data?.data);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (
@@ -85,15 +92,64 @@ export const RequestTable = ({
     return country ? country.flag : undefined;
   };
 
-  const [activeColumn, setActiveColumn] = useState("");
+  const [sortedKey, setSortedKey] = useState<string>("");
 
   const handleSort = (key: string) => {
-    if (key === "bids") return;
-    setActiveColumn(key);
     console.log(key);
-    // if (data && data.data) {
-    //   console.log(data.data);
-    // }
+    setSortedKey(key);
+    let isDescending = sortedKey.includes(key);
+    setSortedKey(isDescending ? "" : key);
+    console.log(tableData);
+
+    let sortedData: ILcs[] = [...tableData].sort((a, b) => {
+      let valueA, valueB;
+      switch (key) {
+        case "LC Amount":
+          valueA = a.amount;
+          valueB = b.amount;
+          break;
+        case "Beneficiary":
+          valueA = a.exporterInfo.beneficiaryName;
+          valueB = b.exporterInfo.beneficiaryName;
+          break;
+        case "Ref no":
+          valueA = a.refId;
+          valueB = b.refId;
+          break;
+        case "LC Issuing Bank":
+          valueA = a.issuingBank.country;
+          valueB = b.issuingBank.country;
+          break;
+        case "Product Type":
+          valueA = a.lcType;
+          valueB = b.lcType;
+          break;
+        case "Bids":
+          valueA = a.bidsCount;
+          valueB = b.bidsCount;
+          break;
+        case "Request":
+        case "Deal Received":
+          valueA = a.lcPeriod.startDate;
+          valueB = b.lcPeriod.startDate;
+          break;
+        case "Expires":
+          valueA = a.lcPeriod.endDate;
+          valueB = b.lcPeriod.endDate;
+          break;
+        case "LC applicant":
+          valueA = a.importerInfo.applicantName;
+          valueB = b.importerInfo.applicantName;
+          break;
+
+        default:
+          return 0;
+      }
+
+      return compareValues(valueA, valueB, isDescending);
+    });
+
+    setTableData(sortedData);
   };
 
   return (
@@ -129,6 +185,7 @@ export const RequestTable = ({
                       <TableHead
                         key={`${header.name}-${idx}`}
                         className="font-roboto px-2 h-8 py-0.5 min-w-32"
+                        onClick={() => handleSort(header.name)}
                       >
                         <div className="capitalize flex text-[#44444F] items-center gap-x-2 justify-center text-[12px] font-semibold">
                           {header.name}
@@ -149,8 +206,11 @@ export const RequestTable = ({
                         <div className="capitalize flex text-[#44444F]  items-center gap-x-2 justify-center text-[12px] font-semibold">
                           {header}
                           <div
-                            // onClick={() => handleSort(header)}
-                            className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer"
+                            onClick={() => handleSort(header)}
+                            className={`border border-primaryCol center rounded-full size-4 ${
+                              sortedKey.includes(header) &&
+                              "bg-primaryCol text-white"
+                            } hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer`}
                           >
                             <ChevronUp className="size-4" />
                           </div>
@@ -169,9 +229,9 @@ export const RequestTable = ({
                 <div className="w-full h-full center">{/* <Loader /> */}</div>
               ) : isBank ? (
                 data &&
-                data.data &&
+                tableData &&
                 // @ts-ignore
-                data.data.map((item: ILcs, index: number) => (
+                tableData.map((item: ILcs, index: number) => (
                   <TableRow key={index} className="border-none font-roboto">
                     <TableDataCell
                       data={convertDateToString(item.lcPeriod.startDate)}
@@ -182,7 +242,7 @@ export const RequestTable = ({
                     <TableDataCell data={item.lcType} />
                     <TableCell className="px-1 py-1 max-w-[180px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                        <p className="text-[16px]">
+                        <p className="text-[16px] emoji-font">
                           {allCountries &&
                             getCountryFlagByName(item.issuingBank.country)}
                         </p>
@@ -204,8 +264,8 @@ export const RequestTable = ({
                     </TableCell>
                   </TableRow>
                 ))
-              ) : data && data.data ? (
-                data.data.map((item: ILcs, index: number) => (
+              ) : tableData && tableData ? (
+                tableData.map((item: ILcs, index: number) => (
                   <TableRow key={index} className="border-none font-roboto">
                     <TableCell className="px-1 py-1 min-w-[90px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
@@ -223,7 +283,7 @@ export const RequestTable = ({
                     <TableDataCell data={item.lcType} />
                     <TableCell className="px-1 py-1 max-w-[180px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                        <p className="text-[16px]">
+                        <p className="text-[16px] emoji-font">
                           {allCountries &&
                             getCountryFlagByName(item.issuingBank.country)}
                         </p>

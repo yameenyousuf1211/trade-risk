@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Noto Color Emoji";
+  src: url("/NotoColorEmoji-Regular.ttf");
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -122,6 +127,11 @@
   -ms-transform: translate(-50%, -50%);
   -o-transform: translate(-50%, -50%);
 }
+.emoji-font {
+  font-family: "Noto Color Emoji", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
 /* For WebKit-based browsers (Chrome, Safari, Opera) */
 input::-webkit-outer-spin-button,
@@ -211,7 +221,7 @@ input[type="number"] {
 .rti--input {
   font-size: 14px !important;
   width: 100% !important;
-  /* max-width: 150px !important; */
+  max-width: 150px !important;
   padding: 6px 8px !important;
 }
 .rti--input::placeholder {

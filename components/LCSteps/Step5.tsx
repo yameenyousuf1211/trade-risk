@@ -1,6 +1,6 @@
 import { useAuth } from "@/context/AuthProvider";
 import { DDInput } from "./helpers";
-import { Input } from "@/components/ui/input";
+import { Input } from "../../components/ui/input";
 import { useEffect } from "react";
 import { getBanks } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";

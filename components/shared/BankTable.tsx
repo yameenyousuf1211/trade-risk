@@ -17,14 +17,13 @@ import {
   SearchBar,
 } from "../helpers";
 import { Button } from "../ui/button";
-import Image from "next/image";
 import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
 import { ApiResponse, Country, IBids } from "@/types/type";
-import { convertDateToString } from "@/utils";
+import { compareValues, convertDateToString } from "@/utils";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getCountries } from "@/services/apis/helpers.api";
+import { getCountries } from "../../services/apis/helpers.api";
 
 const TableDataCell = ({ data }: { data: string | number }) => {
   return (
@@ -48,6 +47,13 @@ export const BankTable = ({
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
 
   const [allCountries, setAllCountries] = useState<Country[]>([]);
+  const [tableData, setTableData] = useState<IBids[]>([]);
+
+  useEffect(() => {
+    if (data && data?.data) {
+      setTableData(data?.data);
+    }
+  }, [data]);
 
   const { data: countriesData } = useQuery({
     queryKey: ["countries"],
@@ -66,10 +72,66 @@ export const BankTable = ({
   }, [countriesData]);
 
   const getCountryFlagByName = (countryName: string): string | undefined => {
-    const country = allCountries.find(
-      (c: Country) => c.name.toLowerCase() === countryName.toLowerCase()
-    );
-    return country ? country.flag : undefined;
+    if (countryName) {
+      const country = allCountries.find(
+        (c: Country) => c.name.toLowerCase() === countryName.toLowerCase()
+      );
+      return country ? country.flag : undefined;
+    }
+  };
+
+  const [sortedKey, setSortedKey] = useState<string>("");
+
+  const handleSort = (key: string) => {
+    setSortedKey(key);
+    let isDescending = sortedKey.includes(key);
+    setSortedKey(isDescending ? "" : key);
+
+    let sortedData: IBids[] = [...tableData].sort((a, b) => {
+      let valueA, valueB;
+      switch (key) {
+        case "Date Submitted":
+          valueA = a.createdAt;
+          valueB = b.createdAt;
+          break;
+        case "Country of issuing bank":
+          valueA = a.lcInfo.country;
+          valueB = b.lcInfo.country;
+          break;
+        case "Confirmation Rate":
+          valueA = a.confirmationPrice;
+          valueB = b.confirmationPrice;
+          break;
+        case "Discounting Rate":
+          valueA = a.discountBaseRate;
+          valueB = b.discountBaseRate;
+          break;
+        case "Discount Margin":
+          valueA = a.discountMargin;
+          valueB = b.discountMargin;
+          break;
+        case "Minimum Charges":
+          valueA = a.confirmationPrice;
+          valueB = b.confirmationPrice;
+          break;
+        case "Country of issuing bank":
+          valueA = a.lcInfo?.[1]?.country;
+          valueB = b.lcInfo?.[1]?.country;
+          break;
+
+        case "Confirmation bank":
+          valueA = a.bidBy?.[0];
+          valueB = b.bidBy?.[0];
+          break;
+
+        default:
+          return 0;
+      }
+
+      return compareValues(valueA, valueB, isDescending);
+    });
+
+    setTableData(sortedData);
   };
 
   return (
@@ -95,7 +157,8 @@ export const BankTable = ({
                   {idx === 2 && isCorporate && (
                     <TableHead
                       key="Confirmation bank"
-                      className="font-roboto px-2 h-8 py-2 min-w-40"
+                      className="font-roboto px-2 h-8 py-2 min-w-44"
+                      onClick={() => handleSort("Confirmation bank")}
                     >
                       <div className="flex items-center gap-x-2 justify-center text-[13px]">
                         Confirming Bank
@@ -107,7 +170,8 @@ export const BankTable = ({
                   )}
                   <TableHead
                     key={`${header}-${idx}`}
-                    className="px-2 h-8 py-2  min-w-40"
+                    className="px-2 h-8 py-2  min-w-44"
+                    onClick={() => handleSort(header)}
                   >
                     <div className="font-roboto capitalize flex items-center gap-x-2 justify-center text-[12px] text-lightGray">
                       {header}
@@ -126,17 +190,17 @@ export const BankTable = ({
             ) : (
               data &&
               data.data &&
-              data.data.map((item, index) => (
+              tableData.map((item, index) => (
                 <TableRow key={index} className="border-none font-roboto">
                   <TableDataCell data={convertDateToString(item.createdAt)} />
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                      <p className="text-[16px]">
+                      <p className="text-[16px] emoji-font">
                         {allCountries &&
-                          getCountryFlagByName(item.lcInfo?.[2]?.country)}
+                          getCountryFlagByName(item.lcInfo?.[1]?.country)}
                       </p>
                       <div className="truncate text-lightGray capitalize">
-                        {item.lcInfo?.[2]?.country || ""}
+                        {item.lcInfo?.[1]?.country || ""}
                       </div>
                     </div>
                   </TableCell>

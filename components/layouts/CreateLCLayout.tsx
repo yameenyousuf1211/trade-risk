@@ -41,7 +41,7 @@ export default function AuthLayout({
             )}
             {children}
           </div>
-          <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
+          <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh] overflow-y-auto">
             <DraftsSidebar isRisk={isRisk} />
           </div>
         </div>

@@ -81,7 +81,7 @@ const DraftCard = ({
       </p>
       <div className="flex items-center w-full justify-between gap-x-1 mt-2">
         <p className="text-[16px] font-semibold uppercase">
-          {draft.currency || "USD"} {draft.amount?.toLocaleString() + ".00"}
+          {draft.currency || "USD"}  {draft?.amount && draft.amount?.toLocaleString() + ".00"}
         </p>
         <Button
           className="!py-0 font-roboto h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"

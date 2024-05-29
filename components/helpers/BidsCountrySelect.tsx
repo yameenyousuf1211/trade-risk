@@ -113,7 +113,7 @@ export const BidsCountrySelect = () => {
                           : "opacity-0"
                       )}
                     />
-                    <span className="mr-2">{flags[idx]}</span>
+                    <span className="mr-2 emoji-font">{flags[idx]}</span>
                     {country}
                   </CommandItem>
                 ))}

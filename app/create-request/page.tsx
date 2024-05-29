@@ -125,7 +125,7 @@ const CreateRequestPage = () => {
     // Check if validation was successful
     if (validationResult.success) {
       const validatedData = validationResult.data;
-
+      console.log(proceed, "proceed");
       if (proceed) {
         if (
           data.confirmingBank &&
@@ -150,6 +150,7 @@ const CreateRequestPage = () => {
 
         const reqData = {
           ...rest,
+          currency: data?.currency ? data?.currency : "usd",
           lcType: "LC Confirmation",
           transhipment: data.transhipment === "yes" ? true : false,
           lcPeriod: {
@@ -159,6 +160,18 @@ const CreateRequestPage = () => {
           ...(extraInfo && { extraInfo }),
         };
 
+        // @ts-ignore
+        delete reqData._id;
+        // @ts-ignore
+        delete reqData.refId;
+        // @ts-ignore
+        delete reqData.createdBy;
+        // @ts-ignore
+        delete reqData.status;
+        // @ts-ignore
+        delete reqData.createdAt;
+        // @ts-ignore
+        delete reqData.updatedAt;
         const { response, success } = confirmationData?._id
           ? await onUpdateLC({
               payload: reqData,
@@ -282,6 +295,7 @@ const CreateRequestPage = () => {
     const { confirmingBank2, ...rest } = data;
     const reqData = {
       ...rest,
+      currency: data?.currency ? data?.currency : "usd",
       lcType: "LC Confirmation",
       transhipment: data.transhipment === "yes" ? true : false,
       lcPeriod: {
@@ -291,6 +305,18 @@ const CreateRequestPage = () => {
       ...(extraInfo && { extraInfo }),
       draft: "true",
     };
+    // @ts-ignore
+    delete reqData._id;
+    // @ts-ignore
+    delete reqData.refId;
+    // @ts-ignore
+    delete reqData.createdBy;
+    // @ts-ignore
+    delete reqData.status;
+    // @ts-ignore
+    delete reqData.createdAt;
+    // @ts-ignore
+    delete reqData.updatedAt;
 
     const { response, success } = confirmationData?._id
       ? await onUpdateLC({
@@ -417,9 +443,7 @@ const CreateRequestPage = () => {
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
           <Button
-            onClick={() => {
-              handleSubmit(saveAsDraft)();
-            }}
+            onClick={handleSubmit(saveAsDraft)}
             type="button"
             variant="ghost"
             className="!bg-[#F1F1F5] w-1/3"
@@ -432,9 +456,7 @@ const CreateRequestPage = () => {
             size="lg"
             disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
-            onClick={() => {
-              handleSubmit(onSubmit)();
-            }}
+            onClick={handleSubmit(onSubmit)}
           >
             {isLoading ? <Loader /> : "Submit request"}
           </Button>
@@ -443,9 +465,7 @@ const CreateRequestPage = () => {
           title="Submit Request"
           className="hidden"
           setProceed={setProceed}
-          onClick={() => {
-            handleSubmit(onSubmit)();
-          }}
+          onAccept={handleSubmit(onSubmit)}
         />
       </form>
     </CreateLCLayout>

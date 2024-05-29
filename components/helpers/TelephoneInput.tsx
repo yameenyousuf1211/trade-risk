@@ -54,6 +54,16 @@ export const TelephoneInput = ({
         onBlur={() => {
           setAllowSubmit && setAllowSubmit(true);
         }}
+        isValid={(value, country) => {
+          console.log(value,country,"hello")
+          if (value.match(/12345/)) {
+            return 'Invalid value: '+value+', '+country.name;
+          } else if (value.match(/1234/)) {
+            return false;
+          } else {
+            return true;
+          }
+        }}
         inputStyle={{
           width: "100%",
           backgroundColor: "#fff",

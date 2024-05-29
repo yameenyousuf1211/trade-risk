@@ -155,6 +155,18 @@ const ConfirmationPage = () => {
           },
           ...(extraInfo && { extraInfo }),
         };
+        // @ts-ignore
+        delete reqData._id;
+        // @ts-ignore
+        delete reqData.refId;
+        // @ts-ignore
+        delete reqData.createdBy;
+        // @ts-ignore
+        delete reqData.status;
+        // @ts-ignore
+        delete reqData.createdAt;
+        // @ts-ignore
+        delete reqData.updatedAt;
         const { response, success } = confirmationData?._id
           ? await onUpdateLC({
               payload: reqData,
@@ -228,6 +240,19 @@ const ConfirmationPage = () => {
       ...(extraInfo && { extraInfo }),
       draft: "true",
     };
+
+    // @ts-ignore
+    delete reqData._id;
+    // @ts-ignore
+    delete reqData.refId;
+    // @ts-ignore
+    delete reqData.createdBy;
+    // @ts-ignore
+    delete reqData.status;
+    // @ts-ignore
+    delete reqData.createdAt;
+    // @ts-ignore
+    delete reqData.updatedAt;
 
     const { response, success } = confirmationData?._id
       ? await onUpdateLC({

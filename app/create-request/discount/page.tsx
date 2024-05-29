@@ -155,6 +155,12 @@ const CreateDiscountPage = () => {
           },
           ...(extraInfo && { extraInfo }),
         };
+        delete reqData._id;
+        delete reqData?.refId;
+        delete reqData?.createdBy
+        delete reqData?.status
+        delete reqData?.createdAt;
+        delete reqData?.updatedAt
 
         const { response, success } = discountingData?._id
           ? await onUpdateLC({

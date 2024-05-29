@@ -307,19 +307,6 @@ export const Transhipment = ({
   const [expectedConfirmationDate, setExpectedConfirmationDate] =
     useState<Date>();
 
-  const [checkedState, setCheckedState] = useState({
-    "transhipment-allowed-yes": false,
-    "transhipment-allowed-no": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    setCheckedState((prevState) => ({
-      ...prevState,
-      "transhipment-allowed-yes": id === "transhipment-allowed-yes",
-      "transhipment-allowed-no": id === "transhipment-allowed-no",
-    }));
-  };
-
   let expectedDate = isDiscount
     ? getValues("expectedDiscountingDate")
     : getValues("expectedConfirmationDate");

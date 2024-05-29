@@ -88,15 +88,6 @@ export const Step2 = ({
     extraInfo = getValues("extraInfo");
   }, [valueChanged]);
 
-  const [extraCheckedState, setExtraCheckedState] = useState({
-    "payment-shipment": false,
-    "payment-acceptance": false,
-    "payment-negotiation": false,
-    "payment-invoice": false,
-    "payment-extra-sight": false,
-    "payment-others": false,
-  });
-
   useEffect(() => {
     if (amount && paymentTerms) {
       setStepCompleted(1, true);
@@ -212,9 +203,13 @@ export const Step2 = ({
                   inputMode="numeric"
                   name="days"
                   type="number"
+                  max={3}
                   value={days}
                   className="text-sm text-lightGray border-none focus-visible:ring-0 focus-visible:ring-offset-0 max-w-[150px] bg-[#F5F7F9] outline-none"
-                  onChange={(e: any) => setDays(e.target.value)}
+                  onChange={(e: any) => {
+                    if (e.target.value > 999) return;
+                    else setDays(e.target.value);
+                  }}
                 />
                 <div className="flex items-center gap-x-1">
                   <button

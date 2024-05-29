@@ -81,13 +81,11 @@ export const BankTable = ({
   };
 
   const [sortedKey, setSortedKey] = useState<string>("");
-  
+
   const handleSort = (key: string) => {
-    console.log(key);
     setSortedKey(key);
     let isDescending = sortedKey.includes(key);
     setSortedKey(isDescending ? "" : key);
-    console.log(tableData);
 
     let sortedData: IBids[] = [...tableData].sort((a, b) => {
       let valueA, valueB;
@@ -104,6 +102,10 @@ export const BankTable = ({
           valueA = a.confirmationPrice;
           valueB = b.confirmationPrice;
           break;
+        case "Discounting Rate":
+          valueA = a.discountBaseRate;
+          valueB = b.discountBaseRate;
+          break;
         case "Discount Margin":
           valueA = a.discountMargin;
           valueB = b.discountMargin;
@@ -112,10 +114,14 @@ export const BankTable = ({
           valueA = a.confirmationPrice;
           valueB = b.confirmationPrice;
           break;
+        case "Country of issuing bank":
+          valueA = a.lcInfo?.[1]?.country;
+          valueB = b.lcInfo?.[1]?.country;
+          break;
 
         case "Confirmation bank":
-          valueA = a.confirmationPrice;
-          valueB = b.confirmationPrice;
+          valueA = a.bidBy?.[0];
+          valueB = b.bidBy?.[0];
           break;
 
         default:

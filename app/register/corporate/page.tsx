@@ -233,7 +233,7 @@ const CompanyInfoPage = () => {
                 trigger={trigger}
                 value={(corporateData && JSON.parse(corporateData).phone) || ""}
               />
-              {(phone === "" || phone === undefined) && errors.phone && (
+              {errors.phone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.phone.message}
                 </span>

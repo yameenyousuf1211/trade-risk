@@ -51,7 +51,7 @@ export const Step7 = ({ register, step }: { register: any; step: number }) => {
           Array.from(fileList).some((f) => f.name === file.name)
         );
       });
-      setSelectedFiles((prevFiles) => [...(prevFiles ?? []), newFiles]);
+      setSelectedFiles((prevFiles: any) => [...(prevFiles ?? []), newFiles]);
     }
   };
 

@@ -34,8 +34,11 @@ const companyInfoSchema = z.object({
     .min(1, "*Address is required"),
   phone: z
     .string({ message: "*Phone number is required" })
-    .min(4, "*Phone number is required.")
-    .max(15),
+    .min(9, "*Provide a valid phone number")
+    .max(15)
+    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
+      message: "*Enter a valid number",
+    }),
   bank: z
     .string({ message: "*Bank field cannot be empty." })
     .min(1, "*Bank field cannot be empty."),
@@ -134,7 +137,7 @@ const bankSchema = z.object({
   // accountCity: z.string({ message: "*Select city" }).nonempty("*Select city"),
   pocPhone: z
     .string({ message: "*POC Phone number is required" })
-    .min(7, "*Provide a valid phone number")
+    .min(9, "*Provide a valid phone number")
     .refine((value) => /^\d+(\.\d+)?$/.test(value), {
       message: "*Enter a valid number",
     }),

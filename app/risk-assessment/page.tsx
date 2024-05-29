@@ -8,7 +8,6 @@ const AssessmentsPage = () => {
         <h2 className="text-5xl font-semibold">Coming Soon</h2>
       </div> */}
       <div className="center w-full h-[80vh]">
-        
         <Image
           src="/images/risk-assess-dummy.png"
           alt="risk-participation"
@@ -17,7 +16,7 @@ const AssessmentsPage = () => {
           className=" w-full h-[80vh] object-contain"
         />
       </div>
-      <div className="center absolute top-0 left-0 backdrop-blur-[3px]	 bg-white/30 w-full h-full z-10">
+      <div className="center absolute top-0 left-0 backdrop-blur-[3px] bg-white/30 w-full h-full z-10">
         <Image
           src="/gif/coming.gif"
           alt="coming-soon"
@@ -25,7 +24,9 @@ const AssessmentsPage = () => {
           height={100}
           className="absolute"
         />
-        <h2 className="text-5xl relative top-20 font-semibold">Work in Progress</h2>
+        <h2 className="text-5xl relative top-20 font-semibold">
+          Work in Progress
+        </h2>
       </div>
     </DashboardLayout>
   );

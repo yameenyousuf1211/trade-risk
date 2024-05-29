@@ -30,24 +30,6 @@ export const Step6 = ({
     isDiscount ? "discountingInfo.discountAtSight" : "discountAtSight"
   );
 
-  const [checkedState, setCheckedState] = useState({
-    "account-beneficiary": false,
-    "account-importer": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    setCheckedState((prevState) => ({
-      ...prevState,
-      "account-beneficiary": id === "account-beneficiary",
-      "account-importer": id === "account-importer",
-    }));
-    setStepCompleted(5, true);
-  };
-
-  const [checkedDiscountState, setCheckedDiscountState] = useState({
-    "discount-yes": false,
-    "discount-no": false,
-  });
   let pricePerAnnum = isDiscount
     ? getValues("discountingInfo.pricePerAnnum")
     : getValues("confirmationInfo.pricePerAnnum");
@@ -65,14 +47,6 @@ export const Step6 = ({
           );
     }
   }, [valueChanged]);
-
-  const handleCheckDiscountChange = (id: string) => {
-    setCheckedDiscountState((prevState) => ({
-      ...prevState,
-      "discount-yes": id === "discount-yes",
-      "discount-no": id === "discount-no",
-    }));
-  };
 
   const handleIncrement = () => {
     const currentValue = isDiscount
@@ -229,7 +203,7 @@ export const Step6 = ({
                   return;
                 event.target.value += "%";
               }}
-              onKeyUp={(event) => {
+              onKeyUp={(event: any) => {
                 if (Number(event.target.value.replace("%", "")) > 100) {
                   event.target.value = "100.0%";
                 }

@@ -28,15 +28,15 @@ export const Step7Disounting = ({
   };
 
   const [checkedDiscountState, setCheckedDiscountState] = useState({
-    "disc-discount-yes": false,
-    "disc-discount-no": false,
+    "discount-yes": false,
+    "discount-no": false,
   });
 
   const handleCheckDiscountChange = (id: string) => {
-    setCheckedState((prevState) => ({
+    setCheckedDiscountState((prevState) => ({
       ...prevState,
-      "disc-discount-yes": id === "disc-discount-yes",
-      "disc-discount-no": id === "disc-discount-no",
+      "discount-yes": id === "discount-yes",
+      "discount-no": id === "discount-no",
     }));
   };
 
@@ -78,21 +78,21 @@ export const Step7Disounting = ({
       <div className="border border-borderCol py-3 px-2 rounded-md mb-4 bg-[#F5F7F9]">
         <p className="font-semibold ml-3 mb-2">Discount at sight</p>
         <BgRadioInput
-          id="disc-discount-yes"
+          id="discount-yes"
           label="Yes"
           name="discountingInfo.discountAtSight"
           value="yes"
           register={register}
-          checked={checkedDiscountState["disc-discount-yes"]}
+          checked={checkedDiscountState["discount-yes"]}
           handleCheckChange={handleCheckDiscountChange}
         />
         <BgRadioInput
-          id="disc-discount-no"
+          id="discount-no"
           label="No"
           name="discountingInfo.discountAtSight"
           value="no"
           register={register}
-          checked={checkedDiscountState["disc-discount-no"]}
+          checked={checkedDiscountState["discount-no"]}
           handleCheckChange={handleCheckDiscountChange}
         />
       </div>

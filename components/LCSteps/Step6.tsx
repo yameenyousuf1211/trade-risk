@@ -11,9 +11,7 @@ export const Step6 = ({
   register,
   setValue,
   getValues,
-  isConfirmation,
   valueChanged,
-  getStateValues,
   setStepCompleted,
 }: {
   title: string;
@@ -21,9 +19,7 @@ export const Step6 = ({
   register: any;
   setValue: any;
   getValues: any;
-  isConfirmation?: boolean;
   valueChanged?: boolean;
-  getStateValues?: any;
   setStepCompleted?: any;
 }) => {
   const [checkedState, setCheckedState] = useState({
@@ -47,7 +43,7 @@ export const Step6 = ({
   let pricePerAnnum = isDiscount
     ? getValues("discountingInfo.pricePerAnnum")
     : getValues("confirmationInfo.pricePerAnnum");
-  console.log(pricePerAnnum, "price");
+
   useEffect(() => {
     if (pricePerAnnum) {
       isDiscount
@@ -180,7 +176,8 @@ export const Step6 = ({
               <p className="w-full text-sm text-lightGray">Select base rate</p>
               <Input
                 id="select-base-rate"
-                type="text"
+                inputMode="numeric"
+                type="number"
                 name="select-base-rate"
                 register={register}
                 className="block bg-none text-sm border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
@@ -221,8 +218,11 @@ export const Step6 = ({
                 event.target.value = newValue;
               }}
               onBlur={(event) => {
-                console.log(event.target.value)
-              if(event.target.value.includes('%') || event.target.value.length === 0) return
+                if (
+                  event.target.value.includes("%") ||
+                  event.target.value.length === 0
+                )
+                  return;
                 event.target.value += "%";
               }}
               onKeyUp={(event) => {
@@ -231,20 +231,6 @@ export const Step6 = ({
                 }
               }}
             />
-            {/* <Input
-              placeholder="Value (%)"
-              type="text"
-              inputMode="numeric"
-              required
-              max={100}
-              name={
-                isDiscount
-                  ? "discountingInfo.pricePerAnnum"
-                  : "confirmationInfo.pricePerAnnum"
-              }
-              register={register}
-              className="border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
-            /> */}
             <Button
               type="button"
               variant="ghost"

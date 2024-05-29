@@ -29,8 +29,7 @@ import { Country } from "@/types/type";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
 import { sendNotification } from "@/services/apis/notifications.api";
-import { useAuth } from "@/context/AuthProvider";
-import { calculateDaysLeft, hasValue } from "@/utils";
+import { calculateDaysLeft } from "@/utils";
 
 const CreateRequestPage = () => {
   const {
@@ -40,6 +39,7 @@ const CreateRequestPage = () => {
     reset,
     watch,
     handleSubmit,
+    trigger,
     formState: { errors },
   } = useForm<z.infer<typeof confirmationSchema>>({});
 

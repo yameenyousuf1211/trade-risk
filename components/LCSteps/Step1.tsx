@@ -1,7 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { BgRadioInput } from "./helpers";
-import { useForm } from "react-hook-form";
 
 export const Step1 = ({ register, type, setStepCompleted }: any) => {
   const [checkedState, setCheckedState] = useState({
@@ -18,6 +17,7 @@ export const Step1 = ({ register, type, setStepCompleted }: any) => {
 
     const isStepComplete =
       newCheckedState["role-exporter"] || newCheckedState["role-importer"];
+
     setStepCompleted(0, isStepComplete);
   };
 

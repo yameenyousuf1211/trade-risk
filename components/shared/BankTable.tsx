@@ -72,14 +72,16 @@ export const BankTable = ({
   }, [countriesData]);
 
   const getCountryFlagByName = (countryName: string): string | undefined => {
-    const country = allCountries.find(
-      (c: Country) => c.name.toLowerCase() === countryName.toLowerCase()
-    );
-    return country ? country.flag : undefined;
+    if (countryName) {
+      const country = allCountries.find(
+        (c: Country) => c.name.toLowerCase() === countryName.toLowerCase()
+      );
+      return country ? country.flag : undefined;
+    }
   };
 
   const [sortedKey, setSortedKey] = useState<string>("");
-
+  
   const handleSort = (key: string) => {
     console.log(key);
     setSortedKey(key);
@@ -189,10 +191,10 @@ export const BankTable = ({
                     <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                       <p className="text-[16px] emoji-font">
                         {allCountries &&
-                          getCountryFlagByName(item.lcInfo?.[2]?.country)}
+                          getCountryFlagByName(item.lcInfo?.[1]?.country)}
                       </p>
                       <div className="truncate text-lightGray capitalize">
-                        {item.lcInfo?.[2]?.country || ""}
+                        {item.lcInfo?.[1]?.country || ""}
                       </div>
                     </div>
                   </TableCell>

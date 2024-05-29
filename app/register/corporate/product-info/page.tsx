@@ -18,12 +18,14 @@ const AmountInput = ({
   name,
   value,
   placeholder,
+  trigger,
 }: {
   register: any;
   setValue: any;
   name: string;
   value: string;
   placeholder: string;
+  trigger: any;
 }) => {
   const [currencyValue, setCurrencyValue] = useState(value || "");
   const [rawValue, setRawValue] = useState(value || "");
@@ -36,6 +38,7 @@ const AmountInput = ({
       setCurrencyValue(formattedValue);
       setRawValue(digitsOnly);
       setValue(name, digitsOnly);
+      trigger();
     } else {
       setCurrencyValue("");
       setRawValue("");
@@ -166,7 +169,6 @@ const ProductInfoPage = () => {
             }}
             onBlur={(e: any) => {
               if (e.target.value) {
-                console.log(e.target.value);
                 setProducts((prev) => [...prev, e.target.value]);
                 setTimeout(() => {
                   e.target.value = "";
@@ -178,7 +180,7 @@ const ProductInfoPage = () => {
               products.length <= 1 && setAllowSubmit(false);
             }}
             name="product"
-            placeHolder={products?.length ===0 && "Your Product(s)"}
+            placeHolder={"Your Product(s)"}
           />
           {errors.product && products?.length === 0 && (
             <span className="text-[11px] text-red-500">
@@ -201,6 +203,7 @@ const ProductInfoPage = () => {
                 value={
                   (productData && JSON.parse(productData)?.annualSalary) || ""
                 }
+                trigger={trigger}
               />
             </div>
           </div>
@@ -227,6 +230,7 @@ const ProductInfoPage = () => {
                     JSON.parse(productData)?.annualValueExports) ||
                   ""
                 }
+                trigger={trigger}
               />
             </div>
           </div>
@@ -252,6 +256,7 @@ const ProductInfoPage = () => {
                     JSON.parse(productData)?.annualValueImports) ||
                   ""
                 }
+                trigger={trigger}
               />
             </div>
           </div>

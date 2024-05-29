@@ -67,7 +67,6 @@ export const Step3 = ({
     }
     if (confirmingCountry) setShowConfirmingBank(true);
     if (advisingCountry) {
-      console.log(advisingCountry)
       setShowAdvisingBank(true);
     }
   }, [valueChanged]);

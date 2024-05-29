@@ -52,7 +52,7 @@ const companyInfoSchema = z.object({
     }),
   accountHolderName: z
     .string({ message: "*Account holder name is required" })
-    .min(3, "*Account holder name field cannot be empty."),
+    .min(1, "*Account holder name field cannot be empty."),
   businessNature: z
     .string({ message: "*Business nature field cannot be empty." })
     .min(1, "*Business nature field cannot be empty."),

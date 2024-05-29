@@ -341,8 +341,8 @@ const ConfirmationPage = () => {
         <Step5
           register={register}
           isConfirmation
-          countries={countries}
-          flags={flags}
+          countries={countryNames}
+          flags={countryFlags}
           setValue={setValue}
           getValues={getValues}
           valueChanged={valueChanged}

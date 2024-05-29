@@ -40,12 +40,14 @@ export const Step2 = ({
   let amount = getValues("amount");
   let currencyVal = getValues("currency");
   let paymentTerms = getValues("paymentTerms");
+  let extraInfo = getValues("extraInfo");
 
   const [currencyValue, setCurrencyValue] = useState<string | number | null>(
     null
   );
   const [rawValue, setRawValue] = useState("");
   const [showExtra, setShowExtra] = useState(false);
+  const [otherValue, setOtherValue] = useState("");
 
   const handleChange = (e: any) => {
     const { value } = e.target;
@@ -78,6 +80,7 @@ export const Step2 = ({
       setCurrencyValue(amount);
       setRawValue(amount);
     }
+    extraInfo = getValues("extraInfo");
   }, [valueChanged]);
 
   const [checkedState, setCheckedState] = useState({
@@ -109,6 +112,7 @@ export const Step2 = ({
   });
 
   const handleExtraCheckChange = (id: string) => {
+    if (id !== "payment-others") setOtherValue("");
     setExtraCheckedState((prevState) => ({
       ...prevState,
       "payment-shipment": id === "payment-shipment",
@@ -124,7 +128,7 @@ export const Step2 = ({
     if (amount && paymentTerms) {
       setStepCompleted(1, true);
     }
-    if (paymentTerms === "Usance LC") setShowExtra(true);
+    if (paymentTerms === "Usance LC" && extraInfo) setShowExtra(true);
   }, [amount, paymentTerms, valueChanged]);
 
   return (
@@ -278,6 +282,7 @@ export const Step2 = ({
                 register={register}
                 checked={extraCheckedState["payment-shipment"]}
                 handleCheckChange={handleExtraCheckChange}
+                setValueChanged={setValueChanged}
               />
               <BgRadioInput
                 id="payment-acceptance"
@@ -287,6 +292,7 @@ export const Step2 = ({
                 register={register}
                 checked={extraCheckedState["payment-acceptance"]}
                 handleCheckChange={handleExtraCheckChange}
+                setValueChanged={setValueChanged}
               />
             </div>
             <div className="flex items-center gap-x-3 justify-between">
@@ -298,6 +304,7 @@ export const Step2 = ({
                 register={register}
                 checked={extraCheckedState["payment-negotiation"]}
                 handleCheckChange={handleExtraCheckChange}
+                setValueChanged={setValueChanged}
               />
               <BgRadioInput
                 id="payment-invoice"
@@ -307,6 +314,7 @@ export const Step2 = ({
                 register={register}
                 checked={extraCheckedState["payment-invoice"]}
                 handleCheckChange={handleExtraCheckChange}
+                setValueChanged={setValueChanged}
               />
               <BgRadioInput
                 id="payment-extra-sight"
@@ -316,6 +324,7 @@ export const Step2 = ({
                 register={register}
                 checked={extraCheckedState["payment-extra-sight"]}
                 handleCheckChange={handleExtraCheckChange}
+                setValueChanged={setValueChanged}
               />
             </div>
             <div
@@ -340,7 +349,10 @@ export const Step2 = ({
               <input
                 type="text"
                 name="ds"
+                value={otherValue}
+                onChange={(e: any) => setOtherValue(e.target.value)}
                 className="text-sm bg-transparent !border-b-2 !border-b-neutral-300 rounded-none border-transparent focus-visible:ring-0 focus-visible:ring-offset-0 outline-none w-[80%]"
+                disabled={!extraCheckedState["payment-others"]}
               />
             </div>
           </>

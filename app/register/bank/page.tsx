@@ -231,7 +231,7 @@ const BankRegisterPage = () => {
                 setAllowSubmit={setAllowSubmit}
                 trigger={trigger}
               />
-              {(phone === "" || phone === undefined) && errors.pocPhone && (
+              {errors.pocPhone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.pocPhone.message}
                 </span>

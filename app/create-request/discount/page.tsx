@@ -37,6 +37,7 @@ const CreateDiscountPage = () => {
     getValues,
     reset,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<z.infer<typeof discountingSchema>>({
     // resolver: zodResolver(discountingSchema),
@@ -147,6 +148,7 @@ const CreateDiscountPage = () => {
         const { confirmingBank2, ...rest } = data;
         const reqData = {
           ...rest,
+          currency: data?.currency ? data?.currency : "usd",
           transhipment: data.transhipment === "yes" ? true : false,
           lcType: "LC Discounting",
           lcPeriod: {
@@ -155,6 +157,18 @@ const CreateDiscountPage = () => {
           },
           ...(extraInfo && { extraInfo }),
         };
+        // @ts-ignore
+        delete reqData._id;
+        // @ts-ignore
+        delete reqData.refId;
+        // @ts-ignore
+        delete reqData.createdBy;
+        // @ts-ignore
+        delete reqData.status;
+        // @ts-ignore
+        delete reqData.createdAt;
+        // @ts-ignore
+        delete reqData.updatedAt;
 
         const { response, success } = discountingData?._id
           ? await onUpdateLC({
@@ -218,6 +232,7 @@ const CreateDiscountPage = () => {
 
     const reqData = {
       ...rest,
+      currency: data?.currency ? data?.currency : "usd",
       transhipment: data.transhipment === "yes" ? true : false,
       lcType: "LC Discounting",
       lcPeriod: {
@@ -227,6 +242,22 @@ const CreateDiscountPage = () => {
       ...(extraInfo && { extraInfo }),
       draft: "true",
     };
+    console.log(reqData, "REQDATA");
+
+    // @ts-ignore
+    delete reqData._id;
+    // @ts-ignore
+    delete reqData.refId;
+    // @ts-ignore
+    delete reqData.createdBy;
+    // @ts-ignore
+    delete reqData.status;
+    // @ts-ignore
+    delete reqData.createdAt;
+    // @ts-ignore
+    delete reqData.updatedAt;
+    // @ts-ignore
+    delete reqData?.selectBaseRate;
 
     const { response, success } = discountingData?._id
       ? await onUpdateLC({
@@ -299,11 +330,12 @@ const CreateDiscountPage = () => {
     <CreateLCLayout isRisk={false}>
       <form className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white">
         <Step1
-          type="discount"
           setStepCompleted={handleStepCompletion}
           register={register}
+          watch={watch}
         />
         <Step2
+          watch={watch}
           register={register}
           setValue={setValue}
           getValues={getValues}
@@ -314,6 +346,7 @@ const CreateDiscountPage = () => {
           setDays={setDays}
         />
         <Step3
+          watch={watch}
           register={register}
           setValue={setValue}
           countries={countryNames}
@@ -348,6 +381,7 @@ const CreateDiscountPage = () => {
 
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6
+            watch={watch}
             register={register}
             title="Discounting Info"
             isDiscount

@@ -16,6 +16,7 @@ export const Step3 = ({
   setValueChanged,
   setStepCompleted,
   isDiscount,
+  watch,
 }: {
   register: any;
   setValue: any;
@@ -26,10 +27,12 @@ export const Step3 = ({
   setValueChanged?: any;
   setStepCompleted?: any;
   isDiscount?: boolean;
+  watch: any;
 }) => {
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
   const [showConfirmingBank2, setShowConfirmingBank2] = useState(false);
+ 
 
   let issuingCountry = getValues("issuingBank.country");
   let issuingBank = getValues("issuingBank.bank");
@@ -301,6 +304,7 @@ export const Step3 = ({
         setValueChanged={setValueChanged}
       />
       <Transhipment
+        watch={watch}
         getValues={getValues}
         register={register}
         setValue={setValue}

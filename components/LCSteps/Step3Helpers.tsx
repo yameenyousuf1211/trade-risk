@@ -294,28 +294,18 @@ export const Transhipment = ({
   isDiscount,
   getValues,
   valueChanged,
+  watch,
 }: {
   register: any;
   setValue: any;
   isDiscount?: boolean;
   getValues?: any;
   valueChanged?: boolean;
+  watch: any;
 }) => {
+  const transhipment = watch("transhipment");
   const [expectedConfirmationDate, setExpectedConfirmationDate] =
     useState<Date>();
-
-  const [checkedState, setCheckedState] = useState({
-    "transhipment-allowed-yes": false,
-    "transhipment-allowed-no": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    setCheckedState((prevState) => ({
-      ...prevState,
-      "transhipment-allowed-yes": id === "transhipment-allowed-yes",
-      "transhipment-allowed-no": id === "transhipment-allowed-no",
-    }));
-  };
 
   let expectedDate = isDiscount
     ? getValues("expectedDiscountingDate")
@@ -355,8 +345,7 @@ export const Transhipment = ({
           name="transhipment"
           value={"yes"}
           register={register}
-          checked={checkedState["transhipment-allowed-yes"]}
-          handleCheckChange={handleCheckChange}
+          checked={transhipment === "yes"}
         />
         <BgRadioInput
           id="transhipment-allowed-no"
@@ -364,8 +353,7 @@ export const Transhipment = ({
           name="transhipment"
           value={"no"}
           register={register}
-          checked={checkedState["transhipment-allowed-no"]}
-          handleCheckChange={handleCheckChange}
+          checked={transhipment === "no"}
         />
       </div>
 

@@ -29,6 +29,7 @@ import { Country } from "@/types/type";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
 import { sendNotification } from "@/services/apis/notifications.api";
+import { useAuth } from "@/context/AuthProvider";
 import { calculateDaysLeft } from "@/utils";
 
 const CreateRequestPage = () => {
@@ -38,8 +39,8 @@ const CreateRequestPage = () => {
     getValues,
     reset,
     watch,
-    handleSubmit,
     trigger,
+    handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof confirmationSchema>>({});
 
@@ -125,7 +126,7 @@ const CreateRequestPage = () => {
     // Check if validation was successful
     if (validationResult.success) {
       const validatedData = validationResult.data;
-
+      console.log(proceed, "proceed");
       if (proceed) {
         if (
           data.confirmingBank &&
@@ -150,6 +151,7 @@ const CreateRequestPage = () => {
 
         const reqData = {
           ...rest,
+          currency: data?.currency ? data?.currency : "usd",
           lcType: "LC Confirmation",
           transhipment: data.transhipment === "yes" ? true : false,
           lcPeriod: {
@@ -159,6 +161,18 @@ const CreateRequestPage = () => {
           ...(extraInfo && { extraInfo }),
         };
 
+        // @ts-ignore
+        delete reqData._id;
+        // @ts-ignore
+        delete reqData.refId;
+        // @ts-ignore
+        delete reqData.createdBy;
+        // @ts-ignore
+        delete reqData.status;
+        // @ts-ignore
+        delete reqData.createdAt;
+        // @ts-ignore
+        delete reqData.updatedAt;
         const { response, success } = confirmationData?._id
           ? await onUpdateLC({
               payload: reqData,
@@ -282,6 +296,7 @@ const CreateRequestPage = () => {
     const { confirmingBank2, ...rest } = data;
     const reqData = {
       ...rest,
+      currency: data?.currency ? data?.currency : "usd",
       lcType: "LC Confirmation",
       transhipment: data.transhipment === "yes" ? true : false,
       lcPeriod: {
@@ -291,6 +306,18 @@ const CreateRequestPage = () => {
       ...(extraInfo && { extraInfo }),
       draft: "true",
     };
+    // @ts-ignore
+    delete reqData._id;
+    // @ts-ignore
+    delete reqData.refId;
+    // @ts-ignore
+    delete reqData.createdBy;
+    // @ts-ignore
+    delete reqData.status;
+    // @ts-ignore
+    delete reqData.createdAt;
+    // @ts-ignore
+    delete reqData.updatedAt;
 
     const { response, success } = confirmationData?._id
       ? await onUpdateLC({
@@ -359,12 +386,18 @@ const CreateRequestPage = () => {
   const handleStepCompletion = (index: number, status: boolean) => {
     setStepStatus(index, status);
   };
+  console.log(getValues());
 
   return (
     <CreateLCLayout isRisk={false}>
       <form className="border border-borderCol bg-white py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg">
-        <Step1 register={register} setStepCompleted={handleStepCompletion} />
+        <Step1
+          watch={watch}
+          register={register}
+          setStepCompleted={handleStepCompletion}
+        />
         <Step2
+          watch={watch}
           register={register}
           setValue={setValue}
           getValues={getValues}
@@ -375,6 +408,7 @@ const CreateRequestPage = () => {
           setDays={setDays}
         />
         <Step3
+          watch={watch}
           register={register}
           setValue={setValue}
           countries={countryNames}
@@ -405,6 +439,7 @@ const CreateRequestPage = () => {
         />
         <div className="flex items-start gap-x-4 h-full w-full relative">
           <Step6
+            watch={watch}
             register={register}
             setValue={setValue}
             getValues={getValues}
@@ -417,9 +452,7 @@ const CreateRequestPage = () => {
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
           <Button
-            onClick={() => {
-              handleSubmit(saveAsDraft)();
-            }}
+            onClick={handleSubmit(saveAsDraft)}
             type="button"
             variant="ghost"
             className="!bg-[#F1F1F5] w-1/3"
@@ -432,9 +465,7 @@ const CreateRequestPage = () => {
             size="lg"
             disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
-            onClick={() => {
-              handleSubmit(onSubmit)();
-            }}
+            onClick={handleSubmit(onSubmit)}
           >
             {isLoading ? <Loader /> : "Submit request"}
           </Button>
@@ -443,9 +474,7 @@ const CreateRequestPage = () => {
           title="Submit Request"
           className="hidden"
           setProceed={setProceed}
-          onClick={() => {
-            handleSubmit(onSubmit)();
-          }}
+          onAccept={handleSubmit(onSubmit)}
         />
       </form>
     </CreateLCLayout>

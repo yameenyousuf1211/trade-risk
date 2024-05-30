@@ -16,7 +16,7 @@ export const RiskBanks = ({ setValue }: { setValue: any }) => {
           value={banks}
           onChange={(val: any) => {
             setBanks(val);
-            // setValue("product", val.join(", "));
+            setValue("banks", val.join(", "));
             setBankInput("");
           }}
           onKeyUp={(e) => {

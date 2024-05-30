@@ -105,31 +105,16 @@ export const Period = ({
     shipmentCountry && fetchPorts();
   }, [shipmentCountry]);
 
-  const [lcPeriodDate, setLcPeriodDate] = useState<Date>();
-  const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
-  const [lcIssueType, setLcIssueType] = useState("");
 
   const handleRadioChange = (e: any) => {
-    setLcIssueType(e.target.value);
     setValue("lcPeriod.expectedDate", e.target.value);
   };
 
   const updateValue = (name: string, value: any) => {
     setValue(name, value);
   };
-
-  useEffect(() => {
-    setLcPeriodDate(lcStartDate);
-    setLcExpiryDate(lcEndDate);
-    // if (lcStartDate && lcEndDate) {
-    //   setValue("lcPeriod.startDate", new Date(lcStartDate));
-    //   setValue("lcPeriod.endDate", new Date(lcEndDate));
-    // }
-    setValue("lcPeriod.expectedDate", lcPeriodType === true ? "yes" : "no");
-    lcStartDate && lcStartDate && setLcIssueType(lcPeriodType);
-  }, [lcStartDate, lcEndDate]);
 
   return (
     <div className="flex items-start gap-x-4 my-5 h-full">
@@ -143,7 +128,7 @@ export const Period = ({
               className="accent-primaryCol size-4"
               name="lcPeriod.expectedDate"
               value="yes"
-              checked={lcIssueType === "yes"}
+              checked={lcPeriodType === "yes"}
               onChange={handleRadioChange}
             />
             <label
@@ -160,7 +145,7 @@ export const Period = ({
               className="accent-primaryCol !bg-white size-4"
               name="lcPeriod.expectedDate"
               value="no"
-              checked={lcIssueType === "no"}
+              checked={lcPeriodType === "no"}
               onChange={handleRadioChange}
             />
             <label
@@ -176,13 +161,13 @@ export const Period = ({
               <Button
                 variant={"outline"}
                 className={`w-fit justify-start text-left font-normal border-none ${
-                  lcPeriodDate ? "text-black" : "text-[#B5B5BE]"
+                  lcStartDate ? "text-black" : "text-[#B5B5BE]"
                 }`}
                 id="period-lc-date"
-                disabled={!lcIssueType}
+                disabled={!lcPeriodType}
               >
-                {lcPeriodDate ? (
-                  format(lcPeriodDate, "PPP")
+                {lcStartDate ? (
+                  format(lcStartDate, "PPP")
                 ) : (
                   <span>DD/MM/YYYY</span>
                 )}
@@ -190,11 +175,10 @@ export const Period = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              {lcIssueType === "yes" ? (
+              {lcPeriodType === "yes" ? (
                 <ValidatingCalendar
-                  initialDate={lcPeriodDate}
+                  initialDate={lcStartDate}
                   onChange={(date) => {
-                    setLcPeriodDate(date);
                     updateValue("lcPeriod.startDate", date);
                   }}
                   onClose={() => setDatePopoverOpen(false)}
@@ -202,9 +186,8 @@ export const Period = ({
                 />
               ) : (
                 <ValidatingCalendar
-                  initialDate={lcPeriodDate}
+                  initialDate={lcStartDate}
                   onChange={(date) => {
-                    setLcPeriodDate(date);
                     updateValue("lcPeriod.startDate", date);
                   }}
                   onClose={() => setDatePopoverOpen(false)}
@@ -225,23 +208,18 @@ export const Period = ({
               <Button
                 variant={"outline"}
                 className={`w-fit justify-start text-left font-normal border-none ${
-                  lcExpiryDate ? "text-black" : "text-[#B5B5BE]"
+                  lcEndDate ? "text-black" : "text-[#B5B5BE]"
                 }`}
                 id="period-expiry-date"
               >
-                {lcExpiryDate ? (
-                  format(lcExpiryDate, "PPP")
-                ) : (
-                  <span>DD/MM/YYYY</span>
-                )}
+                {lcEndDate ? format(lcEndDate, "PPP") : <span>DD/MM/YYYY</span>}
                 <CalendarIcon className="ml-2 mr-2 size-5" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <ValidatingCalendar
-                initialDate={lcExpiryDate}
+                initialDate={lcEndDate}
                 onChange={(date) => {
-                  setLcExpiryDate(date);
                   updateValue("lcPeriod.endDate", date);
                 }}
                 onClose={() => setIsPopoverOpen(false)}
@@ -291,21 +269,19 @@ export const Transhipment = ({
   watch: any;
 }) => {
   const transhipment = watch("transhipment");
-  const [expectedConfirmationDate, setExpectedConfirmationDate] =
-    useState<Date>();
 
   let expectedDate = isDiscount
     ? watch("expectedDiscountingDate")
     : watch("expectedConfirmationDate");
 
-  // useEffect(() => {
-  //   setExpectedConfirmationDate(expectedDate);
+  const setDate = (date: Date | string) => {
+    isDiscount
+      ? setValue("expectedDiscountingDate", date)
+      : setValue("expectedConfirmationDate", date);
+  };
 
-  //   if (expectedDate) {
-  //     isDiscount
-  //       ? setValue("expectedDiscountingDate", new Date(expectedDate))
-  //       : setValue("expectedConfirmationDate", new Date(expectedDate));
-  //   }
+  // useEffect(() => {
+  //   setDate(expectedDate);
   // }, [expectedDate]);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -361,13 +337,13 @@ export const Transhipment = ({
                 variant={"outline"}
                 className={cn(
                   "w-fit justify-start text-left font-normal border-none",
-                  !expectedConfirmationDate &&
+                  !expectedDate &&
                     "text-muted-foreground flex items-center text-sm justify-between w-fit"
                 )}
                 id="expected-confirmation-date"
               >
-                {expectedConfirmationDate ? (
-                  format(expectedConfirmationDate, "PPP")
+                {expectedDate ? (
+                  format(expectedDate, "PPP")
                 ) : (
                   <span className="text-sm">DD/MM/YYYY</span>
                 )}
@@ -376,12 +352,9 @@ export const Transhipment = ({
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <ValidatingCalendar
-                initialDate={expectedConfirmationDate}
+                initialDate={expectedDate}
                 onChange={(date) => {
-                  setExpectedConfirmationDate(date);
-                  isDiscount
-                    ? setValue("expectedDiscountingDate", date)
-                    : setValue("expectedConfirmationDate", date);
+                  setDate(date);
                 }}
                 onClose={() => setIsPopoverOpen(false)}
               />
@@ -395,10 +368,7 @@ export const Transhipment = ({
             type="button"
             className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
             onClick={() => {
-              setExpectedConfirmationDate(nextWeekDate);
-              isDiscount
-                ? setValue("expectedDiscountingDate", nextWeekDate)
-                : setValue("expectedConfirmationDate", nextWeekDate);
+              setDate(nextWeekDate);
             }}
           >
             <p className="text-white text-[12px] font-semibold">Next week</p>
@@ -412,10 +382,7 @@ export const Transhipment = ({
             type="button"
             className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
             onClick={() => {
-              setExpectedConfirmationDate(twoWeeksDate);
-              isDiscount
-                ? setValue("expectedDiscountingDate", twoWeeksDate)
-                : setValue("expectedConfirmationDate", twoWeeksDate);
+              setDate(twoWeeksDate);
             }}
           >
             <p className="text-white text-[12px] font-semibold">Two Weeks</p>

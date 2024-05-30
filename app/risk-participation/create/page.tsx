@@ -16,10 +16,19 @@ import { Button } from "@/components/ui/button";
 import useLoading from "@/hooks/useLoading";
 import { getCountries } from "@/services/apis/helpers.api";
 import { Country } from "@/types/type";
+import { bankCountries } from "@/utils/data";
+import { generalRiskSchema } from "@/validation/risk.validation";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const RiskFundedPage = () => {
+  const { register, setValue, reset, watch, getValues, handleSubmit } = useForm<
+    z.infer<typeof generalRiskSchema>
+  >({});
   const { startLoading, stopLoading, isLoading } = useLoading();
 
   const [allCountries, setAllCountries] = useState<Country[]>([]);
@@ -30,6 +39,8 @@ const RiskFundedPage = () => {
     queryKey: ["countries"],
     queryFn: () => getCountries(),
   });
+  const countryNames = bankCountries.map((country) => country.name);
+  const countryFlags = bankCountries.map((country) => country.flag);
 
   useEffect(() => {
     if (
@@ -52,30 +63,59 @@ const RiskFundedPage = () => {
     }
   }, [countriesData]);
 
+  const onSubmit: SubmitHandler<z.infer<typeof generalRiskSchema>> = async (
+    data
+  ) => {
+    console.log(data);
+    const validationResult = generalRiskSchema.safeParse(data);
+
+    if (validationResult.success) {
+      const validatedData = validationResult.data;
+      console.log(validatedData);
+    } else {
+      if (validationResult.error && validationResult.error.errors.length > 0) {
+        validationResult.error.errors.forEach((error) => {
+          toast.error(`Validation Error: ${error.message}`);
+        });
+      }
+    }
+  };
+
   return (
     <CreateLCLayout isRisk={true}>
       <form className="mt-2 flex flex-col gap-y-5">
-        <RiskBanks setValue={""} />
+        <RiskBanks setValue={setValue} />
         <RiskAgreement />
-        {/* <RiskStep1 /> */}
-        <RiskStep2 />
-        <RiskStep3 countries={countries} flags={flags} />
+        <RiskStep1 register={register} watch={watch} />
+        <RiskStep2 register={register} watch={watch} setValue={setValue} />
+
+        <RiskStep3
+          countries={countryNames}
+          flags={countryFlags}
+          register={register}
+          watch={watch}
+          setValue={setValue}
+        />
         <RiskStep4
-          register={() => console.log("hello")}
-          countries={countries}
-          flags={flags}
-          setValue={() => console.log("hello")}
+       countries={countries}
+       flags={flags}
+          register={register}
+          watch={watch}
+          setValue={setValue}
         />
+
         <RiskStep5
-          register={() => console.log("hello")}
-          setValue={() => console.log("hello")}
+          register={register}
+          watch={watch}
+          setValue={setValue}
           countries={countries}
           flags={flags}
         />
-        <RiskStep6 register={() => console.log("hello")} />
+        <RiskStep6 register={register} watch={watch} />
+
         <div className="relative flex items-center justify-between w-full h-full gap-x-2">
           <RiskStep7 />
-          <RiskStep8 />
+          <RiskStep8 register={register} />
         </div>
 
         <div className="py-4 px-4 border border-borderCol rounded-lg w-full bg-white flex items-center justify-between gap-x-4">
@@ -85,7 +125,10 @@ const RiskFundedPage = () => {
           >
             Save as draft
           </Button>
-          <Button className="w-2/3 py-6 text-[16px] bg-text hover:bg-text/90 text-white">
+          <Button
+            className="w-2/3 py-6 text-[16px] bg-text hover:bg-text/90 text-white"
+            onClick={handleSubmit(onSubmit)}
+          >
             Submit Request
           </Button>
         </div>

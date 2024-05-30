@@ -10,10 +10,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar as CalendarIcon } from "lucide-react";
-
 import { Button } from "../ui/button";
 import { format } from "date-fns";
 import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
+import { UseFormRegister } from "react-hook-form";
+import { generalRiskSchema } from "@/validation/risk.validation";
 
 export const DiscountBanks = ({
   countries,
@@ -21,6 +22,7 @@ export const DiscountBanks = ({
   getValues,
   flags,
   value,
+  watch,
 }: {
   countries: string[];
   flags: string[];
@@ -28,42 +30,30 @@ export const DiscountBanks = ({
   getValues?: any;
   value?: any;
   valueSetter?: any;
+  watch?: any;
 }) => {
   const [valueChanged, setValueChanged] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const { issuingBank, advisingBank, confirmingBank } = watch();
+  console.log(issuingBank);
 
-  //   let issuingCountry = getValues("issuingBank.country");
-  //   let issuingBank = getValues("issuingBank.bank");
-  //   let advisingCountry = getValues("advisingBank.country");
-  //   let advisingBank = getValues("advisingBank.bank");
-  //   let confirmingCountry = getValues("confirmingBank.country");
-  //   let confirmingBank = getValues("confirmingBank.bank");
+  const { data: issuingBanks } = useQuery({
+    queryKey: ["issuing-banks", issuingBank?.country],
+    queryFn: () => getBanks(issuingBank?.country),
+    enabled: !!issuingBank?.country,
+  });
 
-  //   useEffect(() => {
-  //     issuingCountry = getValues("issuingBank.country");
-  //     issuingBank = getValues("issuingBank.bank");
-  //     advisingCountry = getValues("advisingBank.country");
-  //     advisingBank = getValues("advisingBank.bank");
-  //     confirmingCountry = getValues("confirmingBank.country");
-  //   }, [valueChanged, value]);
+  const { data: advisingBanks } = useQuery({
+    queryKey: ["advising-banks", advisingBank?.country],
+    queryFn: () => getBanks(advisingBank?.country),
+    enabled: !!advisingBank?.country,
+  });
 
-  //   const { data: issuingBanks } = useQuery({
-  //     queryKey: ["issuing-banks", issuingCountry],
-  //     queryFn: () => getBanks(issuingCountry),
-  //     enabled: !!issuingCountry,
-  //   });
-
-  //   const { data: advisingBanks } = useQuery({
-  //     queryKey: ["advising-banks", advisingCountry],
-  //     queryFn: () => getBanks(advisingCountry),
-  //     enabled: !!advisingCountry,
-  //   });
-
-  //   const { data: confirmingBanks } = useQuery({
-  //     queryKey: ["confirming-banks", confirmingCountry],
-  //     queryFn: () => getBanks(confirmingCountry),
-  //     enabled: !!confirmingCountry,
-  //   });
+  const { data: confirmingBanks } = useQuery({
+    queryKey: ["confirming-banks", confirmingBank?.country],
+    queryFn: () => getBanks(confirmingBank?.country),
+    enabled: !!confirmingBank?.country,
+  });
 
   //   const handleSameAsAdvisingBank = () => {
   //     const advisingCountry = getValues("advisingBank.country");
@@ -106,7 +96,6 @@ export const DiscountBanks = ({
             data={countries}
             flags={flags}
             setValue={setValue}
-            setValueChanged={setValueChanged}
           />
           <DDInput
             placeholder="Select bank"
@@ -114,14 +103,12 @@ export const DiscountBanks = ({
             id="issuingBank.bank"
             // value={issuingBank}
             setValue={setValue}
-            setValueChanged={setValueChanged}
-            disabled={true}
-            // disabled={
-            //   !issuingBanks || !issuingBanks?.response || !issuingBanks.success
-            // }
-            // data={
-            //   issuingBanks && issuingBanks.success && issuingBanks?.response
-            // }
+            disabled={
+              !issuingBanks || !issuingBanks?.response || !issuingBanks.success
+            }
+            data={
+              issuingBanks && issuingBanks.success && issuingBanks?.response
+            }
           />
         </div>
       </div>
@@ -139,7 +126,6 @@ export const DiscountBanks = ({
             data={countries}
             flags={flags}
             setValue={setValue}
-            setValueChanged={setValueChanged}
           />
           <DDInput
             placeholder="Select bank"
@@ -147,16 +133,14 @@ export const DiscountBanks = ({
             id="advisingBank.bank"
             // value={advisingBank}
             setValue={setValue}
-            setValueChanged={setValueChanged}
-            disabled={true}
-            // disabled={
-            //   !advisingBanks ||
-            //   !advisingBanks?.response ||
-            //   !advisingBanks.success
-            // }
-            // data={
-            //   advisingBanks && advisingBanks.success && advisingBanks.response
-            // }
+            disabled={
+              !advisingBanks ||
+              !advisingBanks?.response ||
+              !advisingBanks.success
+            }
+            data={
+              advisingBanks && advisingBanks.success && advisingBanks.response
+            }
           />
         </div>
       </div>
@@ -191,7 +175,6 @@ export const DiscountBanks = ({
             data={countries}
             flags={flags}
             setValue={setValue}
-            setValueChanged={setValueChanged}
           />
           <DDInput
             placeholder="Select bank"
@@ -199,18 +182,16 @@ export const DiscountBanks = ({
             id="confirmingBank.bank"
             // value={confirmingBank}
             setValue={setValue}
-            setValueChanged={setValueChanged}
-            disabled
-            // disabled={
-            //   !confirmingBanks ||
-            //   !confirmingBanks?.response ||
-            //   !confirmingBanks.success
-            // }
-            // data={
-            //   confirmingBanks &&
-            //   confirmingBanks.success &&
-            //   confirmingBanks.response
-            // }
+            disabled={
+              !confirmingBanks ||
+              !confirmingBanks?.response ||
+              !confirmingBanks.success
+            }
+            data={
+              confirmingBanks &&
+              confirmingBanks.success &&
+              confirmingBanks.response
+            }
           />
         </div>
       </div>
@@ -277,12 +258,14 @@ export const BankRadioInput = ({
   checked,
   name,
   value,
+  register,
 }: {
   id: string;
   label: string;
   name: string;
   value: string;
   checked: boolean;
+  register: any;
 }) => {
   return (
     <label
@@ -295,7 +278,7 @@ export const BankRadioInput = ({
         type="radio"
         id={id}
         value={value}
-        name={name}
+        {...register(name)}
         checked={checked}
         className="accent-[#255EF2] size-4"
       />

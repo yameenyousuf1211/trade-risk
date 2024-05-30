@@ -2,17 +2,21 @@ import React from "react";
 import { Input } from "../ui/input";
 import { DDInput } from "../LCSteps/helpers";
 
+interface Props {
+  register: any;
+  countries: string[];
+  flags: string[];
+  setValue: any;
+  watch: any;
+}
+
 export const RiskStep5 = ({
   register,
   countries,
   flags,
   setValue,
-}: {
-  register: any;
-  countries: string[];
-  flags: string[];
-  setValue: any;
-}) => {
+  watch,
+}: Props) => {
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">
@@ -32,7 +36,7 @@ export const RiskStep5 = ({
           <Input
             type="text"
             inputMode="text"
-            name="importerInfo.applicantName"
+            name="exporterInfo.beneficiaryName"
             register={register}
             className="text-sm block bg-none text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Enter name"
@@ -41,7 +45,7 @@ export const RiskStep5 = ({
         <DDInput
           placeholder="Select a country"
           label="Country of Export"
-          id="importerInfo.countryOfImport"
+          id="exporterInfo.countryOfImport"
           data={countries}
           setValue={setValue}
           flags={flags}
@@ -49,7 +53,7 @@ export const RiskStep5 = ({
         <DDInput
           placeholder="Select a country"
           label="Beneficiary Country"
-          id="importerInfo.countryOfImport"
+          id="exporterInfo.beneficiaryCountry"
           data={countries}
           setValue={setValue}
           flags={flags}

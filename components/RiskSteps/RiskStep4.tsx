@@ -2,17 +2,21 @@ import React from "react";
 import { Input } from "../ui/input";
 import { DDInput } from "../LCSteps/helpers";
 
+interface Props {
+  register: any;
+  countries: string[];
+  flags: string[];
+  setValue: any;
+  watch: any;
+}
+
 export const RiskStep4 = ({
   register,
   countries,
   flags,
   setValue,
-}: {
-  register: any;
-  countries: string[];
-  flags: string[];
-  setValue: any;
-}) => {
+  watch,
+}: Props) => {
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">

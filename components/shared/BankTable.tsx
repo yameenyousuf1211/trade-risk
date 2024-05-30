@@ -95,8 +95,8 @@ export const BankTable = ({
           valueB = b.createdAt;
           break;
         case "Country of issuing bank":
-          valueA = a.lcInfo.country;
-          valueB = b.lcInfo.country;
+          valueA = a.lcInfo && a.lcInfo.country;
+          valueB = b.lcInfo && b.lcInfo.country;
           break;
         case "Confirmation Rate":
           valueA = a.confirmationPrice;
@@ -120,8 +120,8 @@ export const BankTable = ({
           break;
 
         case "Confirmation bank":
-          valueA = a.bidBy?.[0];
-          valueB = b.bidBy?.[0];
+          valueA = a.bidBy && a.bidBy?.[0];
+          valueB = b.bidBy && b.bidBy?.[0];
           break;
 
         default:
@@ -196,7 +196,9 @@ export const BankTable = ({
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                       <p className="text-[16px] emoji-font">
-                        {allCountries &&
+                        {item.lcInfo &&
+                          item.lcInfo?.[1]?.country &&
+                          allCountries &&
                           getCountryFlagByName(item.lcInfo?.[1]?.country)}
                       </p>
                       <div className="truncate text-lightGray capitalize">
@@ -219,7 +221,8 @@ export const BankTable = ({
                   )}
                   <TableDataCell
                     data={
-                      item.confirmationPrice.toLocaleString() + ".00 %" || ""
+                      (item.confirmationPrice &&
+                        item.confirmationPrice.toLocaleString()) + ".00 %" || ""
                     }
                   />
                   <TableDataCell
@@ -238,7 +241,7 @@ export const BankTable = ({
                     }
                   />
                   <TableDataCell
-                    data={"USD " + item.confirmationPrice + ".00" || ""}
+                    data={"USD " + (item.confirmationPrice || "") + ".00" || ""}
                   />
 
                   <TableCell className="px-1 py-1 max-w-[200px]">

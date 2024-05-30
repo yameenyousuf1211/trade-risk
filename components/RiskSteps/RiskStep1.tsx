@@ -1,16 +1,112 @@
-import { ChevronDown } from "lucide-react";
-import React from "react";
+"use client";
+import { useState } from "react";
+import { BankRadioInput } from "./RiskHelpers";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Button } from "../ui/button";
+import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
+import { format } from "date-fns";
 
-export const RiskStep1 = ({ isFunded }: { isFunded?: boolean }) => {
+export const RiskStep1 = () => {
+  const [date, setDate] = useState<Date>();
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
   return (
-    <div className="bg-white rounded-lg border border-borderCol py-4 px-4">
-      <div className="flex items-center justify-between gap-x-2 w-full">
-        <div className="rounded-full text-white size-10 bg-[#255EF2]">1</div>
-        <p className="text-lightGray font-semibold text-[17px] ml-2">
+    <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
+      <div className="flex items-center gap-x-2 ml-2 mb-3">
+        <p className="size-6 text-sm rounded-full bg-[#255EF2] center text-white font-semibold">
+          1
+        </p>
+        <p className="font-semibold text-[16px] text-lightGray">
           Please choose one of the following that describes this transaction
         </p>
       </div>
-      <ChevronDown className="text-[#92929D] cursor-pointer mr-4" />
+      <div className="flex items-center justify-between gap-x-2 w-full">
+        <BankRadioInput
+          id="risk-participation"
+          label="Risk participation"
+          name="transactionType"
+          value="risk-participation"
+          checked={false}
+        />
+        {/* <BankRadioInput
+          id="outright-sales"
+          label="Outright sales"
+          name="transactionType"
+          value="outright-sales"
+          checked={false}
+        /> */}
+
+        <label
+          htmlFor="outright-sales"
+          className={`pl-3 w-full transition-colors duration-100 ${
+            false ? "bg-[#DCE5FD]" : "border border-borderCol bg-white"
+          } rounded-md flex items-center justify-between gap-x-3 mb-2 text-lightGray text-sm w-full`}
+        >
+          <div className="flex items-center gap-x-3 w-full">
+            <input
+              type="radio"
+              id="outright-sales"
+              value="outright-sales"
+              name="transactionType"
+              checked={false}
+              className="accent-[#255EF2] size-4"
+            />
+            Outright sales
+          </div>
+          <div className="bg-[#F2F2F2] py-1.5 w-fit h-full">
+            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className="w-fit justify-start text-left font-normal border-none text-[#B5B5BE] hover:bg-transparent text-sm bg-transparent"
+                  id="period-expiry-date"
+                >
+                  {date ? format(date, "PPP") : <span>DD/MM/YYYY</span>}
+                  <CalendarIcon className="ml-2 mr-2 size-3" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <ValidatingCalendar
+                  initialDate={date}
+                  onChange={(date) => {
+                    setDate(date);
+                    // setValue("lcPeriod.endDate", date);
+                  }}
+                  onClose={() => setIsPopoverOpen(false)}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </label>
+      </div>
+      {/* Condition rendering */}
+      <div className="px-2 pt-2 border border-borderCol rounded-lg w-full bg-[#F5F7F9]">
+        <p className="font-semibold text-sm text-lightGray mb-2 ml-2">
+          Outright Sales
+        </p>
+
+        <div className="flex items-center justify-between gap-x-2 w-full">
+          <BankRadioInput
+            id="pre-sales"
+            label="Pre sales"
+            name="outrightSales"
+            value="pre-sales"
+            checked={false}
+          />
+          <BankRadioInput
+            id="asset-on-books"
+            label="Asset on books"
+            name="outrightSales"
+            value="asset-on-books"
+            checked={false}
+          />
+        </div>
+      </div>
     </div>
   );
 };

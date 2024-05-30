@@ -68,8 +68,13 @@ const CreateRequestPage = () => {
         if (key === "transhipment") {
           setValue(key, value === true ? "yes" : "no");
         }
-        if (key === "lcPeriod.expectedDate") {
-          setValue(key, value === true ? "yes" : "no");
+        if (key === "lcPeriod") {
+          setValue(
+            "lcPeriod.expectedDate",
+            value.expectedDate === true ? "yes" : "no"
+          );
+          // setValue("lcPeriod.startDate", value.startDate);
+          // setValue("lcPeriod.endDate", value.endDate);
         }
         if (key === "extraInfo") {
           const daysLeft = calculateDaysLeft(value.dats);
@@ -87,18 +92,18 @@ const CreateRequestPage = () => {
   ) => {
     const validationResult = confirmationSchema.safeParse(data);
 
-    // Check if validation was successful
     if (validationResult.success) {
       const validatedData = validationResult.data;
       if (proceed) {
         if (
-          data.confirmingBank &&
-          data.issuingBank.country === data.confirmingBank.country
+          validatedData.confirmingBank &&
+          validatedData.issuingBank.country ===
+            validatedData.confirmingBank.country
         )
           return toast.error(
             "Confirming bank country cannot be the same as issuing bank country"
           );
-        if (/^\d+$/.test(data.productDescription))
+        if (/^\d+$/.test(validatedData.productDescription))
           return toast.error("Product description cannot contain only digits");
 
         // startLoading();
@@ -107,36 +112,25 @@ const CreateRequestPage = () => {
           currentDate.setDate(currentDate.getDate() + days)
         );
         let extraInfo;
-        if (data.paymentTerms === "Usance LC") {
+        if (validatedData.paymentTerms === "Usance LC") {
           extraInfo = { dats: futureDate, other: data.extraInfo };
         }
-        const { confirmingBank2, ...rest } = data;
+        const { confirmingBank2, ...rest } = validatedData;
 
         const reqData = {
           ...rest,
-          currency: data?.currency ? data?.currency : "usd",
+          currency: validatedData?.currency ? validatedData?.currency : "usd",
           lcType: "LC Confirmation",
-          transhipment: data.transhipment === "yes" ? true : false,
+          transhipment: validatedData.transhipment === "yes" ? true : false,
           lcPeriod: {
-            ...data.lcPeriod,
-            expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
+            ...validatedData.lcPeriod,
+            expectedDate:
+              validatedData.lcPeriod.expectedDate === "yes" ? true : false,
           },
           ...(extraInfo && { extraInfo }),
         };
 
-        // @ts-ignore
-        delete reqData._id;
-        // @ts-ignore
-        delete reqData.refId;
-        // @ts-ignore
-        delete reqData.createdBy;
-        // @ts-ignore
-        delete reqData.status;
-        // @ts-ignore
-        delete reqData.createdAt;
-        // @ts-ignore
-        delete reqData.updatedAt;
-        console.log(reqData);
+        console.log("reqData: ", reqData);
         // const { response, success } = confirmationData?._id
         //   ? await onUpdateLC({
         //       payload: reqData,

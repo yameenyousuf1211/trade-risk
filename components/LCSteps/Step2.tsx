@@ -80,7 +80,7 @@ export const Step2 = ({
       setStepCompleted(1, true);
     }
   }, [amount, paymentTerms]);
-
+  console.log(paymentTerms);
   return (
     <div
       id="step2"
@@ -286,7 +286,6 @@ export const Step2 = ({
                   id="payment-others"
                   checked={extraInfo === "others"}
                   className="accent-primaryCol size-4"
-                  // onChange={() => handleExtraCheckChange("payment-others")}
                 />
                 Others
               </label>

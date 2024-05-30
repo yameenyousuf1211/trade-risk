@@ -93,7 +93,7 @@ export const RiskStep2 = () => {
         />
       </div>
       {/* Transaction Fields */}
-      <div className="mt-3 py-4 px-2 border border-borderCol rounded-lg w-full bg-[#F5F7F9]">
+      <div className="mt-3 pt-4 px-2 border border-borderCol rounded-lg w-full bg-[#F5F7F9]">
         <p className="font-semibold text-sm text-lightGray mb-2 ml-2">
           Transaction offered under Risk Participation
         </p>

@@ -57,7 +57,7 @@ const RiskFundedPage = () => {
       <form className="mt-2 flex flex-col gap-y-5">
         <RiskBanks setValue={""} />
         <RiskAgreement />
-        {/* <RiskStep1 /> */}
+        <RiskStep1 />
         <RiskStep2 />
         <RiskStep3 countries={countries} flags={flags} />
         <RiskStep4

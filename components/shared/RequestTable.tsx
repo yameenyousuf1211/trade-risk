@@ -109,16 +109,16 @@ export const RequestTable = ({
           valueB = b.amount;
           break;
         case "Beneficiary":
-          valueA = a.exporterInfo.beneficiaryName;
-          valueB = b.exporterInfo.beneficiaryName;
+          valueA = a.exporterInfo && a.exporterInfo.beneficiaryName;
+          valueB = b.exporterInfo && b.exporterInfo.beneficiaryName;
           break;
         case "Ref no":
           valueA = a.refId;
           valueB = b.refId;
           break;
         case "LC Issuing Bank":
-          valueA = a.issuingBank.country;
-          valueB = b.issuingBank.country;
+          valueA = a.issuingBank && a.issuingBank.country;
+          valueB = b.issuingBank && b.issuingBank.country;
           break;
         case "Product Type":
           valueA = a.lcType;
@@ -130,16 +130,16 @@ export const RequestTable = ({
           break;
         case "Request":
         case "Deal Received":
-          valueA = a.lcPeriod.startDate;
-          valueB = b.lcPeriod.startDate;
+          valueA = a.lcPeriod && a.lcPeriod.startDate;
+          valueB = b.lcPeriod && b.lcPeriod.startDate;
           break;
         case "Expires":
-          valueA = a.lcPeriod.endDate;
-          valueB = b.lcPeriod.endDate;
+          valueA = a.lcPeriod && a.lcPeriod.endDate;
+          valueB = b.lcPeriod && b.lcPeriod.endDate;
           break;
         case "LC applicant":
-          valueA = a.importerInfo.applicantName;
-          valueB = b.importerInfo.applicantName;
+          valueA = a.importerInfo && a.importerInfo.applicantName;
+          valueB = b.importerInfo && b.importerInfo.applicantName;
           break;
 
         default:
@@ -234,27 +234,47 @@ export const RequestTable = ({
                 tableData.map((item: ILcs, index: number) => (
                   <TableRow key={index} className="border-none font-roboto">
                     <TableDataCell
-                      data={convertDateToString(item.lcPeriod.startDate)}
+                      data={
+                        (item.lcPeriod &&
+                          convertDateToString(item.lcPeriod.startDate)) ||
+                        ""
+                      }
                     />
                     <TableDataCell
-                      data={convertDateToString(item.lcPeriod.endDate)}
+                      data={
+                        (item.lcPeriod &&
+                          convertDateToString(item.lcPeriod.endDate)) ||
+                        ""
+                      }
                     />
                     <TableDataCell data={item.lcType} />
                     <TableCell className="px-1 py-1 max-w-[180px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <p className="text-[16px] emoji-font">
-                          {allCountries &&
-                            getCountryFlagByName(item.issuingBank.country)}
+                          {item.issuingBank &&
+                            allCountries &&
+                            getCountryFlagByName(item.issuingBank?.country)}
                         </p>
                         <div className="truncate capitalize text-lightGray">
-                          {item.issuingBank.bank}
+                          {item.issuingBank && item.issuingBank?.bank}
                         </div>
                       </div>
                     </TableCell>
-                    <TableDataCell data={item.exporterInfo.beneficiaryName} />
-                    <TableDataCell data={item.importerInfo.applicantName} />
                     <TableDataCell
-                      data={"USD " + item.amount?.toLocaleString() + ".00"}
+                      data={
+                        item.exporterInfo && item.exporterInfo?.beneficiaryName
+                      }
+                    />
+                    <TableDataCell
+                      data={
+                        item.importerInfo && item.importerInfo?.applicantName
+                      }
+                    />
+                    <TableDataCell
+                      data={
+                        "USD " +
+                        (item.amount && item.amount?.toLocaleString() + ".00")
+                      }
                     />
                     <TableCell className="px-1 py-1 max-w-[200px]">
                       <TableBidStatus id={item._id} lcData={item} />
@@ -275,27 +295,50 @@ export const RequestTable = ({
                       </div>
                     </TableCell>
                     <TableDataCell
-                      data={convertDateToString(item.lcPeriod?.startDate)}
+                      data={
+                        item.lcPeriod &&
+                        convertDateToString(item.lcPeriod?.startDate)
+                      }
                     />
                     <TableDataCell
-                      data={convertDateToString(item.lcPeriod?.endDate)}
+                      data={
+                        item.lcPeriod &&
+                        convertDateToString(item.lcPeriod?.endDate)
+                      }
                     />
                     <TableDataCell data={item.lcType} />
                     <TableCell className="px-1 py-1 max-w-[180px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <p className="text-[16px] emoji-font">
-                          {allCountries &&
+                          {item.issuingBank &&
+                            allCountries &&
                             getCountryFlagByName(item.issuingBank.country)}
                         </p>
                         <div className="capitalize truncate text-lightGray">
-                          {item.issuingBank.bank}
+                          {item.issuingBank?.bank}
                         </div>
                       </div>
                     </TableCell>
-                    <TableDataCell data={item.exporterInfo.beneficiaryName} />
-                    <TableDataCell data={item.importerInfo.applicantName} />
                     <TableDataCell
-                      data={"USD " + item.amount?.toLocaleString() + ".00"}
+                      data={
+                        (item.exporterInfo &&
+                          item.exporterInfo.beneficiaryName) ||
+                        ""
+                      }
+                    />
+                    <TableDataCell
+                      data={
+                        (item.importerInfo &&
+                          item.importerInfo.applicantName) ||
+                        ""
+                      }
+                    />
+                    <TableDataCell
+                      data={
+                        "USD " +
+                        (item.amount && item.amount?.toLocaleString()) +
+                        ".00"
+                      }
                     />
 
                     <TableCell className="px-1 py-1 max-w-[200px]">

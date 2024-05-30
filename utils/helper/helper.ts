@@ -30,6 +30,7 @@ export const convertDateToYYYYMMDD = (date: any) => {
 };
 
 export const formatLeftDate = (date: any) => {
+  if (!date) return "";
   const targetDate = new Date(date);
   const currentDate = new Date();
 
@@ -68,6 +69,7 @@ export const formatFileSize = (size: number): string => {
 };
 
 export const convertDateToString = (date: any) => {
+  if (!date) return "";
   const jsDate = new Date(date);
 
   const year = jsDate.getFullYear();
@@ -168,4 +170,3 @@ export const calculateDaysLeft = (futureDate: any) => {
   const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
   return daysDifference > 0 ? daysDifference : 0;
 };
-

@@ -5,11 +5,10 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Paperclip, X } from "lucide-react";
-import useRegisterStore, { getStateValues } from "@/store/register.store";
+import useRegisterStore from "@/store/register.store";
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { pointOfContractSchema } from "@/validation";
 import { z } from "zod";
 import { TelephoneInput } from "@/components/helpers";
@@ -24,7 +23,7 @@ const PointContactPage = () => {
     handleSubmit,
     getValues,
     trigger,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    formState: { errors, isDirty, isValid },
   } = useForm<z.infer<typeof pointOfContractSchema>>({
     resolver: zodResolver(pointOfContractSchema),
     mode: "all",

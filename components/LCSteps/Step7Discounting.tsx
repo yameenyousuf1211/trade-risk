@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { BgRadioInput, DDInput } from "./helpers";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+  UseFormGetValues,
+} from "react-hook-form";
 
 export const Step7Disounting = ({
   register,
@@ -9,10 +14,10 @@ export const Step7Disounting = ({
   getValues,
   watch,
 }: {
-  register: any;
-  setValue: any;
-  getValues: any;
-  watch: any;
+  getValues: UseFormGetValues<any>;
+  register: UseFormRegister<any>;
+  setValue: UseFormSetValue<any>;
+  watch: UseFormWatch<any>;
 }) => {
   const discountAtSight = watch("discountingInfo.discountAtSight");
   const behalfOf = watch("discountingInfo.behalfOf");

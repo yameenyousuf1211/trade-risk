@@ -33,13 +33,6 @@ export const RiskStep1 = () => {
           value="risk-participation"
           checked={false}
         />
-        {/* <BankRadioInput
-          id="outright-sales"
-          label="Outright sales"
-          name="transactionType"
-          value="outright-sales"
-          checked={false}
-        /> */}
 
         <label
           htmlFor="outright-sales"

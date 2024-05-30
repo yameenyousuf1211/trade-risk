@@ -13,44 +13,13 @@ import {
 } from "@/components/RiskSteps";
 import CreateLCLayout from "@/components/layouts/CreateLCLayout";
 import { Button } from "@/components/ui/button";
+import useCountries from "@/hooks/useCountries";
 import useLoading from "@/hooks/useLoading";
-import { getCountries } from "@/services/apis/helpers.api";
-import { Country } from "@/types/type";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 
 const RiskFundedPage = () => {
   const { startLoading, stopLoading, isLoading } = useLoading();
 
-  const [allCountries, setAllCountries] = useState<Country[]>([]);
-  const [countries, setCountries] = useState([]);
-  const [flags, setFlags] = useState([]);
-
-  const { data: countriesData } = useQuery({
-    queryKey: ["countries"],
-    queryFn: () => getCountries(),
-  });
-
-  useEffect(() => {
-    if (
-      countriesData &&
-      countriesData.success &&
-      countriesData.response &&
-      countriesData.response.length > 0
-    ) {
-      setAllCountries(countriesData.response);
-      const fetchedCountries = countriesData.response.map(
-        (country: Country) => {
-          return country.name;
-        }
-      );
-      setCountries(fetchedCountries);
-      const fetchedFlags = countriesData.response.map((country: Country) => {
-        return country.flag;
-      });
-      setFlags(fetchedFlags);
-    }
-  }, [countriesData]);
+  const { countries, flags } = useCountries();
 
   return (
     <CreateLCLayout isRisk={true}>

@@ -80,7 +80,7 @@ const Chart = ({
               strokeLinecap="round"
               strokeDasharray={strokeDasharray}
               strokeDashoffset={
-                circumference - (progress / 100) * circumference
+                circumference - (progress / 100) * circumference || ""
               }
               fill="transparent"
               r={radius}

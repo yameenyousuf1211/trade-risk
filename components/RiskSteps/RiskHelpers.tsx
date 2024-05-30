@@ -28,66 +28,7 @@ export const DiscountBanks = ({
   value?: any;
   valueSetter?: any;
 }) => {
-  const [valueChanged, setValueChanged] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-
-  //   let issuingCountry = getValues("issuingBank.country");
-  //   let issuingBank = getValues("issuingBank.bank");
-  //   let advisingCountry = getValues("advisingBank.country");
-  //   let advisingBank = getValues("advisingBank.bank");
-  //   let confirmingCountry = getValues("confirmingBank.country");
-  //   let confirmingBank = getValues("confirmingBank.bank");
-
-  //   useEffect(() => {
-  //     issuingCountry = getValues("issuingBank.country");
-  //     issuingBank = getValues("issuingBank.bank");
-  //     advisingCountry = getValues("advisingBank.country");
-  //     advisingBank = getValues("advisingBank.bank");
-  //     confirmingCountry = getValues("confirmingBank.country");
-  //   }, [valueChanged, value]);
-
-  //   const { data: issuingBanks } = useQuery({
-  //     queryKey: ["issuing-banks", issuingCountry],
-  //     queryFn: () => getBanks(issuingCountry),
-  //     enabled: !!issuingCountry,
-  //   });
-
-  //   const { data: advisingBanks } = useQuery({
-  //     queryKey: ["advising-banks", advisingCountry],
-  //     queryFn: () => getBanks(advisingCountry),
-  //     enabled: !!advisingCountry,
-  //   });
-
-  //   const { data: confirmingBanks } = useQuery({
-  //     queryKey: ["confirming-banks", confirmingCountry],
-  //     queryFn: () => getBanks(confirmingCountry),
-  //     enabled: !!confirmingCountry,
-  //   });
-
-  //   const handleSameAsAdvisingBank = () => {
-  //     const advisingCountry = getValues("advisingBank.country");
-  //     const advisingBank = getValues("advisingBank.bank");
-  //     const confirmingBank = getValues("confirmingBank.bank");
-  //     const confirmingCountry = getValues("confirmingBank.country");
-  //     if (!advisingBank || !advisingCountry) {
-  //       toast.error("Please select advising bank first");
-  //       setIsChecked(false);
-  //       return;
-  //     }
-  //     if (confirmingBank && confirmingCountry) {
-  //       setValue("confirmingBank.country", undefined);
-  //       setValue("confirmingBank.bank", undefined);
-  //     } else {
-  //       setValue("confirmingBank.country", advisingCountry);
-  //       setValue("confirmingBank.bank", advisingBank);
-  //     }
-  //     setValueChanged(!valueChanged);
-  //   };
-
-  //   const handleCheckboxChange = (e) => {
-  //     setIsChecked(e.target.checked);
-  //     handleSameAsAdvisingBank();
-  //   };
 
   return (
     <div className="flex items-center justify-between w-full mb-3 gap-x-4 flex-wrap xl:flex-nowrap">
@@ -105,7 +46,6 @@ export const DiscountBanks = ({
             data={countries}
             flags={flags}
             setValue={setValue}
-            setValueChanged={setValueChanged}
           />
           <DDInput
             placeholder="Select bank"
@@ -113,7 +53,6 @@ export const DiscountBanks = ({
             id="issuingBank.bank"
             // value={issuingBank}
             setValue={setValue}
-            setValueChanged={setValueChanged}
             disabled={true}
             // disabled={
             //   !issuingBanks || !issuingBanks?.response || !issuingBanks.success
@@ -138,7 +77,6 @@ export const DiscountBanks = ({
             data={countries}
             flags={flags}
             setValue={setValue}
-            setValueChanged={setValueChanged}
           />
           <DDInput
             placeholder="Select bank"
@@ -146,7 +84,6 @@ export const DiscountBanks = ({
             id="advisingBank.bank"
             // value={advisingBank}
             setValue={setValue}
-            setValueChanged={setValueChanged}
             disabled={true}
             // disabled={
             //   !advisingBanks ||
@@ -190,7 +127,6 @@ export const DiscountBanks = ({
             data={countries}
             flags={flags}
             setValue={setValue}
-            setValueChanged={setValueChanged}
           />
           <DDInput
             placeholder="Select bank"
@@ -198,7 +134,6 @@ export const DiscountBanks = ({
             id="confirmingBank.bank"
             // value={confirmingBank}
             setValue={setValue}
-            setValueChanged={setValueChanged}
             disabled
             // disabled={
             //   !confirmingBanks ||

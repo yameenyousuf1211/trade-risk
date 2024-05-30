@@ -45,7 +45,7 @@ export const generalLcSchema = z.object({
       country: z.string({ message: "Confirming bank country is required" }),
     })
   ),
-  lcPeriod: z.object(
+  period: z.object(
     {
       expectedDate: z.enum(["yes", "no"], {
         message: "Select LC Period Type",

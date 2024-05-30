@@ -224,12 +224,12 @@ export const TableDialog = ({
             <div className="px-4 pt-5 bg-[#F5F7F9]">
               <h2 className="text-2xl font-semibold mb-1">
                 <span className="text-para font-normal">LC Amount:</span> USD{" "}
-                {(lcData && lcData.amount?.toLocaleString()) + ".00" || ""}
+                {(lcData && lcData.amount?.price?.toLocaleString()) + ".00" ||
+                  ""}
               </h2>
               <p className="font-roboto text-sm text-para">
                 Created at,{" "}
-                {lcData &&
-                  convertDateAndTimeToString(lcData.lcPeriod?.startDate)}
+                {lcData && convertDateAndTimeToString(lcData.period?.startDate)}
                 , by{" "}
                 <span className="text-text capitalize">
                   {(lcData && lcData.exporterInfo?.beneficiaryName) || ""}
@@ -271,16 +271,16 @@ export const TableDialog = ({
                 label="LC Issuance (Expected)"
                 value={
                   lcData &&
-                  lcData.lcPeriod &&
-                  convertDateToCommaString(lcData.lcPeriod?.startDate)
+                  lcData.period &&
+                  convertDateToCommaString(lcData.period?.startDate)
                 }
               />
               <LCInfo
                 label="LC Expiry Date"
                 value={
                   lcData &&
-                  lcData.lcPeriod &&
-                  convertDateToCommaString(lcData.lcPeriod?.endDate)
+                  lcData.period &&
+                  convertDateToCommaString(lcData.period?.endDate)
                 }
               />
               <LCInfo

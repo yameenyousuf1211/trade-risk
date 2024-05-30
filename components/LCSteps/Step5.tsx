@@ -4,6 +4,11 @@ import { Input } from "../../components/ui/input";
 import { useEffect } from "react";
 import { getBanks } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
 
 export const Step5 = ({
   register,
@@ -14,13 +19,13 @@ export const Step5 = ({
   setStepCompleted,
   watch,
 }: {
-  register: any;
+  register: UseFormRegister<any>;
   isConfirmation?: boolean;
   countries: string[];
-  setValue: any;
+  setValue: UseFormSetValue<any>;
   flags: string[];
-  setStepCompleted?: any;
-  watch: any;
+  setStepCompleted: (index: number, status: boolean) => void;
+  watch: UseFormWatch<any>;
 }) => {
   const { user } = useAuth();
   let isExporter = watch("participantRole") === "exporter";
@@ -32,7 +37,7 @@ export const Step5 = ({
   const { data: exporterBanks } = useQuery({
     queryKey: ["exporter-banks", countryOfExport],
     queryFn: () => getBanks(countryOfExport),
-    enabled: !!countryOfExport,
+    enabled: !!countryOfExport && !!isConfirmation,
   });
 
   useEffect(() => {

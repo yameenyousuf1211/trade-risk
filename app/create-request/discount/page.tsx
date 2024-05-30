@@ -19,15 +19,14 @@ import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { usePathname, useRouter } from "next/navigation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "@/components/ui/loader";
-import { getCountries } from "@/services/apis/helpers.api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Country } from "@/types/type";
+import { useQueryClient } from "@tanstack/react-query";
 import { DisclaimerDialog } from "@/components/helpers";
 import useDiscountingStore, { getStateValues } from "@/store/discounting.store";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
+import useCountries from "@/hooks/useCountries";
 
 const CreateDiscountPage = () => {
   const { register, setValue, reset, handleSubmit, watch } = useForm<
@@ -69,8 +68,14 @@ const CreateDiscountPage = () => {
         if (key === "transhipment") {
           setValue(key, value === true ? "yes" : "no");
         }
-        if (key === "lcPeriod.expectedDate") {
-          setValue(key, value === true ? "yes" : "no");
+        if (key === "period") {
+          setValue(
+            "period.expectedDate",
+            value.expectedDate === true ? "yes" : "no"
+          );
+        }
+        if (key === "amount") {
+          setValue(key, value.price);
         }
         if (key === "extraInfo") {
           const daysLeft = calculateDaysLeft(value.dats);
@@ -83,95 +88,170 @@ const CreateDiscountPage = () => {
 
   const [proceed, setProceed] = useState(false);
 
-  const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async (
-    data
-  ) => {
-    const validationResult = discountingSchema.safeParse(data);
-    if (validationResult.success) {
-      const validatedData = validationResult.data;
+  // const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async (
+  //   data
+  // ) => {
+  //   const validationResult = discountingSchema.safeParse(data);
+  //   if (validationResult.success) {
+  //     const validatedData = validationResult.data;
 
-      if (proceed) {
-        if (validatedData.paymentTerms === "Usance LC" && !days)
-          return toast.error("Please select days from");
+  //     if (proceed) {
+  //       if (validatedData.paymentTerms === "Usance LC" && !days)
+  //         return toast.error("Please select days from");
 
-        const currentDate = new Date();
-        const futureDate = new Date(
-          currentDate.setDate(currentDate.getDate() + days)
-        );
-        if (
-          validatedData.confirmingBank &&
-          validatedData.issuingBank.country ===
-            validatedData.confirmingBank.country
-        )
-          return toast.error(
-            "Confirming bank country cannot be the same as issuing bank country"
-          );
-        if (/^\d+$/.test(validatedData.productDescription))
-          return toast.error("Product description cannot contain only digits");
-        // startLoading();
-        let extraInfoObj;
-        if (validatedData.paymentTerms === "Usance LC") {
-          extraInfoObj = { dats: futureDate, other: validatedData.extraInfo };
-        }
+  //       const currentDate = new Date();
+  //       const futureDate = new Date(
+  //         currentDate.setDate(currentDate.getDate() + days)
+  //       );
+  //       if (
+  //         validatedData.confirmingBank &&
+  //         validatedData.issuingBank.country ===
+  //           validatedData.confirmingBank.country
+  //       )
+  //         return toast.error(
+  //           "Confirming bank country cannot be the same as issuing bank country"
+  //         );
+  //       if (/^\d+$/.test(validatedData.productDescription))
+  //         return toast.error("Product description cannot contain only digits");
+  //       startLoading();
+  //       let extraInfoObj;
+  //       if (validatedData.paymentTerms === "Usance LC") {
+  //         extraInfoObj = { dats: futureDate, other: validatedData.extraInfo };
+  //       }
 
-        const { confirmingBank2, ...rest } = validatedData;
-        const reqData = {
-          ...rest,
-          currency: validatedData?.currency ? validatedData?.currency : "usd",
-          transhipment: validatedData.transhipment === "yes" ? true : false,
-          lcType: "LC Discounting",
-          lcPeriod: {
-            ...validatedData.lcPeriod,
-            expectedDate:
-              validatedData.lcPeriod.expectedDate === "yes" ? true : false,
-          },
-          ...(extraInfoObj && { extraInfo: extraInfoObj }),
-        };
-        console.log(reqData);
-        // const { response, success } = discountingData?._id
-        //   ? await onUpdateLC({
-        //       payload: reqData,
-        //       id: discountingData?._id,
-        //     })
-        //   : await onCreateLC(reqData);
-        // stopLoading();
-        // if (!success) return toast.error(response);
-        // else {
-        //   toast.success("LC created successfully");
-        //   setValues(getStateValues(useDiscountingStore.getInitialState()));
-        //   // await sendNotification({
-        //   //   title: "New LC Discounting Request",
-        //   //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-        //   // });
-        //   reset();
-        //   router.push("/");
-        // }
-      } else {
-        let openDisclaimerBtn = document.getElementById("open-disclaimer");
-        // @ts-ignore
-        openDisclaimerBtn.click();
-        setProceed(true);
-      }
-    } else {
-      if (validationResult.error && validationResult.error.errors.length > 0) {
-        validationResult.error.errors.forEach((error) => {
-          toast.error(`${error.message}`);
-        });
-      }
-    }
-  };
+  //       const { confirmingBank2, ...rest } = validatedData;
+  //       const reqData = {
+  //         ...rest,
+  //         currency: validatedData?.currency ? validatedData?.currency : "usd",
+  //         transhipment: validatedData.transhipment === "yes" ? true : false,
+  //         amount: {
+  //           price: data.amount,
+  //         },
+  //         type: "LC Discounting",
+  //         period: {
+  //           ...validatedData.period,
+  //           expectedDate:
+  //             validatedData.period.expectedDate === "yes" ? true : false,
+  //         },
+  //         ...(extraInfoObj && { extraInfo: extraInfoObj }),
+  //       };
+  //       const { response, success } = discountingData?._id
+  //         ? await onUpdateLC({
+  //             payload: reqData,
+  //             id: discountingData?._id,
+  //           })
+  //         : await onCreateLC(reqData);
+  //       stopLoading();
+  //       if (!success) return toast.error(response);
+  //       else {
+  //         toast.success("LC created successfully");
+  //         setValues(getStateValues(useDiscountingStore.getInitialState()));
+  //         // await sendNotification({
+  //         //   title: "New LC Discounting Request",
+  //         //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+  //         // });
+  //         reset();
+  //         router.push("/");
+  //       }
+  //     } else {
+  //       let openDisclaimerBtn = document.getElementById("open-disclaimer");
+  //       // @ts-ignore
+  //       openDisclaimerBtn.click();
+  //       setProceed(true);
+  //     }
+  //   } else {
+  //     if (validationResult.error && validationResult.error.errors.length > 0) {
+  //       validationResult.error.errors.forEach((error) => {
+  //         toast.error(`${error.message}`);
+  //       });
+  //     }
+  //   }
+  // };
+
+  // const saveAsDraft: SubmitHandler<z.infer<typeof discountingSchema>> = async (
+  //   data: z.infer<typeof discountingSchema>
+  // ) => {
+  //   if (data.paymentTerms === "Usance LC" && !days)
+  //     return toast.error("Please select days from");
+  //   const currentDate = new Date();
+  //   const futureDate = new Date(
+  //     currentDate.setDate(currentDate.getDate() + days)
+  //   );
+  //   if (
+  //     data.confirmingBank &&
+  //     data.issuingBank.country === data.confirmingBank.country
+  //   )
+  //     return toast.error(
+  //       "Confirming bank country cannot be the same as issuing bank country"
+  //     );
+  //   if (/^\d+$/.test(data.productDescription))
+  //     return toast.error("Product description cannot contain only digits");
+  //   setLoader(true);
+  //   let extraInfoObj;
+  //   if (data.paymentTerms === "Usance LC") {
+  //     extraInfoObj = { dats: futureDate, other: data.extraInfo };
+  //   }
+  //   const { confirmingBank2, ...rest } = data;
+
+  //   const reqData = {
+  //     ...rest,
+  //     transhipment: data.transhipment === "yes" ? true : false,
+  //     type: "LC Discounting",
+  //     amount: {
+  //       price: data.amount,
+  //     },
+  //     period: {
+  //       ...data.period,
+  //       expectedDate: data.period.expectedDate === "yes" ? true : false,
+  //     },
+  //     ...(extraInfoObj && { extraInfo: extraInfoObj }),
+  //     draft: "true",
+  //   };
+
+  //   // @ts-ignore
+  //   delete reqData._id;
+  //   // @ts-ignore
+  //   delete reqData.refId;
+  //   // @ts-ignore
+  //   delete reqData.createdBy;
+  //   // @ts-ignore
+  //   delete reqData.status;
+  //   // @ts-ignore
+  //   delete reqData.createdAt;
+  //   // @ts-ignore
+  //   delete reqData.updatedAt;
+  //   // @ts-ignore
+  //   delete reqData?.selectBaseRate;
+
+  //   const { response, success } = discountingData?._id
+  //     ? await onUpdateLC({
+  //         payload: reqData,
+  //         id: discountingData?._id,
+  //       })
+  //     : await onCreateLC(reqData);
+
+  //   setLoader(false);
+  //   if (!success) return toast.error(response);
+  //   else {
+  //     toast.success("LC saved as draft");
+  //     setValues(getStateValues(useDiscountingStore.getInitialState()));
+  //     reset();
+  //     router.push("/");
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["fetch-lcs-drafts"],
+  //     });
+  //   }
+  // };
 
   const [loader, setLoader] = useState(false);
 
-  const saveAsDraft: SubmitHandler<z.infer<typeof discountingSchema>> = async (
-    data: z.infer<typeof discountingSchema>
-  ) => {
-    if (data.paymentTerms === "Usance LC" && !days)
-      return toast.error("Please select days from");
-    const currentDate = new Date();
-    const futureDate = new Date(
-      currentDate.setDate(currentDate.getDate() + days)
-    );
+  const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async ({
+    data,
+    isDraft,
+  }: {
+    isDraft: boolean;
+    data: any;
+  }) => {
     if (
       data.confirmingBank &&
       data.issuingBank.country === data.confirmingBank.country
@@ -181,93 +261,120 @@ const CreateDiscountPage = () => {
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
-    setLoader(true);
-    let extraInfo;
-    if (data.paymentTerms === "Usance LC") {
-      extraInfo = { dats: futureDate, other: data.extraInfo };
+    const currentDate = new Date();
+    const futureDate = new Date(
+      currentDate.setDate(currentDate.getDate() + days)
+    );
+    let extraInfoObj;
+    if (
+      data.paymentTerms &&
+      data.paymentTerms === "Usance LC" &&
+      data.extraInfo
+    ) {
+      extraInfoObj = { dats: futureDate, other: data.extraInfo };
     }
-    const { confirmingBank2, ...rest } = data;
 
-    const reqData = {
-      ...rest,
-      currency: data?.currency ? data?.currency : "usd",
+    let reqData;
+    const baseData = {
+      type: "LC Discounting",
       transhipment: data.transhipment === "yes" ? true : false,
-      lcType: "LC Discounting",
-      lcPeriod: {
-        ...data.lcPeriod,
-        expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
+      amount: {
+        price: data.amount,
       },
-      ...(extraInfo && { extraInfo }),
-      draft: "true",
+      period: {
+        ...data.period,
+        expectedDate: data.period?.expectedDate === "yes" ? true : false,
+      },
+      ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
-    console.log(reqData, "REQDATA");
 
-    // @ts-ignore
-    delete reqData._id;
-    // @ts-ignore
-    delete reqData.refId;
-    // @ts-ignore
-    delete reqData.createdBy;
-    // @ts-ignore
-    delete reqData.status;
-    // @ts-ignore
-    delete reqData.createdAt;
-    // @ts-ignore
-    delete reqData.updatedAt;
-    // @ts-ignore
-    delete reqData?.selectBaseRate;
-
-    const { response, success } = discountingData?._id
-      ? await onUpdateLC({
-          payload: reqData,
-          id: discountingData?._id,
-        })
-      : await onCreateLC(reqData);
-
-    setLoader(false);
-    if (!success) return toast.error(response);
-    else {
-      toast.success("LC saved as draft");
-      setValues(getStateValues(useDiscountingStore.getInitialState()));
-      reset();
-      router.push("/");
-      queryClient.invalidateQueries({
-        queryKey: ["fetch-lcs-drafts"],
-      });
+    if (isDraft) {
+      const {
+        confirmingBank2,
+        _id,
+        refId,
+        createdBy,
+        status,
+        createdAt,
+        updatedAt,
+        extraInfo,
+        ...rest
+      } = data;
+      reqData = {
+        ...rest,
+        ...baseData,
+        draft: "true",
+      };
+      setLoader(true);
+      const { response, success } = discountingData?._id
+        ? await onUpdateLC({
+            payload: reqData,
+            id: discountingData?._id,
+          })
+        : await onCreateLC(reqData);
+      setLoader(false);
+      if (!success) return toast.error(response);
+      else {
+        toast.success("LC saved as draft");
+        reset();
+        router.push("/");
+        setValues(getStateValues(useDiscountingStore.getInitialState()));
+        queryClient.invalidateQueries({
+          queryKey: ["fetch-lcs-drafts"],
+        });
+      }
+    } else {
+      const validationResult = discountingSchema.safeParse(data);
+      if (validationResult.success) {
+        const validatedData = validationResult.data;
+        if (proceed) {
+          const { confirmingBank2, extraInfo, ...rest } = validatedData;
+          reqData = {
+            ...rest,
+            ...baseData,
+          };
+          startLoading();
+          const { response, success } = discountingData?._id
+            ? await onUpdateLC({
+                payload: reqData,
+                id: discountingData?._id,
+              })
+            : await onCreateLC(reqData);
+          stopLoading();
+          if (!success) return toast.error(response);
+          else {
+            // await sendNotification({
+            //   title: "New LC Confirmation Request",
+            //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+            // });
+            setValues(getStateValues(useDiscountingStore.getInitialState()));
+            toast.success("LC created successfully");
+            reset();
+            router.push("/");
+          }
+        } else {
+          let openDisclaimerBtn = document.getElementById("open-disclaimer");
+          // @ts-ignore
+          openDisclaimerBtn.click();
+          setProceed(true);
+        }
+      } else {
+        if (
+          validationResult.error &&
+          validationResult.error.errors.length > 0
+        ) {
+          validationResult.error.errors.forEach((error) => {
+            toast.error(`${error.message}`);
+          });
+        }
+      }
     }
   };
-  const [allCountries, setAllCountries] = useState<Country[]>([]);
-  const [countries, setCountries] = useState([]);
-  const [flags, setFlags] = useState([]);
 
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
 
-  const { data: countriesData } = useQuery({
-    queryKey: ["countries"],
-    queryFn: () => getCountries(),
-  });
-
-  useEffect(() => {
-    if (
-      countriesData &&
-      countriesData.success &&
-      countriesData.response &&
-      countriesData.response.length > 0
-    ) {
-      setAllCountries(countriesData.response);
-      const fetchedCountries = countriesData.response.map(
-        (country: Country) => {
-          return country.name;
-        }
-      );
-      setCountries(fetchedCountries);
-      const fetchedFlags = countriesData.response.map((country: Country) => {
-        return country.flag;
-      });
-      setFlags(fetchedFlags);
-    }
-  }, [countriesData]);
+  const { countries, flags } = useCountries();
 
   // reset the form on page navigation
   useEffect(() => {
@@ -341,7 +448,8 @@ const CreateDiscountPage = () => {
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
           <Button
-            onClick={handleSubmit(saveAsDraft)}
+            // onClick={handleSubmit(saveAsDraft)}
+            onClick={handleSubmit((data) => onSubmit({ data, isDraft: true }))}
             type="button"
             variant="ghost"
             className="!bg-[#F1F1F5] w-1/3"
@@ -354,7 +462,8 @@ const CreateDiscountPage = () => {
             disabled={isLoading}
             size="lg"
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
-            onClick={handleSubmit(onSubmit)}
+            // onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit((data) => onSubmit({ data, isDraft: false }))}
           >
             {isLoading ? <Loader /> : "Submit request"}
           </Button>
@@ -363,7 +472,8 @@ const CreateDiscountPage = () => {
           title="Submit Request"
           className="hidden"
           setProceed={setProceed}
-          onAccept={handleSubmit(onSubmit)}
+          // onAccept={handleSubmit(onSubmit)}
+          onAccept={handleSubmit((data) => onSubmit({ data, isDraft: false }))}
         />
       </form>
     </CreateLCLayout>

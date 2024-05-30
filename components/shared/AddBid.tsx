@@ -105,7 +105,7 @@ export const AddBid = ({
     const baseData = {
       confirmationPrice: data.confirmationPrice,
       lc: lcData._id,
-      type: lcData.lcType!,
+      type: lcData.type!, 
       validity: data.validity,
     };
 
@@ -169,7 +169,7 @@ export const AddBid = ({
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">
-            {lcData?.lcType + " Request" || ""}
+            {lcData?.type + " Request" || ""}
           </h2>
           <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>
             <X className="size-7" />
@@ -188,7 +188,8 @@ export const AddBid = ({
                 <div className="pt-5 px-4 bg-bg">
                   <h2 className="text-2xl font-semibold mb-1">
                     <span className="text-para font-medium">LC Amount:</span>{" "}
-                    USD {lcData?.amount?.toLocaleString() + ".00" || ""}
+                    {lcData?.currency || "USD"}{" "}
+                    {lcData?.amount?.price?.toLocaleString() + ".00" || ""}
                   </h2>
                   <div className="h-[2px] w-full bg-neutral-800 mt-5" />
                 </div>
@@ -251,19 +252,19 @@ export const AddBid = ({
                   <LCInfo
                     label="LC Issuance (Expected)"
                     value={convertDateToCommaString(
-                      lcData?.lcPeriod?.startDate || ""
+                      lcData?.period?.startDate || ""
                     )}
                   />
                   <LCInfo
                     label="LC Expiry Date"
                     value={convertDateToCommaString(
-                      lcData?.lcPeriod?.endDate || ""
+                      lcData?.period?.endDate || ""
                     )}
                   />
                   <LCInfo
                     label="Confirmation Date (Expected)"
                     value={convertDateToCommaString(
-                      lcData?.lcPeriod?.endDate || ""
+                      lcData?.period?.endDate || ""
                     )}
                   />
                   <LCInfo
@@ -420,7 +421,7 @@ export const AddBid = ({
                     </label>
                     <DatePicker
                       setValue={setValue}
-                      maxDate={lcData?.lcPeriod?.endDate}
+                      maxDate={lcData?.period?.endDate}
                     />
                   </div>
                   {errors.validity && (
@@ -447,7 +448,7 @@ export const AddBid = ({
                     max={100}
                     {...register("confirmationPrice")}
                     onChange={(event) => {
-                      const newValue = event.target.value.replace(
+                      const newValue: any = event.target.value.replace(
                         /[^0-9.]/g,
                         ""
                       );

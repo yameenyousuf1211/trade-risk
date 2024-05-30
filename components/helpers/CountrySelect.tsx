@@ -17,6 +17,7 @@ import {
 import { Button } from "../ui/button";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import useCountries from "@/hooks/useCountries";
 
 export const CountrySelect = ({
   setValue,
@@ -34,27 +35,7 @@ export const CountrySelect = ({
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryVal, setCountryVal] = useState("");
 
-  const [allData, setAllData] = useState<Country[]>([]);
-  const [countries, setCountries] = useState([]);
-  const [flags, setFlags] = useState([]);
-
-  // Fetch the countries and sort them
-  useEffect(() => {
-    const fetchCountries = async () => {
-      const { response } = await getCountries();
-      setAllData(response);
-      const fetchedCountries = response?.map((country: Country) => {
-        return country.name;
-      });
-      setCountries(fetchedCountries);
-      const fetchedFlags = response?.map((country: Country) => {
-        return country.flag;
-      });
-      setFlags(fetchedFlags);
-    };
-
-    fetchCountries();
-  }, []);
+  const { allCountries: allData, countries, flags, isLoading } = useCountries();
 
   const setCountryCode = (selectedCountry: string) => {
     const country = allData.filter(

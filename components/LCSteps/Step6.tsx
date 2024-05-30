@@ -3,6 +3,11 @@ import { BgRadioInput } from "./helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
 
 export const Step6 = ({
   title,
@@ -13,9 +18,9 @@ export const Step6 = ({
 }: {
   title: string;
   isDiscount?: boolean;
-  register: any;
-  setValue: any;
-  watch: any;
+  register: UseFormRegister<any>;
+  setValue: UseFormSetValue<any>;
+  watch: UseFormWatch<any>;
 }) => {
   const behalfOf = watch(
     isDiscount ? "discountingInfo.behalfOf" : "confirmationInfo.behalfOf"

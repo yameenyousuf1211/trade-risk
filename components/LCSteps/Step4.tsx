@@ -2,6 +2,11 @@ import { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { DDInput } from "./helpers";
 import { useAuth } from "@/context/AuthProvider";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
 
 export const Step4 = ({
   register,
@@ -11,12 +16,12 @@ export const Step4 = ({
   setStepCompleted,
   watch,
 }: {
-  register: any;
+  register: UseFormRegister<any>;
   countries: string[];
   flags: string[];
-  setValue: any;
-  setStepCompleted?: any;
-  watch: any;
+  setValue: UseFormSetValue<any>;
+  setStepCompleted: (index: number, status: boolean) => void;
+  watch: UseFormWatch<any>;
 }) => {
   const { user } = useAuth();
   let isImporter = watch("participantRole") === "importer";

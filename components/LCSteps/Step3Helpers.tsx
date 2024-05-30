@@ -15,6 +15,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { getAllPortData, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
 
 export const ValidatingCalendar = ({
   initialDate,
@@ -63,15 +68,15 @@ export const Period = ({
   watch,
   flags,
 }: {
-  setValue: any;
-  watch: any;
+  setValue: UseFormSetValue<any>;
+  watch: UseFormWatch<any>;
   flags: string[];
 }) => {
   let shipmentCountry = watch("shipmentPort.country");
   let shipmentPort = watch("shipmentPort.port");
-  let lcStartDate = watch("lcPeriod.startDate");
-  let lcEndDate = watch("lcPeriod.endDate");
-  let lcPeriodType = watch("lcPeriod.expectedDate");
+  let lcStartDate = watch("period.startDate");
+  let lcEndDate = watch("period.endDate");
+  let lcPeriodType = watch("period.expectedDate");
 
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
@@ -109,7 +114,7 @@ export const Period = ({
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
 
   const handleRadioChange = (e: any) => {
-    setValue("lcPeriod.expectedDate", e.target.value);
+    setValue("period.expectedDate", e.target.value);
   };
 
   const updateValue = (name: string, value: any) => {
@@ -126,7 +131,7 @@ export const Period = ({
               type="radio"
               id="date-lc-issued"
               className="accent-primaryCol size-4"
-              name="lcPeriod.expectedDate"
+              name="period.expectedDate"
               value="yes"
               checked={lcPeriodType === "yes"}
               onChange={handleRadioChange}
@@ -143,7 +148,7 @@ export const Period = ({
               type="radio"
               id="expected-date"
               className="accent-primaryCol !bg-white size-4"
-              name="lcPeriod.expectedDate"
+              name="period.expectedDate"
               value="no"
               checked={lcPeriodType === "no"}
               onChange={handleRadioChange}
@@ -179,7 +184,7 @@ export const Period = ({
                 <ValidatingCalendar
                   initialDate={lcStartDate}
                   onChange={(date) => {
-                    updateValue("lcPeriod.startDate", date);
+                    updateValue("period.startDate", date);
                   }}
                   onClose={() => setDatePopoverOpen(false)}
                   isPast
@@ -188,7 +193,7 @@ export const Period = ({
                 <ValidatingCalendar
                   initialDate={lcStartDate}
                   onChange={(date) => {
-                    updateValue("lcPeriod.startDate", date);
+                    updateValue("period.startDate", date);
                   }}
                   onClose={() => setDatePopoverOpen(false)}
                 />
@@ -220,7 +225,7 @@ export const Period = ({
               <ValidatingCalendar
                 initialDate={lcEndDate}
                 onChange={(date) => {
-                  updateValue("lcPeriod.endDate", date);
+                  updateValue("period.endDate", date);
                 }}
                 onClose={() => setIsPopoverOpen(false)}
               />
@@ -263,10 +268,10 @@ export const Transhipment = ({
   isDiscount,
   watch,
 }: {
-  register: any;
-  setValue: any;
+  register: UseFormRegister<any>;
+  setValue: UseFormSetValue<any>;
   isDiscount?: boolean;
-  watch: any;
+  watch: UseFormWatch<any>;
 }) => {
   const transhipment = watch("transhipment");
 

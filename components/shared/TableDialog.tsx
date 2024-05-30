@@ -5,9 +5,9 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { ArrowUpNarrowWide, Eye, ListFilter, X } from "lucide-react";
+import { Eye, ListFilter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { IBids, ILcs } from "@/types/type";
+import { IBids } from "@/types/type";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -270,13 +270,17 @@ export const TableDialog = ({
               <LCInfo
                 label="LC Issuance (Expected)"
                 value={
-                  lcData && convertDateToCommaString(lcData.lcPeriod?.startDate)
+                  lcData &&
+                  lcData.lcPeriod &&
+                  convertDateToCommaString(lcData.lcPeriod?.startDate)
                 }
               />
               <LCInfo
                 label="LC Expiry Date"
                 value={
-                  lcData && convertDateToCommaString(lcData.lcPeriod?.endDate)
+                  lcData &&
+                  lcData.lcPeriod &&
+                  convertDateToCommaString(lcData.lcPeriod?.endDate)
                 }
               />
               <LCInfo

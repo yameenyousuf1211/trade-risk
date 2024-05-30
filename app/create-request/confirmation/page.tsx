@@ -90,72 +90,62 @@ const ConfirmationPage = () => {
   > = async (data) => {
     const validationResult = confirmationDiscountSchema.safeParse(data);
     if (validationResult.success) {
+      const validatedData = validationResult.data;
       if (proceed) {
         if (
-          data.confirmingBank &&
-          data.issuingBank.country === data.confirmingBank.country
+          validatedData.confirmingBank &&
+          validatedData.issuingBank.country ===
+            validatedData.confirmingBank.country
         )
           return toast.error(
             "Confirming bank country cannot be the same as issuing bank country"
           );
-        if (/^\d+$/.test(data.productDescription))
+        if (/^\d+$/.test(validatedData.productDescription))
           return toast.error("Product description cannot contain only digits");
-        // startLoading();
+        startLoading();
         const currentDate = new Date();
         const futureDate = new Date(
           currentDate.setDate(currentDate.getDate() + days)
         );
 
-        let extraInfo;
-        if (data.paymentTerms === "Usance LC") {
-          extraInfo = { dats: futureDate, other: data.extraInfo };
+        let extraInfoObj;
+        if (validatedData.paymentTerms === "Usance LC") {
+          extraInfoObj = { dats: futureDate, other: validatedData.extraInfo };
         }
 
-        const { confirmingBank2, ...rest } = data;
+        const { confirmingBank2, ...rest } = validatedData;
         const reqData = {
           ...rest,
-          currency: data?.currency ? data?.currency : "usd",
-          transhipment: data.transhipment === "yes" ? true : false,
+          currency: validatedData?.currency ? validatedData?.currency : "usd",
+          transhipment: validatedData.transhipment === "yes" ? true : false,
           lcType: "LC Confirmation & Discounting",
           lcPeriod: {
-            ...data.lcPeriod,
-            expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
+            ...validatedData.lcPeriod,
+            expectedDate:
+              validatedData.lcPeriod.expectedDate === "yes" ? true : false,
           },
-          ...(extraInfo && { extraInfo }),
+          ...(extraInfoObj && { extraInfo: extraInfoObj }),
         };
-        // @ts-ignore
-        delete reqData._id;
-        // @ts-ignore
-        delete reqData.refId;
-        // @ts-ignore
-        delete reqData.createdBy;
-        // @ts-ignore
-        delete reqData.status;
-        // @ts-ignore
-        delete reqData.createdAt;
-        // @ts-ignore
-        delete reqData.updatedAt;
-        console.log(reqData);
-        // const { response, success } = confirmationData?._id
-        //   ? await onUpdateLC({
-        //       payload: reqData,
-        //       id: confirmationData?._id,
-        //     })
-        //   : await onCreateLC(reqData);
-        // stopLoading();
-        // if (!success) return toast.error(response);
-        // else {
-        //   toast.success("LC created successfully");
-        //   setValues(
-        //     getStateValues(useConfirmationDiscountingStore.getInitialState())
-        //   );
-        //   // await sendNotification({
-        //   //   title: "New LC Confirmation & Discounting Request",
-        //   //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-        //   // });
-        //   reset();
-        //   router.push("/");
-        // }
+        const { response, success } = confirmationData?._id
+          ? await onUpdateLC({
+              payload: reqData,
+              id: confirmationData?._id,
+            })
+          : await onCreateLC(reqData);
+        stopLoading();
+        if (!success) return toast.error(response);
+        else {
+          toast.success("LC created successfully");
+          setValues(
+            getStateValues(useConfirmationDiscountingStore.getInitialState())
+          );
+          // await sendNotification({
+          //   title: "New LC Confirmation & Discounting Request",
+          //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+          // });
+          reset();
+          router.push("/");
+        }
       } else {
         let openDisclaimerBtn = document.getElementById("open-disclaimer");
         // @ts-ignore

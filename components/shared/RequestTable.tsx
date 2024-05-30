@@ -18,7 +18,6 @@ import {
 } from "../helpers";
 import { Button } from "../ui/button";
 import { TableDialog } from "./TableDialog";
-import Image from "next/image";
 import { columnHeaders, bankColumnHeaders } from "@/utils/data";
 import { ApiResponse, Country, ILcs } from "@/types/type";
 import { compareValues, convertDateToString } from "@/utils";
@@ -40,17 +39,6 @@ const TableDataCell = ({ data }: TableDataCellProps) => {
   );
 };
 
-type SortOrder = "asc" | "desc";
-
-interface ActiveColumn {
-  column: string;
-  order: SortOrder;
-}
-
-const sortOrder = {
-  ASCENDING: "asc" as SortOrder,
-  DESCENDING: "desc" as SortOrder,
-};
 export const RequestTable = ({
   isBank,
   data,
@@ -234,25 +222,38 @@ export const RequestTable = ({
                 tableData.map((item: ILcs, index: number) => (
                   <TableRow key={index} className="border-none font-roboto">
                     <TableDataCell
-                      data={convertDateToString(item.lcPeriod.startDate)}
+                      data={
+                        item.lcPeriod &&
+                        item.lcPeriod.startDate &&
+                        convertDateToString(item.lcPeriod.startDate)
+                      }
                     />
                     <TableDataCell
-                      data={convertDateToString(item.lcPeriod.endDate)}
+                      data={
+                        item.lcPeriod &&
+                        item.lcPeriod.endDate &&
+                        convertDateToString(item.lcPeriod.endDate)
+                      }
                     />
-                    <TableDataCell data={item.lcType} />
+                    <TableDataCell data={item.lcType || ""} />
                     <TableCell className="px-1 py-1 max-w-[180px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <p className="text-[16px] emoji-font">
-                          {allCountries &&
+                          {item.issuingBank &&
+                            allCountries &&
                             getCountryFlagByName(item.issuingBank.country)}
                         </p>
                         <div className="truncate capitalize text-lightGray">
-                          {item.issuingBank.bank}
+                          {item.issuingBank && item.issuingBank.bank}
                         </div>
                       </div>
                     </TableCell>
-                    <TableDataCell data={item.exporterInfo.beneficiaryName} />
-                    <TableDataCell data={item.importerInfo.applicantName} />
+                    <TableDataCell
+                      data={item.exporterInfo?.beneficiaryName || ""}
+                    />
+                    <TableDataCell
+                      data={item.importerInfo?.applicantName || ""}
+                    />
                     <TableDataCell
                       data={"USD " + item.amount?.toLocaleString() + ".00"}
                     />
@@ -275,27 +276,41 @@ export const RequestTable = ({
                       </div>
                     </TableCell>
                     <TableDataCell
-                      data={convertDateToString(item.lcPeriod?.startDate)}
+                      data={
+                        item.lcPeriod?.startDate &&
+                        convertDateToString(item.lcPeriod?.startDate)
+                      }
                     />
                     <TableDataCell
-                      data={convertDateToString(item.lcPeriod?.endDate)}
+                      data={
+                        item.lcPeriod?.endDate &&
+                        convertDateToString(item.lcPeriod?.endDate)
+                      }
                     />
                     <TableDataCell data={item.lcType} />
                     <TableCell className="px-1 py-1 max-w-[180px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <p className="text-[16px] emoji-font">
                           {allCountries &&
-                            getCountryFlagByName(item.issuingBank.country)}
+                            getCountryFlagByName(item.issuingBank?.country)}
                         </p>
                         <div className="capitalize truncate text-lightGray">
-                          {item.issuingBank.bank}
+                          {item.issuingBank?.bank || ""}
                         </div>
                       </div>
                     </TableCell>
-                    <TableDataCell data={item.exporterInfo.beneficiaryName} />
-                    <TableDataCell data={item.importerInfo.applicantName} />
                     <TableDataCell
-                      data={"USD " + item.amount?.toLocaleString() + ".00"}
+                      data={item.exporterInfo?.beneficiaryName || ""}
+                    />
+                    <TableDataCell
+                      data={item.importerInfo?.applicantName || ""}
+                    />
+                    <TableDataCell
+                      data={
+                        (item.currency || "USD ") +
+                        item.amount?.toLocaleString() +
+                        ".00"
+                      }
                     />
 
                     <TableCell className="px-1 py-1 max-w-[200px]">

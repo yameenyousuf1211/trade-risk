@@ -75,8 +75,9 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
 const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
   const { user } = useAuth();
   const pendingBids =
-    data.status !== "Expired" &&
-    data.bids.filter((bid) => bid.status === "Pending");
+    data.status !== "Expired"
+      ? data.bids.filter((bid) => bid.status === "Pending")
+      : [];
   const showData = !data.bids.some((bid) => bid.bidBy === user?._id);
 
   return (
@@ -114,7 +115,9 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
                 triggerTitle="Add Bid"
                 status="Add bid"
                 isBank
-                isDiscount={data.lcType.includes("Discount")}
+                isDiscount={
+                  (data.lcType && data.lcType.includes("Discount")) || false
+                }
                 lcId={data._id}
               />
             </div>

@@ -88,8 +88,10 @@ const CreateDiscountPage = () => {
   ) => {
     const validationResult = discountingSchema.safeParse(data);
     if (validationResult.success) {
+      const validatedData = validationResult.data;
+
       if (proceed) {
-        if (data.paymentTerms === "Usance LC" && !days)
+        if (validatedData.paymentTerms === "Usance LC" && !days)
           return toast.error("Please select days from");
 
         const currentDate = new Date();
@@ -97,44 +99,34 @@ const CreateDiscountPage = () => {
           currentDate.setDate(currentDate.getDate() + days)
         );
         if (
-          data.confirmingBank &&
-          data.issuingBank.country === data.confirmingBank.country
+          validatedData.confirmingBank &&
+          validatedData.issuingBank.country ===
+            validatedData.confirmingBank.country
         )
           return toast.error(
             "Confirming bank country cannot be the same as issuing bank country"
           );
-        if (/^\d+$/.test(data.productDescription))
+        if (/^\d+$/.test(validatedData.productDescription))
           return toast.error("Product description cannot contain only digits");
         // startLoading();
-        let extraInfo;
-        if (data.paymentTerms === "Usance LC") {
-          extraInfo = { dats: futureDate, other: data.extraInfo };
+        let extraInfoObj;
+        if (validatedData.paymentTerms === "Usance LC") {
+          extraInfoObj = { dats: futureDate, other: validatedData.extraInfo };
         }
 
-        const { confirmingBank2, ...rest } = data;
+        const { confirmingBank2, ...rest } = validatedData;
         const reqData = {
           ...rest,
-          currency: data?.currency ? data?.currency : "usd",
-          transhipment: data.transhipment === "yes" ? true : false,
+          currency: validatedData?.currency ? validatedData?.currency : "usd",
+          transhipment: validatedData.transhipment === "yes" ? true : false,
           lcType: "LC Discounting",
           lcPeriod: {
-            ...data.lcPeriod,
-            expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
+            ...validatedData.lcPeriod,
+            expectedDate:
+              validatedData.lcPeriod.expectedDate === "yes" ? true : false,
           },
-          ...(extraInfo && { extraInfo }),
+          ...(extraInfoObj && { extraInfo: extraInfoObj }),
         };
-        // @ts-ignore
-        delete reqData._id;
-        // @ts-ignore
-        delete reqData.refId;
-        // @ts-ignore
-        delete reqData.createdBy;
-        // @ts-ignore
-        delete reqData.status;
-        // @ts-ignore
-        delete reqData.createdAt;
-        // @ts-ignore
-        delete reqData.updatedAt;
         console.log(reqData);
         // const { response, success } = discountingData?._id
         //   ? await onUpdateLC({
@@ -163,7 +155,7 @@ const CreateDiscountPage = () => {
     } else {
       if (validationResult.error && validationResult.error.errors.length > 0) {
         validationResult.error.errors.forEach((error) => {
-          toast.error(`Validation Error: ${error.message}`);
+          toast.error(`${error.message}`);
         });
       }
     }

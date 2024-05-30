@@ -116,7 +116,7 @@ export const AddBid = ({
           discountBaseRate,
         }
       : baseData;
-
+    // @ts-ignore
     const { success, response } = await mutateAsync(reqData);
 
     if (!success) return toast.error(response);

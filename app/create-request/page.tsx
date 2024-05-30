@@ -73,8 +73,6 @@ const CreateRequestPage = () => {
             "lcPeriod.expectedDate",
             value.expectedDate === true ? "yes" : "no"
           );
-          // setValue("lcPeriod.startDate", value.startDate);
-          // setValue("lcPeriod.endDate", value.endDate);
         }
         if (key === "extraInfo") {
           const daysLeft = calculateDaysLeft(value.dats);
@@ -111,11 +109,11 @@ const CreateRequestPage = () => {
         const futureDate = new Date(
           currentDate.setDate(currentDate.getDate() + days)
         );
-        let extraInfo;
+        let extraInfoObj;
         if (validatedData.paymentTerms === "Usance LC") {
-          extraInfo = { dats: futureDate, other: data.extraInfo };
+          extraInfoObj = { dats: futureDate, other: validatedData.extraInfo };
         }
-        const { confirmingBank2, ...rest } = validatedData;
+        const { confirmingBank2, extraInfo, ...rest } = validatedData;
 
         const reqData = {
           ...rest,
@@ -127,10 +125,9 @@ const CreateRequestPage = () => {
             expectedDate:
               validatedData.lcPeriod.expectedDate === "yes" ? true : false,
           },
-          ...(extraInfo && { extraInfo }),
+          ...(extraInfoObj && { extraInfo: extraInfoObj }),
         };
-
-        console.log("reqData: ", reqData);
+        console.log(reqData);
         // const { response, success } = confirmationData?._id
         //   ? await onUpdateLC({
         //       payload: reqData,
@@ -221,7 +218,6 @@ const CreateRequestPage = () => {
         })
       : await onCreateLC(reqData);
     setLoader(false);
-
     if (!success) return toast.error(response);
     else {
       toast.success("LC saved as draft");

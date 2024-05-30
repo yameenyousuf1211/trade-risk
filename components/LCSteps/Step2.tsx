@@ -79,8 +79,9 @@ export const Step2 = ({
     if (amount && paymentTerms) {
       setStepCompleted(1, true);
     }
+    if (paymentTerms !== "Usance LC") setValue("extraInfo", undefined);
   }, [amount, paymentTerms]);
-  console.log(paymentTerms);
+
   return (
     <div
       id="step2"

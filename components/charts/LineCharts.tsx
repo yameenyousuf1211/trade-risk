@@ -54,7 +54,7 @@ const Chart = ({
   }[];
 }) => {
   return (
-    <div className="font-roboto w-full rounded-lg border border-borderCol py-2 px-3">
+    <div className="font-roboto w-full  xl:w-[10.5vw] rounded-lg border border-borderCol py-2 px-3">
       <div className="flex items-center gap-x-1 justify-between w-full">
         <div className="flex items-center gap-x-1">
           <Image
@@ -64,13 +64,13 @@ const Chart = ({
             height={20}
             className="object-cover"
           />
-          <h4 className="text-lg font-medium font-roboto">{country}</h4>
+          <h4 className="text-[0.8em] font-medium font-roboto">{country}</h4>
         </div>
-        <p className="text-lg">{percentage}%</p>
+        <p className="text-[0.8em]">{percentage}%</p>
       </div>
 
       <div className="w-full mt-3 mb-2">
-        <LineChart width={170} height={30} data={data}>
+        <LineChart  width={120} height={30} data={data}>
           <Line type="monotone" dataKey="pv" stroke={color} strokeWidth={3} />
         </LineChart>
       </div>
@@ -137,8 +137,8 @@ export const LineCharts = () => {
   ];
 
   return (
-    <div className="rounded-lg border border-borderCol py-4 px-5 w-full overflow-x-auto bg-white relative">
-      <div className="center absolute top-0 left-0 backdrop-blur-[3px]	 bg-white/30 w-full h-full z-10">
+    <div className="rounded-lg border border-borderCol py-4 px-5 w-[95%] xl:w-[46vw] overflow-x-auto bg-white relative">
+       <div className="center absolute top-0 left-0 backdrop-blur-[3px]	 bg-white/30 w-full h-full z-10">
         {/* <img
         src="https://static.wixstatic.com/media/b3ae7c_44c1408d9e894c46920f514df033f75e~mv2_d_1500_1200_s_2.gif"
           alt="coming-soon"
@@ -156,8 +156,8 @@ export const LineCharts = () => {
           />
           <h2 className="text-3xl relative font-semibold">Work in Progress</h2>
         </div>
-      </div>
-      <div className="w-full flex xl:flex-col 2xl:flex-row 2xl:tems-center  gap-x-2 justify-between">
+       </div> 
+      <div className="w-full flex xl:flex- col 2xl:fle x-row 2xl:tems-center  gap-x-2 justify-between">
         <div className="flex items-center w-1/3">
           <h4 className="text-lg font-semibold w-full max-w-[100px]">
             Risk Price

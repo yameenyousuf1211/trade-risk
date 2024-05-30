@@ -55,7 +55,7 @@ const Chart = ({
 
   return (
     <div
-      className="hover:shadow-xl hover:bg-white rounded-xl pb-2 cursor-pointer transition-all duration-100"
+      className="hover:shadow-xl hover:bg-white rounded-xl pb-2 cursor-pointer xl:w-[6.75vw] transition-all duration-100"
       onClick={handleFilter}
     >
       <div className="flex flex-col items-center justify-center">
@@ -153,8 +153,7 @@ export const ProgressCharts = ({
 
   return (
     <div
-      className="bg-[white] rounded-lg border border-borderCol py-4 px-5 
-    2xl:max- w-[525px] max-h-[550px]"
+      className="bg-[white] w-[95%] xl:w-[29vw] rounded-lg border border-borderCol py-4 px-3"
     >
       <div className="flex items-center gap-x-2 justify-between mb-3 w-full">
         <div className="flex items-center gap-x-2">

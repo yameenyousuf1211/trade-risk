@@ -81,7 +81,7 @@ const pointOfContractSchema = z.object({
     .email("*Must be a valid email."),
   pocPhone: z
     .string({ message: "*POC phone is required" })
-    .min(4, "*POC Phone is required.")
+    .min(4, "*POC Phone number is required")
     .refine((value) => /^\d+(\.\d+)?$/.test(value), {
       message: "*Enter a valid number",
     }),

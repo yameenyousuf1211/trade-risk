@@ -196,7 +196,9 @@ export const BankTable = ({
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                       <p className="text-[16px] emoji-font">
-                        {allCountries &&
+                        {item.lcInfo &&
+                          item.lcInfo?.[1]?.country &&
+                          allCountries &&
                           getCountryFlagByName(item.lcInfo?.[1]?.country)}
                       </p>
                       <div className="truncate text-lightGray capitalize">

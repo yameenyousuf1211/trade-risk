@@ -30,7 +30,11 @@ export const convertDateToYYYYMMDD = (date: any) => {
 };
 
 export const formatLeftDate = (date: any) => {
+<<<<<<< HEAD
   if (!date) return;
+=======
+  if (!date) return "";
+>>>>>>> main
   const targetDate = new Date(date);
   const currentDate = new Date();
 

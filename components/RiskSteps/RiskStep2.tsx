@@ -10,63 +10,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
-export const RiskStep2 = () => {
+interface Props {
+  register: any;
+  watch: any;
+  setValue: any;
+}
+
+export const RiskStep2 = ({ register, watch, setValue }: Props) => {
   const { data: currency } = useQuery({
     queryKey: ["currency"],
     queryFn: () => getCurrenncy(),
   });
 
   const [isFunded, setIsFunded] = useState(false);
-
-  const [checkedState, setCheckedState] = useState({
-    funded: false,
-    "non-funded": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    if (id === "funded") setIsFunded(true);
-    else setIsFunded(false);
-    const newCheckedState = {
-      funded: id === "funded",
-      "non-funded": id === "non-funded",
-    };
-    setCheckedState(newCheckedState);
-  };
-
-  const [returnState, setReturnState] = useState({
-    "return-per-annum": false,
-    "return-fixed": false,
-  });
-
-  const handleReturnChange = (id: string) => {
-    const newCheckedState = {
-      "return-per-annum": id === "return-per-annum",
-      "return-fixed": id === "return-fixed",
-    };
-    setReturnState(newCheckedState);
-  };
-
-  const [transactionState, setTransactionState] = useState({
-    "transaction-confirmation": false,
-    "transaction-avalization": false,
-    "transaction-supply": false,
-    "transaction-discounting": false,
-    "transaction-trade": false,
-  });
-
-  const handleTransactionChange = (id: string) => {
-    const newCheckedState = {
-      "transaction-confirmation": id === "transaction-confirmation",
-      "transaction-avalization": id === "transaction-avalization",
-      "transaction-supply": id === "transaction-supply",
-      "transaction-discounting": id === "transaction-discounting",
-      "transaction-trade": id === "transaction-trade",
-    };
-    setTransactionState(newCheckedState);
-  };
 
   const [currencyValue, setCurrencyValue] = useState<string | number>();
   const [rawValue, setRawValue] = useState("");
@@ -79,9 +37,11 @@ export const RiskStep2 = () => {
       const formattedValue = parseInt(digitsOnly).toLocaleString();
       setCurrencyValue(formattedValue);
       setRawValue(digitsOnly);
+      setValue("riskParticipationTransaction.amount", formattedValue);
     } else {
       setCurrencyValue("");
       setRawValue("");
+      setValue("riskParticipationTransaction.amount", "");
     }
   };
 
@@ -107,7 +67,7 @@ export const RiskStep2 = () => {
 
   const handleDecrement = () => {
     const currentValue = pricePerAnnum || "0";
-    let newValue = parseFloat(currentValue) - 0.5;
+    let newValue: any = parseFloat(currentValue) - 0.5;
 
     if (newValue < 0) newValue = 0;
     // @ts-ignore
@@ -128,22 +88,22 @@ export const RiskStep2 = () => {
         <BankRadioInput
           id="non-funded"
           label="Non-Funded"
-          name="type"
-          value="non-funded"
-          checked={checkedState["non-funded"] || (!isFunded && true)}
-          handleCheckChange={handleCheckChange}
+          name="riskParticipation"
+          value="Non-Funded"
+          checked={watch("riskParticipation") === "Non-Funded"}
+          register={register}
         />
         <BankRadioInput
           id="funded"
           label="Funded"
-          name="type"
-          value="funded"
-          checked={checkedState["funded"]}
-          handleCheckChange={handleCheckChange}
+          name="riskParticipation"
+          value="Funded"
+          checked={watch("riskParticipation") === "Funded"}
+          register={register}
         />
       </div>
       {/* Transaction Fields */}
-      <div className="mt-3 py-4 px-2 border border-borderCol rounded-lg w-full bg-[#F5F7F9]">
+      <div className="mt-3 pt-4 px-2 border border-borderCol rounded-lg w-full bg-[#F5F7F9]">
         <p className="font-semibold text-sm text-lightGray mb-2 ml-2">
           Transaction offered under Risk Participation
         </p>
@@ -152,42 +112,54 @@ export const RiskStep2 = () => {
           <BankRadioInput
             id="transaction-confirmation"
             label="LC Confirmation"
-            name="transaction"
-            value="transaction-confirmation"
-            checked={transactionState["transaction-confirmation"]}
-            handleCheckChange={handleTransactionChange}
+            name="riskParticipationTransaction.type"
+            value="LC Confirmation"
+            checked={
+              watch("riskParticipationTransaction.type") === "LC Confirmation"
+            }
+            register={register}
           />
+
           <BankRadioInput
             id="transaction-avalization"
             label="Avalization"
-            name="transaction"
-            value="transaction-avalization"
-            checked={transactionState["transaction-avalization"]}
-            handleCheckChange={handleTransactionChange}
+            name="riskParticipationTransaction.type"
+            value="Avalization"
+            checked={
+              watch("riskParticipationTransaction.type") === "Avalization"
+            }
+            register={register}
           />
           <BankRadioInput
             id="transaction-supply"
             label="Supply Chain Finance"
-            name="transaction"
-            value="transaction-supply"
-            checked={transactionState["transaction-supply"]}
-            handleCheckChange={handleTransactionChange}
+            name="riskParticipationTransaction.type"
+            value="Supply Chain Finance"
+            checked={
+              watch("riskParticipationTransaction.type") ===
+              "Supply Chain Finance"
+            }
+            register={register}
           />
           <BankRadioInput
             id="transaction-discounting"
             label="LC Discounting"
-            name="transaction"
-            value="transaction-discounting"
-            checked={transactionState["transaction-discounting"]}
-            handleCheckChange={handleTransactionChange}
+            name="riskParticipationTransaction.type"
+            value="LC Discounting"
+            checked={
+              watch("riskParticipationTransaction.type") === "LC Discounting"
+            }
+            register={register}
           />
           <BankRadioInput
             id="transaction-trade"
             label="Trade Loan"
-            name="transaction"
-            value="transaction-trade"
-            checked={transactionState["transaction-trade"]}
-            handleCheckChange={handleTransactionChange}
+            name="riskParticipationTransaction.type"
+            value="Trade Loan"
+            checked={
+              watch("riskParticipationTransaction.type") === "Trade Loan"
+            }
+            register={register}
           />
         </div>
         <div className={`flex ${isFunded && "flex-col"} gap-2 gap-y-3 my-2`}>
@@ -235,18 +207,23 @@ export const RiskStep2 = () => {
               <BankRadioInput
                 id="return-per-annum"
                 label="% per annum"
-                name="return"
-                value="per-annum"
-                checked={returnState["return-per-annum"]}
-                handleCheckChange={handleReturnChange}
+                name="riskParticipationTransaction.returnOffer"
+                value="perAnnum"
+                checked={
+                  watch("riskParticipationTransaction.returnOffer") ===
+                  "perAnnum"
+                }
+                register={register}
               />
               <BankRadioInput
                 id="return-fixed"
                 label="% (Fixed)"
-                name="return"
+                name="riskParticipationTransaction.returnOffer"
                 value="fixed"
-                checked={returnState["return-fixed"]}
-                handleCheckChange={handleReturnChange}
+                checked={
+                  watch("riskParticipationTransaction.returnOffer") === "fixed"
+                }
+                register={register}
               />
               {!isFunded && (
                 <div className="bg-white rounded-lg py-3 px-3 w-[80%] flex items-center justify-between gap-x-2">
@@ -255,8 +232,9 @@ export const RiskStep2 = () => {
                     inputMode="numeric"
                     className="bg-transparent outline-none w-[80%] text-sm"
                     placeholder="Enter Value"
+                    {...register("riskParticipationTransaction.baseRate")}
                     max={100}
-                    onKeyUp={(event) => {
+                    onKeyUp={(event: any) => {
                       if (event.target?.value > 100) {
                         event.target.value = "100.0";
                       }
@@ -265,7 +243,7 @@ export const RiskStep2 = () => {
                   <p>%</p>
                 </div>
               )}
-              {isFunded && (
+              {watch("riskParticipation") === "Funded" && (
                 <>
                   <label
                     id="select-base-rate"
@@ -280,7 +258,7 @@ export const RiskStep2 = () => {
                       name="select-base-rate"
                       className="block bg-none text-sm border-none outline-none w-[100px]"
                       placeholder="Select Value"
-                      onKeyUp={(event) => {
+                      onKeyUp={(event: any) => {
                         if (event.target?.value > 100) {
                           event.target.value = "100.0";
                         }
@@ -311,7 +289,7 @@ export const RiskStep2 = () => {
                         max={100}
                         className="border-none outline-none text-sm max-w-[70px] w-fit"
                         onChange={(e) => setPricePerAnnum(e.target.value)}
-                        onKeyUp={(event) => {
+                        onKeyUp={(event: any) => {
                           if (event.target?.value > 100) {
                             event.target.value = "100.0";
                           }
@@ -346,8 +324,9 @@ export const RiskStep2 = () => {
               inputMode="numeric"
               className="bg-transparent outline-none w-[80%] text-sm"
               placeholder="Value"
+              {...register("riskParticipationTransaction.participationRate")}
               max={100}
-              onKeyUp={(event) => {
+              onKeyUp={(event: any) => {
                 if (event.target?.value > 100) {
                   event.target.value = "100.0";
                 }

@@ -54,7 +54,7 @@ const DraftCard = ({
   const handleEditLC = async () => {
     try {
       const response = await fetchSingleLc(draft?._id);
-      console.log("response: ", response);
+      // console.log("response: ", response);
       isConfirmation && setConfirmationValues(response);
       isDiscounting && setDiscountingValues(response);
       isConfirmationDiscounting && setConfirmationDiscountingValues(response);
@@ -74,14 +74,16 @@ const DraftCard = ({
         </Button>
       </div>
 
-      <p className="font-roboto text-text text-[12px]">{draft.lcType}</p>
+      <p className="font-roboto text-text text-[12px]">{draft.type}</p>
       <p className="font-roboto text-para text-[12px]">
         Last updated:{" "}
         {convertDateToCommaString(draft.updatedAt! || draft.createdAt!)}
       </p>
       <div className="flex items-center w-full justify-between gap-x-1 mt-2">
         <p className="text-[16px] font-semibold uppercase">
-          {draft.currency || "USD"}  {draft?.amount && draft.amount?.toLocaleString() + ".00"}
+          {draft.currency || "USD"}{" "}
+          {((draft?.amount && draft.amount?.price?.toLocaleString()) || "00") +
+            ".00"}
         </p>
         <Button
           className="!py-0 font-roboto h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"
@@ -118,11 +120,11 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
     data.data.length > 0 &&
     data?.data.filter((draft) => {
       if (isConfirmation) {
-        return draft.lcType === "LC Confirmation";
+        return draft.type === "LC Confirmation";
       } else if (isDiscounting) {
-        return draft.lcType === "LC Discounting";
+        return draft.type === "LC Discounting";
       } else if (isConfirmationDiscounting) {
-        return draft.lcType === "LC Confirmation & Discounting";
+        return draft.type === "LC Confirmation & Discounting";
       } else {
         return true;
       }

@@ -14,12 +14,13 @@ export const generalRiskSchema = z.object({
   transaction: z.enum(["Risk Participation", "Outright Sales"], {
     message: "Select transaction type",
   }),
+
+  outrightSales: z.enum(["Pre Sales", "Asset On Books"], {
+    message: "Outright sales cannot be empty",
+  }),
   riskParticipation: z.enum(["Non-Funded", "Funded"], {
     message: "Select risk participation",
   }),
-  outrightSales: z
-    .string()
-    .nonempty({ message: "Outright sales cannot be empty" }),
   riskParticipationTransaction: z.object({
     type: z.enum(
       [
@@ -33,33 +34,37 @@ export const generalRiskSchema = z.object({
         message: "Select risk participation type",
       }
     ),
-    amount: z
-      .string()
-      .nonempty("Enter amount")
-      .refine((value) => /^\d+$/.test(value), {
-        message: "Enter a valid number",
+    amount: z.string({
+      message: "Enter amount",
+    }),
+    // amount: z
+    //   .string()
+    //   .nonempty("Enter amount")
+    //   .refine((value) => /^\d+$/.test(value), {
+    //     message: "Enter a valid number",
+    //   }),
+    returnOffer: z.object({
+      type: z.enum(["fixed", "perAnnum"], {
+        message: "Return offer",
       }),
-    returnOffer: z
-      .string()
-      .nonempty({ message: "Return offer cannot be empty" }),
-    baseRate: z
-      .string()
-      .nonempty("Enter base rate")
-      .refine((value) => /^\d+$/.test(value), {
-        message: "Enter a valid number",
-      }),
-    perAnnum: z
-      .string()
-      .nonempty("Enter per annum rate")
-      .refine((value) => /^\d+$/.test(value), {
-        message: "Enter a valid number",
-      }),
-    participationRate: z
-      .string()
-      .nonempty("Enter participation rate")
-      .refine((value) => /^\d+$/.test(value), {
-        message: "Enter a valid number",
-      }),
+    }),
+
+    baseRate: z.string({ message: '"Enter base rate"' }),
+    // .nonempty("Enter base rate"),
+    // // .refine((value) => /^\d+$/.test(value),
+    //  {
+    //   message: "Enter a valid number",
+    // }),
+    perAnnum: z.string({ message: '"Enter per annum rate"' }),
+    // perAnnum: z
+    //   .string()
+    //   .nonempty("Enter per annum rate")
+    //   .refine((value) => /^\d+$/.test(value), {
+    //     message: "Enter a valid number",
+    //   }),
+    participationRate: z.string({
+      message: "Enter participation rate",
+    }),
   }),
   issuingBank: z.object(
     {
@@ -82,8 +87,8 @@ export const generalRiskSchema = z.object({
     },
     { message: "Confirming bank details are required" }
   ),
-  isLcDiscounting: z.boolean({ message: "Choose if LC is dicounted" }),
-  expectedDiscounting: z.boolean({
+  isLcDiscounting: z.string({ message: "Choose if LC is dicounted" }),
+  expectedDiscounting: z.string({
     message: "Choose if LC is expected to be  dicounted",
   }),
   expectedDateDiscounting: z
@@ -100,7 +105,7 @@ export const generalRiskSchema = z.object({
       .string()
       .nonempty({ message: "Shipment country cannot be empty" }),
   }),
-  transhipment: z.boolean(),
+  transhipment: z.string({ message: "Select transhipment" }),
   expectedDateConfirmation: z
     .string()
     .nonempty({ message: "Expected date for confirmation cannot be empty" }),
@@ -124,16 +129,18 @@ export const generalRiskSchema = z.object({
       .string()
       .nonempty({ message: "Beneficiary country cannot be empty" }),
   }),
-  paymentType: z.string().nonempty({ message: "Payment type cannot be empty" }),
+  paymentReceviedType: z
+    .string()
+    .nonempty({ message: "Payment Recevied type cannot be empty" }),
   attachment: z.any().optional(),
   note: z.string().nonempty({ message: "Note cannot be empty" }),
-  draft: z.boolean(),
-  days: z
-    .string()
-    .nonempty("Enter days")
-    .refine((value) => /^\d+$/.test(value), {
-      message: "Enter a valid number",
-    }),
+  // draft: z.boolean(),
+  // days: z
+  //   .string()
+  //   .nonempty("Enter days")
+  //   .refine((value) => /^\d+$/.test(value), {
+  //     message: "Enter a valid number",
+  //   }),
 });
 
 export const fundedSchema = z.lazy(() =>

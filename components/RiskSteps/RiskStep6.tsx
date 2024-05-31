@@ -2,19 +2,12 @@
 import React, { useState } from "react";
 import { BankRadioInput } from "./RiskHelpers";
 
-export const RiskStep6 = ({ register }: { register: any }) => {
-  const [checkedState, setCheckedState] = useState({
-    "highest-price-quoted": false,
-    "all-prices-quoted": false,
-  });
+interface Props {
+  watch: any;
+  register: any;
+}
 
-  const handleCheckChange = (id: string) => {
-    const newCheckedState = {
-      "highest-price-quoted": id === "highest-price-quoted",
-      "all-prices-quoted": id === "all-prices-quoted",
-    };
-    setCheckedState(newCheckedState);
-  };
+export const RiskStep6 = ({ register, watch }: Props) => {
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">
@@ -29,18 +22,18 @@ export const RiskStep6 = ({ register }: { register: any }) => {
         <BankRadioInput
           id="highest-price-quoted"
           label="Highest Price Quoted"
-          name="require"
+          name="paymentReceviedType"
           value="highest-price"
-          checked={checkedState["highest-price-quoted"]}
-          handleCheckChange={handleCheckChange}
+          checked={watch("paymentReceviedType") === "highest-price"}
+          register={register}
         />
         <BankRadioInput
           id="all-prices-quoted"
           label="All Prices Quoted"
-          name="require"
+          name="paymentReceviedType"
           value="all-prices"
-          checked={checkedState["all-prices-quoted"]}
-          handleCheckChange={handleCheckChange}
+          checked={watch("paymentReceviedType") === "all-prices"}
+          register={register}
         />
       </div>
     </div>

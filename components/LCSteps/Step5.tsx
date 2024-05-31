@@ -4,59 +4,55 @@ import { Input } from "../../components/ui/input";
 import { useEffect } from "react";
 import { getBanks } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
 
 export const Step5 = ({
   register,
   isConfirmation,
   countries,
   setValue,
-  getValues,
   flags,
-  valueChanged,
-  setValueChanged,
   setStepCompleted,
+  watch,
 }: {
-  register: any;
+  register: UseFormRegister<any>;
   isConfirmation?: boolean;
   countries: string[];
-  setValue: any;
-  getValues: any;
+  setValue: UseFormSetValue<any>;
   flags: string[];
-  valueChanged?: boolean;
-  setValueChanged?: any;
-  setStepCompleted?: any;
+  setStepCompleted: (index: number, status: boolean) => void;
+  watch: UseFormWatch<any>;
 }) => {
   const { user } = useAuth();
-  let isExporter = getValues("participantRole") === "exporter";
-  let countryOfExport = getValues("exporterInfo.countryOfExport");
-  let beneficiaryCountry = getValues("exporterInfo.beneficiaryCountry");
-  let beneficiaryBank = getValues("exporterInfo.bank");
-  let beneficiaryName = getValues("exporterInfo.beneficiaryName");
-
-  useEffect(() => {
-    countryOfExport = getValues("exporterInfo.countryOfExport");
-  }, [valueChanged]);
+  let isExporter = watch("participantRole") === "exporter";
+  let countryOfExport = watch("exporterInfo.countryOfExport");
+  let beneficiaryCountry = watch("exporterInfo.beneficiaryCountry");
+  let beneficiaryBank = watch("exporterInfo.bank");
+  let beneficiaryName = watch("exporterInfo.beneficiaryName");
 
   const { data: exporterBanks } = useQuery({
     queryKey: ["exporter-banks", countryOfExport],
     queryFn: () => getBanks(countryOfExport),
-    enabled: !!countryOfExport,
+    enabled: !!countryOfExport && !!isConfirmation,
   });
-
-  useEffect(() => {
-    isExporter = getValues("participantRole") === "exporter";
-  }, [getValues, user]);
 
   useEffect(() => {
     if (countryOfExport && beneficiaryCountry && beneficiaryName) {
       setStepCompleted(4, true);
     }
-  }, [valueChanged, beneficiaryBank, beneficiaryCountry]);
-
-  isExporter && setValue("exporterInfo.beneficiaryName", user ? user.name : "");
+    isExporter &&
+      setValue("exporterInfo.beneficiaryName", user ? user.name : "");
+  }, [isExporter, countryOfExport, beneficiaryBank, beneficiaryCountry]);
 
   return (
-    <div id="step5" className="py-3 px-2 border border-borderCol rounded-lg w-full">
+    <div
+      id="step5"
+      className="py-3 px-2 border border-borderCol rounded-lg w-full"
+    >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           5
@@ -94,7 +90,6 @@ export const Step5 = ({
           data={countries}
           setValue={setValue}
           flags={flags}
-          setValueChanged={setValueChanged}
         />
         <DDInput
           id="exporterInfo.beneficiaryCountry"
@@ -104,7 +99,6 @@ export const Step5 = ({
           data={countries}
           setValue={setValue}
           flags={flags}
-          setValueChanged={setValueChanged}
         />
         {isConfirmation && (
           <DDInput

@@ -2,23 +2,41 @@
 import React, { useEffect, useState } from "react";
 import { BankRadioInput, DateInput, DiscountBanks } from "./RiskHelpers";
 import { DDInput } from "../LCSteps/helpers";
-import { getAllPortData } from "@/services/apis/helpers.api";
+import { getAllPortData, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
+
+interface Props {
+  countries: string[];
+  flags: string[];
+  register: any;
+  watch: any;
+  setValue: any;
+}
 
 export const RiskStep3 = ({
   countries,
   flags,
-}: {
-  countries: string[];
-  flags: string[];
-}) => {
+  register,
+  watch,
+  setValue,
+}: Props) => {
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
+  const { shipmentPort } = watch();
 
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],
     queryFn: () => getAllPortData(),
   });
+  useEffect(() => {
+    const fetchPorts = async () => {
+      const { success, response } = await getPorts(shipmentPort?.country);
+      if (success) setPorts(response[0].ports);
+      else setPorts([]);
+    };
+
+    shipmentPort?.country && fetchPorts();
+  }, [shipmentPort?.country]);
 
   useEffect(() => {
     if (
@@ -34,63 +52,7 @@ export const RiskStep3 = ({
     }
   }, [portsData]);
 
-  const [checkedState, setCheckedState] = useState({
-    "shipment-yes": false,
-    "shipment-no": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    const newCheckedState = {
-      "shipment-yes": id === "shipment-yes",
-      "shipment-no": id === "shipment-no",
-    };
-    setCheckedState(newCheckedState);
-  };
-
-  const [discountedCheckedState, setDiscountedCheckedState] = useState({
-    "discounted-yes": false,
-    "discounted-no": false,
-  });
-
-  const handleDiscountedCheckChange = (id: string) => {
-    const newCheckedState = {
-      "discounted-yes": id === "discounted-yes",
-      "discounted-no": id === "discounted-no",
-    };
-    setDiscountedCheckedState(newCheckedState);
-  };
-
-  const [expectedCheckedState, setExpectedCheckedState] = useState({
-    "expected-yes": false,
-    "expected-no": false,
-  });
-
-  const handleExpectedCheckChange = (id: string) => {
-    const newCheckedState = {
-      "expected-yes": id === "expected-yes",
-      "expected-no": id === "expected-no",
-    };
-    setExpectedCheckedState(newCheckedState);
-  };
-
   const [days, setDays] = useState<number | string>();
-
-  const [paymentCheckedState, setPaymentCheckedState] = useState({
-    "payment-sight": false,
-    "payment-usance": false,
-    "payment-tenor": false,
-  });
-
-  const handlePaymentCheckChange = (id: string) => {
-    if (id === "payment-tenor") setDays(1);
-    else setDays("");
-    const newCheckedState = {
-      "payment-sight": id === "payment-sight",
-      "payment-usance": id === "payment-usance",
-      "payment-tenor": id === "payment-tenor",
-    };
-    setPaymentCheckedState(newCheckedState);
-  };
 
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
@@ -102,7 +64,12 @@ export const RiskStep3 = ({
           Details of Transaction being offered for Risk Participation
         </p>
       </div>
-      <DiscountBanks countries={countries} flags={flags} />
+      <DiscountBanks
+        countries={countries}
+        flags={flags}
+        setValue={setValue}
+        watch={watch}
+      />
 
       <div className="relative flex items-center justify-between gap-x-3 w-full my-4">
         <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-[274px]">
@@ -112,18 +79,18 @@ export const RiskStep3 = ({
           <BankRadioInput
             id="discounted-yes"
             label="Yes"
-            name="discounted"
+            name="isLcDiscounting"
             value="yes"
-            checked={discountedCheckedState["discounted-yes"]}
-            handleCheckChange={handleDiscountedCheckChange}
+            checked={watch("isLcDiscounting") === "yes"}
+            register={register}
           />
           <BankRadioInput
             id="discounted-no"
             label="No"
-            name="discounted"
+            name="isLcDiscounting"
             value="no"
-            checked={discountedCheckedState["discounted-no"]}
-            handleCheckChange={handleDiscountedCheckChange}
+            checked={watch("isLcDiscounting") === "no"}
+            register={register}
           />
         </div>
 
@@ -134,27 +101,40 @@ export const RiskStep3 = ({
           <BankRadioInput
             id="expected-yes"
             label="Yes"
-            name="expected"
+            name="expectedDiscounting"
             value="yes"
-            checked={expectedCheckedState["expected-yes"]}
-            handleCheckChange={handleExpectedCheckChange}
+            checked={watch("expectedDiscounting") === "yes"}
+            register={register}
           />
           <BankRadioInput
             id="expected-no"
             label="No"
-            name="expected"
+            name="expectedDiscounting"
             value="no"
-            checked={expectedCheckedState["expected-no"]}
-            handleCheckChange={handleExpectedCheckChange}
+            checked={watch("expectedDiscounting") === "no"}
+            register={register}
           />
 
-          <DateInput title="Expected Date of Discounting" noBorder />
+          <DateInput
+            name="expectedDateDiscounting"
+            setValue={setValue}
+            title="Expected Date of Discounting"
+            noBorder
+          />
         </div>
       </div>
 
       <div className="flex items-center justify-between gap-x-3 w-full my-4">
-        <DateInput title="Date LC Issued / Expected Date of LC Issuance" />
-        <DateInput title="LC Expiry Date" />
+        <DateInput
+          name="startDate"
+          setValue={setValue}
+          title="Date LC Issued / Expected Date of LC Issuance"
+        />
+        <DateInput
+          name="expiryDate"
+          setValue={setValue}
+          title="LC Expiry Date"
+        />
       </div>
 
       <div className="flex items-center justify-between gap-x-3 w-full my-4">
@@ -164,24 +144,24 @@ export const RiskStep3 = ({
             <BankRadioInput
               id="payment-sight"
               label="Sight LC"
-              name="payment"
+              name="paymentTerms"
               value="sight"
-              checked={paymentCheckedState["payment-sight"]}
-              handleCheckChange={handlePaymentCheckChange}
+              checked={watch("paymentTerms") === "sight"}
+              register={register}
             />
             <BankRadioInput
               id="payment-usance"
               label="Usance LC"
-              name="payment"
+              name="paymentTerms"
               value="usance"
-              checked={paymentCheckedState["payment-usance"]}
-              handleCheckChange={handlePaymentCheckChange}
+              checked={watch("paymentTerms") === "usance"}
+              register={register}
             />
             <div className="w-full">
               <label
                 htmlFor="payment-tenor"
                 className={`px-3 py-2.5 w-full transition-colors duration-100 ${
-                  paymentCheckedState["payment-tenor"]
+                  watch("paymentTerms") === "tenor"
                     ? "bg-[#DCE5FD]"
                     : "border border-borderCol bg-white"
                 } rounded-md flex items-center justify-between gap-x-3 mb-2 text-lightGray text-sm`}
@@ -190,12 +170,10 @@ export const RiskStep3 = ({
                   <input
                     type="radio"
                     id="payment-tenor"
-                    value={days}
-                    name="payment"
+                    value="tenor"
+                    {...register("paymentTerms")}
+                    checked={watch("paymentTerms") === "tenor"}
                     className="accent-[#255EF2] size-4"
-                    onChange={() => {
-                      handlePaymentCheckChange("payment-tenor");
-                    }}
                   />
                   Tenor LC
                 </div>
@@ -247,22 +225,19 @@ export const RiskStep3 = ({
               label="Country"
               //   value={shipmentCountry}
               placeholder="Select a country"
-              setValue={() => ""}
+              setValue={setValue}
               data={portCountries}
               disabled={portCountries.length <= 0}
               flags={flags}
-              //   setValueChanged={setValueChanged}
             />
             <DDInput
               id="shipmentPort.port"
               label="Port"
               //   value={shipmentPort}
               placeholder="Select port"
-              setValue={() => ""}
-              //   setValueChanged={setValueChanged}
-              //   disabled={!ports || ports.length === 0}
-              //   data={ports}
-              disabled
+              setValue={setValue}
+              disabled={!ports || ports.length === 0}
+              data={ports}
             />
           </div>
         </div>
@@ -275,16 +250,16 @@ export const RiskStep3 = ({
             label="Yes"
             name="transhipment"
             value="yes"
-            checked={checkedState["shipment-yes"]}
-            handleCheckChange={handleCheckChange}
+            checked={watch("transhipment") == "yes"}
+            register={register}
           />
           <BankRadioInput
             id="shipment-no"
             label="No"
             name="transhipment"
             value="no"
-            checked={checkedState["shipment-no"]}
-            handleCheckChange={handleCheckChange}
+            checked={watch("transhipment") == "no"}
+            register={register}
           />
         </div>
       </div>
@@ -296,8 +271,9 @@ export const RiskStep3 = ({
         <div className="border border-borderCol pt-3 pb-2 px-2 rounded-md w-full bg-[#F5F7F9]">
           <p className="text-sm font-semibold mb-2 ml-3">Product Description</p>
           <textarea
-            name=""
+            name="description"
             rows={1}
+            {...register("description")}
             placeholder="Enter the description of the product being imported (under this LC)"
             className="bg-white text-sm border border-borderCol resize-none w-full py-1 px-3 rounded-lg outline-none"
           ></textarea>

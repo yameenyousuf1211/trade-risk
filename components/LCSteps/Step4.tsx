@@ -1,49 +1,45 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { DDInput } from "./helpers";
 import { useAuth } from "@/context/AuthProvider";
-import { useForm, useWatch } from "react-hook-form";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
 
 export const Step4 = ({
   register,
   countries,
   setValue,
-  getValues,
   flags,
-  valueChanged,
-  setValueChanged,
   setStepCompleted,
   watch,
 }: {
-  register: any;
+  register: UseFormRegister<any>;
   countries: string[];
   flags: string[];
-  setValue: any;
-  getValues: any;
-  valueChanged: boolean;
-  setValueChanged?: any;
-  setStepCompleted?: any;
-  watch?: any;
+  setValue: UseFormSetValue<any>;
+  setStepCompleted: (index: number, status: boolean) => void;
+  watch: UseFormWatch<any>;
 }) => {
   const { user } = useAuth();
-  let isImporter = getValues("participantRole") === "importer";
-  let importerCountry = getValues("importerInfo.countryOfImport");
-  let applicantName = getValues("importerInfo.applicantName");
+  let isImporter = watch("participantRole") === "importer";
+  let importerCountry = watch("importerInfo.countryOfImport");
+  let applicantName = watch("importerInfo.applicantName");
 
-  useEffect(() => {
-    isImporter = getValues("participantRole") === "importer";
-  }, [getValues, user]);
-  // console.log(isImporter);
   useEffect(() => {
     if (importerCountry && applicantName) {
       setStepCompleted(3, true);
     }
-  }, [valueChanged]);
-
-  isImporter && setValue("importerInfo.applicantName", user ? user.name : "");
+    isImporter && setValue("importerInfo.applicantName", user ? user.name : "");
+  }, [importerCountry, applicantName, isImporter]);
 
   return (
-    <div id="step4" className="py-3 px-2 border border-borderCol rounded-lg w-full">
+    <div
+      id="step4"
+      className="py-3 px-2 border border-borderCol rounded-lg w-full"
+    >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           4
@@ -63,7 +59,6 @@ export const Step4 = ({
           register={register}
           className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
           placeholder="Enter name"
-          onChange={() => setValueChanged(!valueChanged)}
         />
       </label>
       <DDInput
@@ -74,7 +69,6 @@ export const Step4 = ({
         value={importerCountry}
         setValue={setValue}
         flags={flags}
-        setValueChanged={setValueChanged}
       />
     </div>
   );

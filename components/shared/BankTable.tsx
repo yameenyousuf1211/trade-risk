@@ -21,7 +21,7 @@ import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
 import { ApiResponse, Country, IBids } from "@/types/type";
 import { compareValues, convertDateToString } from "@/utils";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "../../services/apis/helpers.api";
 
@@ -83,6 +83,7 @@ export const BankTable = ({
   const [sortedKey, setSortedKey] = useState<string>("");
 
   const handleSort = (key: string) => {
+    console.log(key)
     setSortedKey(key);
     let isDescending = sortedKey.includes(key);
     setSortedKey(isDescending ? "" : key);
@@ -95,8 +96,8 @@ export const BankTable = ({
           valueB = b.createdAt;
           break;
         case "Country of issuing bank":
-          valueA = a.lcInfo.country;
-          valueB = b.lcInfo.country;
+          valueA = a.lcInfo && a.lcInfo.country;
+          valueB = b.lcInfo && b.lcInfo.country;
           break;
         case "Confirmation Rate":
           valueA = a.confirmationPrice;
@@ -115,13 +116,13 @@ export const BankTable = ({
           valueB = b.confirmationPrice;
           break;
         case "Country of issuing bank":
-          valueA = a.lcInfo?.[1]?.country;
-          valueB = b.lcInfo?.[1]?.country;
+          valueA = a.lcInfo && a.lcInfo?.[1]?.country;
+          valueB = b.lcInfo && b.lcInfo?.[1]?.country;
           break;
 
         case "Confirmation bank":
-          valueA = a.bidBy?.[0];
-          valueB = b.bidBy?.[0];
+          valueA = a.bidBy && a.bidBy?.[0];
+          valueB = b.bidBy && b.bidBy?.[0];
           break;
 
         default:
@@ -153,7 +154,7 @@ export const BankTable = ({
           <TableHeader className="bg-[#F0F0F0] hover:bg-[#F0F0F0]/90 p-2 rounded-lg">
             <TableRow className="py-0">
               {myBidsColumnHeaders.map((header, idx) => (
-                <>
+                <React.Fragment key={`${header}-${idx}`}>
                   {idx === 2 && isCorporate && (
                     <TableHead
                       key="Confirmation bank"
@@ -169,7 +170,6 @@ export const BankTable = ({
                     </TableHead>
                   )}
                   <TableHead
-                    key={`${header}-${idx}`}
                     className="px-2 h-8 py-2  min-w-44"
                     onClick={() => handleSort(header)}
                   >
@@ -180,7 +180,7 @@ export const BankTable = ({
                       </div>
                     </div>
                   </TableHead>
-                </>
+                </React.Fragment>
               ))}
             </TableRow>
           </TableHeader>
@@ -208,7 +208,8 @@ export const BankTable = ({
                     <TableCell className="px-1 py-1 max-w-[200px]">
                       <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <p className="text-[16px]">
-                          {allCountries &&
+                          {item.bidBy &&
+                            allCountries &&
                             getCountryFlagByName(item.bidBy?.[2])}
                         </p>
                         <div className="truncate text-lightGray capitalize">
@@ -219,7 +220,9 @@ export const BankTable = ({
                   )}
                   <TableDataCell
                     data={
-                      item.confirmationPrice.toLocaleString() + ".00 %" || ""
+                      (item.confirmationPrice &&
+                        item.confirmationPrice.toLocaleString() + ".00 %") ||
+                      ""
                     }
                   />
                   <TableDataCell
@@ -238,7 +241,7 @@ export const BankTable = ({
                     }
                   />
                   <TableDataCell
-                    data={"USD " + item.confirmationPrice + ".00" || ""}
+                    data={"USD " + (item.confirmationPrice || "") + ".00" || ""}
                   />
 
                   <TableCell className="px-1 py-1 max-w-[200px]">
@@ -248,7 +251,10 @@ export const BankTable = ({
                         status={item.status}
                         isInfo={item.status !== "Add bid" && !isAddNewBid}
                         setIsAddNewBid={setIsAddNewBid}
-                        isDiscount={item.bidType.includes("Discount")}
+                        isDiscount={
+                          (item.bidType && item.bidType.includes("Discount")) ||
+                          false
+                        }
                         border
                         bidData={item}
                         lcId={item.lc[0]}

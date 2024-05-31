@@ -27,9 +27,10 @@ export const TableBidStatus = ({
           status={data.response.data}
           isInfo={data.response.data !== "Add bid" && !isAddNewBid}
           setIsAddNewBid={setIsAddNewBid}
-          isDiscount={lcData.lcType.includes("Discount")}
+          isDiscount={
+            (lcData.type && lcData.type.includes("Discount")) || false
+          }
           lcId={lcData._id}
-          bidId={id}
         />
       ) : (
         <Button

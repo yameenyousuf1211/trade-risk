@@ -1,27 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { BgRadioInput, DDInput } from "./helpers";
+import { useEffect } from "react";
+import { BgRadioInput } from "./helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
 
 export const Step6 = ({
   title,
   isDiscount,
   register,
   setValue,
-  getValues,
-  valueChanged,
-  setStepCompleted,
   watch,
 }: {
   title: string;
   isDiscount?: boolean;
-  register: any;
-  setValue: any;
-  getValues: any;
-  valueChanged?: boolean;
-  setStepCompleted?: any;
-  watch: any;
+  register: UseFormRegister<any>;
+  setValue: UseFormSetValue<any>;
+  watch: UseFormWatch<any>;
 }) => {
   const behalfOf = watch(
     isDiscount ? "discountingInfo.behalfOf" : "confirmationInfo.behalfOf"
@@ -31,8 +30,8 @@ export const Step6 = ({
   );
 
   let pricePerAnnum = isDiscount
-    ? getValues("discountingInfo.pricePerAnnum")
-    : getValues("confirmationInfo.pricePerAnnum");
+    ? watch("discountingInfo.pricePerAnnum")
+    : watch("confirmationInfo.pricePerAnnum");
 
   useEffect(() => {
     if (pricePerAnnum) {
@@ -46,12 +45,12 @@ export const Step6 = ({
             `${pricePerAnnum.toString()}`
           );
     }
-  }, [valueChanged]);
+  }, [pricePerAnnum]);
 
   const handleIncrement = () => {
     const currentValue = isDiscount
-      ? getValues("discountingInfo.pricePerAnnum") || "0"
-      : getValues("confirmationInfo.pricePerAnnum") || "0";
+      ? watch("discountingInfo.pricePerAnnum") || "0"
+      : watch("confirmationInfo.pricePerAnnum") || "0";
     const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
     if (Number(newValue) > 100) {
       return;
@@ -63,8 +62,8 @@ export const Step6 = ({
 
   const handleDecrement = () => {
     const currentValue = isDiscount
-      ? getValues("discountingInfo.pricePerAnnum") || "0"
-      : getValues("confirmationInfo.pricePerAnnum") || "0";
+      ? watch("discountingInfo.pricePerAnnum") || "0"
+      : watch("confirmationInfo.pricePerAnnum") || "0";
     let newValue = parseFloat(currentValue) - 0.5;
 
     if (newValue < 0) newValue = 0;

@@ -5,64 +5,66 @@ import { Period, Transhipment } from "./Step3Helpers";
 import { useQuery } from "@tanstack/react-query";
 import { getBanks } from "@/services/apis/helpers.api";
 import { useEffect, useState } from "react";
+import {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 
 export const Step3 = ({
   register,
   setValue,
-  getValues,
   countries,
   flags,
-  valueChanged,
-  setValueChanged,
   setStepCompleted,
   isDiscount,
   watch,
 }: {
-  register: any;
-  setValue: any;
-  getValues: any;
+  register: UseFormRegister<any>;
+  setValue: UseFormSetValue<any>;
   countries: string[];
   flags: string[];
-  valueChanged?: boolean;
-  setValueChanged?: any;
-  setStepCompleted?: any;
+  setStepCompleted: (index: number, status: boolean) => void;
   isDiscount?: boolean;
-  watch: any;
+  watch: UseFormWatch<any>;
 }) => {
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
   const [showConfirmingBank2, setShowConfirmingBank2] = useState(false);
 
-  let issuingCountry = getValues("issuingBank.country");
-  let issuingBank = getValues("issuingBank.bank");
-  let advisingCountry = getValues("advisingBank.country");
-  let advisingBank = getValues("advisingBank.bank");
-  let confirmingCountry = getValues("confirmingBank.country");
-  let confirmingBank = getValues("confirmingBank.bank");
-  let confirming2Country = getValues("confirmingBank2.country");
-  let confirming2Bank = getValues("confirmingBank2.bank");
-  let expectedDate = getValues("lcPeriod.expectedDate");
-  let startDate = getValues("lcPeriod.startDate");
-  let endDate = getValues("lcPeriod.endDate");
-  let productDescription = getValues("productDescription");
+  let issuingCountry = watch("issuingBank.country");
+  let issuingBank = watch("issuingBank.bank");
+  let advisingCountry = watch("advisingBank.country");
+  let advisingBank = watch("advisingBank.bank");
+  let confirmingCountry = watch("confirmingBank.country");
+  let confirmingBank = watch("confirmingBank.bank");
+  let confirming2Country = watch("confirmingBank2.country");
+  let confirming2Bank = watch("confirmingBank2.bank");
+  let expectedDate = watch("lcPeriod.expectedDate");
+  let startDate = watch("lcPeriod.startDate");
+  let endDate = watch("lcPeriod.endDate");
+  let productDescription = watch("productDescription");
 
   useEffect(() => {
-    issuingCountry = getValues("issuingBank.country");
-    confirmingCountry = getValues("confirmingBank.country");
-    advisingCountry = getValues("advisingBank.country");
-    confirming2Country = getValues("confirmingBank2.country");
-    expectedDate = getValues("lcPeriod.expectedDate");
-  }, [valueChanged]);
+    if (
+      issuingCountry &&
+      issuingBank 
+    ) {
 
-  useEffect(() => {
-    if (issuingCountry && issuingBank) {
       setStepCompleted(2, true);
     }
     if (confirmingCountry) setShowConfirmingBank(true);
     if (advisingCountry) {
       setShowAdvisingBank(true);
     }
-  }, [valueChanged]);
+  }, [
+    issuingCountry,
+    confirmingCountry,
+    startDate,
+    endDate,
+    productDescription,
+    expectedDate,
+  ]);
 
   const { data: issuingBanks } = useQuery({
     queryKey: ["issuing-banks", issuingCountry],
@@ -105,7 +107,6 @@ export const Step3 = ({
               id="issuingBank.country"
               data={countries}
               setValue={setValue}
-              setValueChanged={setValueChanged}
               flags={flags}
             />
             <DDInput
@@ -114,7 +115,6 @@ export const Step3 = ({
               value={issuingBank}
               id="issuingBank.bank"
               setValue={setValue}
-              setValueChanged={setValueChanged}
               disabled={
                 !issuingBanks ||
                 !issuingBanks?.success ||
@@ -146,7 +146,6 @@ export const Step3 = ({
                 id="advisingBank.country"
                 data={countries}
                 setValue={setValue}
-                setValueChanged={setValueChanged}
                 flags={flags}
               />
               <DDInput
@@ -155,7 +154,6 @@ export const Step3 = ({
                 value={advisingBank}
                 id="advisingBank.bank"
                 setValue={setValue}
-                setValueChanged={setValueChanged}
                 disabled={
                   !advisingBanks ||
                   !advisingBanks?.success ||
@@ -197,7 +195,6 @@ export const Step3 = ({
                 value={confirmingCountry}
                 data={countries}
                 setValue={setValue}
-                setValueChanged={setValueChanged}
                 flags={flags}
               />
             </div>
@@ -207,7 +204,6 @@ export const Step3 = ({
               placeholder="Select bank"
               value={confirmingBank}
               setValue={setValue}
-              setValueChanged={setValueChanged}
               disabled={
                 !confirmingBanks ||
                 !confirmingBanks?.response ||
@@ -239,7 +235,6 @@ export const Step3 = ({
                 value={confirming2Bank}
                 data={countries}
                 setValue={setValue}
-                setValueChanged={setValueChanged}
                 flags={flags}
               />
             </div>
@@ -249,7 +244,6 @@ export const Step3 = ({
               placeholder="Select bank"
               value={confirming2Bank}
               setValue={setValue}
-              setValueChanged={setValueChanged}
               disabled={
                 !confirmingBanks ||
                 !confirmingBanks.success ||
@@ -285,20 +279,11 @@ export const Step3 = ({
           </div>
         )}
       </div>
-      <Period
-        setValue={setValue}
-        getValues={getValues}
-        countries={countries}
-        flags={flags}
-        valueChanged={valueChanged}
-        setValueChanged={setValueChanged}
-      />
+      <Period setValue={setValue} watch={watch} flags={flags} />
       <Transhipment
         watch={watch}
-        getValues={getValues}
         register={register}
         setValue={setValue}
-        valueChanged={valueChanged}
         isDiscount={isDiscount}
       />
     </div>

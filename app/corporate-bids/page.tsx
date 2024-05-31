@@ -101,7 +101,7 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
             <BankTable data={data} isLoading={isLoading} isCorporate/>
           </div>
         </div>
-        <div className="w-1/5 max-w-[300px] sticky top-10 h-[80vh]">
+        <div className="w-full max-w-[300p x] sticky top-10 h-[80vh]">
           <Sidebar isBank={false} />
         </div>
       </div>

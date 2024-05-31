@@ -90,7 +90,7 @@ const Chart = ({
   );
 };
 
-export const LineCharts = ({ isBank }: { isBank: boolean }) => {
+export const LineCharts = ({ isBank }: { isBank?: boolean }) => {
   const data = [
     {
       name: "Page A",

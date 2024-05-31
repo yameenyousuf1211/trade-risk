@@ -15,9 +15,11 @@ export const generalRiskSchema = z.object({
     message: "Select transaction type",
   }),
 
-  outrightSales: z.enum(["Pre Sales", "Asset On Books"], {
-    message: "Outright sales cannot be empty",
-  }),
+  outrightSales: z
+    .enum(["Pre Sales", "Asset On Books"], {
+      message: "Outright sales cannot be empty",
+    })
+    .optional(),
   riskParticipation: z.enum(["Non-Funded", "Funded"], {
     message: "Select risk participation",
   }),
@@ -34,19 +36,16 @@ export const generalRiskSchema = z.object({
         message: "Select risk participation type",
       }
     ),
-    amount: z.string({
-      message: "Enter amount",
-    }),
-    // amount: z
-    //   .string()
-    //   .nonempty("Enter amount")
-    //   .refine((value) => /^\d+$/.test(value), {
-    //     message: "Enter a valid number",
-    //   }),
-    returnOffer: z.object({
-      type: z.enum(["fixed", "perAnnum"], {
-        message: "Return offer",
+
+    amount: z
+      .string()
+      .nonempty("Enter amount")
+      .refine((value) => /^\d+$/.test(value), {
+        message: "Enter a valid number",
       }),
+
+    returnOffer: z.enum(["fixed", "perAnnum"], {
+      message: "Return offer",
     }),
 
     baseRate: z.string({ message: '"Enter base rate"' }),
@@ -55,7 +54,7 @@ export const generalRiskSchema = z.object({
     //  {
     //   message: "Enter a valid number",
     // }),
-    perAnnum: z.string({ message: '"Enter per annum rate"' }),
+    perAnnum: z.string({ message: '"Enter per annum rate"' }).optional(),
     // perAnnum: z
     //   .string()
     //   .nonempty("Enter per annum rate")
@@ -91,11 +90,11 @@ export const generalRiskSchema = z.object({
   expectedDiscounting: z.string({
     message: "Choose if LC is expected to be  dicounted",
   }),
-  expectedDateDiscounting: z
-    .string({ message: "Expected date for discounting cannot be empty" })
-    .nonempty({ message: "Expected date for discounting cannot be empty" }),
-  expiryDate: z.string().nonempty({ message: "Expiry date cannot be empty" }),
-  startDate: z.string().nonempty({ message: "Start date cannot be empty" }),
+  expectedDateDiscounting: z.date({
+    message: "Expected date for discounting cannot be empty",
+  }),
+  expiryDate: z.date({ message: "Expiry date cannot be empty" }),
+  startDate: z.date({ message: "Start date cannot be empty" }),
   paymentTerms: z
     .string()
     .nonempty({ message: "Payment terms cannot be empty" }),
@@ -106,9 +105,9 @@ export const generalRiskSchema = z.object({
       .nonempty({ message: "Shipment country cannot be empty" }),
   }),
   transhipment: z.string({ message: "Select transhipment" }),
-  expectedDateConfirmation: z
-    .string()
-    .nonempty({ message: "Expected date for confirmation cannot be empty" }),
+  expectedDateConfirmation: z.date({
+    message: "sExpected date for confirmation cannot be empty",
+  }),
   description: z.string().nonempty({ message: "Description cannot be empty" }),
   importerInfo: z.object({
     applicantName: z

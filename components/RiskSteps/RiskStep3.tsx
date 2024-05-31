@@ -266,7 +266,7 @@ export const RiskStep3 = ({
 
       {/* Expected Date */}
       <div className="flex items-center justify-between gap-x-3 w-full mt-4">
-        <DateInput title="Expected date to add confirmation" />
+        <DateInput name="expectedDateConfirmation" setValue={setValue} title="Expected date to add confirmation" />
         {/* Product Description */}
         <div className="border border-borderCol pt-3 pb-2 px-2 rounded-md w-full bg-[#F5F7F9]">
           <p className="text-sm font-semibold mb-2 ml-3">Product Description</p>

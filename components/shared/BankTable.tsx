@@ -19,7 +19,7 @@ import {
 import { Button } from "../ui/button";
 import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
-import { ApiResponse, Country, IBids } from "@/types/type";
+import { ApiResponse, Country, IBids, IRisk } from "@/types/type";
 import { compareValues, convertDateToString } from "@/utils";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -39,19 +39,20 @@ export const BankTable = ({
   data,
   isLoading,
   isCorporate,
+  isRisk,
 }: {
-  data: ApiResponse<IBids> | undefined;
+  data: ApiResponse<IBids | IRisk> | undefined;
   isLoading: boolean;
   isCorporate?: boolean;
+  isRisk?: boolean;
 }) => {
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
-
   const [allCountries, setAllCountries] = useState<Country[]>([]);
-  const [tableData, setTableData] = useState<IBids[]>([]);
+  const [tableData, setTableData] = useState<(IBids | IRisk)[]>([]);
 
   useEffect(() => {
-    if (data && data?.data) {
-      setTableData(data?.data);
+    if (data && data.data) {
+      setTableData(data.data);
     }
   }, [data]);
 
@@ -83,48 +84,46 @@ export const BankTable = ({
   const [sortedKey, setSortedKey] = useState<string>("");
 
   const handleSort = (key: string) => {
-    console.log(key)
+    console.log(key);
     setSortedKey(key);
     let isDescending = sortedKey.includes(key);
     setSortedKey(isDescending ? "" : key);
 
-    let sortedData: IBids[] = [...tableData].sort((a, b) => {
+    let sortedData: (IBids | IRisk)[] = [...tableData].sort((a, b) => {
       let valueA, valueB;
       switch (key) {
         case "Date Submitted":
-          valueA = a.createdAt;
-          valueB = b.createdAt;
+          valueA = (a as IBids).createdAt || (a as IRisk).createdAt;
+          valueB = (b as IBids).createdAt || (b as IRisk).createdAt;
           break;
         case "Country of issuing bank":
-          valueA = a.lcInfo && a.lcInfo.country;
-          valueB = b.lcInfo && b.lcInfo.country;
+          valueA =
+            (a as IBids).lcInfo?.[1]?.country ||
+            (a as IRisk).issuingBank?.country;
+          valueB =
+            (b as IBids).lcInfo?.[1]?.country ||
+            (b as IRisk).issuingBank?.country;
           break;
         case "Confirmation Rate":
-          valueA = a.confirmationPrice;
-          valueB = b.confirmationPrice;
+          valueA = (a as IBids).confirmationPrice || (a as IRisk).transhipment;
+          valueB = (b as IBids).confirmationPrice || (b as IRisk).transhipment;
           break;
         case "Discounting Rate":
-          valueA = a.discountBaseRate;
-          valueB = b.discountBaseRate;
+          valueA = (a as IBids).discountBaseRate;
+          valueB = (b as IBids).discountBaseRate;
           break;
         case "Discount Margin":
-          valueA = a.discountMargin;
-          valueB = b.discountMargin;
+          valueA = (a as IBids).discountMargin;
+          valueB = (b as IBids).discountMargin;
           break;
         case "Minimum Charges":
-          valueA = a.confirmationPrice;
-          valueB = b.confirmationPrice;
+          valueA = (a as IBids).confirmationPrice;
+          valueB = (b as IBids).confirmationPrice;
           break;
-        case "Country of issuing bank":
-          valueA = a.lcInfo && a.lcInfo?.[1]?.country;
-          valueB = b.lcInfo && b.lcInfo?.[1]?.country;
-          break;
-
         case "Confirmation bank":
-          valueA = a.bidBy && a.bidBy?.[0];
-          valueB = b.bidBy && b.bidBy?.[0];
+          valueA = (a as any).bidBy?.[0] || (b as any).bidBy?.[0];
+          valueB = (b as any).bidBy?.[0] || (b as any).bidBy?.[0];
           break;
-
         default:
           return 0;
       }
@@ -134,6 +133,7 @@ export const BankTable = ({
 
     setTableData(sortedData);
   };
+  console.log(tableData, "tabledata");
 
   return (
     <div className="">
@@ -188,19 +188,22 @@ export const BankTable = ({
             {isLoading ? (
               <div className="w-full h-full center">{/* <Loader /> */}</div>
             ) : (
-              data &&
-              data.data &&
-              tableData.map((item, index) => (
+              tableData &&
+              tableData?.map((item: IBids | IRisk, index: number) => (
                 <TableRow key={index} className="border-none font-roboto">
-                  <TableDataCell data={convertDateToString(item.createdAt)} />
+                  <TableDataCell data={convertDateToString(item?.createdAt)} />
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                       <p className="text-[16px] emoji-font">
                         {allCountries &&
-                          getCountryFlagByName(item.lcInfo?.[1]?.country)}
+                          getCountryFlagByName(
+                            (item as IBids)?.lcInfo?.[1]?.country ||
+                              (item as IRisk)?.issuingBank?.country
+                          )}
                       </p>
                       <div className="truncate text-lightGray capitalize">
-                        {item.lcInfo?.[1]?.country || ""}
+                        {(item as IBids)?.lcInfo?.[1]?.country ||
+                          (item as IRisk)?.issuingBank?.country}
                       </div>
                     </div>
                   </TableCell>
@@ -208,56 +211,66 @@ export const BankTable = ({
                     <TableCell className="px-1 py-1 max-w-[200px]">
                       <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <p className="text-[16px]">
-                          {item.bidBy &&
+                          {(item as IBids).bidBy &&
                             allCountries &&
-                            getCountryFlagByName(item.bidBy?.[2])}
+                            getCountryFlagByName((item as any).bidBy?.[2])}
                         </p>
                         <div className="truncate text-lightGray capitalize">
-                          {item.bidBy?.[0] || ""}
+                          {(item as any).bidBy?.[0] || ""}
                         </div>
                       </div>
                     </TableCell>
                   )}
                   <TableDataCell
                     data={
-                      (item.confirmationPrice &&
-                        item.confirmationPrice.toLocaleString() + ".00 %") ||
+                      ((item as IBids)?.confirmationPrice &&
+                        (item as IBids).confirmationPrice.toLocaleString() +
+                          ".00 %") ||
                       ""
                     }
                   />
                   <TableDataCell
                     data={
-                      item.discountBaseRate
-                        ? item.discountBaseRate?.toLocaleString() + ".00%"
+                      (item as IBids)?.discountBaseRate
+                        ? (item as IBids).discountBaseRate?.toLocaleString() +
+                          ".00%"
                         : "Not Applicable"
                     }
                   />
 
                   <TableDataCell
                     data={
-                      item.discountMargin
-                        ? item.discountMargin?.toLocaleString() + ".00%"
+                      (item as IBids)?.discountMargin
+                        ? (item as IBids).discountMargin?.toLocaleString() +
+                          ".00%"
                         : "Not Applicable"
                     }
                   />
                   <TableDataCell
-                    data={"USD " + (item.confirmationPrice || "") + ".00" || ""}
+                    data={
+                      "USD " +
+                        ((item as IBids).confirmationPrice ||
+                          (item as IRisk).riskParticipationTransaction
+                            ?.amount) +
+                        ".00" || ""
+                    }
                   />
 
                   <TableCell className="px-1 py-1 max-w-[200px]">
-                    {item.status !== "Pending" ? (
+                    {(item as IBids).status !== "Pending" ? (
                       <AddBid
                         triggerTitle={item.status}
                         status={item.status}
                         isInfo={item.status !== "Add bid" && !isAddNewBid}
                         setIsAddNewBid={setIsAddNewBid}
                         isDiscount={
-                          (item.bidType && item.bidType.includes("Discount")) ||
+                          ((item as IBids).bidType &&
+                            (item as IBids).bidType.includes("Discount")) ||
                           false
                         }
                         border
                         bidData={item}
-                        lcId={item.lc[0]}
+                        lcId={item?.lc && item?.lc[0]}
                         isCorporate={isCorporate}
                       />
                     ) : (

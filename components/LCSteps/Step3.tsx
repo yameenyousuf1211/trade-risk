@@ -5,6 +5,11 @@ import { Period, Transhipment } from "./Step3Helpers";
 import { useQuery } from "@tanstack/react-query";
 import { getBanks } from "@/services/apis/helpers.api";
 import { useEffect, useState } from "react";
+import {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 
 export const Step3 = ({
   register,
@@ -15,13 +20,13 @@ export const Step3 = ({
   isDiscount,
   watch,
 }: {
-  register: any;
-  setValue: any;
+  register: UseFormRegister<any>;
+  setValue: UseFormSetValue<any>;
   countries: string[];
   flags: string[];
-  setStepCompleted?: any;
+  setStepCompleted: (index: number, status: boolean) => void;
   isDiscount?: boolean;
-  watch: any;
+  watch: UseFormWatch<any>;
 }) => {
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
@@ -43,13 +48,7 @@ export const Step3 = ({
   useEffect(() => {
     if (
       issuingCountry &&
-      issuingBank &&
-      confirmingBank &&
-      confirmingCountry &&
-      startDate &&
-      endDate &&
-      expectedDate &&
-      productDescription
+      issuingBank 
     ) {
       setStepCompleted(2, true);
     }

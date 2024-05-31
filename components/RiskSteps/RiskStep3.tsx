@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { BankRadioInput, DateInput, DiscountBanks } from "./RiskHelpers";
 import { DDInput } from "../LCSteps/helpers";
-import { getAllPortData } from "@/services/apis/helpers.api";
+import { getAllPortData, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 
 interface Props {
@@ -22,13 +22,21 @@ export const RiskStep3 = ({
 }: Props) => {
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
-  const {shipmentPort}  = watch();
-  console.log(shipmentPort,"port")
+  const { shipmentPort } = watch();
 
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],
     queryFn: () => getAllPortData(),
   });
+  useEffect(() => {
+    const fetchPorts = async () => {
+      const { success, response } = await getPorts(shipmentPort?.country);
+      if (success) setPorts(response[0].ports);
+      else setPorts([]);
+    };
+
+    shipmentPort?.country && fetchPorts();
+  }, [shipmentPort?.country]);
 
   useEffect(() => {
     if (
@@ -107,13 +115,26 @@ export const RiskStep3 = ({
             register={register}
           />
 
-          <DateInput title="Expected Date of Discounting" noBorder />
+          <DateInput
+            name="expectedDateDiscounting"
+            setValue={setValue}
+            title="Expected Date of Discounting"
+            noBorder
+          />
         </div>
       </div>
 
       <div className="flex items-center justify-between gap-x-3 w-full my-4">
-        <DateInput title="Date LC Issued / Expected Date of LC Issuance" />
-        <DateInput title="LC Expiry Date" />
+        <DateInput
+          name="startDate"
+          setValue={setValue}
+          title="Date LC Issued / Expected Date of LC Issuance"
+        />
+        <DateInput
+          name="expiryDate"
+          setValue={setValue}
+          title="LC Expiry Date"
+        />
       </div>
 
       <div className="flex items-center justify-between gap-x-3 w-full my-4">
@@ -215,8 +236,8 @@ export const RiskStep3 = ({
               //   value={shipmentPort}
               placeholder="Select port"
               setValue={setValue}
-                disabled={!ports || ports.length === 0}
-                data={ports}
+              disabled={!ports || ports.length === 0}
+              data={ports}
             />
           </div>
         </div>

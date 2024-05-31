@@ -91,11 +91,11 @@ export const generalRiskSchema = z.object({
   expectedDiscounting: z.string({
     message: "Choose if LC is expected to be  dicounted",
   }),
-  // expectedDateDiscounting: z
-  //   .string({ message: "Expected date for discounting cannot be empty" })
-  //   .nonempty({ message: "Expected date for discounting cannot be empty" }),
-  // expiryDate: z.string().nonempty({ message: "Expiry date cannot be empty" }),
-  // startDate: z.string().nonempty({ message: "Start date cannot be empty" }),
+  expectedDateDiscounting: z
+    .string({ message: "Expected date for discounting cannot be empty" })
+    .nonempty({ message: "Expected date for discounting cannot be empty" }),
+  expiryDate: z.string().nonempty({ message: "Expiry date cannot be empty" }),
+  startDate: z.string().nonempty({ message: "Start date cannot be empty" }),
   paymentTerms: z
     .string()
     .nonempty({ message: "Payment terms cannot be empty" }),
@@ -106,9 +106,9 @@ export const generalRiskSchema = z.object({
       .nonempty({ message: "Shipment country cannot be empty" }),
   }),
   transhipment: z.string({ message: "Select transhipment" }),
-  // expectedDateConfirmation: z
-  //   .string()
-  //   .nonempty({ message: "Expected date for confirmation cannot be empty" }),
+  expectedDateConfirmation: z
+    .string()
+    .nonempty({ message: "Expected date for confirmation cannot be empty" }),
   description: z.string().nonempty({ message: "Description cannot be empty" }),
   importerInfo: z.object({
     applicantName: z

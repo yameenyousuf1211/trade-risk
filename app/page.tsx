@@ -44,7 +44,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
             Welcome, {user && user.name}
           </h2>
           {/* Charts */}
-          <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 w-[80vw] h-fit">
+          <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 w-[80vw] 2xl:w-full h-fit">
             <ProgressCharts title="Total Requests" />
             <LineCharts />
           </div>

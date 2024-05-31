@@ -32,7 +32,6 @@ export const DiscountBanks = ({
   valueSetter?: any;
   watch?: any;
 }) => {
-  const [valueChanged, setValueChanged] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const { issuingBank, advisingBank, confirmingBank } = watch();
   console.log(issuingBank);
@@ -201,10 +200,14 @@ export const DiscountBanks = ({
 
 export const DateInput = ({
   title,
+  name,
   noBorder,
+  setValue,
 }: {
   title: string;
+  name: string;
   noBorder?: boolean;
+  setValue?: any;
 }) => {
   const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -241,7 +244,7 @@ export const DateInput = ({
               initialDate={lcExpiryDate}
               onChange={(date) => {
                 setLcExpiryDate(date);
-                // updateValue("lcPeriod.endDate", date);
+                setValue(name, date);
               }}
               onClose={() => setIsPopoverOpen(false)}
             />

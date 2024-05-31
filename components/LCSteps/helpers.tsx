@@ -15,6 +15,7 @@ import {
 import { Check, ChevronDown } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+import { UseFormSetValue } from "react-hook-form";
 
 export const DDInput = ({
   id,
@@ -33,7 +34,7 @@ export const DDInput = ({
   data?: string[];
   flags?: string[];
   disabled?: boolean;
-  setValue: any;
+  setValue: UseFormSetValue<any>;
 }) => {
   const [ddOpen, setDdOpen] = useState(false);
   const [ddVal, setDdVal] = useState("");

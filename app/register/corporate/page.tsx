@@ -251,7 +251,7 @@ const CompanyInfoPage = () => {
                   className="z-[1] relative px-2.5 pb-2.5 pt-2.5 w-full text-sm text-lightGray font-roboto bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
                   placeholder=""
                   value={businessNature}
-                  onKeyUp={(e) => e.target.value.replace(/\d/g, "")}
+                  onKeyUp={(e: any) => e.target.value.replace(/\d/g, "")}
                   onChange={handleNatureChange}
                 />
                 <label
@@ -455,7 +455,7 @@ const CompanyInfoPage = () => {
               type="checkbox"
               id="agree"
               required
-              checked={corporateData}
+              checked={corporateData ? true : undefined}
             />
             <label
               htmlFor="agree"

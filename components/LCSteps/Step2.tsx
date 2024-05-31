@@ -12,6 +12,11 @@ import { getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 const numberToText = require("number-to-text");
 require("number-to-text/converters/en-us");
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
 
 export const Step2 = ({
   register,
@@ -21,12 +26,12 @@ export const Step2 = ({
   setDays,
   watch,
 }: {
-  register: any;
-  setValue: any;
-  setStepCompleted?: any;
+  register: UseFormRegister<any>;
+  setValue: UseFormSetValue<any>;
+  setStepCompleted: (index: number, status: boolean) => void;
   days: number;
-  setDays: any;
-  watch: any;
+  setDays: React.Dispatch<React.SetStateAction<number>>;
+  watch: UseFormWatch<any>;
 }) => {
   const { data: currency } = useQuery({
     queryKey: ["currency"],
@@ -38,7 +43,9 @@ export const Step2 = ({
   let paymentTerms = watch("paymentTerms");
   let extraInfo = watch("extraInfo");
 
-  const [currencyValue, setCurrencyValue] = useState<string | number>(amount);
+  const [currencyValue, setCurrencyValue] = useState<string | number>(
+    amount || ""
+  );
   const [rawValue, setRawValue] = useState("");
   const [otherValue, setOtherValue] = useState("");
 
@@ -79,8 +86,9 @@ export const Step2 = ({
     if (amount && paymentTerms) {
       setStepCompleted(1, true);
     }
+    if (paymentTerms !== "Usance LC") setValue("extraInfo", undefined);
   }, [amount, paymentTerms]);
-  console.log(paymentTerms);
+
   return (
     <div
       id="step2"
@@ -121,7 +129,6 @@ export const Step2 = ({
           <input
             type="text"
             inputMode="numeric"
-            name="amount"
             {...register("amount")}
             value={currencyValue}
             onChange={handleChange}
@@ -280,7 +287,6 @@ export const Step2 = ({
               >
                 <input
                   type="radio"
-                  name="extraInfo"
                   value="others"
                   {...register("extraInfo")}
                   id="payment-others"

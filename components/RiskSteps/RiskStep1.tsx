@@ -10,7 +10,6 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
 import { format } from "date-fns";
-import { useForm } from "react-hook-form";
 
 interface Props {
   register: any;
@@ -20,7 +19,6 @@ interface Props {
 export const RiskStep1 = ({ register, watch }: Props) => {
   const [date, setDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  console.log(watch());
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">
@@ -52,7 +50,9 @@ export const RiskStep1 = ({ register, watch }: Props) => {
         <label
           htmlFor="outright-sales"
           className={`pl-3 w-full transition-colors duration-100 ${
-            false ? "bg-[#DCE5FD]" : "border border-borderCol bg-white"
+            watch("transaction") === "Outright Sales"
+              ? "bg-[#DCE5FD]"
+              : "border border-borderCol bg-white"
           } rounded-md flex items-center justify-between gap-x-3 mb-2 text-lightGray text-sm w-full`}
         >
           <div className="flex items-center gap-x-3 w-full">

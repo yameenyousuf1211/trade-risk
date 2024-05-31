@@ -13,8 +13,11 @@ import {
 } from "@/components/RiskSteps";
 import CreateLCLayout from "@/components/layouts/CreateLCLayout";
 import { Button } from "@/components/ui/button";
+import useCountries from "@/hooks/useCountries";
 import useLoading from "@/hooks/useLoading";
 import { getCountries } from "@/services/apis/helpers.api";
+import { onCreateLC } from "@/services/apis/lcs.api";
+import { onCreateRisk } from "@/services/apis/risk.api";
 import { Country } from "@/types/type";
 import { bankCountries } from "@/utils/data";
 import { generalRiskSchema } from "@/validation/risk.validation";
@@ -31,40 +34,13 @@ const RiskFundedPage = () => {
   >({});
   const { startLoading, stopLoading, isLoading } = useLoading();
 
-  const [allCountries, setAllCountries] = useState<Country[]>([]);
-  const [countries, setCountries] = useState([]);
-  const [flags, setFlags] = useState([]);
-
-  const { data: countriesData } = useQuery({
-    queryKey: ["countries"],
-    queryFn: () => getCountries(),
-  });
+  const { countries, flags } = useCountries();
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
 
-  useEffect(() => {
-    if (
-      countriesData &&
-      countriesData.success &&
-      countriesData.response &&
-      countriesData.response.length > 0
-    ) {
-      setAllCountries(countriesData.response);
-      const fetchedCountries = countriesData.response.map(
-        (country: Country) => {
-          return country.name;
-        }
-      );
-      setCountries(fetchedCountries);
-      const fetchedFlags = countriesData.response.map((country: Country) => {
-        return country.flag;
-      });
-      setFlags(fetchedFlags);
-    }
-  }, [countriesData]);
-
   const onSubmit: SubmitHandler<z.infer<typeof generalRiskSchema>> = async (
-    data
+    data,
+    isDraft
   ) => {
     console.log(data);
     const validationResult = generalRiskSchema.safeParse(data);
@@ -78,6 +54,21 @@ const RiskFundedPage = () => {
           toast.error(`Validation Error: ${error.message}`);
         });
       }
+    }
+  };
+  const onSaveAsDraft: SubmitHandler<z.infer<typeof generalRiskSchema>> = async (data) => {
+    try {
+      const { response, success } = await onCreateRisk({ ...data, draft: true});
+      if (!success) {
+        toast.error(response);
+      } else {
+        toast.success("Risk created successfully");
+        reset();
+        // router.push("/");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An unexpected error occurred");
     }
   };
 
@@ -97,8 +88,8 @@ const RiskFundedPage = () => {
           setValue={setValue}
         />
         <RiskStep4
-       countries={countries}
-       flags={flags}
+          countries={countries}
+          flags={flags}
           register={register}
           watch={watch}
           setValue={setValue}
@@ -122,10 +113,12 @@ const RiskFundedPage = () => {
           <Button
             variant="ghost"
             className="w-1/3 py-6 text-[16px] text-lightGray bg-[#F1F1F5]"
+            onClick={handleSubmit(onSaveAsDraft)}
           >
             Save as draft
           </Button>
           <Button
+            type="button"
             className="w-2/3 py-6 text-[16px] bg-text hover:bg-text/90 text-white"
             onClick={handleSubmit(onSubmit)}
           >

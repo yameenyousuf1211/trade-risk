@@ -70,7 +70,7 @@ const Chart = ({
       </div>
 
       <div className="w-full mt-3 mb-2">
-        <LineChart  width={120} height={30} data={data}>
+        <LineChart width={120} height={30} data={data}>
           <Line type="monotone" dataKey="pv" stroke={color} strokeWidth={3} />
         </LineChart>
       </div>
@@ -90,7 +90,7 @@ const Chart = ({
   );
 };
 
-export const LineCharts = () => {
+export const LineCharts = ({ isBank }: { isBank: boolean }) => {
   const data = [
     {
       name: "Page A",
@@ -137,8 +137,12 @@ export const LineCharts = () => {
   ];
 
   return (
-    <div className="rounded-lg border border-borderCol py-4 px-5 w-[95%] xl:w-[46vw] overflow-x-auto bg-white relative">
-       <div className="center absolute top-0 left-0 backdrop-blur-[3px]	 bg-white/30 w-full h-full z-10">
+    <div
+      className={`rounded-lg border border-borderCol py-4 px-5 ${
+        isBank ? "w-full" : "w-[95%]"
+      } xl:w-[45.8vw] 2xl:w-[61%] overflow-x-auto bg-white relative`}
+    >
+      <div className="center absolute top-0 left-0 backdrop-blur-[3px]	 bg-white/30 w-full h-full z-10">
         {/* <img
         src="https://static.wixstatic.com/media/b3ae7c_44c1408d9e894c46920f514df033f75e~mv2_d_1500_1200_s_2.gif"
           alt="coming-soon"
@@ -156,7 +160,7 @@ export const LineCharts = () => {
           />
           <h2 className="text-3xl relative font-semibold">Work in Progress</h2>
         </div>
-       </div> 
+      </div>
       <div className="w-full flex xl:flex- col 2xl:fle x-row 2xl:tems-center  gap-x-2 justify-between">
         <div className="flex items-center w-1/3">
           <h4 className="text-lg font-semibold w-full max-w-[100px]">

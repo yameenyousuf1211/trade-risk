@@ -72,7 +72,7 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
             <BankTable data={data} isLoading={isLoading} />
           </div>
         </div>
-        <div className="w-1/5 max-w-[300px] sticky top-10 h-[80vh]">
+        <div className="w-full 1/ 5  max-w-[ 300px] sticky top-10 h-[80vh]">
           <Sidebar isBank={true} />
         </div>
       </div>

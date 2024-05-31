@@ -19,6 +19,7 @@ import {
 import { Check, ChevronDown } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+import useCountries from "@/hooks/useCountries";
 
 export const BidsCountrySelect = () => {
   const pathname = usePathname();
@@ -37,33 +38,7 @@ export const BidsCountrySelect = () => {
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryVal, setCountryVal] = useState("");
 
-  const [countries, setCountries] = useState([]);
-  const [flags, setFlags] = useState([]);
-
-  const { data: countriesData } = useQuery({
-    queryKey: ["countries"],
-    queryFn: () => getCountries(),
-  });
-
-  useEffect(() => {
-    if (
-      countriesData &&
-      countriesData.success &&
-      countriesData.response &&
-      countriesData.response.length > 0
-    ) {
-      const fetchedCountries = countriesData.response.map(
-        (country: Country) => {
-          return country.name;
-        }
-      );
-      setCountries(fetchedCountries);
-      const fetchedFlags = countriesData.response.map((country: Country) => {
-        return country.flag;
-      });
-      setFlags(fetchedFlags);
-    }
-  }, [countriesData]);
+  const { countries, flags } = useCountries();
 
   return (
     <div className="w-[180px]">

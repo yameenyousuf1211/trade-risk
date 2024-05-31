@@ -3,7 +3,7 @@ import { useState } from "react";
 import { TagsInput } from "react-tag-input-component";
 
 export const RiskBanks = ({ setValue }: { setValue: any }) => {
-  const [banks, setBanks] = useState([]);
+  const [banks, setBanks] = useState<string[]>([]);
   const [BankInput, setBankInput] = useState("");
 
   return (
@@ -16,7 +16,7 @@ export const RiskBanks = ({ setValue }: { setValue: any }) => {
           value={banks}
           onChange={(val: any) => {
             setBanks(val);
-            setValue("banks", val.join(", "));
+            setValue("banks", banks);
             setBankInput("");
           }}
           onKeyUp={(e) => {
@@ -26,7 +26,7 @@ export const RiskBanks = ({ setValue }: { setValue: any }) => {
           }}
           onBlur={(e: any) => {
             if (BankInput.length > 1) {
-              setBanks((prev: any) => [...prev, BankInput]);
+              setBanks((prev) => [...prev, BankInput]);
               e.target.value = "";
             }
             setBankInput("");

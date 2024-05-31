@@ -70,8 +70,8 @@ const CurrentBankingPage = () => {
   const [bankVal, setBankVal] = useState("");
 
   const [allCountries, setAllCountries] = useState<Country[]>(bankCountries);
-  const [countries, setCountries] = useState([]);
-  const [flags, setFlags] = useState([]);
+  const [countries, setCountries] = useState<string[]>([]);
+  const [flags, setFlags] = useState<string[]>([]);
   const [isoCode, setIsoCode] = useState("");
   const [cities, setCities] = useState([]);
 

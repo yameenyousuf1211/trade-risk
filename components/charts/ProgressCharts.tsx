@@ -80,7 +80,7 @@ const Chart = ({
               strokeLinecap="round"
               strokeDasharray={strokeDasharray}
               strokeDashoffset={
-                circumference - (progress / 100) * circumference
+                circumference - (progress / 100) * circumference || ""
               }
               fill="transparent"
               r={radius}
@@ -153,7 +153,7 @@ export const ProgressCharts = ({
 
   return (
     <div
-      className="bg-[white] w-[95%] xl:w-[29vw] rounded-lg border border-borderCol py-4 px-3"
+      className={`bg-[white] ${isBank ? 'w-full' : 'w-[95%]'} xl:w-[29vw] rounded-lg border border-borderCol py-4 px-3`}
     >
       <div className="flex items-center gap-x-2 justify-between mb-3 w-full">
         <div className="flex items-center gap-x-2">

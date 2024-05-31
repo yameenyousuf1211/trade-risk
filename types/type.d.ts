@@ -145,11 +145,16 @@ export interface IUser {
 export interface ILcs {
   _id: string;
   participantRole?: string;
-  lcType: string;
+  type: string;
   currency: string;
-  amount?: number;
+  amount: {
+    price: number;
+  };
   paymentTerms: string;
-  createdBy?: string;
+  createdBy?: {
+    name: string;
+    accountCountry: string;
+  }[];
   issuingBank: {
     bank: string;
     country: string;
@@ -175,7 +180,7 @@ export interface ILcs {
   expectedConfirmationDate: Date;
   expectedDiscountingDate: Date;
   productDescription: string;
-  lcPeriod: {
+  period: {
     startDate: Date;
     endDate: Date;
   };
@@ -223,7 +228,7 @@ export interface IBids {
     country: string;
   };
   lcInfo: ILcInfo | any;
-  confirmationPrice: string | number
+  confirmationPrice: string | number;
   lc?: string[];
   isDeleted: boolean;
   createdAt: Date;
@@ -269,7 +274,7 @@ export interface IMyBids {
 }
 
 export interface Country {
-  name: "";
-  flag: "";
-  isoCode: "";
+  name: string;
+  flag: string;
+  isoCode: string;
 }

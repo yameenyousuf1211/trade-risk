@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatFileSize } from "@/utils";
 import { filter } from "d3-array";
+import { UseFormRegister } from "react-hook-form";
 
 const FileCard = ({
   file,
@@ -40,7 +41,13 @@ const FileCard = ({
   );
 };
 
-export const Step7 = ({ register, step }: { register: any; step: number }) => {
+export const Step7 = ({
+  register,
+  step,
+}: {
+  register: UseFormRegister<any>;
+  step: number;
+}) => {
   const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +75,7 @@ export const Step7 = ({ register, step }: { register: any; step: number }) => {
         });
       });
     }
-  }, [selectedFiles, register]);
+  }, [selectedFiles]);
 
   return (
     <div

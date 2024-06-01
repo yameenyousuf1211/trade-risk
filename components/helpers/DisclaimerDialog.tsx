@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MutableRefObject, RefObject } from "react";
+import { useRef, useEffect, useState } from "react";
 
 export const DisclaimerDialog = ({
   title,
@@ -28,6 +28,29 @@ export const DisclaimerDialog = ({
     setProceed(true);
   };
 
+  const [disabled, setDisabled] = useState(true);
+  const ref = useRef<HTMLDivElement | null>(null);
+  console.log(ref);
+
+  useEffect(() => {
+    console.log(ref);
+    // const handleScroll = () => {
+    //   const div = ref.current;
+    //   if (div) {
+    //     const isBottom = div.scrollHeight - div.scrollTop === div.clientHeight;
+    //     if (isBottom) {
+    //       setDisabled(false);
+    //     }
+    //   }
+    // };
+
+    // const div = ref.current;
+    // if (div) {
+    //   div.addEventListener("scroll", handleScroll);
+    //   return () => div.removeEventListener("scroll", handleScroll);
+    // }
+  }, []); 
+
   return (
     <Dialog>
       <DialogTrigger className={className} id="open-disclaimer">
@@ -42,7 +65,10 @@ export const DisclaimerDialog = ({
           </DialogClose>
         </div>
 
-        <div className="px-8 flex flex-col gap-y-4 overflow-y-auto max-h-[60vh] text-[#696974] text-sm">
+        <div
+          ref={ref}
+          className="px-8 flex flex-col gap-y-4 overflow-y-auto max-h-[60vh] text-[#696974] text-sm"
+        >
           <p>
             This export management software, designed for banks and
             corporations, facilitates the process of creating, viewing, and
@@ -102,13 +128,70 @@ export const DisclaimerDialog = ({
             Thank you for choosing our software to enhance your export
             management capabilities.
           </p>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus
+            asperiores aut maiores velit ipsum, iste corrupti unde at alias nam,
+            enim deserunt eius? Consectetur error quam non ipsam quisquam vel
+            enim! Maxime facilis rerum magnam eaque voluptas culpa. Quibusdam
+            voluptatum, recusandae at similique velit possimus officiis nulla
+            accusamus necessitatibus dolor a harum porro aspernatur impedit
+            nobis mollitia, illum soluta ab facilis explicabo quo minus! Velit
+            vero ad nemo voluptatibus, quisquam cupiditate! Accusamus magni
+            deserunt doloremque quasi doloribus iure dolore magnam eaque fuga
+            possimus? Magni, commodi iste. Ipsam eveniet vitae aspernatur, sed
+            voluptates eum recusandae ea laudantium amet vel reiciendis illo
+            accusantium, nesciunt dolorum debitis pariatur odio ullam animi
+            saepe? Ipsa ullam nam fugiat qui voluptate et numquam aperiam dolor
+            nulla repellendus quasi omnis dolorum facilis, maiores tenetur
+            ducimus hic molestiae officiis expedita ut voluptates, commodi nemo
+            modi nostrum! Veniam ratione laborum fuga ab aliquid consequuntur
+            dolor molestiae neque pariatur, nulla sunt odit aspernatur nisi
+            fugiat delectus necessitatibus! Quidem tempora est aliquid? Ex ipsam
+            itaque quae delectus error, non earum repellat! Perferendis possimus
+            vel quo obcaecati quis ratione impedit aliquid unde ipsum minima
+            deleniti totam labore eum nemo molestias, dolores quia tenetur
+            voluptatem, minus rem deserunt natus officiis. At enim hic fuga iure
+            assumenda. Necessitatibus ut dolorem maiores temporibus fuga, cumque
+            harum officia iusto consequuntur deleniti ea magni expedita eveniet
+            perferendis vitae placeat obcaecati illum reiciendis quasi sunt ipsa
+            enim blanditiis ab laborum. Quaerat, voluptate earum maxime magnam
+            possimus deserunt mollitia sit magni qui iusto suscipit quod facilis
+            dicta vero nisi distinctio labore. Architecto molestias quibusdam
+            quia repellat quam cumque cum vero, voluptatem illum corporis
+            veritatis perspiciatis. Nemo recusandae quos dignissimos fugit
+            reprehenderit alias officia consequuntur, tenetur, similique quod a
+            unde sunt quis? Amet cumque nisi modi expedita, ab ipsam quod. Ut
+            omnis inventore, ea et iusto pariatur sequi numquam illum tempore
+            doloremque ipsam vel neque ab, expedita facilis iste enim. Tempora
+            consequuntur eius dolorum praesentium temporibus nobis commodi sint
+            odit officiis consequatur cupiditate unde necessitatibus neque,
+            expedita quas sequi repellendus est modi aut ipsam repudiandae sunt
+            odio? Animi consequatur, ex veniam rem laudantium blanditiis earum
+            est deleniti porro cum neque quidem cupiditate consectetur harum
+            inventore quae, hic maxime commodi, dolores ad expedita minima
+            velit. Cumque quia incidunt consectetur facere explicabo qui rem aut
+            aspernatur est! Delectus officia assumenda consectetur perferendis,
+            laboriosam nihil eaque doloribus. Error numquam eligendi nesciunt
+            architecto amet sequi voluptates vero! Nesciunt, dolorem. Nam magni
+            suscipit nostrum esse autem porro cupiditate quaerat, sapiente non
+            exercitationem nesciunt repellendus asperiores quos labore qui
+            accusamus nulla! Nam laudantium, laborum non incidunt labore
+            placeat? Cupiditate pariatur aliquid similique! Quidem odio, amet
+            mollitia voluptas ullam sunt dicta tempora, magni rem quo unde eos
+            hic non sapiente, dolorem eum? Fuga vero perspiciatis unde? Natus
+            eius ipsa sed nam exercitationem excepturi! Dolor, necessitatibus
+            optio error omnis modi architecto maiores, fugiat atque deleniti
+            veritatis nulla doloremque placeat deserunt rem fugit accusantium
+            culpa consequuntur quidem autem blanditiis a pariatur. Animi qui
+            neque veniam quibusdam in dolorum, numquam saepe odio fugiat totam,
+            impedit laudantium quaerat eius omnis eos!
+          </p>
         </div>
 
         <DialogClose className="hidden" id="close-disclaimer"></DialogClose>
         <Button
-          variant="ghost"
-          className="text-lightGray text-lg w-full py-7 cursor-pointer"
-          disabled={false}
+          className="text-lightGray w-[95%] mx-auto bg-[#F1F1F5] hover:bg-[#F1F1F5]/90 text-lg py-7 cursor-pointer"
+          disabled={disabled}
           onClick={handleProceed}
         >
           Accept Terms and Conditions

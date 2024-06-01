@@ -105,14 +105,17 @@ const CreateRequestPage = () => {
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
+    if (data.period.startDate > data.period.endDate)
+      return toast.error("LC Issuance date cannot be greater than expiry date");
     const currentDate = new Date();
     const futureDate = new Date(
       currentDate.setDate(currentDate.getDate() + days)
     );
+
     let extraInfoObj;
     if (
       data.paymentTerms &&
-      data.paymentTerms === "Usance LC" &&
+      data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
       extraInfoObj = { dats: futureDate, other: data.extraInfo };
@@ -171,18 +174,22 @@ const CreateRequestPage = () => {
       const lcStartDateString = data.period.startDate;
       const lcEndDateString = data.period.endDate;
       const expectedConfirmationDateString = data?.expectedConfirmationDate;
-        const lcStartDate = lcStartDateString ? new Date(lcStartDateString) : null;
+      const lcStartDate = lcStartDateString
+        ? new Date(lcStartDateString)
+        : null;
       const lcEndDate = lcEndDateString ? new Date(lcEndDateString) : null;
-      const expectedConfirmationDate = expectedConfirmationDateString ? new Date(expectedConfirmationDateString) : null;
+      const expectedConfirmationDate = expectedConfirmationDateString
+        ? new Date(expectedConfirmationDateString)
+        : null;
 
-        const preparedData = {
+      const preparedData = {
         ...data,
         period: {
           ...data.period,
           startDate: lcStartDate,
           endDate: lcEndDate,
         },
-        expectedConfirmationDate
+        expectedConfirmationDate,
       };
       const validationResult = confirmationSchema.safeParse(preparedData);
       if (validationResult.success) {

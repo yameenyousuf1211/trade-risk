@@ -113,7 +113,7 @@ const CreateDiscountPage = () => {
     let extraInfoObj;
     if (
       data.paymentTerms &&
-      data.paymentTerms === "Usance LC" &&
+      data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
       extraInfoObj = { dats: futureDate, other: data.extraInfo };

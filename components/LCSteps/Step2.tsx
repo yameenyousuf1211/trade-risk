@@ -86,7 +86,7 @@ export const Step2 = ({
     if (amount && paymentTerms) {
       setStepCompleted(1, true);
     }
-    if (paymentTerms !== "Usance LC") setValue("extraInfo", undefined);
+    if (paymentTerms !== "Sight LC") setValue("extraInfo", undefined);
   }, [amount, paymentTerms]);
 
   return (
@@ -187,7 +187,7 @@ export const Step2 = ({
           />
         </div>
         {/* Days input */}
-        {paymentTerms === "Usance LC" && (
+        {paymentTerms && paymentTerms !== "Sight LC" && (
           <>
             <div className="flex items-center gap-x-2 my-3 ml-2">
               <div className="border-b-2 border-black flex items-center">

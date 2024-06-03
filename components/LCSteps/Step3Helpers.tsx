@@ -15,6 +15,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { getAllPortData, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
 
 export const ValidatingCalendar = ({
   initialDate,
@@ -51,6 +56,7 @@ export const ValidatingCalendar = ({
     <Calendar
       mode="single"
       selected={selectedDate}
+      // @ts-ignore
       onSelect={handleDateSelect}
       initialFocus
     />
@@ -59,24 +65,18 @@ export const ValidatingCalendar = ({
 
 export const Period = ({
   setValue,
-  getValues,
-  countries,
+  watch,
   flags,
-  valueChanged,
-  setValueChanged,
 }: {
-  setValue: any;
-  getValues: any;
-  countries: string[];
+  setValue: UseFormSetValue<any>;
+  watch: UseFormWatch<any>;
   flags: string[];
-  valueChanged?: boolean;
-  setValueChanged?: any;
 }) => {
-  let shipmentCountry = getValues("shipmentPort.country");
-  let shipmentPort = getValues("shipmentPort.port");
-  let lcStartDate = getValues("lcPeriod.startDate");
-  let lcEndDate = getValues("lcPeriod.endDate");
-  let lcPeriodType = getValues("lcPeriod.expectedDate");
+  let shipmentCountry = watch("shipmentPort.country");
+  let shipmentPort = watch("shipmentPort.port");
+  let lcStartDate = watch("period.startDate");
+  let lcEndDate = watch("period.endDate");
+  let lcPeriodType = watch("period.expectedDate");
 
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
@@ -110,33 +110,16 @@ export const Period = ({
     shipmentCountry && fetchPorts();
   }, [shipmentCountry]);
 
-  const [lcPeriodDate, setLcPeriodDate] = useState<Date>();
-  const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
-  const [lcIssueType, setLcIssueType] = useState("");
 
   const handleRadioChange = (e: any) => {
-    setLcIssueType(e.target.value);
-    setValue("lcPeriod.expectedDate", e.target.value);
+    setValue("period.expectedDate", e.target.value);
   };
 
   const updateValue = (name: string, value: any) => {
     setValue(name, value);
   };
-
-  useEffect(() => {
-    shipmentCountry = getValues("shipmentPort.country");
-    setLcPeriodDate(lcStartDate);
-    setLcExpiryDate(lcEndDate);
-    if (lcStartDate && lcEndDate) {
-      setValue("lcPeriod.startDate", new Date(lcStartDate));
-      setValue("lcPeriod.endDate", new Date(lcEndDate));
-    }
-    setValue("lcPeriod.expectedDate", lcPeriodType === true ? "yes" : "no");
-    lcPeriodType = getValues("lcPeriod.expectedDate");
-    lcStartDate && lcStartDate && setLcIssueType(lcPeriodType);
-  }, [valueChanged]);
 
   return (
     <div className="flex items-start gap-x-4 my-5 h-full">
@@ -148,9 +131,9 @@ export const Period = ({
               type="radio"
               id="date-lc-issued"
               className="accent-primaryCol size-4"
-              name="lcPeriod.expectedDate"
+              name="period.expectedDate"
               value="yes"
-              checked={lcIssueType === "yes"}
+              checked={lcPeriodType === "yes"}
               onChange={handleRadioChange}
             />
             <label
@@ -165,9 +148,9 @@ export const Period = ({
               type="radio"
               id="expected-date"
               className="accent-primaryCol !bg-white size-4"
-              name="lcPeriod.expectedDate"
+              name="period.expectedDate"
               value="no"
-              checked={lcIssueType === "no"}
+              checked={lcPeriodType === "no"}
               onChange={handleRadioChange}
             />
             <label
@@ -183,13 +166,13 @@ export const Period = ({
               <Button
                 variant={"outline"}
                 className={`w-fit justify-start text-left font-normal border-none ${
-                  lcPeriodDate ? "text-black" : "text-[#B5B5BE]"
+                  lcStartDate ? "text-black" : "text-[#B5B5BE]"
                 }`}
                 id="period-lc-date"
-                disabled={!lcIssueType}
+                disabled={!lcPeriodType}
               >
-                {lcPeriodDate ? (
-                  format(lcPeriodDate, "PPP")
+                {lcStartDate ? (
+                  format(lcStartDate, "PPP")
                 ) : (
                   <span>DD/MM/YYYY</span>
                 )}
@@ -197,22 +180,20 @@ export const Period = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              {lcIssueType === "yes" ? (
+              {lcPeriodType === "yes" ? (
                 <ValidatingCalendar
-                  initialDate={lcPeriodDate}
+                  initialDate={lcStartDate}
                   onChange={(date) => {
-                    setLcPeriodDate(date);
-                    updateValue("lcPeriod.startDate", date);
+                    updateValue("period.startDate", date);
                   }}
                   onClose={() => setDatePopoverOpen(false)}
                   isPast
                 />
               ) : (
                 <ValidatingCalendar
-                  initialDate={lcPeriodDate}
+                  initialDate={lcStartDate}
                   onChange={(date) => {
-                    setLcPeriodDate(date);
-                    updateValue("lcPeriod.startDate", date);
+                    updateValue("period.startDate", date);
                   }}
                   onClose={() => setDatePopoverOpen(false)}
                 />
@@ -232,24 +213,19 @@ export const Period = ({
               <Button
                 variant={"outline"}
                 className={`w-fit justify-start text-left font-normal border-none ${
-                  lcExpiryDate ? "text-black" : "text-[#B5B5BE]"
+                  lcEndDate ? "text-black" : "text-[#B5B5BE]"
                 }`}
                 id="period-expiry-date"
               >
-                {lcExpiryDate ? (
-                  format(lcExpiryDate, "PPP")
-                ) : (
-                  <span>DD/MM/YYYY</span>
-                )}
+                {lcEndDate ? format(lcEndDate, "PPP") : <span>DD/MM/YYYY</span>}
                 <CalendarIcon className="ml-2 mr-2 size-5" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <ValidatingCalendar
-                initialDate={lcExpiryDate}
+                initialDate={lcEndDate}
                 onChange={(date) => {
-                  setLcExpiryDate(date);
-                  updateValue("lcPeriod.endDate", date);
+                  updateValue("period.endDate", date);
                 }}
                 onClose={() => setIsPopoverOpen(false)}
               />
@@ -270,7 +246,6 @@ export const Period = ({
             data={portCountries}
             disabled={portCountries.length <= 0}
             flags={flags}
-            setValueChanged={setValueChanged}
           />
           <DDInput
             id="shipmentPort.port"
@@ -278,7 +253,6 @@ export const Period = ({
             value={shipmentPort}
             placeholder="Select port"
             setValue={setValue}
-            setValueChanged={setValueChanged}
             disabled={!ports || ports.length === 0}
             data={ports}
           />
@@ -292,34 +266,28 @@ export const Transhipment = ({
   register,
   setValue,
   isDiscount,
-  getValues,
-  valueChanged,
   watch,
 }: {
-  register: any;
-  setValue: any;
+  register: UseFormRegister<any>;
+  setValue: UseFormSetValue<any>;
   isDiscount?: boolean;
-  getValues?: any;
-  valueChanged?: boolean;
-  watch: any;
+  watch: UseFormWatch<any>;
 }) => {
   const transhipment = watch("transhipment");
-  const [expectedConfirmationDate, setExpectedConfirmationDate] =
-    useState<Date>();
 
   let expectedDate = isDiscount
-    ? getValues("expectedDiscountingDate")
-    : getValues("expectedConfirmationDate");
+    ? watch("expectedDiscountingDate")
+    : watch("expectedConfirmationDate");
 
-  useEffect(() => {
-    setExpectedConfirmationDate(expectedDate);
+  const setDate = (date: Date | string) => {
+    isDiscount
+      ? setValue("expectedDiscountingDate", date)
+      : setValue("expectedConfirmationDate", date);
+  };
 
-    if (expectedDate) {
-      isDiscount
-        ? setValue("expectedDiscountingDate", new Date(expectedDate))
-        : setValue("expectedConfirmationDate", new Date(expectedDate));
-    }
-  }, [valueChanged]);
+  // useEffect(() => {
+  //   setDate(expectedDate);
+  // }, [expectedDate]);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const currentDate = new Date();
@@ -374,13 +342,13 @@ export const Transhipment = ({
                 variant={"outline"}
                 className={cn(
                   "w-fit justify-start text-left font-normal border-none",
-                  !expectedConfirmationDate &&
+                  !expectedDate &&
                     "text-muted-foreground flex items-center text-sm justify-between w-fit"
                 )}
                 id="expected-confirmation-date"
               >
-                {expectedConfirmationDate ? (
-                  format(expectedConfirmationDate, "PPP")
+                {expectedDate ? (
+                  format(expectedDate, "PPP")
                 ) : (
                   <span className="text-sm">DD/MM/YYYY</span>
                 )}
@@ -389,12 +357,9 @@ export const Transhipment = ({
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <ValidatingCalendar
-                initialDate={expectedConfirmationDate}
+                initialDate={expectedDate}
                 onChange={(date) => {
-                  setExpectedConfirmationDate(date);
-                  isDiscount
-                    ? setValue("expectedDiscountingDate", date)
-                    : setValue("expectedConfirmationDate", date);
+                  setDate(date);
                 }}
                 onClose={() => setIsPopoverOpen(false)}
               />
@@ -408,10 +373,7 @@ export const Transhipment = ({
             type="button"
             className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
             onClick={() => {
-              setExpectedConfirmationDate(nextWeekDate);
-              isDiscount
-                ? setValue("expectedDiscountingDate", nextWeekDate)
-                : setValue("expectedConfirmationDate", nextWeekDate);
+              setDate(nextWeekDate);
             }}
           >
             <p className="text-white text-[12px] font-semibold">Next week</p>
@@ -425,10 +387,7 @@ export const Transhipment = ({
             type="button"
             className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
             onClick={() => {
-              setExpectedConfirmationDate(twoWeeksDate);
-              isDiscount
-                ? setValue("expectedDiscountingDate", twoWeeksDate)
-                : setValue("expectedConfirmationDate", twoWeeksDate);
+              setDate(twoWeeksDate);
             }}
           >
             <p className="text-white text-[12px] font-semibold">Two Weeks</p>

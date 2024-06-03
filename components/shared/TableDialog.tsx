@@ -5,9 +5,9 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { ArrowUpNarrowWide, Eye, ListFilter, X } from "lucide-react";
+import { Eye, ListFilter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { IBids, ILcs } from "@/types/type";
+import { IBids } from "@/types/type";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -224,12 +224,12 @@ export const TableDialog = ({
             <div className="px-4 pt-5 bg-[#F5F7F9]">
               <h2 className="text-2xl font-semibold mb-1">
                 <span className="text-para font-normal">LC Amount:</span> USD{" "}
-                {(lcData && lcData.amount?.toLocaleString()) + ".00" || ""}
+                {(lcData && lcData.amount?.price?.toLocaleString()) + ".00" ||
+                  ""}
               </h2>
               <p className="font-roboto text-sm text-para">
                 Created at,{" "}
-                {lcData &&
-                  convertDateAndTimeToString(lcData.lcPeriod?.startDate)}
+                {lcData && convertDateAndTimeToString(lcData.period?.startDate)}
                 , by{" "}
                 <span className="text-text capitalize">
                   {(lcData && lcData.exporterInfo?.beneficiaryName) || ""}
@@ -254,7 +254,7 @@ export const TableDialog = ({
               />
               <LCInfo
                 label="Confirming Bank"
-                value={(lcData && lcData.confirmingBank?.bank) || ""}
+                value={(lcData && lcData.confirmingBank?.bank) || "-"}
               />
               <LCInfo
                 label="Payments Terms"
@@ -270,13 +270,17 @@ export const TableDialog = ({
               <LCInfo
                 label="LC Issuance (Expected)"
                 value={
-                  lcData && convertDateToCommaString(lcData.lcPeriod?.startDate)
+                  lcData &&
+                  lcData.period &&
+                  convertDateToCommaString(lcData.period?.startDate)
                 }
               />
               <LCInfo
                 label="LC Expiry Date"
                 value={
-                  lcData && convertDateToCommaString(lcData.lcPeriod?.endDate)
+                  lcData &&
+                  lcData.period &&
+                  convertDateToCommaString(lcData.period?.endDate)
                 }
               />
               <LCInfo

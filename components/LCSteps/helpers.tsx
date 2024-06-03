@@ -12,40 +12,10 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
-import { UseFormRegister } from "react-hook-form";
 import { Check, ChevronDown } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
-
-export const RadioInput = ({
-  id,
-  label,
-  name,
-  value,
-  register,
-}: {
-  id: string;
-  label: string;
-  name: string;
-  value: string;
-  register: UseFormRegister<any>;
-}) => {
-  return (
-    <label
-      htmlFor={id}
-      className="px-3 py-4 w-full rounded-md flex items-center gap-x-3 mb-2 border border-borderCol text-lightGray bg-white"
-    >
-      <input
-        type="radio"
-        id={id}
-        value={value}
-        {...register(name)}
-        className="accent-primaryCol size-4"
-      />
-      {label}
-    </label>
-  );
-};
+import { UseFormSetValue } from "react-hook-form";
 
 export const DDInput = ({
   id,
@@ -54,9 +24,9 @@ export const DDInput = ({
   data,
   value,
   disabled,
-  setValueChanged,
   setValue,
   flags,
+  type,
 }: {
   id: string;
   label: string;
@@ -65,8 +35,8 @@ export const DDInput = ({
   data?: string[];
   flags?: string[];
   disabled?: boolean;
-  setValue: any;
-  setValueChanged?: any;
+  type?: string;
+  setValue: UseFormSetValue<any>;
 }) => {
   const [ddOpen, setDdOpen] = useState(false);
   const [ddVal, setDdVal] = useState("");
@@ -74,9 +44,9 @@ export const DDInput = ({
   return (
     <label
       id={id}
-      className="border text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+      className={`${type !== 'baseRate' && "border"} text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white`}
     >
-      <p className="text-lightGray">{label}</p>
+      {type !== "baseRate" && <p className="text-lightGray">{label}</p>}
       <Popover open={ddOpen} onOpenChange={setDdOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -118,8 +88,6 @@ export const DDInput = ({
                       );
                       setDdOpen(false);
                       setValue(id, currentValue, { shouldValidate: true });
-                      setValueChanged &&
-                        setValueChanged((prev: boolean) => !prev);
                     }}
                   >
                     <Check

@@ -31,7 +31,7 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`fetch-lcs`] });
+      queryClient.invalidateQueries({ queryKey: ["fetch-lcs"] });
     },
   });
 
@@ -75,10 +75,10 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
 const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
   const { user } = useAuth();
   const pendingBids =
-    data.status !== "Expired" &&
-    data.bids.filter((bid) => bid.status === "Pending");
+    data.status !== "Expired"
+      ? data.bids.filter((bid) => bid.status === "Pending")
+      : [];
   const showData = !data.bids.some((bid) => bid.bidBy === user?._id);
-
   return (
     <>
       {isBank ? (
@@ -93,20 +93,20 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
                   Request #{data.refId}
                 </p>
                 <p className="capitalize text-lg font-semibold my-1">
-                  {data.createdBy?.[0].name || ""}
+                  {data.createdBy?.[0]?.name || ""}
                 </p>
 
                 <p className="text-sm flex items-center flex-wrap">
-                  <span className="text-text">{data.lcType || ""}</span>
+                  <span className="text-text">{data.type || ""}</span>
                 </p>
 
                 <p className="text-para text-sm">Request Expiry</p>
                 <p className="text-red-500 font-medium text-sm mb-2">
-                  {formatLeftDate(data.lcPeriod?.endDate) || ""}
+                  {formatLeftDate(data.period?.endDate) || ""}
                 </p>
                 <h3 className="font-poppins text-xl font-semibold uppercase">
                   {data.currency ?? "USD"}{" "}
-                  {data.amount?.toLocaleString() + ".00"}
+                  {data.amount?.price?.toLocaleString() + ".00"}
                 </h3>
               </div>
 
@@ -114,7 +114,9 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
                 triggerTitle="Add Bid"
                 status="Add bid"
                 isBank
-                isDiscount={data.lcType.includes("Discount")}
+                isDiscount={
+                  (data.type && data.type.includes("Discount")) || false
+                }
                 lcId={data._id}
               />
             </div>
@@ -129,14 +131,15 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
             </p>
 
             <p className="font-roboto text-sm flex items-center flex-wrap">
-              <span className="text-text">{data.lcType}</span>
+              <span className="text-text">{data.type}</span>
               <span className="text-para text-[10px] flex items-center">
                 <Dot />
-                {formatLeftDays(data.lcPeriod?.endDate)}
+                {formatLeftDays(data.period?.endDate)}
               </span>
             </p>
             <h3 className="text-xl font-semibold uppercase">
-              {data.currency || "USD"} {data.amount?.toLocaleString() + ".00"}
+              {data.currency || "USD"}{" "}
+              {data.amount?.price?.toLocaleString() + ".00"}
             </h3>
             <div className="flex items-center justify-between gap-x-2">
               <p className="font-roboto text-gray-500 text-sm">
@@ -343,6 +346,7 @@ export const Sidebar = ({
       stopLoading();
     }
   };
+  console.log(data,"SIDEBAR")
 
   const [generateType, setGenerateType] = useState("csv");
 

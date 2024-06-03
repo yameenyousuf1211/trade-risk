@@ -1,27 +1,8 @@
 "use client";
-import { useState } from "react";
 import { BgRadioInput } from "../LCSteps/helpers";
 import { Textarea } from "../ui/textarea";
 
 export const IssuanceStep5 = () => {
-  const [checkedState, setCheckedState] = useState({
-    "type-bid": false,
-    "type-advance": false,
-    "type-payment": false,
-    "type-cg": false,
-    "type-performance": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    const newCheckedState = {
-      "type-bid": id === "type-bid",
-      "type-advance": id === "type-advance",
-      "type-payment": id === "type-payment",
-      "type-cg": id === "type-cg",
-      "type-performance": id === "type-performance",
-    };
-    setCheckedState(newCheckedState);
-  };
   return (
     <div
       id="step5"
@@ -39,50 +20,40 @@ export const IssuanceStep5 = () => {
           label="Bid"
           name="lgType"
           value="bid"
-          // register={register}
           register={() => ""}
-          checked={checkedState["type-bid"]}
-          handleCheckChange={handleCheckChange}
+          checked={false}
         />
         <BgRadioInput
           id="type-advance"
           label="Advance"
           name="lgType"
           value="advance"
-          // register={register}
           register={() => ""}
-          checked={checkedState["type-advance"]}
-          handleCheckChange={handleCheckChange}
+          checked={false}
         />
         <BgRadioInput
           id="type-payment"
           label="Payment"
           name="lgType"
           value="payment"
-          // register={register}
           register={() => ""}
-          checked={checkedState["type-payment"]}
-          handleCheckChange={handleCheckChange}
+          checked={false}
         />
         <BgRadioInput
           id="type-cg"
           label="CG"
           name="lgType"
           value="cg"
-          // register={register}
           register={() => ""}
-          checked={checkedState["type-cg"]}
-          handleCheckChange={handleCheckChange}
+          checked={false}
         />
         <BgRadioInput
           id="type-performance"
           label="Performance"
           name="lgType"
           value="performance"
-          // register={register}
           register={() => ""}
-          checked={checkedState["type-performance"]}
-          handleCheckChange={handleCheckChange}
+          checked={false}
         />
       </div>
 

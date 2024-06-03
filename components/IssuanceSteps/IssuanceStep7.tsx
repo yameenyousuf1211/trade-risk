@@ -1,34 +1,7 @@
 "use client";
-import React, { useState } from "react";
 import { BgRadioInput, DDInput } from "../LCSteps/helpers";
 
 export const IssuanceStep7 = () => {
-  const [checkedState, setCheckedState] = useState({
-    "instrument-yes": false,
-    "instrument-no": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    const newCheckedState = {
-      "instrument-yes": id === "instrument-yes",
-      "instrument-no": id === "instrument-no",
-    };
-    setCheckedState(newCheckedState);
-  };
-
-  const [lgCheckedState, setLgCheckedState] = useState({
-    "lg-applicant": false,
-    "lg-beneficiary": false,
-  });
-
-  const handleLGCheckChange = (id: string) => {
-    const newCheckedState = {
-      "lg-applicant": id === "lg-applicant",
-      "lg-beneficiary": id === "lg-beneficiary",
-    };
-    setLgCheckedState(newCheckedState);
-  };
-
   return (
     <div
       id="step7"
@@ -50,20 +23,16 @@ export const IssuanceStep7 = () => {
             label="Yes"
             name="instrument"
             value="yes"
-            // register={register}
             register={() => ""}
-            checked={checkedState["instrument-yes"]}
-            handleCheckChange={handleCheckChange}
+            checked={false}
           />
           <BgRadioInput
             id="instrument-no"
             label="No"
             name="instrument"
             value="no"
-            // register={register}
             register={() => ""}
-            checked={checkedState["instrument-no"]}
-            handleCheckChange={handleCheckChange}
+            checked={false}
           />
         </div>
 
@@ -77,9 +46,8 @@ export const IssuanceStep7 = () => {
             label="Select Bank"
             id="beneficiary.bank"
             // data={countries}
-            //   value={importerCountry}
+            // value={importerCountry}
             setValue={() => ""}
-            //   setValueChanged={setValueChanged}
           />
 
           <p className="text-sm font-semibold my-2 ml-2">
@@ -90,20 +58,16 @@ export const IssuanceStep7 = () => {
             label="Applicant"
             name="accountOf"
             value="applicant"
-            // register={register}
             register={() => ""}
-            checked={lgCheckedState["lg-applicant"]}
-            handleCheckChange={handleLGCheckChange}
+            checked={false}
           />
           <BgRadioInput
             id="lg-beneficiary"
             label="Beneficiary"
             name="accountOf"
             value="beneficiary"
-            // register={register}
             register={() => ""}
-            checked={lgCheckedState["lg-beneficiary"]}
-            handleCheckChange={handleLGCheckChange}
+            checked={false}
           />
         </div>
       </div>

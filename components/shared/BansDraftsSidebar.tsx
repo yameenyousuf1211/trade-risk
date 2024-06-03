@@ -1,11 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../ui/button";
-import { ApiResponse, ILcs } from "@/types/type";
-import {
-  deleteLcDraft,
-  fetchLcs,
-  fetchSingleLc,
-} from "@/services/apis/lcs.api";
+import { ApiResponse, ILcs, IRisk } from "@/types/type";
+import { deleteLcDraft, fetchSingleLc } from "@/services/apis/lcs.api";
 import { Loader } from "../helpers";
 import { convertDateToCommaString } from "@/utils";
 import { useAuth } from "@/context/AuthProvider";
@@ -14,6 +10,8 @@ import { usePathname } from "next/navigation";
 import useConfirmationStore from "@/store/lc.store";
 import useDiscountingStore from "@/store/discounting.store";
 import useConfirmationDiscountingStore from "@/store/confirmationDiscounting.store";
+import { deleteRiskDraft, fetchRisk } from "@/services/apis/risk.api";
+import useFormStore from "@/store/risk.store";
 
 const DraftCard = ({
   noBorder,
@@ -30,9 +28,9 @@ const DraftCard = ({
 }) => {
   const queryClient = useQueryClient();
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: deleteLcDraft,
+    mutationFn: deleteRiskDraft,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["fetch-lcs-drafts"] });
+      queryClient.invalidateQueries({ queryKey: ["fetch-risk-drafts"] });
     },
   });
 
@@ -42,23 +40,18 @@ const DraftCard = ({
     toast.success("Draft deleted");
   };
 
-  const setConfirmationValues = useConfirmationStore(
-    (state) => state.setValues
-  );
 
-  const setDiscountingValues = useDiscountingStore((state) => state.setValues);
-  const setConfirmationDiscountingValues = useConfirmationDiscountingStore(
-    (state) => state.setValues
-  );
+  const setFormData = useFormStore((state) => state.setFormData);
 
-  const handleEditLC = async () => {
-    try {
-      const response = await fetchSingleLc(draft?._id);
-      // console.log("response: ", response);
-      isConfirmation && setConfirmationValues(response);
-      isDiscounting && setDiscountingValues(response);
-      isConfirmationDiscounting && setConfirmationDiscountingValues(response);
-    } catch (error) {}
+  const handleEditRisk = async (draft: IRisk) => {
+    setFormData(draft);
+    // try {
+
+    //   const response = await fetchSingleLc(draft?._id);
+    //   isConfirmation && setConfirmationValues(response);
+    //   isDiscounting && setDiscountingValues(response);
+    //   isConfirmationDiscounting && setConfirmationDiscountingValues(response);
+    // } catch (error) {}
   };
 
   return (
@@ -68,7 +61,7 @@ const DraftCard = ({
         <Button
           size="sm"
           className="!py-0.5 font-roboto h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#44444F] hover:text-white border border-[#44444F] text-[#44444F]"
-          onClick={handleEditLC}
+          onClick={() => handleEditRisk(draft)}
         >
           Edit request
         </Button>
@@ -98,37 +91,21 @@ const DraftCard = ({
   );
 };
 
-export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
+export const BankDraftsSidebar = () => {
   const { user } = useAuth();
   const pathname = usePathname();
-  const isConfirmation = pathname === "/create-request";
-  const isDiscounting = pathname === "/create-request/discount";
-  const isConfirmationDiscounting = pathname === "/create-request/confirmation";
 
   const {
     isLoading,
     data,
-  }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
-    useQuery({
-      queryKey: ["fetch-lcs-drafts"],
-      queryFn: () => fetchLcs({ draft: true, userId: user._id }),
-      enabled: !!user?._id,
-    });
-
-  const filteredData =
-    data &&
-    data.data.length > 0 &&
-    data?.data.filter((draft) => {
-      if (isConfirmation) {
-        return draft.type === "LC Confirmation";
-      } else if (isDiscounting) {
-        return draft.type === "LC Discounting";
-      } else if (isConfirmationDiscounting) {
-        return draft.type === "LC Confirmation & Discounting";
-      } else {
-        return true;
-      }
-    });
+  }: {
+    data: ApiResponse<IRisk> | undefined;
+    error: any;
+    isLoading: boolean;
+  } = useQuery({
+    queryKey: ["fetch-risk-drafts"],
+    queryFn: () => fetchRisk({ draft: true }),
+  });
 
   return (
     <div className="border border-borderCol bg-white rounded-lg py-4 px-3 min-h-[70vh]">
@@ -140,20 +117,17 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
         data && (
           <>
             <h4 className="text-[16px] font-semibold mb-3">
-              Drafts ({(filteredData && filteredData.length) || 0})
+              Drafts ({(data?.data && data?.data.length) || 0})
             </h4>
 
             <div className="flex flex-col gap-y-2">
               {data.data.length > 0 &&
-                filteredData &&
-                filteredData.map((draft, idx) => (
+                data?.data &&
+                data?.data.map((draft, idx) => (
                   <DraftCard
                     key={draft._id}
                     noBorder={idx === data.data.length - 1}
                     draft={draft}
-                    isConfirmation={isConfirmation}
-                    isDiscounting={isDiscounting}
-                    isConfirmationDiscounting={isConfirmationDiscounting}
                   />
                 ))}
             </div>

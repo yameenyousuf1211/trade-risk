@@ -44,7 +44,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
             Welcome, {user && user.name}
           </h2>
           {/* Charts */}
-          <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 h-fit">
+          <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 w-[80vw] 2xl:w-full h-fit">
             <ProgressCharts title="Total Requests" />
             <LineCharts />
           </div>
@@ -55,7 +55,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
             isLoading={isLoading}
           />
         </div>
-        <div className="w-1/5 w-[1 00%] mb-5  sticky top-10 h-[88vh]">
+        <div className="w-[20vw] w-1 /5 w-[1 00%] mb-5  sticky top-10 h-[88vh]">
           <Sidebar isBank={false} />
         </div>
       </div>

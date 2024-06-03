@@ -1,9 +1,34 @@
+"use client";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { BankTable } from "@/components/shared/BankTable";
 import { Sidebar } from "@/components/shared/Sidebar";
+import { useAuth } from "@/context/AuthProvider";
+import { fetchRisk } from "@/services/apis/risk.api";
+import { ApiResponse, IRisk } from "@/types/type";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 
-const RiskParticipationPage = () => {
+interface Props {
+  searchParams: {
+    page: number;
+    limit: number;
+    search: string;
+    filter: string;
+  };
+}
+
+const RiskParticipationPage = ({ searchParams }: Props) => {
+  const { page, limit, search, filter } = searchParams;
+  const { user } = useAuth();
+  const {
+    isLoading,
+    data,
+  }: { data: ApiResponse<IRisk> | undefined; error: any; isLoading: boolean } =
+    useQuery({
+      queryKey: ["fetch-risk", page, limit, search, filter],
+      queryFn: () => fetchRisk({ draft: false }),
+      enabled: !!user?._id,
+    });
   return (
     <DashboardLayout>
       {/* <div className="flex w-full 2xl:px-10 px-2">
@@ -11,7 +36,9 @@ const RiskParticipationPage = () => {
           <h2 className="text-4xl font-semibold mb-5">
             Risk Participation Requests
           </h2>
-          <div className="rounded-md border border-borderCol px-4 py-4"></div>
+          <div className="rounded-md border border-borderCol px-4 py-4">
+            <BankTable data={data} isLoading={isLoading} isRisk />
+          </div>
         </div>
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
           <Sidebar isBank={true} createMode />

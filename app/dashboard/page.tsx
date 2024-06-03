@@ -43,7 +43,7 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
           {/* Charts */}
           <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 h-fit">
             <ProgressCharts title="Transactions Overview" isBank />
-            <LineCharts />
+            <LineCharts isBank/>
           </div>
           {/* Data Table */}
           <RequestTable
@@ -53,7 +53,7 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
             isLoading={isLoading}
           />
         </div>
-        <div className="w-1/5 max-w-[300px] sticky top-10 h-[80vh]">
+        <div className="w-full 1  /5 max-w-[3 00px] sticky top-10 h-[80vh]">
           <Sidebar isBank={true} />
         </div>
       </div>

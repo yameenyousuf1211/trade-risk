@@ -8,7 +8,6 @@ import {
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker, Loader } from "../helpers";
-import { Input } from "../ui/input";
 import Image from "next/image";
 import { convertDateAndTimeToString, convertDateToCommaString } from "@/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -16,11 +15,10 @@ import { z } from "zod";
 import { addBidTypes } from "@/validation/bids.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addBid, fetchSingleBid } from "@/services/apis/bids.api";
+import { addBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
 import { ChangeEvent, useState } from "react";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
-import { useAuth } from "@/context/AuthProvider";
 import { cn } from "@/lib/utils";
 
 const LCInfo = ({
@@ -72,47 +70,11 @@ export const AddBid = ({
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
-  const { user } = useAuth();
   // Get LC
   const { data: lcData, isLoading } = useQuery({
     queryKey: [`single-lc`, lcId],
     queryFn: () => fetchSingleLc(lcId),
   });
-
-  // const { data: bidData, isLoading: isBidLoading } = useQuery({
-  //   queryKey: [`single-bid`, bidId],
-  //   queryFn: () => fetchSingleBid(bidId),
-  //   enabled: !!bidId,
-  // });
-
-  //   <input
-  //   placeholder="Value (%)"
-  //   type="text"
-  //   inputMode="numeric"
-  //   className={cn(
-  //     "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0 "
-  //   )}
-  //   max={100}
-  //   {...register(
-  //     isDiscount
-  //       ? "discountingInfo.pricePerAnnum"
-  //       : "confirmationInfo.pricePerAnnum"
-  //   )}
-  //   onChange={(event) => {
-  //     const newValue = event.target.value.replace(/[^0-9.]/g, "");
-  //     event.target.value = newValue;
-  //   }}
-  //   onBlur={(event) => {
-  //     console.log(event.target.value)
-  //   if(event.target.value.includes('%') || event.target.value.length === 0) return
-  //     event.target.value += "%";
-  //   }}
-  //   onKeyUp={(event) => {
-  //     if (Number(event.target.value.replace("%", "")) > 100) {
-  //       event.target.value = "100.0%";
-  //     }
-  //   }}
-  // />
 
   const { mutateAsync } = useMutation({
     mutationFn: addBid,
@@ -143,7 +105,7 @@ export const AddBid = ({
     const baseData = {
       confirmationPrice: data.confirmationPrice,
       lc: lcData._id,
-      type: lcData.lcType!,
+      type: lcData.type!, 
       validity: data.validity,
     };
 
@@ -154,7 +116,7 @@ export const AddBid = ({
           discountBaseRate,
         }
       : baseData;
-
+    // @ts-ignore
     const { success, response } = await mutateAsync(reqData);
 
     if (!success) return toast.error(response);
@@ -170,7 +132,11 @@ export const AddBid = ({
     <Dialog>
       <DialogTrigger
         className={`${
-          status === "Rejected"
+          lcData &&
+          (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
+          (status === "Add bid" || status === "Rejected")
+            ? "bg-[#1A1A26] text-white text-sm"
+            : status === "Rejected"
             ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
                 border && "border border-[#D20000]"
               }`
@@ -183,24 +149,27 @@ export const AddBid = ({
                 border &&
                 "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
               }`
-            : lcData && lcData.status === "Expired" && status === "Add bid"
-            ? "bg-[#1A1A26] text-white text-sm"
             : status === "Add bid" && !isBank
             ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
             : status === "Add bid" && isBank
             ? "bg-[#1A1A26] text-white text-sm"
             : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
         } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
-        disabled={lcData?.status === "Expired" && status === "Add bid"}
+        disabled={
+          (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
+          (status === "Add bid" || status === "Rejected")
+        }
       >
-        {lcData && lcData.status === "Expired" && status === "Add bid"
+        {lcData &&
+        (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
+        (status === "Add bid" || status === "Rejected")
           ? "Not Applicable"
           : triggerTitle || "Pending"}
       </DialogTrigger>
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">
-            {lcData?.lcType + " Request" || ""}
+            {lcData?.type + " Request" || ""}
           </h2>
           <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>
             <X className="size-7" />
@@ -219,7 +188,8 @@ export const AddBid = ({
                 <div className="pt-5 px-4 bg-bg">
                   <h2 className="text-2xl font-semibold mb-1">
                     <span className="text-para font-medium">LC Amount:</span>{" "}
-                    USD {lcData?.amount?.toLocaleString() + ".00" || ""}
+                    {lcData?.currency || "USD"}{" "}
+                    {lcData?.amount?.price?.toLocaleString() + ".00" || ""}
                   </h2>
                   <div className="h-[2px] w-full bg-neutral-800 mt-5" />
                 </div>
@@ -282,19 +252,19 @@ export const AddBid = ({
                   <LCInfo
                     label="LC Issuance (Expected)"
                     value={convertDateToCommaString(
-                      lcData?.lcPeriod?.startDate || ""
+                      lcData?.period?.startDate || ""
                     )}
                   />
                   <LCInfo
                     label="LC Expiry Date"
                     value={convertDateToCommaString(
-                      lcData?.lcPeriod?.endDate || ""
+                      lcData?.period?.endDate || ""
                     )}
                   />
                   <LCInfo
                     label="Confirmation Date (Expected)"
                     value={convertDateToCommaString(
-                      lcData?.lcPeriod?.endDate || ""
+                      lcData?.period?.endDate || ""
                     )}
                   />
                   <LCInfo
@@ -451,7 +421,7 @@ export const AddBid = ({
                     </label>
                     <DatePicker
                       setValue={setValue}
-                      maxDate={lcData?.lcPeriod?.endDate}
+                      maxDate={lcData?.period?.endDate}
                     />
                   </div>
                   {errors.validity && (
@@ -478,7 +448,7 @@ export const AddBid = ({
                     max={100}
                     {...register("confirmationPrice")}
                     onChange={(event) => {
-                      const newValue = event.target.value.replace(
+                      const newValue: any = event.target.value.replace(
                         /[^0-9.]/g,
                         ""
                       );

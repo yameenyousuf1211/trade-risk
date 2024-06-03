@@ -6,7 +6,7 @@ export const CreateTabs = () => {
   const pathname = usePathname();
 
   return (
-    <div className="flex items-center gap-x-8 mb-2 border-b-2 border-borderCol">
+    <div className="flex  items-center gap-x-8 mb-2 border-b-2 border-borderCol">
       <div className="relative py-3">
         <Link
           href="/create-request"

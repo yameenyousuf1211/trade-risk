@@ -1,24 +1,7 @@
 "use client";
-import { useState } from "react";
 import { BgRadioInput } from "../LCSteps/helpers";
 
 export const IssuanceStep1 = () => {
-  const [checkedState, setCheckedState] = useState({
-    "cash-margin": false,
-    "credit-facility": false,
-  });
-
-  const handleCheckChange = (id: string) => {
-    const newCheckedState = {
-      "cash-margin": id === "cash-margin",
-      "credit-facility": id === "credit-facility",
-    };
-    setCheckedState(newCheckedState);
-
-    // const isStepComplete =
-    //   newCheckedState["role-exporter"] || newCheckedState["role-importer"];
-    // setStepCompleted(0, isStepComplete);
-  };
   return (
     <div
       id="step1"
@@ -39,8 +22,7 @@ export const IssuanceStep1 = () => {
         value="cash-margin"
         // register={register}
         register={() => ""}
-        checked={checkedState["cash-margin"]}
-        handleCheckChange={handleCheckChange}
+        checked={false}
       />
       <BgRadioInput
         id="credit-facility"
@@ -49,8 +31,7 @@ export const IssuanceStep1 = () => {
         value="credit-facility"
         // register={register}
         register={() => ""}
-        checked={checkedState["credit-facility"]}
-        handleCheckChange={handleCheckChange}
+        checked={false}
       />
     </div>
   );

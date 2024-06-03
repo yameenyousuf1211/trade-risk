@@ -11,7 +11,6 @@ import {
   Step7,
 } from "@/components/LCSteps";
 import { useEffect, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { discountingSchema } from "@/validation/lc.validation";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -20,41 +19,31 @@ import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { usePathname, useRouter } from "next/navigation";
 import useLoading from "@/hooks/useLoading";
 import Loader from "@/components/ui/loader";
-import { getCountries } from "@/services/apis/helpers.api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Country } from "@/types/type";
+import { useQueryClient } from "@tanstack/react-query";
 import { DisclaimerDialog } from "@/components/helpers";
 import useDiscountingStore, { getStateValues } from "@/store/discounting.store";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
+import useCountries from "@/hooks/useCountries";
 
 const CreateDiscountPage = () => {
-  const {
-    register,
-    setValue,
-    getValues,
-    reset,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<z.infer<typeof discountingSchema>>({
-    // resolver: zodResolver(discountingSchema),
-  });
+  const { register, setValue, reset, handleSubmit, watch } = useForm<
+    z.infer<typeof discountingSchema>
+  >({});
 
   const queryClient = useQueryClient();
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
-  const [valueChanged, setValueChanged] = useState<boolean>(false);
   const [days, setDays] = useState<number>(1);
 
   // Edit Request
   const setValues = useDiscountingStore((state) => state.setValues);
   const discountingData = useDiscountingStore((state) => state);
-  const { setStepStatus } = useStepStore(); // Access setStepStatus
+  const { setStepStatus } = useStepStore();
 
   useEffect(() => {
     if (discountingData && discountingData?._id) {
@@ -79,8 +68,14 @@ const CreateDiscountPage = () => {
         if (key === "transhipment") {
           setValue(key, value === true ? "yes" : "no");
         }
-        if (key === "lcPeriod.expectedDate") {
-          setValue(key, value === true ? "yes" : "no");
+        if (key === "period") {
+          setValue(
+            "period.expectedDate",
+            value.expectedDate === true ? "yes" : "no"
+          );
+        }
+        if (key === "amount") {
+          setValue(key, value.price);
         }
         if (key === "extraInfo") {
           const daysLeft = calculateDaysLeft(value.dats);
@@ -89,131 +84,19 @@ const CreateDiscountPage = () => {
         }
       });
     }
-    setValueChanged(!valueChanged);
   }, [discountingData]);
-
-  // Showing errors
-  useEffect(() => {
-    if (errors) {
-      const showNestedErrors = (errorsObj: any, parentKey = "") => {
-        Object.keys(errorsObj)
-          .reverse()
-          .forEach((key) => {
-            const errorMessage =
-              errorsObj[key as keyof typeof errorsObj]?.message;
-
-            if (errorMessage) {
-              // const fieldName = parentKey ? `${parentKey}.${key}` : key;
-              toast.error(`${errorMessage}`);
-            } else if (typeof errorsObj[key] === "object") {
-              showNestedErrors(errorsObj[key], key);
-            }
-          });
-      };
-
-      showNestedErrors(errors);
-    }
-  }, [errors]);
 
   const [proceed, setProceed] = useState(false);
 
-  const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async (
-    data
-  ) => {
-    const validationResult = discountingSchema.safeParse(data);
-    if (validationResult.success) {
-      if (proceed) {
-        if (data.paymentTerms === "Usance LC" && !days)
-          return toast.error("Please select days from");
-
-        const currentDate = new Date();
-        const futureDate = new Date(
-          currentDate.setDate(currentDate.getDate() + days)
-        );
-        if (
-          data.confirmingBank &&
-          data.issuingBank.country === data.confirmingBank.country
-        )
-          return toast.error(
-            "Confirming bank country cannot be the same as issuing bank country"
-          );
-        if (/^\d+$/.test(data.productDescription))
-          return toast.error("Product description cannot contain only digits");
-        startLoading();
-        let extraInfo;
-        if (data.paymentTerms === "Usance LC") {
-          extraInfo = { dats: futureDate, other: data.extraInfo };
-        }
-
-        const { confirmingBank2, ...rest } = data;
-        const reqData = {
-          ...rest,
-          currency: data?.currency ? data?.currency : "usd",
-          transhipment: data.transhipment === "yes" ? true : false,
-          lcType: "LC Discounting",
-          lcPeriod: {
-            ...data.lcPeriod,
-            expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
-          },
-          ...(extraInfo && { extraInfo }),
-        };
-        // @ts-ignore
-        delete reqData._id;
-        // @ts-ignore
-        delete reqData.refId;
-        // @ts-ignore
-        delete reqData.createdBy;
-        // @ts-ignore
-        delete reqData.status;
-        // @ts-ignore
-        delete reqData.createdAt;
-        // @ts-ignore
-        delete reqData.updatedAt;
-
-        const { response, success } = discountingData?._id
-          ? await onUpdateLC({
-              payload: reqData,
-              id: discountingData?._id,
-            })
-          : await onCreateLC(reqData);
-        stopLoading();
-        if (!success) return toast.error(response);
-        else {
-          toast.success("LC created successfully");
-          setValues(getStateValues(useDiscountingStore.getInitialState()));
-          // await sendNotification({
-          //   title: "New LC Discounting Request",
-          //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-          // });
-          reset();
-          router.push("/");
-        }
-      } else {
-        let openDisclaimerBtn = document.getElementById("open-disclaimer");
-        // @ts-ignore
-        openDisclaimerBtn.click();
-        setProceed(true);
-      }
-    } else {
-      if (validationResult.error && validationResult.error.errors.length > 0) {
-        validationResult.error.errors.forEach((error) => {
-          toast.error(`Validation Error: ${error.message}`);
-        });
-      }
-    }
-  };
-
   const [loader, setLoader] = useState(false);
 
-  const saveAsDraft: SubmitHandler<z.infer<typeof discountingSchema>> = async (
-    data: z.infer<typeof discountingSchema>
-  ) => {
-    if (data.paymentTerms === "Usance LC" && !days)
-      return toast.error("Please select days from");
-    const currentDate = new Date();
-    const futureDate = new Date(
-      currentDate.setDate(currentDate.getDate() + days)
-    );
+  const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async ({
+    data,
+    isDraft,
+  }: {
+    isDraft: boolean;
+    data: any;
+  }) => {
     if (
       data.confirmingBank &&
       data.issuingBank.country === data.confirmingBank.country
@@ -223,93 +106,142 @@ const CreateDiscountPage = () => {
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
-    setLoader(true);
-    let extraInfo;
-    if (data.paymentTerms === "Usance LC") {
-      extraInfo = { dats: futureDate, other: data.extraInfo };
+    const currentDate = new Date();
+    const futureDate = new Date(
+      currentDate.setDate(currentDate.getDate() + days)
+    );
+    let extraInfoObj;
+    if (
+      data.paymentTerms &&
+      data.paymentTerms !== "Sight LC" &&
+      data.extraInfo
+    ) {
+      extraInfoObj = { dats: futureDate, other: data.extraInfo };
     }
-    const { confirmingBank2, ...rest } = data;
 
-    const reqData = {
-      ...rest,
-      currency: data?.currency ? data?.currency : "usd",
+    let reqData;
+    const baseData = {
+      type: "LC Discounting",
       transhipment: data.transhipment === "yes" ? true : false,
-      lcType: "LC Discounting",
-      lcPeriod: {
-        ...data.lcPeriod,
-        expectedDate: data.lcPeriod.expectedDate === "yes" ? true : false,
+      amount: {
+        price: data.amount,
       },
-      ...(extraInfo && { extraInfo }),
-      draft: "true",
+      period: {
+        ...data.period,
+        expectedDate: data.period?.expectedDate === "yes" ? true : false,
+      },
+      ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
-    console.log(reqData, "REQDATA");
 
-    // @ts-ignore
-    delete reqData._id;
-    // @ts-ignore
-    delete reqData.refId;
-    // @ts-ignore
-    delete reqData.createdBy;
-    // @ts-ignore
-    delete reqData.status;
-    // @ts-ignore
-    delete reqData.createdAt;
-    // @ts-ignore
-    delete reqData.updatedAt;
-    // @ts-ignore
-    delete reqData?.selectBaseRate;
+    if (isDraft) {
+      const {
+        confirmingBank2,
+        _id,
+        refId,
+        createdBy,
+        status,
+        createdAt,
+        updatedAt,
+        extraInfo,
+        ...rest
+      } = data;
+      reqData = {
+        ...rest,
+        ...baseData,
+        draft: "true",
+      };
+      setLoader(true);
+      const { response, success } = discountingData?._id
+        ? await onUpdateLC({
+            payload: reqData,
+            id: discountingData?._id,
+          })
+        : await onCreateLC(reqData);
+      setLoader(false);
+      if (!success) return toast.error(response);
+      else {
+        toast.success("LC saved as draft");
+        reset();
+        router.push("/");
+        setValues(getStateValues(useDiscountingStore.getInitialState()));
+        queryClient.invalidateQueries({
+          queryKey: ["fetch-lcs-drafts"],
+        });
+      }
+    } else {
+      const lcStartDateString = data.period?.startDate;
+      const lcEndDateString = data.period?.endDate;
+      const expectedDateString = data?.expectedDiscountingDate;
+      const lcStartDate = lcStartDateString
+        ? new Date(lcStartDateString)
+        : null;
+      const lcEndDate = lcEndDateString ? new Date(lcEndDateString) : null;
+      const expectedDiscountingDate = expectedDateString
+        ? new Date(expectedDateString)
+        : null;
+      const preparedData = {
+        ...data,
+        period: {
+          ...data.period,
+          startDate: lcStartDate,
+          endDate: lcEndDate,
+        },
+        expectedDiscountingDate: expectedDiscountingDate,
+      };
+      console.log(data, preparedData);
 
-    const { response, success } = discountingData?._id
-      ? await onUpdateLC({
-          payload: reqData,
-          id: discountingData?._id,
-        })
-      : await onCreateLC(reqData);
-
-    setLoader(false);
-    if (!success) return toast.error(response);
-    else {
-      toast.success("LC saved as draft");
-      setValues(getStateValues(useDiscountingStore.getInitialState()));
-      reset();
-      router.push("/");
-      queryClient.invalidateQueries({
-        queryKey: ["fetch-lcs-drafts"],
-      });
+      const validationResult = discountingSchema.safeParse(preparedData);
+      console.log(validationResult);
+      if (validationResult.success) {
+        const validatedData = validationResult.data;
+        if (proceed) {
+          const { confirmingBank2, extraInfo, ...rest } = validatedData;
+          reqData = {
+            ...rest,
+            ...baseData,
+          };
+          startLoading();
+          const { response, success } = discountingData?._id
+            ? await onUpdateLC({
+                payload: reqData,
+                id: discountingData?._id,
+              })
+            : await onCreateLC(reqData);
+          stopLoading();
+          if (!success) return toast.error(response);
+          else {
+            // await sendNotification({
+            //   title: "New LC Confirmation Request",
+            //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
+            // });
+            setValues(getStateValues(useDiscountingStore.getInitialState()));
+            toast.success("LC created successfully");
+            reset();
+            router.push("/");
+          }
+        } else {
+          let openDisclaimerBtn = document.getElementById("open-disclaimer");
+          // @ts-ignore
+          openDisclaimerBtn.click();
+          setProceed(true);
+        }
+      } else {
+        if (
+          validationResult.error &&
+          validationResult.error.errors.length > 0
+        ) {
+          validationResult.error.errors.forEach((error) => {
+            toast.error(`${error.message}`);
+          });
+        }
+      }
     }
   };
-  const [allCountries, setAllCountries] = useState<Country[]>([]);
-  const [countries, setCountries] = useState([]);
-  const [flags, setFlags] = useState([]);
 
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
 
-  const { data: countriesData } = useQuery({
-    queryKey: ["countries"],
-    queryFn: () => getCountries(),
-  });
-
-  useEffect(() => {
-    if (
-      countriesData &&
-      countriesData.success &&
-      countriesData.response &&
-      countriesData.response.length > 0
-    ) {
-      setAllCountries(countriesData.response);
-      const fetchedCountries = countriesData.response.map(
-        (country: Country) => {
-          return country.name;
-        }
-      );
-      setCountries(fetchedCountries);
-      const fetchedFlags = countriesData.response.map((country: Country) => {
-        return country.flag;
-      });
-      setFlags(fetchedFlags);
-    }
-  }, [countriesData]);
+  const { countries, flags } = useCountries();
 
   // reset the form on page navigation
   useEffect(() => {
@@ -338,9 +270,6 @@ const CreateDiscountPage = () => {
           watch={watch}
           register={register}
           setValue={setValue}
-          getValues={getValues}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
           days={days}
           setDays={setDays}
@@ -350,10 +279,7 @@ const CreateDiscountPage = () => {
           register={register}
           setValue={setValue}
           countries={countryNames}
-          getValues={getValues}
           flags={countryFlags}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
           isDiscount
         />
@@ -362,20 +288,16 @@ const CreateDiscountPage = () => {
           register={register}
           setValue={setValue}
           countries={countries}
-          getValues={getValues}
           flags={flags}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
           setStepCompleted={handleStepCompletion}
+          watch={watch}
         />
         <Step5
           register={register}
           countries={countries}
           flags={flags}
           setValue={setValue}
-          getValues={getValues}
-          valueChanged={valueChanged}
-          setValueChanged={setValueChanged}
+          watch={watch}
           setStepCompleted={handleStepCompletion}
         />
 
@@ -386,8 +308,6 @@ const CreateDiscountPage = () => {
             title="Discounting Info"
             isDiscount
             setValue={setValue}
-            getValues={getValues}
-            valueChanged={valueChanged}
             setStepCompleted={handleStepCompletion}
           />
           <Step7 register={register} step={7} />
@@ -396,7 +316,8 @@ const CreateDiscountPage = () => {
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
           <Button
-            onClick={handleSubmit(saveAsDraft)}
+            // onClick={handleSubmit(saveAsDraft)}
+            onClick={handleSubmit((data) => onSubmit({ data, isDraft: true }))}
             type="button"
             variant="ghost"
             className="!bg-[#F1F1F5] w-1/3"
@@ -409,7 +330,8 @@ const CreateDiscountPage = () => {
             disabled={isLoading}
             size="lg"
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
-            onClick={handleSubmit(onSubmit)}
+            // onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit((data) => onSubmit({ data, isDraft: false }))}
           >
             {isLoading ? <Loader /> : "Submit request"}
           </Button>
@@ -418,7 +340,8 @@ const CreateDiscountPage = () => {
           title="Submit Request"
           className="hidden"
           setProceed={setProceed}
-          onAccept={handleSubmit(onSubmit)}
+          // onAccept={handleSubmit(onSubmit)}
+          onAccept={handleSubmit((data) => onSubmit({ data, isDraft: false }))}
         />
       </form>
     </CreateLCLayout>

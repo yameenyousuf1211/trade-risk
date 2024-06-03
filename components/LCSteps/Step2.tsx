@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BgRadioInput } from "./helpers";
 import {
   Select,
@@ -12,27 +12,26 @@ import { getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 const numberToText = require("number-to-text");
 require("number-to-text/converters/en-us");
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
 
 export const Step2 = ({
   register,
   setValue,
-  getValues,
-  valueChanged,
-  setValueChanged,
   setStepCompleted,
   days,
   setDays,
   watch,
 }: {
-  register: any;
-  setValue: any;
-  getValues: any;
-  valueChanged?: any;
-  setValueChanged?: any;
-  setStepCompleted?: any;
+  register: UseFormRegister<any>;
+  setValue: UseFormSetValue<any>;
+  setStepCompleted: (index: number, status: boolean) => void;
   days: number;
-  setDays: any;
-  watch: any;
+  setDays: React.Dispatch<React.SetStateAction<number>>;
+  watch: UseFormWatch<any>;
 }) => {
   const { data: currency } = useQuery({
     queryKey: ["currency"],
@@ -40,18 +39,14 @@ export const Step2 = ({
   });
 
   let amount = watch("amount");
-  let currencyVal = getValues("currency");
-  // let paymentTerms = getValues("paymentTerms");
-  // let extraInfo = getValues("extraInfo");
-
+  let currencyVal = watch("currency");
   let paymentTerms = watch("paymentTerms");
   let extraInfo = watch("extraInfo");
 
-  const [currencyValue, setCurrencyValue] = useState<string | number | null>(
-    null
+  const [currencyValue, setCurrencyValue] = useState<string | number>(
+    amount || ""
   );
   const [rawValue, setRawValue] = useState("");
-  const [showExtra, setShowExtra] = useState(false);
   const [otherValue, setOtherValue] = useState("");
 
   const handleChange = (e: any) => {
@@ -85,14 +80,14 @@ export const Step2 = ({
       setCurrencyValue(amount);
       setRawValue(amount);
     }
-    extraInfo = getValues("extraInfo");
-  }, [valueChanged]);
+  }, [amount]);
 
   useEffect(() => {
     if (amount && paymentTerms) {
       setStepCompleted(1, true);
     }
-  }, [amount, paymentTerms, valueChanged]);
+    if (paymentTerms !== "Sight LC") setValue("extraInfo", undefined);
+  }, [amount, paymentTerms]);
 
   return (
     <div
@@ -111,7 +106,6 @@ export const Step2 = ({
           <Select
             onValueChange={(value) => {
               setValue("currency", value);
-              setValueChanged((prev: boolean) => !prev);
             }}
           >
             <SelectTrigger className="w-[100px] bg-borderCol/80">
@@ -135,7 +129,6 @@ export const Step2 = ({
           <input
             type="text"
             inputMode="numeric"
-            name="amount"
             {...register("amount")}
             value={currencyValue}
             onChange={handleChange}
@@ -194,7 +187,7 @@ export const Step2 = ({
           />
         </div>
         {/* Days input */}
-        {paymentTerms === "Usance LC" && (
+        {paymentTerms && paymentTerms !== "Sight LC" && (
           <>
             <div className="flex items-center gap-x-2 my-3 ml-2">
               <div className="border-b-2 border-black flex items-center">
@@ -216,7 +209,8 @@ export const Step2 = ({
                     type="button"
                     className="rounded-sm border border-para size-6 center mb-2"
                     onClick={() => {
-                      setDays((prev: any) => Number(prev) + 1);
+                      if (days >= 999) return;
+                      else setDays((prev: any) => Number(prev) + 1);
                     }}
                   >
                     +
@@ -225,9 +219,11 @@ export const Step2 = ({
                     type="button"
                     className="rounded-sm border border-para size-6 center mb-2"
                     onClick={() => {
-                      setDays((prev: any) =>
-                        Number(prev) > 1 ? Number(prev) - 1 : 1
-                      );
+                      if (days >= 999) return;
+                      else
+                        setDays((prev: any) =>
+                          Number(prev) > 1 ? Number(prev) - 1 : 1
+                        );
                     }}
                   >
                     -
@@ -291,13 +287,11 @@ export const Step2 = ({
               >
                 <input
                   type="radio"
-                  name="extraInfo"
                   value="others"
                   {...register("extraInfo")}
                   id="payment-others"
                   checked={extraInfo === "others"}
                   className="accent-primaryCol size-4"
-                  // onChange={() => handleExtraCheckChange("payment-others")}
                 />
                 Others
               </label>

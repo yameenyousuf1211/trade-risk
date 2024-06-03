@@ -145,11 +145,16 @@ export interface IUser {
 export interface ILcs {
   _id: string;
   participantRole?: string;
-  lcType: string;
+  type: string;
   currency: string;
-  amount?: number;
+  amount: {
+    price: number;
+  };
   paymentTerms: string;
-  createdBy?: string;
+  createdBy?: {
+    name: string;
+    accountCountry: string;
+  }[];
   issuingBank: {
     bank: string;
     country: string;
@@ -175,7 +180,7 @@ export interface ILcs {
   expectedConfirmationDate: Date;
   expectedDiscountingDate: Date;
   productDescription: string;
-  lcPeriod: {
+  period: {
     startDate: Date;
     endDate: Date;
   };
@@ -223,7 +228,7 @@ export interface IBids {
     country: string;
   };
   lcInfo: ILcInfo | any;
-  confirmationPrice: string | number
+  confirmationPrice: string | number;
   lc?: string[];
   isDeleted: boolean;
   createdAt: Date;
@@ -242,7 +247,6 @@ export interface IMyBids {
     name: string;
     email: string;
   };
-
   address: string;
   avalizationExportBills: boolean;
   confirmationLcs: boolean;
@@ -269,7 +273,69 @@ export interface IMyBids {
 }
 
 export interface Country {
-  name: "";
-  flag: "";
-  isoCode: "";
+  name: string;
+  flag: string;
+  isoCode: string;
 }
+
+// risk participation
+interface Bank {
+  bank: string;
+  country: string;
+}
+
+interface ExporterInfo {
+  beneficiaryName: string;
+  countryOfExport: string;
+  beneficiaryCountry: string;
+}
+
+interface ImporterInfo {
+  applicantName: string;
+  countryOfImport: string;
+}
+
+interface RiskParticipationTransaction {
+  type: string;
+  amount: number;
+  returnOffer: string;
+  baseRate: string;
+  perAnnum: string;
+}
+
+interface ShipmentPort {
+  country: string;
+  port: string;
+}
+
+export interface IRisk {
+  advisingBank: Bank;
+  attachment: any[]; // Adjust the type as needed for attachments
+  banks: string[];
+  confirmingBank: Bank;
+  createdBy: string;
+  description: string;
+  draft: boolean;
+  expectedDateConfimation: string; // ISO date string
+  expectedDateDiscounting: string; // ISO date string
+  expectedDiscounting: boolean;
+  expiryDate: string; // ISO date string
+  exporterInfo: ExporterInfo;
+  importerInfo: ImporterInfo;
+  isDeleted: boolean;
+  isLcDiscounting: boolean;
+  issuingBank: Bank;
+  note: string;
+  outrightSales: string;
+  paymentTerms: string;
+  riskParticipation: string;
+  riskParticipationTransaction: RiskParticipationTransaction;
+  shipmentPort: ShipmentPort;
+  startDate: string; // ISO date string
+  transaction: string;
+  transhipment: boolean;
+  __v: number;
+  _id: string;
+  createdAt :Date
+}
+

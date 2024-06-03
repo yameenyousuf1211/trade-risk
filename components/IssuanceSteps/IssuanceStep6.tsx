@@ -34,7 +34,6 @@ export const IssuanceStep6 = ({
             register={() => ""}
             className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Applicant name"
-            // onChange={() => setValueChanged(!valueChanged)}
           />
         </label>
 
@@ -46,7 +45,6 @@ export const IssuanceStep6 = ({
           //   value={importerCountry}
           setValue={() => ""}
           flags={flags}
-          //   setValueChanged={setValueChanged}
         />
 
         <label
@@ -60,7 +58,6 @@ export const IssuanceStep6 = ({
             register={() => ""}
             className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Beneficiary name"
-            // onChange={() => setValueChanged(!valueChanged)}
           />
         </label>
 
@@ -77,7 +74,6 @@ export const IssuanceStep6 = ({
             register={() => ""}
             className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Enter address"
-            // onChange={() => setValueChanged(!valueChanged)}
           />
         </label>
 
@@ -89,7 +85,6 @@ export const IssuanceStep6 = ({
           //   value={importerCountry}
           setValue={() => ""}
           flags={flags}
-          //   setValueChanged={setValueChanged}
         />
       </div>
     </div>

@@ -12,9 +12,7 @@ import {
 import { Button } from "../ui/button";
 
 const NumberInput = () => {
-  const [currencyValue, setCurrencyValue] = useState<string | number | null>(
-    null
-  );
+  const [currencyValue, setCurrencyValue] = useState<string | number>();
   const [rawValue, setRawValue] = useState("");
 
   const handleChange = (e: any) => {
@@ -73,7 +71,7 @@ export const IssuanceStep3 = () => {
 
   const handleDecrement = () => {
     const currentValue = pricePerAnnum || "0";
-    let newValue = parseFloat(currentValue) - 0.5;
+    let newValue: any = parseFloat(currentValue) - 0.5;
 
     if (newValue < 0) newValue = 0;
     // @ts-ignore
@@ -168,8 +166,10 @@ export const IssuanceStep3 = () => {
                 required
                 max={100}
                 className="border-none outline-none text-sm max-w-[70px] w-fit"
-                onChange={(e) => setPricePerAnnum(e.target.value)}
-                onKeyUp={(event) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPricePerAnnum(e.target.value)
+                }
+                onKeyUp={(event: any) => {
                   if (event.target?.value > 100) {
                     event.target.value = "100.0";
                   }

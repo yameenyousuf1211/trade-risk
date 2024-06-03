@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { BgRadioInput, DDInput } from "./helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
 
 export const Step6 = ({
   title,
   isDiscount,
   register,
   setValue,
-  getValues,
-  valueChanged,
-  setStepCompleted,
   watch,
+  setStepCompleted,
 }: {
   title: string;
   isDiscount?: boolean;
-  register: any;
-  setValue: any;
-  getValues: any;
-  valueChanged?: boolean;
+  register: UseFormRegister<any>;
+  setValue: UseFormSetValue<any>;
+  watch: UseFormWatch<any>;
   setStepCompleted?: any;
-  watch: any;
 }) => {
   const behalfOf = watch(
     isDiscount ? "discountingInfo.behalfOf" : "confirmationInfo.behalfOf"
@@ -29,10 +30,11 @@ export const Step6 = ({
   const discountAtSight = watch(
     isDiscount ? "discountingInfo.discountAtSight" : "discountAtSight"
   );
+  const { baseRate } = watch();
 
   let pricePerAnnum = isDiscount
-    ? getValues("discountingInfo.pricePerAnnum")
-    : getValues("confirmationInfo.pricePerAnnum");
+    ? watch("discountingInfo.pricePerAnnum")
+    : watch("confirmationInfo.pricePerAnnum");
 
   useEffect(() => {
     if (pricePerAnnum) {
@@ -46,12 +48,18 @@ export const Step6 = ({
             `${pricePerAnnum.toString()}`
           );
     }
-  }, [valueChanged]);
+  }, [pricePerAnnum]);
+
+  useEffect(() => {
+    if (behalfOf && pricePerAnnum && baseRate) {
+      setStepCompleted(5, true);
+    }
+  }, [behalfOf,pricePerAnnum,baseRate]);
 
   const handleIncrement = () => {
     const currentValue = isDiscount
-      ? getValues("discountingInfo.pricePerAnnum") || "0"
-      : getValues("confirmationInfo.pricePerAnnum") || "0";
+      ? watch("discountingInfo.pricePerAnnum") || "0"
+      : watch("confirmationInfo.pricePerAnnum") || "0";
     const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
     if (Number(newValue) > 100) {
       return;
@@ -63,8 +71,8 @@ export const Step6 = ({
 
   const handleDecrement = () => {
     const currentValue = isDiscount
-      ? getValues("discountingInfo.pricePerAnnum") || "0"
-      : getValues("confirmationInfo.pricePerAnnum") || "0";
+      ? watch("discountingInfo.pricePerAnnum") || "0"
+      : watch("confirmationInfo.pricePerAnnum") || "0";
     let newValue = parseFloat(currentValue) - 0.5;
 
     if (newValue < 0) newValue = 0;
@@ -145,14 +153,14 @@ export const Step6 = ({
             ? "Expected pricing"
             : "Expected charges"}
         </p>
-        {isDiscount && (
-          <div className="mb-3 bg-white">
-            <label
-              id="selectBaseRate"
-              className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
-            >
-              <p className="w-full text-sm text-lightGray">Select base rate</p>
-              <Input
+        {/* {isDiscount && ( */}
+        <div className="mb-3 bg-white">
+          <label
+            id="selectBaseRate"
+            className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
+          >
+            <p className="w-full text-sm text-lightGray">Select base rate</p>
+            {/* <Input
                 id="selectBaseRate"
                 inputMode="numeric"
                 type="number"
@@ -160,10 +168,21 @@ export const Step6 = ({
                 register={register}
                 className="block bg-none text-sm border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                 placeholder="Select Value"
+              /> */}
+            <div className="text-end">
+              <DDInput
+                id="baseRate"
+                label="Base Rate"
+                type="baseRate"
+                value={baseRate}
+                placeholder="Select Value"
+                setValue={setValue}
+                data={["KIBOR", "LIBOR", "SOFR"]}
               />
-            </label>
-          </div>
-        )}
+            </div>
+          </label>
+        </div>
+        {/* )} */}
         <label
           id="expected-pricing"
           className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"

@@ -2,21 +2,21 @@ import React from "react";
 import { Input } from "../ui/input";
 import { DDInput } from "../LCSteps/helpers";
 
-export const RiskStep4 = ({
-  register,
-  setValueChanged,
-  countries,
-  flags,
-  valueChanged,
-  setValue,
-}: {
+interface Props {
   register: any;
-  setValueChanged: any;
   countries: string[];
   flags: string[];
-  valueChanged: boolean;
   setValue: any;
-}) => {
+  watch: any;
+}
+
+export const RiskStep4 = ({
+  register,
+  countries,
+  flags,
+  setValue,
+  watch,
+}: Props) => {
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">
@@ -39,7 +39,6 @@ export const RiskStep4 = ({
             register={register}
             className="text-sm block bg-none text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Enter name"
-            onChange={() => setValueChanged(!valueChanged)}
           />
         </label>
         <DDInput
@@ -49,7 +48,6 @@ export const RiskStep4 = ({
           data={countries}
           setValue={setValue}
           flags={flags}
-          setValueChanged={setValueChanged}
         />
       </div>
     </div>

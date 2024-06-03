@@ -1,8 +1,17 @@
 "use client";
 import { useEffect } from "react";
 import { BgRadioInput } from "./helpers";
+import { UseFormRegister, UseFormWatch } from "react-hook-form";
 
-export const Step1 = ({ register, watch, setStepCompleted }: any) => {
+export const Step1 = ({
+  register,
+  watch,
+  setStepCompleted,
+}: {
+  register: UseFormRegister<any>;
+  watch: UseFormWatch<any>;
+  setStepCompleted: (index: number, status: boolean) => void;
+}) => {
   const participantRole = watch("participantRole");
   useEffect(() => {
     setStepCompleted(0, participantRole);

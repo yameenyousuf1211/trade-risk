@@ -38,7 +38,7 @@ const AmountInput = ({
       setCurrencyValue(formattedValue);
       setRawValue(digitsOnly);
       setValue(name, digitsOnly);
-      trigger();
+      trigger(name);
     } else {
       setCurrencyValue("");
       setRawValue("");
@@ -95,7 +95,7 @@ const ProductInfoPage = () => {
   const productData =
     typeof window !== "undefined" ? localStorage.getItem("productData") : null;
 
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<string[]>([]);
   const [productInput, setProductInput] = useState("");
   const [allowSubmit, setAllowSubmit] = useState(false);
 
@@ -119,13 +119,6 @@ const ProductInfoPage = () => {
     } else {
       (!isValid || !isDirty || products.length <= 0) && setAllowSubmit(false);
     }
-    // const checkValidation = async () => {
-    //   const validationResult = await trigger("product");
-
-    //   const isFormValid = Object.values(validationResult).every(Boolean);
-    //   console.log("isValid:", isFormValid);
-    // };
-    // products.length > 0 && checkValidation();
   }, [errors, isValid, isDirty, productData]);
 
   const onSubmit: SubmitHandler<z.infer<typeof productsInfoSchema>> = async (
@@ -169,7 +162,7 @@ const ProductInfoPage = () => {
             }}
             onBlur={(e: any) => {
               if (e.target.value) {
-                setProducts((prev) => [...prev, e.target.value]);
+                setProducts((prev: any) => [...prev, e.target.value]);
                 setTimeout(() => {
                   e.target.value = "";
                 }, 10);

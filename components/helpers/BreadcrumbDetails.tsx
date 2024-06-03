@@ -74,7 +74,7 @@ export const BreadcrumbDetails = () => {
     });
 
   return (
-    <div className="flex items-center justify-between gap-x-2">
+    <div className="bg-bg sticky top-0 relative z-[2] flex items-center justify-between gap-x-2">
       <Breadcrumb>
         <BreadcrumbList>
           {crumbs.map((crumb, idx) => (

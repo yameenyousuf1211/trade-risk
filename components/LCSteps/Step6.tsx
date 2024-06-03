@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BgRadioInput } from "./helpers";
+import { BgRadioInput, DDInput } from "./helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils";
@@ -15,12 +15,14 @@ export const Step6 = ({
   register,
   setValue,
   watch,
+  setStepCompleted,
 }: {
   title: string;
   isDiscount?: boolean;
   register: UseFormRegister<any>;
   setValue: UseFormSetValue<any>;
   watch: UseFormWatch<any>;
+  setStepCompleted?: any;
 }) => {
   const behalfOf = watch(
     isDiscount ? "discountingInfo.behalfOf" : "confirmationInfo.behalfOf"
@@ -28,6 +30,7 @@ export const Step6 = ({
   const discountAtSight = watch(
     isDiscount ? "discountingInfo.discountAtSight" : "discountAtSight"
   );
+  const { baseRate } = watch();
 
   let pricePerAnnum = isDiscount
     ? watch("discountingInfo.pricePerAnnum")
@@ -46,6 +49,12 @@ export const Step6 = ({
           );
     }
   }, [pricePerAnnum]);
+
+  useEffect(() => {
+    if (behalfOf && pricePerAnnum && baseRate) {
+      setStepCompleted(5, true);
+    }
+  }, [behalfOf,pricePerAnnum,baseRate]);
 
   const handleIncrement = () => {
     const currentValue = isDiscount
@@ -144,14 +153,14 @@ export const Step6 = ({
             ? "Expected pricing"
             : "Expected charges"}
         </p>
-        {isDiscount && (
-          <div className="mb-3 bg-white">
-            <label
-              id="selectBaseRate"
-              className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
-            >
-              <p className="w-full text-sm text-lightGray">Select base rate</p>
-              <Input
+        {/* {isDiscount && ( */}
+        <div className="mb-3 bg-white">
+          <label
+            id="selectBaseRate"
+            className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
+          >
+            <p className="w-full text-sm text-lightGray">Select base rate</p>
+            {/* <Input
                 id="selectBaseRate"
                 inputMode="numeric"
                 type="number"
@@ -159,10 +168,21 @@ export const Step6 = ({
                 register={register}
                 className="block bg-none text-sm border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                 placeholder="Select Value"
+              /> */}
+            <div className="text-end">
+              <DDInput
+                id="baseRate"
+                label="Base Rate"
+                type="baseRate"
+                value={baseRate}
+                placeholder="Select Value"
+                setValue={setValue}
+                data={["KIBOR", "LIBOR", "SOFR"]}
               />
-            </label>
-          </div>
-        )}
+            </div>
+          </label>
+        </div>
+        {/* )} */}
         <label
           id="expected-pricing"
           className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"

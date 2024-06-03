@@ -26,6 +26,7 @@ export const DDInput = ({
   disabled,
   setValue,
   flags,
+  type,
 }: {
   id: string;
   label: string;
@@ -34,6 +35,7 @@ export const DDInput = ({
   data?: string[];
   flags?: string[];
   disabled?: boolean;
+  type?: string;
   setValue: UseFormSetValue<any>;
 }) => {
   const [ddOpen, setDdOpen] = useState(false);
@@ -42,9 +44,9 @@ export const DDInput = ({
   return (
     <label
       id={id}
-      className="border text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+      className={`${type !== 'baseRate' && "border"} text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white`}
     >
-      <p className="text-lightGray">{label}</p>
+      {type !== "baseRate" && <p className="text-lightGray">{label}</p>}
       <Popover open={ddOpen} onOpenChange={setDdOpen}>
         <PopoverTrigger asChild>
           <Button

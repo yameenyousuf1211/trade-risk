@@ -88,161 +88,6 @@ const CreateDiscountPage = () => {
 
   const [proceed, setProceed] = useState(false);
 
-  // const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async (
-  //   data
-  // ) => {
-  //   const validationResult = discountingSchema.safeParse(data);
-  //   if (validationResult.success) {
-  //     const validatedData = validationResult.data;
-
-  //     if (proceed) {
-  //       if (validatedData.paymentTerms === "Usance LC" && !days)
-  //         return toast.error("Please select days from");
-
-  //       const currentDate = new Date();
-  //       const futureDate = new Date(
-  //         currentDate.setDate(currentDate.getDate() + days)
-  //       );
-  //       if (
-  //         validatedData.confirmingBank &&
-  //         validatedData.issuingBank.country ===
-  //           validatedData.confirmingBank.country
-  //       )
-  //         return toast.error(
-  //           "Confirming bank country cannot be the same as issuing bank country"
-  //         );
-  //       if (/^\d+$/.test(validatedData.productDescription))
-  //         return toast.error("Product description cannot contain only digits");
-  //       startLoading();
-  //       let extraInfoObj;
-  //       if (validatedData.paymentTerms === "Usance LC") {
-  //         extraInfoObj = { dats: futureDate, other: validatedData.extraInfo };
-  //       }
-
-  //       const { confirmingBank2, ...rest } = validatedData;
-  //       const reqData = {
-  //         ...rest,
-  //         currency: validatedData?.currency ? validatedData?.currency : "usd",
-  //         transhipment: validatedData.transhipment === "yes" ? true : false,
-  //         amount: {
-  //           price: data.amount,
-  //         },
-  //         type: "LC Discounting",
-  //         period: {
-  //           ...validatedData.period,
-  //           expectedDate:
-  //             validatedData.period.expectedDate === "yes" ? true : false,
-  //         },
-  //         ...(extraInfoObj && { extraInfo: extraInfoObj }),
-  //       };
-  //       const { response, success } = discountingData?._id
-  //         ? await onUpdateLC({
-  //             payload: reqData,
-  //             id: discountingData?._id,
-  //           })
-  //         : await onCreateLC(reqData);
-  //       stopLoading();
-  //       if (!success) return toast.error(response);
-  //       else {
-  //         toast.success("LC created successfully");
-  //         setValues(getStateValues(useDiscountingStore.getInitialState()));
-  //         // await sendNotification({
-  //         //   title: "New LC Discounting Request",
-  //         //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-  //         // });
-  //         reset();
-  //         router.push("/");
-  //       }
-  //     } else {
-  //       let openDisclaimerBtn = document.getElementById("open-disclaimer");
-  //       // @ts-ignore
-  //       openDisclaimerBtn.click();
-  //       setProceed(true);
-  //     }
-  //   } else {
-  //     if (validationResult.error && validationResult.error.errors.length > 0) {
-  //       validationResult.error.errors.forEach((error) => {
-  //         toast.error(`${error.message}`);
-  //       });
-  //     }
-  //   }
-  // };
-
-  // const saveAsDraft: SubmitHandler<z.infer<typeof discountingSchema>> = async (
-  //   data: z.infer<typeof discountingSchema>
-  // ) => {
-  //   if (data.paymentTerms === "Usance LC" && !days)
-  //     return toast.error("Please select days from");
-  //   const currentDate = new Date();
-  //   const futureDate = new Date(
-  //     currentDate.setDate(currentDate.getDate() + days)
-  //   );
-  //   if (
-  //     data.confirmingBank &&
-  //     data.issuingBank.country === data.confirmingBank.country
-  //   )
-  //     return toast.error(
-  //       "Confirming bank country cannot be the same as issuing bank country"
-  //     );
-  //   if (/^\d+$/.test(data.productDescription))
-  //     return toast.error("Product description cannot contain only digits");
-  //   setLoader(true);
-  //   let extraInfoObj;
-  //   if (data.paymentTerms === "Usance LC") {
-  //     extraInfoObj = { dats: futureDate, other: data.extraInfo };
-  //   }
-  //   const { confirmingBank2, ...rest } = data;
-
-  //   const reqData = {
-  //     ...rest,
-  //     transhipment: data.transhipment === "yes" ? true : false,
-  //     type: "LC Discounting",
-  //     amount: {
-  //       price: data.amount,
-  //     },
-  //     period: {
-  //       ...data.period,
-  //       expectedDate: data.period.expectedDate === "yes" ? true : false,
-  //     },
-  //     ...(extraInfoObj && { extraInfo: extraInfoObj }),
-  //     draft: "true",
-  //   };
-
-  //   // @ts-ignore
-  //   delete reqData._id;
-  //   // @ts-ignore
-  //   delete reqData.refId;
-  //   // @ts-ignore
-  //   delete reqData.createdBy;
-  //   // @ts-ignore
-  //   delete reqData.status;
-  //   // @ts-ignore
-  //   delete reqData.createdAt;
-  //   // @ts-ignore
-  //   delete reqData.updatedAt;
-  //   // @ts-ignore
-  //   delete reqData?.selectBaseRate;
-
-  //   const { response, success } = discountingData?._id
-  //     ? await onUpdateLC({
-  //         payload: reqData,
-  //         id: discountingData?._id,
-  //       })
-  //     : await onCreateLC(reqData);
-
-  //   setLoader(false);
-  //   if (!success) return toast.error(response);
-  //   else {
-  //     toast.success("LC saved as draft");
-  //     setValues(getStateValues(useDiscountingStore.getInitialState()));
-  //     reset();
-  //     router.push("/");
-  //     queryClient.invalidateQueries({
-  //       queryKey: ["fetch-lcs-drafts"],
-  //     });
-  //   }
-  // };
-
   const [loader, setLoader] = useState(false);
 
   const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async ({
@@ -268,7 +113,7 @@ const CreateDiscountPage = () => {
     let extraInfoObj;
     if (
       data.paymentTerms &&
-      data.paymentTerms === "Usance LC" &&
+      data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
       extraInfoObj = { dats: futureDate, other: data.extraInfo };
@@ -324,8 +169,8 @@ const CreateDiscountPage = () => {
         });
       }
     } else {
-      const lcStartDateString = data.period.startDate;
-      const lcEndDateString = data.period.endDate;
+      const lcStartDateString = data.period?.startDate;
+      const lcEndDateString = data.period?.endDate;
       const expectedDateString = data?.expectedDiscountingDate;
       const lcStartDate = lcStartDateString
         ? new Date(lcStartDateString)
@@ -341,12 +186,12 @@ const CreateDiscountPage = () => {
           startDate: lcStartDate,
           endDate: lcEndDate,
         },
-        expectedDiscountingDate:expectedDiscountingDate,
+        expectedDiscountingDate: expectedDiscountingDate,
       };
-      console.log(data,preparedData)
+      console.log(data, preparedData);
 
       const validationResult = discountingSchema.safeParse(preparedData);
-      console.log(validationResult)
+      console.log(validationResult);
       if (validationResult.success) {
         const validatedData = validationResult.data;
         if (proceed) {
@@ -463,6 +308,7 @@ const CreateDiscountPage = () => {
             title="Discounting Info"
             isDiscount
             setValue={setValue}
+            setStepCompleted={handleStepCompletion}
           />
           <Step7 register={register} step={7} />
         </div>

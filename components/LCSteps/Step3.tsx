@@ -50,6 +50,7 @@ export const Step3 = ({
       issuingCountry &&
       issuingBank 
     ) {
+
       setStepCompleted(2, true);
     }
     if (confirmingCountry) setShowConfirmingBank(true);

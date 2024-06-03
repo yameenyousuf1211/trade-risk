@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BankRadioInput } from "./RiskHelpers";
 import {
   Popover,
@@ -14,11 +14,19 @@ import { format } from "date-fns";
 interface Props {
   register: any;
   watch: any;
+  setValue: any;
 }
 
-export const RiskStep1 = ({ register, watch }: Props) => {
+export const RiskStep1 = ({ register, watch, setValue }: Props) => {
   const [date, setDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  useEffect(() => {
+    if (watch("transaction") !== "Outright Sales") {
+      // Clear the value of outrightSales
+      setValue("outrightSales", undefined);
+      console.log("first");
+    }
+  }, [watch("transaction"), register]);
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">

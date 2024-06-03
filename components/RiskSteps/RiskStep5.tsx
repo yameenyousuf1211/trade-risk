@@ -45,7 +45,7 @@ export const RiskStep5 = ({
         <DDInput
           placeholder="Select a country"
           label="Country of Export"
-          id="exporterInfo.countryOfImport"
+          id="exporterInfo.countryOfExport"
           data={countries}
           setValue={setValue}
           flags={flags}

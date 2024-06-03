@@ -18,11 +18,14 @@ import useLoading from "@/hooks/useLoading";
 import { getCountries } from "@/services/apis/helpers.api";
 import { onCreateLC } from "@/services/apis/lcs.api";
 import { onCreateRisk } from "@/services/apis/risk.api";
+import useFormStore from "@/store/risk.store";
 import { Country } from "@/types/type";
 import { bankCountries } from "@/utils/data";
 import { generalRiskSchema } from "@/validation/risk.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
+import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -33,10 +36,38 @@ const RiskFundedPage = () => {
     z.infer<typeof generalRiskSchema>
   >({});
   const { startLoading, stopLoading, isLoading } = useLoading();
-
+  const router = useRouter();
   const { countries, flags } = useCountries();
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
+  const formData = useFormStore((state) => state.formData);
+
+  useEffect(() => {
+    if (formData && formData?._id) {
+      Object.entries(formData).forEach(([key, value]) => {
+        // @ts-ignore
+        if (typeof value === "number") {
+          // @ts-ignore
+          setValue(key, value);
+        }
+        if (typeof value === "string" && value.length > 0) {
+          // @ts-ignore
+          setValue(key, value);
+        }
+        if (typeof value === "boolean") {
+          setValue(key, value ? "Yes" : "No");
+        }
+        if (typeof value === "object" && value !== null) {
+          const keys = Object.keys(value);
+          const hasOnlyEmptyValues = keys.every((k) => value[k] === "");
+          if (!hasOnlyEmptyValues) {
+            // @ts-ignore
+            setValue(key, value);
+          }
+        }
+      });
+    }
+  }, [formData]);
 
   const onSubmit: SubmitHandler<z.infer<typeof generalRiskSchema>> = async (
     data,
@@ -44,10 +75,42 @@ const RiskFundedPage = () => {
   ) => {
     console.log(data);
     const validationResult = generalRiskSchema.safeParse(data);
+    console.log(validationResult);
 
     if (validationResult.success) {
       const validatedData = validationResult.data;
-      console.log(validatedData);
+      const reqData = {
+        ...data,
+        riskParticipationTransaction: {
+          ...data?.riskParticipationTransaction,
+          perAnnum: "22",
+        },
+        outrightSales:
+          data?.transaction === "Risk Participation"
+            ? undefined
+            : data?.outrightSales,
+        isLcDiscounting: data?.isLcDiscounting === "no" ? false : true,
+        expectedDiscounting: data?.expectedDiscounting === "no" ? false : true,
+        transhipment: data?.transhipment === "no" ? false : true,
+        currency: "usd",
+      };
+      console.log(reqData, "REQDATA");
+      try {
+        startLoading();
+        const { response, success } = await onCreateRisk(reqData);
+
+        if (!success) {
+          toast.error(response);
+        } else {
+          toast.success("Risk draft created successfully");
+          reset();
+          router.push("/risk-participation");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("An unexpected error occurred");
+      }
+      stopLoading();
     } else {
       if (validationResult.error && validationResult.error.errors.length > 0) {
         validationResult.error.errors.forEach((error) => {
@@ -56,15 +119,26 @@ const RiskFundedPage = () => {
       }
     }
   };
-  const onSaveAsDraft: SubmitHandler<z.infer<typeof generalRiskSchema>> = async (data) => {
+  const onSaveAsDraft: SubmitHandler<
+    z.infer<typeof generalRiskSchema>
+  > = async (data) => {
+    const reqData = {
+      ...data,
+      isLcDiscounting: data?.isLcDiscounting === "no" ? false : true,
+      expectedDiscounting: data?.expectedDiscounting === "no" ? false : true,
+      transhipment: data?.transhipment === "no" ? false : true,
+      draft: "true",
+    };
+    console.log(reqData, "REQDATA");
     try {
-      const { response, success } = await onCreateRisk({ ...data, draft: true});
+      const { response, success } = await onCreateRisk(reqData);
+
       if (!success) {
         toast.error(response);
       } else {
         toast.success("Risk created successfully");
         reset();
-        // router.push("/");
+        router.push("/risk-participation");
       }
     } catch (error) {
       console.error(error);
@@ -77,7 +151,7 @@ const RiskFundedPage = () => {
       <form className="mt-2 flex flex-col gap-y-5">
         <RiskBanks setValue={setValue} />
         <RiskAgreement />
-        <RiskStep1 register={register} watch={watch} />
+        <RiskStep1 register={register} watch={watch} setValue={setValue} />
         <RiskStep2 register={register} watch={watch} setValue={setValue} />
 
         <RiskStep3
@@ -114,6 +188,7 @@ const RiskFundedPage = () => {
             variant="ghost"
             className="w-1/3 py-6 text-[16px] text-lightGray bg-[#F1F1F5]"
             onClick={handleSubmit(onSaveAsDraft)}
+            disabled={isLoading}
           >
             Save as draft
           </Button>
@@ -121,8 +196,9 @@ const RiskFundedPage = () => {
             type="button"
             className="w-2/3 py-6 text-[16px] bg-text hover:bg-text/90 text-white"
             onClick={handleSubmit(onSubmit)}
+            disabled={isLoading}
           >
-            Submit Request
+            {isLoading ? <Loader /> : "Submit Request"}
           </Button>
         </div>
       </form>

@@ -31,7 +31,7 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`fetch-lcs`] });
+      queryClient.invalidateQueries({ queryKey: ["fetch-lcs"] });
     },
   });
 
@@ -138,7 +138,8 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
               </span>
             </p>
             <h3 className="text-xl font-semibold uppercase">
-              {data.currency || "USD"} {data.amount?.price?.toLocaleString() + ".00"}
+              {data.currency || "USD"}{" "}
+              {data.amount?.price?.toLocaleString() + ".00"}
             </h3>
             <div className="flex items-center justify-between gap-x-2">
               <p className="font-roboto text-gray-500 text-sm">
@@ -345,6 +346,7 @@ export const Sidebar = ({
       stopLoading();
     }
   };
+  console.log(data,"SIDEBAR")
 
   const [generateType, setGenerateType] = useState("csv");
 

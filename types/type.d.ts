@@ -247,7 +247,6 @@ export interface IMyBids {
     name: string;
     email: string;
   };
-
   address: string;
   avalizationExportBills: boolean;
   confirmationLcs: boolean;
@@ -278,3 +277,65 @@ export interface Country {
   flag: string;
   isoCode: string;
 }
+
+// risk participation
+interface Bank {
+  bank: string;
+  country: string;
+}
+
+interface ExporterInfo {
+  beneficiaryName: string;
+  countryOfExport: string;
+  beneficiaryCountry: string;
+}
+
+interface ImporterInfo {
+  applicantName: string;
+  countryOfImport: string;
+}
+
+interface RiskParticipationTransaction {
+  type: string;
+  amount: number;
+  returnOffer: string;
+  baseRate: string;
+  perAnnum: string;
+}
+
+interface ShipmentPort {
+  country: string;
+  port: string;
+}
+
+export interface IRisk {
+  advisingBank: Bank;
+  attachment: any[]; // Adjust the type as needed for attachments
+  banks: string[];
+  confirmingBank: Bank;
+  createdBy: string;
+  description: string;
+  draft: boolean;
+  expectedDateConfimation: string; // ISO date string
+  expectedDateDiscounting: string; // ISO date string
+  expectedDiscounting: boolean;
+  expiryDate: string; // ISO date string
+  exporterInfo: ExporterInfo;
+  importerInfo: ImporterInfo;
+  isDeleted: boolean;
+  isLcDiscounting: boolean;
+  issuingBank: Bank;
+  note: string;
+  outrightSales: string;
+  paymentTerms: string;
+  riskParticipation: string;
+  riskParticipationTransaction: RiskParticipationTransaction;
+  shipmentPort: ShipmentPort;
+  startDate: string; // ISO date string
+  transaction: string;
+  transhipment: boolean;
+  __v: number;
+  _id: string;
+  createdAt :Date
+}
+

@@ -34,7 +34,6 @@ export const DiscountBanks = ({
 }) => {
   const [isChecked, setIsChecked] = useState(false);
   const { issuingBank, advisingBank, confirmingBank } = watch();
-  console.log(issuingBank);
 
   const { data: issuingBanks } = useQuery({
     queryKey: ["issuing-banks", issuingBank?.country],
@@ -91,7 +90,7 @@ export const DiscountBanks = ({
             placeholder="Select a country"
             label="Country"
             id="issuingBank.country"
-            // value={issuingCountry}
+            value={issuingBank?.country}
             data={countries}
             flags={flags}
             setValue={setValue}
@@ -100,7 +99,7 @@ export const DiscountBanks = ({
             placeholder="Select bank"
             label="Bank"
             id="issuingBank.bank"
-            // value={issuingBank}
+            value={issuingBank?.bank}
             setValue={setValue}
             disabled={
               !issuingBanks || !issuingBanks?.response || !issuingBanks.success
@@ -121,7 +120,7 @@ export const DiscountBanks = ({
             placeholder="Select a country"
             label="Country"
             id="advisingBank.country"
-            // value={advisingCountry}
+            value={advisingBank?.country}
             data={countries}
             flags={flags}
             setValue={setValue}
@@ -130,7 +129,7 @@ export const DiscountBanks = ({
             placeholder="Select bank"
             label="Bank"
             id="advisingBank.bank"
-            // value={advisingBank}
+            value={advisingBank?.bank}
             setValue={setValue}
             disabled={
               !advisingBanks ||
@@ -169,7 +168,7 @@ export const DiscountBanks = ({
           <DDInput
             placeholder="Select a country"
             label="Country"
-            // value={confirmingCountry}
+            value={confirmingBank?.country}
             id="confirmingBank.country"
             data={countries}
             flags={flags}
@@ -179,7 +178,7 @@ export const DiscountBanks = ({
             placeholder="Select bank"
             label="Bank"
             id="confirmingBank.bank"
-            // value={confirmingBank}
+            value={confirmingBank?.bank}
             setValue={setValue}
             disabled={
               !confirmingBanks ||

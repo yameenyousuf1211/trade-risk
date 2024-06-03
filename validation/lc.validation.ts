@@ -92,6 +92,7 @@ export const generalLcSchema = z.object({
       { message: "Extra info is required" }
     )
     .optional(),
+  baseRate: z.string({ message: "Base Rate is required" }),
 });
 
 export const confirmationSchema = z.lazy(() =>

@@ -26,8 +26,7 @@ const RiskParticipationPage = ({ searchParams }: Props) => {
   }: { data: ApiResponse<IRisk> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["fetch-risk", page, limit, search, filter],
-      queryFn: () =>
-        fetchRisk({ page, limit, search, filter, userId: user._id }),
+      queryFn: () => fetchRisk({ draft: false }),
       enabled: !!user?._id,
     });
   return (
@@ -38,7 +37,7 @@ const RiskParticipationPage = ({ searchParams }: Props) => {
             Risk Participation Requests
           </h2>
           <div className="rounded-md border border-borderCol px-4 py-4">
-            <BankTable data={data} isLoading={isLoading}  isRisk/>
+            <BankTable data={data} isLoading={isLoading} isRisk />
           </div>
         </div>
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">

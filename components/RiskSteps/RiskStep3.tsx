@@ -53,6 +53,7 @@ export const RiskStep3 = ({
   }, [portsData]);
 
   const [days, setDays] = useState<number | string>();
+  console.log(watch())
 
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">

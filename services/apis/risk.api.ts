@@ -1,24 +1,11 @@
 import { STATUS } from "@/utils";
 import api from "../middleware/middleware";
 
-export const fetchRisk = async ({
-  page,
-  limit,
-  draft,
-  search,
-  filter,
-  userId,
-}: {
-  page?: number;
-  limit?: number;
-  draft?: boolean;
-  search?: string;
-  filter?: string;
-  userId: string;
-}) => {
-  console.log(userId, "userID");
+export const fetchRisk = async ({ draft }: { draft?: boolean }) => {
   try {
-    const { data } = await api.get(`/risk?createdBy=true`);
+    const { data } = await api.get(
+      `/risk?createdBy=true&draft=${draft || false}`
+    );
 
     return data.data;
   } catch (error: any) {
@@ -34,6 +21,17 @@ export const onCreateRisk = async (payload: any) => {
       return { success: false, response: response.data.message };
     if (response.status === STATUS.BAD_REQUEST)
       return { success: false, response: response.data.message };
+
+    return { success: true, response: response.data };
+  } catch (error) {
+    console.error(error);
+    return { success: false, response: (error as any).response.data.message };
+  }
+};
+
+export const deleteRiskDraft = async (id: string) => {
+  try {
+    const response = await api.delete(`/risk/${id}`);
 
     return { success: true, response: response.data };
   } catch (error) {

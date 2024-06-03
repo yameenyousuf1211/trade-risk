@@ -2,6 +2,7 @@ import { Header } from "../shared/Header";
 import { BreadcrumbDetails, CreateTabs } from "../helpers";
 import { DraftsSidebar } from "../shared/DraftsSidebar";
 import { Button } from "../ui/button";
+import { BankDraftsSidebar } from "../shared/BansDraftsSidebar";
 
 export default function AuthLayout({
   children,
@@ -42,7 +43,7 @@ export default function AuthLayout({
             {children}
           </div>
           <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh] overflow-y-auto">
-            <DraftsSidebar isRisk={isRisk} />
+            {isRisk ? <BankDraftsSidebar /> : <DraftsSidebar isRisk={isRisk} />}
           </div>
         </div>
       </main>

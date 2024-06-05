@@ -6,7 +6,7 @@ interface Props {
 
 export const RiskStep8 = ({ register }: Props) => {
   return (
-    <div className="h-full py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
+    <div className="h-full py-4 pt-[2.2rem] px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">
         <p className="size-6 rounded-full bg-[#255EF2] center text-white font-semibold text-sm">
           8

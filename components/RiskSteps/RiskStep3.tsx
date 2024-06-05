@@ -22,7 +22,14 @@ export const RiskStep3 = ({
 }: Props) => {
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
-  const { shipmentPort } = watch();
+  const {
+    shipmentPort,
+    expectedDateDiscounting,
+    startDate,
+    expiryDate,
+    expectedDateConfirmation,
+    days,
+  } = watch();
 
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],
@@ -51,9 +58,16 @@ export const RiskStep3 = ({
       setPortCountries(allPortCountries);
     }
   }, [portsData]);
+  const [dayss, setDays] = useState<number | string>();
 
-  const [days, setDays] = useState<number | string>();
-  console.log(watch())
+  useEffect(() => {
+    if (watch("paymentTerms") !== "tenor") {
+      setValue("days", undefined);
+    }
+    else {
+      setValue('days',watch('days'))
+    }
+  }, [watch("paymentTerms"),watch('days')]);
 
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
@@ -118,6 +132,7 @@ export const RiskStep3 = ({
 
           <DateInput
             name="expectedDateDiscounting"
+            value={expectedDateDiscounting}
             setValue={setValue}
             title="Expected Date of Discounting"
             noBorder
@@ -128,11 +143,13 @@ export const RiskStep3 = ({
       <div className="flex items-center justify-between gap-x-3 w-full my-4">
         <DateInput
           name="startDate"
+          value={startDate}
           setValue={setValue}
           title="Date LC Issued / Expected Date of LC Issuance"
         />
         <DateInput
           name="expiryDate"
+          value={expiryDate}
           setValue={setValue}
           title="LC Expiry Date"
         />
@@ -182,11 +199,11 @@ export const RiskStep3 = ({
                   <input
                     placeholder="enter days"
                     inputMode="numeric"
-                    name="days"
+                    disabled={watch("paymentTerms") !== "tenor"}
                     type="number"
                     value={days}
+                    {...register("days")}
                     className="text-sm text-lightGray border-none max-w-[150px] bg-transparent outline-none"
-                    onChange={(e: any) => setDays(e.target.value)}
                   />
                   <div className="flex items-center gap-x-1">
                     <button
@@ -224,7 +241,7 @@ export const RiskStep3 = ({
             <DDInput
               id="shipmentPort.country"
               label="Country"
-              //   value={shipmentCountry}
+              value={shipmentPort?.country}
               placeholder="Select a country"
               setValue={setValue}
               data={portCountries}
@@ -234,7 +251,7 @@ export const RiskStep3 = ({
             <DDInput
               id="shipmentPort.port"
               label="Port"
-              //   value={shipmentPort}
+              value={shipmentPort?.port}
               placeholder="Select port"
               setValue={setValue}
               disabled={!ports || ports.length === 0}
@@ -267,13 +284,18 @@ export const RiskStep3 = ({
 
       {/* Expected Date */}
       <div className="flex items-center justify-between gap-x-3 w-full mt-4">
-        <DateInput name="expectedDateConfirmation" setValue={setValue} title="Expected date to add confirmation" />
+        <DateInput
+          name="expectedDateConfirmation"
+          value={expectedDateConfirmation}
+          setValue={setValue}
+          title="Expected date to add confirmation"
+        />
         {/* Product Description */}
-        <div className="border border-borderCol pt-3 pb-2 px-2 rounded-md w-full bg-[#F5F7F9]">
+        <div className="border border-borderCol pt-3 pb -5 px-2 rounded-md w-full bg-[#F5F7F9]">
           <p className="text-sm font-semibold mb-2 ml-3">Product Description</p>
           <textarea
             name="description"
-            rows={1}
+            rows={2}
             {...register("description")}
             placeholder="Enter the description of the product being imported (under this LC)"
             className="bg-white text-sm border border-borderCol resize-none w-full py-1 px-3 rounded-lg outline-none"

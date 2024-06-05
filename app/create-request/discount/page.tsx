@@ -93,9 +93,11 @@ const CreateDiscountPage = () => {
   const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async ({
     data,
     isDraft,
+    isProceed=false
   }: {
     isDraft: boolean;
     data: any;
+    isProceed?:boolean
   }) => {
     if (
       data.confirmingBank &&
@@ -194,7 +196,7 @@ const CreateDiscountPage = () => {
       console.log(validationResult);
       if (validationResult.success) {
         const validatedData = validationResult.data;
-        if (proceed) {
+        if (isProceed) {
           const { confirmingBank2, extraInfo, ...rest } = validatedData;
           reqData = {
             ...rest,
@@ -223,7 +225,6 @@ const CreateDiscountPage = () => {
           let openDisclaimerBtn = document.getElementById("open-disclaimer");
           // @ts-ignore
           openDisclaimerBtn.click();
-          setProceed(true);
         }
       } else {
         if (
@@ -341,7 +342,7 @@ const CreateDiscountPage = () => {
           className="hidden"
           setProceed={setProceed}
           // onAccept={handleSubmit(onSubmit)}
-          onAccept={handleSubmit((data) => onSubmit({ data, isDraft: false }))}
+          onAccept={handleSubmit((data) => onSubmit({ data, isDraft: false,isProceed:true }))}
         />
       </form>
     </CreateLCLayout>

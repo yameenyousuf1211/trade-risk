@@ -127,6 +127,7 @@ export const AddBid = ({
       toast.success("Bid added");
     }
   };
+  console.log(bidData,"BID_DATA!")
 
   return (
     <Dialog>

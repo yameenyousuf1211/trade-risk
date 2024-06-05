@@ -12,6 +12,7 @@ import useDiscountingStore from "@/store/discounting.store";
 import useConfirmationDiscountingStore from "@/store/confirmationDiscounting.store";
 import { deleteRiskDraft, fetchRisk } from "@/services/apis/risk.api";
 import useFormStore from "@/store/risk.store";
+import useRiskStore from "@/store/risk.store";
 
 const DraftCard = ({
   noBorder,
@@ -21,7 +22,7 @@ const DraftCard = ({
   isDiscounting,
 }: {
   noBorder?: boolean;
-  draft: ILcs;
+  draft: IRisk;
   isConfirmation: boolean;
   isDiscounting: boolean;
   isConfirmationDiscounting: boolean;
@@ -40,8 +41,7 @@ const DraftCard = ({
     toast.success("Draft deleted");
   };
 
-
-  const setFormData = useFormStore((state) => state.setFormData);
+  const setFormData = useRiskStore((state) => state.setValues);
 
   const handleEditRisk = async (draft: IRisk) => {
     setFormData(draft);
@@ -67,16 +67,17 @@ const DraftCard = ({
         </Button>
       </div>
 
-      <p className="font-roboto text-text text-[12px]">{draft.type}</p>
+      {/* <p className="font-roboto text-text text-[12px]">{draft.type}</p> */}
       <p className="font-roboto text-para text-[12px]">
         Last updated:{" "}
         {convertDateToCommaString(draft.updatedAt! || draft.createdAt!)}
       </p>
       <div className="flex items-center w-full justify-between gap-x-1 mt-2">
         <p className="text-[16px] font-semibold uppercase">
-          {draft.currency || "USD"}{" "}
-          {((draft?.amount && draft.amount?.price?.toLocaleString()) || "00") +
-            ".00"}
+          {draft?.currency || "USD"}{" "}
+          {((draft?.riskParticipationTransaction?.amount &&
+            draft?.riskParticipationTransaction?.amount?.toLocaleString()) ||
+            "00") + ".00"}
         </p>
         <Button
           className="!py-0 font-roboto h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"

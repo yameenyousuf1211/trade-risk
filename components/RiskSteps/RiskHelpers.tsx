@@ -53,30 +53,34 @@ export const DiscountBanks = ({
     enabled: !!confirmingBank?.country,
   });
 
-  //   const handleSameAsAdvisingBank = () => {
-  //     const advisingCountry = getValues("advisingBank.country");
-  //     const advisingBank = getValues("advisingBank.bank");
-  //     const confirmingBank = getValues("confirmingBank.bank");
-  //     const confirmingCountry = getValues("confirmingBank.country");
-  //     if (!advisingBank || !advisingCountry) {
-  //       toast.error("Please select advising bank first");
-  //       setIsChecked(false);
-  //       return;
-  //     }
-  //     if (confirmingBank && confirmingCountry) {
-  //       setValue("confirmingBank.country", undefined);
-  //       setValue("confirmingBank.bank", undefined);
-  //     } else {
-  //       setValue("confirmingBank.country", advisingCountry);
-  //       setValue("confirmingBank.bank", advisingBank);
-  //     }
-  //     setValueChanged(!valueChanged);
-  //   };
+  const handleSameAsAdvisingBank = () => {
+    console.log(advisingBank, "aaa");
+    if (!advisingBank?.country || !advisingBank?.bank) {
+      toast.error("Please select advising country & bank first");
+      setIsChecked(false);
+      return;
+    }
+    if (confirmingBank?.country && confirmingBank?.bank) {
+      setValue("confirmingBank.country", undefined);
+      setValue("confirmingBank.bank", undefined);
+      setIsChecked(false);
+    } else {
+      setValue("confirmingBank.country", advisingBank.country);
+      setValue("confirmingBank.bank", advisingBank.bank);
+      setIsChecked(true);
+    }
+  };
 
-  //   const handleCheckboxChange = (e) => {
-  //     setIsChecked(e.target.checked);
-  //     handleSameAsAdvisingBank();
-  //   };
+  useEffect(() => {
+    if (advisingBank && confirmingBank !== undefined) {
+      if (
+        advisingBank?.country === confirmingBank?.country &&
+        advisingBank?.bank === confirmingBank?.bank
+      ) {
+        setIsChecked(true);
+      }
+    }
+  }, [advisingBank, confirmingBank]);
 
   return (
     <div className="flex items-center justify-between w-full mb-3 gap-x-4 flex-wrap xl:flex-nowrap">
@@ -154,7 +158,7 @@ export const DiscountBanks = ({
               id="same-as-advising"
               className="accent-primaryCol"
               checked={isChecked}
-              //   onChange={handleCheckboxChange}
+              onChange={handleSameAsAdvisingBank}
             />
             <label
               htmlFor="same-as-advising"
@@ -202,15 +206,22 @@ export const DateInput = ({
   name,
   noBorder,
   setValue,
+  value,
 }: {
   title: string;
   name: string;
   noBorder?: boolean;
   setValue?: any;
+  value: Date;
 }) => {
   const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
+  useEffect(() => {
+    if (value) {
+      setLcExpiryDate(value);
+    }
+  }, [value]);
   return (
     <div
       className={`${
@@ -227,7 +238,9 @@ export const DateInput = ({
           <PopoverTrigger asChild>
             <Button
               variant={"outline"}
-              className="w-fit justify-start text-left font-normal border-none text-[#B5B5BE]"
+              className={`w-fit justify-start text-left font-normal border-none  ${
+                lcExpiryDate ? "text-black" : "text-[#B5B5BE]"
+              } `}
               id="period-expiry-date"
             >
               {lcExpiryDate ? (
@@ -261,6 +274,7 @@ export const BankRadioInput = ({
   name,
   value,
   register,
+  className,
 }: {
   id: string;
   label: string;
@@ -268,13 +282,14 @@ export const BankRadioInput = ({
   value: string;
   checked: boolean;
   register: any;
+  className?: string;
 }) => {
   return (
     <label
       htmlFor={id}
       className={`px-3 py-4 w-full transition-colors duration-100 ${
         checked ? "bg-[#DCE5FD]" : "border border-borderCol bg-white"
-      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm w-full`}
+      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm w-full ${className}`}
     >
       <input
         type="radio"

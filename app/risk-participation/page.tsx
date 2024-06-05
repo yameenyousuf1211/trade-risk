@@ -26,12 +26,12 @@ const RiskParticipationPage = ({ searchParams }: Props) => {
   }: { data: ApiResponse<IRisk> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["fetch-risk", page, limit, search, filter],
-      queryFn: () => fetchRisk({ draft: false }),
+      queryFn: () => fetchRisk({ draft: false, page: page, limit: 7 }),
       enabled: !!user?._id,
     });
   return (
     <DashboardLayout>
-      {/* <div className="flex w-full 2xl:px-10 px-2">
+      <div className="flex w-full 2xl:px-10 px-2">
         <div className="2xl:w-5/6 w-4/5 p-2 xl:p-4">
           <h2 className="text-4xl font-semibold mb-5">
             Risk Participation Requests
@@ -43,12 +43,12 @@ const RiskParticipationPage = ({ searchParams }: Props) => {
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
           <Sidebar isBank={true} createMode />
         </div>
-      </div> */}
+      </div>
 
       {/* <div>
         <h2 className="text-5xl font-semibold">Coming Soon</h2>
       </div> */}
-      <div className="center w-full h-[84vh]">
+      {/* <div className="center w-full h-[84vh]">
         <Image
           src="/images/risk-dummy.png"
           alt="risk-participation"
@@ -68,7 +68,7 @@ const RiskParticipationPage = ({ searchParams }: Props) => {
         <h2 className="text-5xl relative top-20 font-semibold">
           Work in Progress
         </h2>
-      </div>
+      </div> */}
     </DashboardLayout>
   );
 };

@@ -17,6 +17,7 @@ export const RiskStep5 = ({
   setValue,
   watch,
 }: Props) => {
+  const {exporterInfo} = watch();
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">
@@ -38,6 +39,7 @@ export const RiskStep5 = ({
             inputMode="text"
             name="exporterInfo.beneficiaryName"
             register={register}
+            value={exporterInfo?.beneficiaryName}
             className="text-sm block bg-none text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Enter name"
           />
@@ -46,6 +48,7 @@ export const RiskStep5 = ({
           placeholder="Select a country"
           label="Country of Export"
           id="exporterInfo.countryOfExport"
+          value={exporterInfo?.countryOfExport}
           data={countries}
           setValue={setValue}
           flags={flags}
@@ -54,6 +57,7 @@ export const RiskStep5 = ({
           placeholder="Select a country"
           label="Beneficiary Country"
           id="exporterInfo.beneficiaryCountry"
+          value={exporterInfo?.beneficiaryCountry}
           data={countries}
           setValue={setValue}
           flags={flags}

@@ -92,9 +92,11 @@ const CreateRequestPage = () => {
   const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async ({
     data,
     isDraft,
+    isProceed=false
   }: {
     isDraft: boolean;
     data: any;
+    isProceed?:boolean
   }) => {
     if (
       data.confirmingBank &&
@@ -194,7 +196,7 @@ const CreateRequestPage = () => {
       const validationResult = confirmationSchema.safeParse(preparedData);
       if (validationResult.success) {
         const validatedData = validationResult.data;
-        if (proceed) {
+        if (isProceed) {
           const { confirmingBank2, extraInfo, ...rest } = validatedData;
           reqData = {
             ...rest,
@@ -223,7 +225,8 @@ const CreateRequestPage = () => {
           let openDisclaimerBtn = document.getElementById("open-disclaimer");
           // @ts-ignore
           openDisclaimerBtn.click();
-          setProceed(true);
+          console.log("hellooooojeee asssalamualaikum");
+          // setProceed(true);
         }
       } else {
         if (
@@ -335,7 +338,7 @@ const CreateRequestPage = () => {
           title="Submit Request"
           className="hidden"
           setProceed={setProceed}
-          onAccept={handleSubmit((data) => onSubmit({ data, isDraft: false }))}
+          onAccept={handleSubmit((data) => onSubmit({ data, isDraft: false,isProceed:true }))}
         />
       </form>
     </CreateLCLayout>

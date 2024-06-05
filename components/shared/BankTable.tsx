@@ -133,19 +133,18 @@ export const BankTable = ({
 
     setTableData(sortedData);
   };
-  console.log(tableData, "tabledata");
 
   return (
     <div className="">
       <div className="flex items-center justify-between hide-scrollbar overflow-x-auto xl:gap-x-2 mb-2">
         <div className="flex items-center gap-x-2">
-          {!isCorporate && <ProductFilter />}
+          {!isCorporate && <ProductFilter isRisk={isRisk as boolean} />}
           <BidsCountrySelect />
           <DateRangePicker />
         </div>
         <div className="flex items-center gap-x-2">
           <SearchBar />
-          <Filter />
+          <Filter isRisk={isRisk as boolean} />
           <Ellipsis className="mx-3" />
         </div>
       </div>
@@ -226,7 +225,7 @@ export const BankTable = ({
                       ((item as IBids)?.confirmationPrice &&
                         (item as IBids).confirmationPrice.toLocaleString() +
                           ".00 %") ||
-                      ""
+                      "Not Applicable"
                     }
                   />
                   <TableDataCell

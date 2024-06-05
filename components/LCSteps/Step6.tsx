@@ -54,7 +54,7 @@ export const Step6 = ({
     if (behalfOf && pricePerAnnum && baseRate) {
       setStepCompleted(5, true);
     }
-  }, [behalfOf,pricePerAnnum,baseRate]);
+  }, [behalfOf, pricePerAnnum, baseRate]);
 
   const handleIncrement = () => {
     const currentValue = isDiscount
@@ -211,7 +211,15 @@ export const Step6 = ({
                   : "confirmationInfo.pricePerAnnum"
               )}
               onChange={(event) => {
-                const newValue = event.target.value.replace(/[^0-9.]/g, "");
+                let newValue = event.target.value.replace(/[^0-9.]/g, "");
+
+                // Allow only 4 digits after the decimal point
+                if (newValue.includes(".")) {
+                  const parts = newValue.split(".");
+                  parts[1] = parts[1].slice(0, 4);
+                  newValue = parts.join(".");
+                }
+
                 event.target.value = newValue;
               }}
               onBlur={(event) => {
@@ -220,14 +228,18 @@ export const Step6 = ({
                   event.target.value.length === 0
                 )
                   return;
-                event.target.value += "%";
+
+                // Ensure the value has at most 4 decimal places
+                let value = parseFloat(event.target.value).toFixed(4);
+                event.target.value = `${value}%`;
               }}
-              onKeyUp={(event: any) => {
+              onKeyUp={(event) => {
                 if (Number(event.target.value.replace("%", "")) > 100) {
-                  event.target.value = "100.0%";
+                  event.target.value = "100.0000%";
                 }
               }}
             />
+
             <Button
               type="button"
               variant="ghost"

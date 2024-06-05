@@ -334,8 +334,9 @@ export interface IRisk {
   startDate: string; // ISO date string
   transaction: string;
   transhipment: boolean;
+  currency: string;
   __v: number;
   _id: string;
-  createdAt :Date
+  createdAt: Date;
+  updatedAt: Date;
 }
-

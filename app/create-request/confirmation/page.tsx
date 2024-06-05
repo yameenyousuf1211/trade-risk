@@ -94,7 +94,7 @@ const ConfirmationPage = () => {
 
   const onSubmit: SubmitHandler<
     z.infer<typeof confirmationDiscountSchema>
-  > = async ({ data, isDraft }: { isDraft: boolean; data: any }) => {
+  > = async ({ data, isDraft,isProceed=false }: { isDraft: boolean; data: any,isProceed }) => {
     if (
       data.confirmingBank &&
       data.issuingBank.country === data.confirmingBank.country
@@ -193,7 +193,7 @@ const ConfirmationPage = () => {
       console.log(validationResult, "result");
       if (validationResult.success) {
         const validatedData = validationResult.data;
-        if (proceed) {
+        if (isProceed) {
           const { confirmingBank2, extraInfo, ...rest } = validatedData;
           reqData = {
             ...rest,
@@ -224,7 +224,6 @@ const ConfirmationPage = () => {
           let openDisclaimerBtn = document.getElementById("open-disclaimer");
           // @ts-ignore
           openDisclaimerBtn.click();
-          setProceed(true);
         }
       } else {
         if (
@@ -348,7 +347,9 @@ const ConfirmationPage = () => {
           className="hidden"
           setProceed={setProceed}
           // onAccept={handleSubmit(onSubmit)}
-          onAccept={handleSubmit((data) => onSubmit({ data, isDraft: false }))}
+          onAccept={handleSubmit((data) =>
+            onSubmit({ data, isDraft: false, isProceed: true })
+          )}
         />
       </form>
     </CreateLCLayout>

@@ -24,7 +24,6 @@ export const RiskStep1 = ({ register, watch, setValue }: Props) => {
     if (watch("transaction") !== "Outright Sales") {
       // Clear the value of outrightSales
       setValue("outrightSales", undefined);
-      console.log("first");
     }
   }, [watch("transaction"), register]);
   return (

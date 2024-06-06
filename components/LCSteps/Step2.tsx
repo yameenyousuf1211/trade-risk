@@ -42,13 +42,18 @@ export const Step2 = ({
   let currencyVal = watch("currency");
   let paymentTerms = watch("paymentTerms");
   let extraInfo = watch("extraInfo");
-  console.log(extraInfo, "EXTRAINFO");
 
   const [currencyValue, setCurrencyValue] = useState<string | number>(
     amount || ""
   );
   const [rawValue, setRawValue] = useState("");
   const [otherValue, setOtherValue] = useState("");
+
+  useEffect(() => {
+    if (paymentTerms === "Sight LC") {
+      setValue("extraInfo", undefined);
+    }
+  }, [paymentTerms]);
 
   const handleChange = (e: any) => {
     const { value } = e.target;
@@ -91,6 +96,7 @@ export const Step2 = ({
         const formattedValue = parseInt(digitsOnly).toLocaleString();
         setCurrencyValue(formattedValue);
         setRawValue(amount);
+        setValue("amount", amount.toString());
       }
     }
   }, [amount]);

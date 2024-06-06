@@ -6,7 +6,7 @@
 //   setFormData: (data: Partial<IRisk> | null) => void;
 // }
 
-// const useFormStore = create<RiskStore>((set) => ({
+// const useRiskStore = create<RiskStore>((set) => ({
 //   formData: {
 //     advisingBank: {
 //       country: "",
@@ -63,7 +63,7 @@
 //     set((state) => ({ formData: { ...state.formData, ...data } })),
 // }));
 
-// export default useFormStore;
+// export default useRiskStore;
 
 
 import { IRisk } from "@/types/type";

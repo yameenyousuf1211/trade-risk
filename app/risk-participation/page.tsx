@@ -1,12 +1,16 @@
 "use client";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { BankTable } from "@/components/shared/BankTable";
+import { RequestTable } from "@/components/shared/RequestTable";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { useAuth } from "@/context/AuthProvider";
 import { fetchRisk } from "@/services/apis/risk.api";
 import { ApiResponse, IRisk } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 interface Props {
   searchParams: {
@@ -14,19 +18,28 @@ interface Props {
     limit: number;
     search: string;
     filter: string;
+    createdBy: string;
   };
 }
 
 const RiskParticipationPage = ({ searchParams }: Props) => {
   const { page, limit, search, filter } = searchParams;
+  const [tab, setTab] = useState<number>(0);
   const { user } = useAuth();
+  const pathname = usePathname();
   const {
     isLoading,
     data,
   }: { data: ApiResponse<IRisk> | undefined; error: any; isLoading: boolean } =
     useQuery({
-      queryKey: ["fetch-risk", page, limit, search, filter],
-      queryFn: () => fetchRisk({ draft: false, page: page, limit: 7 }),
+      queryKey: ["fetch-risks", page, limit, search, filter, tab],
+      queryFn: () =>
+        fetchRisk({
+          draft: false,
+          createdBy: tab === 0 ? true : false,
+          page: page,
+          limit: 7,
+        }),
       enabled: !!user?._id,
     });
   return (
@@ -37,9 +50,44 @@ const RiskParticipationPage = ({ searchParams }: Props) => {
             Risk Participation Requests
           </h2>
           <div className="rounded-md border border-borderCol px-4 py-4">
-            <BankTable data={data} isLoading={isLoading} isRisk />
+            {/* Tabs */}
+            <div className="flex items-center gap-x-5 mb-2">
+              <div className="relative py-3">
+                <div
+                  className="text-neutral-700 cursor-pointer font-semibold"
+                  onClick={() => setTab(0)}
+                >
+                  My Risks
+                </div>
+                {tab === 0 && (
+                  <div className="absolute bottom-0 h-0.5 w-full bg-primaryCol" />
+                )}
+              </div>
+              <div className="relative py-3">
+                <div
+                  className="text-neutral-700 cursor-pointer font-semibold"
+                  onClick={() => setTab(1)}
+                >
+                  Other Requests
+                </div>
+                {tab === 1 && (
+                  <div className="absolute bottom-0 h-0.5 w-full bg-primaryCol" />
+                )}
+              </div>
+            </div>
+            {tab === 0 ? (
+              <RequestTable data={data} isLoading={isLoading} isRisk={true} />
+            ) : (
+              <RequestTable
+                data={data}
+                isLoading={isLoading}
+                isRisk={true}
+                isBank
+              />
+            )}
           </div>
         </div>
+
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
           <Sidebar isBank={true} createMode />
         </div>

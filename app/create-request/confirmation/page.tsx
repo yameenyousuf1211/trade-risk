@@ -45,7 +45,7 @@ const ConfirmationPage = () => {
 
   const setValues = useConfirmationDiscountingStore((state) => state.setValues);
   const confirmationData = useConfirmationDiscountingStore((state) => state);
-  const { setStepStatus } = useStepStore();
+  const { setStepStatus, submit } = useStepStore();
 
   useEffect(() => {
     if (confirmationData && confirmationData?._id) {
@@ -94,10 +94,19 @@ const ConfirmationPage = () => {
 
   const onSubmit: SubmitHandler<
     z.infer<typeof confirmationDiscountSchema>
-  > = async ({ data, isDraft,isProceed=false }: { isDraft: boolean; data: any,isProceed }) => {
+  > = async ({
+    data,
+    isDraft,
+    isProceed = false,
+  }: {
+    isDraft: boolean;
+    data: any;
+    isProceed;
+  }) => {
+    submit();
     if (
       data.confirmingBank &&
-      data.issuingBank.country === data.confirmingBank.country
+      data.issuingBank?.country === data.confirmingBank?.country
     )
       return toast.error(
         "Confirming bank country cannot be the same as issuing bank country"
@@ -251,6 +260,7 @@ const ConfirmationPage = () => {
       );
       reset();
       useStepStore.getState().setStepStatus(null, null);
+      useStepStore.getState().resetSubmit();
     };
 
     handleRouteChange();
@@ -317,7 +327,11 @@ const ConfirmationPage = () => {
             register={register}
           />
         </div>
-        <Step7 register={register} step={8} />
+        <Step7
+          register={register}
+          step={8}
+          setStepCompleted={handleStepCompletion}
+        />
 
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">

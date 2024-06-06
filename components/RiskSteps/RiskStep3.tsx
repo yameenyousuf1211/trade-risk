@@ -38,7 +38,7 @@ export const RiskStep3 = ({
   useEffect(() => {
     const fetchPorts = async () => {
       const { success, response } = await getPorts(shipmentPort?.country);
-      if (success) setPorts(response[0].ports);
+      if (success) setPorts(response[0]?.ports);
       else setPorts([]);
     };
 
@@ -61,7 +61,7 @@ export const RiskStep3 = ({
   const [dayss, setDays] = useState<number | string>();
 
   useEffect(() => {
-    if (watch("paymentTerms") !== "tenor") {
+    if (watch("paymentTerms") !== "Tenor Lc") {
       setValue("days", undefined);
     }
     else {
@@ -179,7 +179,7 @@ export const RiskStep3 = ({
               <label
                 htmlFor="payment-tenor"
                 className={`px-3 py-2.5 w-full transition-colors duration-100 ${
-                  watch("paymentTerms") === "tenor"
+                  watch("paymentTerms") === "Tenor LC"
                     ? "bg-[#DCE5FD]"
                     : "border border-borderCol bg-white"
                 } rounded-md flex items-center justify-between gap-x-3 mb-2 text-lightGray text-sm`}
@@ -188,9 +188,9 @@ export const RiskStep3 = ({
                   <input
                     type="radio"
                     id="payment-tenor"
-                    value="tenor"
+                    value="Tenor LC"
                     {...register("paymentTerms")}
-                    checked={watch("paymentTerms") === "tenor"}
+                    checked={watch("paymentTerms") === "Tenor LC"}
                     className="accent-[#255EF2] size-4"
                   />
                   Tenor LC
@@ -199,8 +199,8 @@ export const RiskStep3 = ({
                   <input
                     placeholder="enter days"
                     inputMode="numeric"
-                    disabled={watch("paymentTerms") !== "tenor"}
-                    type="number"
+                    disabled={watch("paymentTerms") !== "Tenor LC"}
+                    type="text"
                     value={days}
                     {...register("days")}
                     className="text-sm text-lightGray border-none max-w-[150px] bg-transparent outline-none"

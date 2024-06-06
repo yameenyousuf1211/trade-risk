@@ -19,11 +19,13 @@ import {
 import { Button } from "../ui/button";
 import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
-import { ApiResponse, Country, IBids, IRisk } from "@/types/type";
+import { ApiResponse, Country, IBids, IBidsInfo, IRisk } from "@/types/type";
 import { compareValues, convertDateToString } from "@/utils";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "../../services/apis/helpers.api";
+import { TableDialog } from "./TableDialog";
+import { useAuth } from "@/context/AuthProvider";
 
 const TableDataCell = ({ data }: { data: string | number }) => {
   return (
@@ -49,6 +51,7 @@ export const BankTable = ({
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [tableData, setTableData] = useState<(IBids | IRisk)[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (data && data.data) {
@@ -269,7 +272,8 @@ export const BankTable = ({
                         }
                         border
                         bidData={item}
-                        lcId={item?.lc && item?.lc[0]}
+                        id={item?._id}
+                        isRisk={isRisk}
                         isCorporate={isCorporate}
                       />
                     ) : (
@@ -277,10 +281,14 @@ export const BankTable = ({
                         variant="ghost"
                         className="bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]  rounded-md w-full p-2 capitalize hover:opacity-85 border border-[#F2994A]"
                       >
-                        {item.status}
+                        {item?.status}
                       </Button>
                     )}
                   </TableCell>
+
+                  {/* <TableCell className="px-1 py-1 max-w-[200px]">
+                    <TableDialog lcId={item._id} bids={item.bids} />
+                  </TableCell> */}
                 </TableRow>
               ))
             )}

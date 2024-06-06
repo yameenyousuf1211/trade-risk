@@ -14,12 +14,14 @@ export const fetchSingleBid = async (id: string) => {
 export const acceptOrRejectBid = async ({
   status,
   id,
+  key
 }: {
   status: string;
   id: string;
+  key:string
 }) => {
   try {
-    const { data } = await api.put(`/bids?status=${status}`, {
+    const { data } = await api.put(`/bids?status=${status}&key=${key}`, {
       id,
     });
     if (data.status === STATUS.NOT_FOUND)
@@ -47,9 +49,11 @@ export const addBid = async ({
   validity,
   discountBaseRate,
   discountMargin,
+  risk,
 }: {
   type: string;
-  lc: string;
+  lc?: string;
+  risk?: string;
   validity: string;
   confirmationPrice: string;
   discountBaseRate?: string;
@@ -59,6 +63,7 @@ export const addBid = async ({
     const baseData = {
       confirmationPrice,
       lc,
+      risk,
       bidType: type,
       bidValidity: validity,
     };

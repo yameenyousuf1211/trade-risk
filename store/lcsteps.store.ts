@@ -1,11 +1,15 @@
 import { create } from "zustand";
 
 type StepState = {
+  isSubmitted: boolean;
   stepStatus: boolean[] | null[]; // Allow for boolean or null values
   setStepStatus: (index: number | null, status: boolean | null) => void;
+  submit: () => void;
+  resetSubmit: () => void;
 };
 
 const useStepStore = create<StepState>((set) => ({
+  isSubmitted: false,
   stepStatus: Array(7).fill(false), // Initialize with 7 steps, all set to false (not completed)
   setStepStatus: (index: number | null, status: boolean | null) =>
     set((state) => {
@@ -28,6 +32,16 @@ const useStepStore = create<StepState>((set) => ({
 
       return { ...state, stepStatus: newStepStatus };
     }),
+  submit: () =>
+    set((state) => ({
+      ...state,
+      isSubmitted: true,
+    })),
+  resetSubmit: () =>
+    set((state) => ({
+      ...state,
+      isSubmitted: false,
+    })),
 }));
 
 export default useStepStore;

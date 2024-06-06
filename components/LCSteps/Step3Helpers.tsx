@@ -27,12 +27,14 @@ export const ValidatingCalendar = ({
   onClose,
   isPast,
   maxDate,
+  startDate,
 }: {
   initialDate: Date | undefined;
   onChange: (date: Date) => void;
   onClose: any;
   isPast?: boolean;
   maxDate?: Date | string | undefined;
+  startDate?: Date | string | undefined;
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
@@ -56,6 +58,7 @@ export const ValidatingCalendar = ({
     <Calendar
       mode="single"
       selected={selectedDate}
+      disabled={selectedDate && { before: startDate }} // Disable all previous dates
       // @ts-ignore
       onSelect={handleDateSelect}
       initialFocus
@@ -103,7 +106,7 @@ export const Period = ({
   useEffect(() => {
     const fetchPorts = async () => {
       const { success, response } = await getPorts(shipmentCountry);
-      if (success) setPorts(response[0].ports);
+      if (success) setPorts(response[0]?.ports);
       else setPorts([]);
     };
 
@@ -223,6 +226,7 @@ export const Period = ({
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <ValidatingCalendar
+                startDate={lcStartDate}
                 initialDate={lcEndDate}
                 onChange={(date) => {
                   updateValue("period.endDate", date);

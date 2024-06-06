@@ -32,7 +32,7 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
       queryKey: ["fetch-lcs", page, limit, search, filter],
       queryFn: () => fetchAllLcs({ page, limit, search, filter }),
     });
-
+console.log(data,"lctable")
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">
@@ -50,6 +50,7 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
             isBank={true}
             data={data}
             key={"Bank"}
+            isRisk={false}
             isLoading={isLoading}
           />
         </div>

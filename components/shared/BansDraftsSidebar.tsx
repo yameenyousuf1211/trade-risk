@@ -10,7 +10,11 @@ import { usePathname } from "next/navigation";
 import useConfirmationStore from "@/store/lc.store";
 import useDiscountingStore from "@/store/discounting.store";
 import useConfirmationDiscountingStore from "@/store/confirmationDiscounting.store";
-import { deleteRiskDraft, fetchRisk } from "@/services/apis/risk.api";
+import {
+  deleteRiskDraft,
+  fetchRisk,
+  fetchSingleRisk,
+} from "@/services/apis/risk.api";
 import useFormStore from "@/store/risk.store";
 import useRiskStore from "@/store/risk.store";
 
@@ -44,14 +48,10 @@ const DraftCard = ({
   const setFormData = useRiskStore((state) => state.setValues);
 
   const handleEditRisk = async (draft: IRisk) => {
-    setFormData(draft);
-    // try {
-
-    //   const response = await fetchSingleLc(draft?._id);
-    //   isConfirmation && setConfirmationValues(response);
-    //   isDiscounting && setDiscountingValues(response);
-    //   isConfirmationDiscounting && setConfirmationDiscountingValues(response);
-    // } catch (error) {}
+    try {
+      const response = await fetchSingleRisk(draft?._id);
+      setFormData(response);
+    } catch (error) {}
   };
 
   return (
@@ -105,7 +105,7 @@ export const BankDraftsSidebar = () => {
     isLoading: boolean;
   } = useQuery({
     queryKey: ["fetch-risk-drafts"],
-    queryFn: () => fetchRisk({ draft: true }),
+    queryFn: () => fetchRisk({ draft: true, createdBy: true }),
   });
 
   return (

@@ -44,6 +44,7 @@ const RiskFundedPage = () => {
   const setFormData = useRiskStore((state) => state.setValues);
 
   useEffect(() => {
+    console.log(formData, "FORMDATA!");
     if (formData && formData?._id) {
       Object.entries(formData).forEach(([key, value]) => {
         // @ts-ignore
@@ -84,12 +85,12 @@ const RiskFundedPage = () => {
     isDraft
   ) => {
     const startDateString = data?.startDate;
-    const endDateString = data?.expiryDate;
+    const expiryDateString = data?.expiryDate;
     const expectedDateDiscountingString = data?.expectedDateDiscounting;
     const expectedDateConfirmationString = data?.expectedDateConfirmation;
 
     const startDate = startDateString ? new Date(startDateString) : null;
-    const endDate = endDateString ? new Date(endDateString) : null;
+    const expiryDate = expiryDateString ? new Date(expiryDateString) : null;
     const expectedDateDiscounting = expectedDateDiscountingString
       ? new Date(expectedDateDiscountingString)
       : null;
@@ -99,7 +100,7 @@ const RiskFundedPage = () => {
     const preparedData = {
       ...data,
       startDate: startDate as Date,
-      endDate: endDate,
+      expiryDate: expiryDate,
       expectedDateDiscounting: expectedDateDiscounting,
       expectedDateConfirmation: expectedDateConfirmation,
     };
@@ -124,19 +125,22 @@ const RiskFundedPage = () => {
         currency: data?.currency ? data?.currency : "usd",
       };
       // @ts-ignore
-      delete reqData?.draft
+      delete reqData?.draft;
       // @ts-ignore
-      delete reqData?.updatedAt
+      delete reqData?.updatedAt;
       // @ts-ignore
-      delete reqData?.createdAt
+      delete reqData?.createdAt;
       // @ts-ignore
-      delete reqData?.createdBy
-        // @ts-ignore
-        delete reqData?.isDeleted
-          // @ts-ignore
-          delete reqData?.__v
-           // @ts-ignore
-           delete reqData?._id
+      delete reqData?.createdBy;
+      // @ts-ignore
+      delete reqData?.isDeleted;
+      // @ts-ignore
+      delete reqData?.__v;
+      // @ts-ignore
+      delete reqData?._id;
+      // @ts-ignore
+      delete reqData?.status;
+
       try {
         startLoading();
         const { response, success } = await onCreateRisk(reqData);
@@ -172,6 +176,7 @@ const RiskFundedPage = () => {
       transhipment: data?.transhipment === "no" ? false : true,
       draft: "true",
     };
+    console.log(reqData, "REQDATA");
     try {
       let result;
       if (formData?._id) {
@@ -181,7 +186,6 @@ const RiskFundedPage = () => {
       }
 
       const { response, success } = result;
-
       if (!success) {
         toast.error(response);
       } else {

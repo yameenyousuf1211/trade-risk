@@ -43,7 +43,7 @@ const CreateDiscountPage = () => {
   // Edit Request
   const setValues = useDiscountingStore((state) => state.setValues);
   const discountingData = useDiscountingStore((state) => state);
-  const { setStepStatus } = useStepStore();
+  const { setStepStatus, submit } = useStepStore();
 
   useEffect(() => {
     if (discountingData && discountingData?._id) {
@@ -93,12 +93,13 @@ const CreateDiscountPage = () => {
   const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async ({
     data,
     isDraft,
-    isProceed=false
+    isProceed = false,
   }: {
     isDraft: boolean;
     data: any;
-    isProceed?:boolean
+    isProceed?: boolean;
   }) => {
+    submit();
     if (
       data.confirmingBank &&
       data.issuingBank.country === data.confirmingBank.country
@@ -250,6 +251,7 @@ const CreateDiscountPage = () => {
       setValues(getStateValues(useDiscountingStore.getInitialState()));
       reset();
       useStepStore.getState().setStepStatus(null, null);
+      useStepStore.getState().resetSubmit();
     };
 
     handleRouteChange();
@@ -311,7 +313,11 @@ const CreateDiscountPage = () => {
             setValue={setValue}
             setStepCompleted={handleStepCompletion}
           />
-          <Step7 register={register} step={7} />
+          <Step7
+            register={register}
+            step={7}
+            setStepCompleted={handleStepCompletion}
+          />
         </div>
 
         {/* Action Buttons */}
@@ -342,7 +348,9 @@ const CreateDiscountPage = () => {
           className="hidden"
           setProceed={setProceed}
           // onAccept={handleSubmit(onSubmit)}
-          onAccept={handleSubmit((data) => onSubmit({ data, isDraft: false,isProceed:true }))}
+          onAccept={handleSubmit((data) =>
+            onSubmit({ data, isDraft: false, isProceed: true })
+          )}
         />
       </form>
     </CreateLCLayout>

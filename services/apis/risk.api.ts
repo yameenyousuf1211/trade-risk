@@ -3,19 +3,32 @@ import api from "../middleware/middleware";
 
 export const fetchRisk = async ({
   draft,
+  createdBy,
   page,
   limit,
 }: {
   draft?: boolean;
-  page: number;
-  limit: number;
+  createdBy?: boolean;
+  page?: number;
+  limit?: number;
 }) => {
   try {
     const { data } = await api.get(
-      `/risk?createdBy=${draft}&draft=${
+      `/risk?createdBy=${createdBy}&draft=${
         draft || false
       }&page=${page}&limit=${limit}`
     );
+
+    return data.data;
+  } catch (error: any) {
+    console.log(error);
+    return error.response?.data?.message || "Something went wrong";
+  }
+};
+
+export const fetchSingleRisk = async (id: string) => {
+  try {
+    const { data } = await api.get(`/risk/${id}`);
 
     return data.data;
   } catch (error: any) {

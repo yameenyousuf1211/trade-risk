@@ -19,19 +19,33 @@ import { toast } from "sonner";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
 import { useAuth } from "@/context/AuthProvider";
 import { BidsSort } from "../helpers";
+import { fetchSingleRisk } from "@/services/apis/risk.api";
+import Image from "next/image";
 
-const BidCard = ({ data, isBank }: { data: IBids; isBank?: boolean }) => {
+const BidCard = ({
+  data,
+  isBank,
+  isRisk,
+}: {
+  data: IBids;
+  isBank?: boolean;
+  isRisk?: boolean;
+}) => {
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`fetch-lcs`] });
+      queryClient.invalidateQueries({ queryKey: [`fetch-lcs`, `fetch-risks`] });
     },
   });
 
   const handleSubmit = async (status: string, id: string) => {
-    const { success, response } = await mutateAsync({ status, id });
+    const { success, response } = await mutateAsync({
+      status,
+      id,
+      key: isRisk ? "risk" : "lc",
+    });
     if (!success) return toast.error(response as string);
     else {
       let closeBtn = document.getElementById("close-button");
@@ -181,16 +195,23 @@ export const TableDialog = ({
   bids,
   isBank,
   isViewAll,
+  isRisk = false,
 }: {
   lcId: string;
   bids: IBids[];
   isBank?: boolean;
   isViewAll?: boolean;
+  isRisk?: boolean;
 }) => {
   // Get LC
   const { data: lcData } = useQuery({
     queryKey: [`single-lc`, lcId],
     queryFn: () => fetchSingleLc(lcId),
+  });
+
+  const { data: riskData } = useQuery({
+    queryKey: [`single-risk`, lcId],
+    queryFn: () => fetchSingleRisk(lcId),
   });
 
   const { user } = useAuth();
@@ -218,102 +239,258 @@ export const TableDialog = ({
           </DialogClose>
         </div>
 
-        <div className="overflow-y-hidden relative flex items-start justify-between h-full">
+        <div className="overflow-y-hidden  relative flex items-start justify-between h-full">
           {/* Left Section */}
-          <div className="w-full pb-5 border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[90vh] min-h-[85vh]">
-            <div className="px-4 pt-5 bg-[#F5F7F9]">
-              <h2 className="text-2xl font-semibold mb-1">
-                <span className="text-para font-normal">LC Amount:</span> USD{" "}
-                {(lcData && lcData.amount?.price?.toLocaleString()) + ".00" ||
-                  ""}
-              </h2>
-              <p className="font-roboto text-sm text-para">
-                Created at,{" "}
-                {lcData && convertDateAndTimeToString(lcData.period?.startDate)}
-                , by{" "}
-                <span className="text-text capitalize">
-                  {(lcData && lcData.exporterInfo?.beneficiaryName) || ""}
-                </span>
-              </p>
+          {isRisk ? (
+            <div className="w-full flex flex-col overflow-y-scroll max-h-[90vh]">
+              <div className="px-4 bg-bg pb-5">
+                <div className=" bg-white border border-borderCol p-2 flex items-center justify-between w-full gap-x-2 rounded-lg">
+                  <div className="flex items-center gap-x-2">
+                    <Button
+                      type="button"
+                      className="block bg-red-200 p-1 hover:bg-red-300"
+                    >
+                      <Image
+                        src="/images/pdf.png"
+                        alt="pdf"
+                        width={500}
+                        height={500}
+                        className="size-8"
+                      />
+                    </Button>
+                    <div>
+                      <p className="text-sm">BAFT Agreement</p>
+                      <p className="text-para text-[12px]">PDF, 1.4 MB</p>
+                    </div>
+                  </div>
+                  <p className="text-sm font-medium cursor-pointer underline">
+                    View attachments
+                  </p>
+                </div>
+                <LCInfo
+                  label="Transaction Type"
+                  value={riskData?.transaction || ""}
+                />
+                <LCInfo
+                  label="Risk Participation"
+                  value={riskData?.riskParticipation || ""}
+                />
+                <LCInfo
+                  label="Transaction Offered"
+                  value={riskData?.riskParticipationTransaction?.type || ""}
+                />
+                <LCInfo
+                  label="Value of Transaction"
+                  value={riskData?.riskParticipationTransaction?.amount || ""}
+                />
+                <LCInfo
+                  label="Return"
+                  value={
+                    riskData?.riskParticipationTransaction?.returnOffer || ""
+                  }
+                />
+                <LCInfo
+                  label="Participation Offered"
+                  value={riskData?.riskParticipationTransaction?.perAnnum || ""}
+                  noBorder
+                />
+              </div>
+              {/* Separator */}
+              <div className="h-[2px] w-full bg-borderCol" />
+              {/* LC Details */}
+              <div className="px-4 mt-4">
+                <h2 className="text-xl font-semibold">LC Details</h2>
+                <LCInfo
+                  label="LC Issuing Bank"
+                  value={riskData?.issuingBank?.bank || ""}
+                />
+                <LCInfo
+                  label="LC Advising Bank"
+                  value={riskData?.advisingBank?.bank || ""}
+                />
+                <LCInfo
+                  label="Confirming Bank"
+                  value={riskData?.confirmingBank?.bank || ""}
+                />
+                <LCInfo
+                  label="LC Discounted"
+                  value={
+                    riskData?.transhipment === true ? "Allowed" : "Not allowed"
+                  }
+                />
+                <LCInfo
+                  label="Expected Discounting Date"
+                  value={convertDateToCommaString(
+                    riskData?.expectedDateDiscounting || ""
+                  )}
+                />
+                <LCInfo
+                  label="Issuance/Expected Issuance Date"
+                  value={convertDateToCommaString(riskData?.startDate || "")}
+                  noBorder
+                />
+                <LCInfo
+                  label="Date of Expiry"
+                  value={convertDateToCommaString(riskData?.expiryDate || "")}
+                  noBorder
+                />
+                <LCInfo
+                  label="Payment Terms"
+                  value={riskData?.paymentTerms || ""}
+                  noBorder
+                />
+                <LCInfo
+                  label="Port of Shipment"
+                  value={riskData?.shipmentPort?.port || ""}
+                  noBorder
+                />
+                <LCInfo
+                  label="Transhipment"
+                  value={
+                    riskData?.transhipment === true
+                      ? "Allowed"
+                      : "Not-Allowed" || ""
+                  }
+                  noBorder
+                />
+                <LCInfo
+                  label="Expected Confirmation Date"
+                  value={convertDateToCommaString(
+                    riskData?.expectedDateConfimation || ""
+                  )}
+                  noBorder
+                />
 
-              <div className="h-[2px] w-full bg-neutral-800 mt-5" />
-            </div>
-            {/* Main Info */}
-            <div className="px-4  bg-[#F5F7F9]">
-              <LCInfo
-                label="LC Issuing Bank"
-                value={(lcData && lcData.issuingBank?.bank) || ""}
-              />
-              <LCInfo
-                label="LC Applicant"
-                value={(lcData && lcData.importerInfo?.applicantName) || ""}
-              />
-              <LCInfo
-                label="Advising Bank"
-                value={(lcData && lcData.advisingBank?.bank) || "-"}
-              />
-              <LCInfo
-                label="Confirming Bank"
-                value={(lcData && lcData.confirmingBank?.bank) || "-"}
-              />
-              <LCInfo
-                label="Payments Terms"
-                value={(lcData && lcData.paymentTerms) || ""}
-                noBorder
-              />
-            </div>
-            {/* Separator */}
-            <div className="h-[2px] w-full bg-borderCol mt- 5" />
-            {/* LC Details */}
-            <div className="px-4 mt-4">
-              <h2 className="text-xl font-semibold">LC Details</h2>
-              <LCInfo
-                label="LC Issuance (Expected)"
-                value={
-                  lcData &&
-                  lcData.period &&
-                  convertDateToCommaString(lcData.period?.startDate)
-                }
-              />
-              <LCInfo
-                label="LC Expiry Date"
-                value={
-                  lcData &&
-                  lcData.period &&
-                  convertDateToCommaString(lcData.period?.endDate)
-                }
-              />
-              <LCInfo
-                label="Transhipment"
-                value={
-                  lcData && lcData.transhipment === true
-                    ? "Allowed"
-                    : "Not allowed"
-                }
-              />
-              <LCInfo
-                label="Port of Shipment"
-                value={(lcData && lcData.shipmentPort?.port) || ""}
-                noBorder
-              />
+                <h2 className="text-xl font-semibold mt-3">Importer Info</h2>
+                <LCInfo
+                  label="Applicant"
+                  value={riskData?.importerInfo?.applicantName || ""}
+                />
+                <LCInfo
+                  label="Country of Import"
+                  value={riskData?.importerInfo?.countryOfImport || ""}
+                  noBorder
+                />
 
-              <h2 className="text-xl font-semibold mt-3">Exporter Info</h2>
-              <LCInfo
-                label="Beneficiary"
-                value={(lcData && lcData.exporterInfo?.beneficiaryName) || ""}
-              />
-              <LCInfo
-                label="Country"
-                value={(lcData && lcData.exporterInfo?.countryOfExport) || ""}
-              />
-              <LCInfo
-                label="Charges on account of"
-                value="Beneficiary"
-                noBorder
-              />
+                <h2 className="text-xl font-semibold mt-3">Exporter Info</h2>
+                <LCInfo
+                  label="Beneficiary"
+                  value={riskData?.exporterInfo?.beneficiaryName || ""}
+                />
+                <LCInfo
+                  label="Country of Export"
+                  value={riskData?.exporterInfo?.countryOfExport || ""}
+                />
+                <LCInfo
+                  label="Beneficiary Country"
+                  value={riskData?.exporterInfo?.beneficiaryCountry || ""}
+                  noBorder
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="w-full pb-5 border-r-2 border-r-borderCol h-full overflow-y-scroll max-h-[90vh] min-h-[85vh]">
+                <div className="px-4 pt-5 bg-[#F5F7F9]">
+                  <h2 className="text-2xl font-semibold mb-1">
+                    <span className="text-para font-normal">LC Amount:</span>{" "}
+                    USD{" "}
+                    {(lcData && lcData.amount?.price?.toLocaleString()) +
+                      ".00" || ""}
+                  </h2>
+                  <p className="font-roboto text-sm text-para">
+                    Created at,{" "}
+                    {lcData &&
+                      convertDateAndTimeToString(lcData.period?.startDate)}
+                    , by{" "}
+                    <span className="text-text capitalize">
+                      {(lcData && lcData.exporterInfo?.beneficiaryName) || ""}
+                    </span>
+                  </p>
 
+                  <div className="h-[2px] w-full bg-neutral-800 mt-5" />
+                </div>
+                {/* Main Info */}
+                <div className="px-4  bg-[#F5F7F9]">
+                  <LCInfo
+                    label="LC Issuing Bank"
+                    value={(lcData && lcData.issuingBank?.bank) || ""}
+                  />
+                  <LCInfo
+                    label="LC Applicant"
+                    value={(lcData && lcData.importerInfo?.applicantName) || ""}
+                  />
+                  <LCInfo
+                    label="Advising Bank"
+                    value={(lcData && lcData.advisingBank?.bank) || "-"}
+                  />
+                  <LCInfo
+                    label="Confirming Bank"
+                    value={(lcData && lcData.confirmingBank?.bank) || "-"}
+                  />
+                  <LCInfo
+                    label="Payments Terms"
+                    value={(lcData && lcData.paymentTerms) || ""}
+                    noBorder
+                  />
+                </div>
+                {/* Separator */}
+                <div className="h-[2px] w-full bg-borderCol mt- 5" />
+                {/* LC Details */}
+                <div className="px-4 mt-4">
+                  <h2 className="text-xl font-semibold">LC Details</h2>
+                  <LCInfo
+                    label="LC Issuance (Expected)"
+                    value={
+                      lcData &&
+                      lcData.period &&
+                      convertDateToCommaString(lcData.period?.startDate)
+                    }
+                  />
+                  <LCInfo
+                    label="LC Expiry Date"
+                    value={
+                      lcData &&
+                      lcData.period &&
+                      convertDateToCommaString(lcData.period?.endDate)
+                    }
+                  />
+                  <LCInfo
+                    label="Transhipment"
+                    value={
+                      lcData && lcData.transhipment === true
+                        ? "Allowed"
+                        : "Not allowed"
+                    }
+                  />
+                  <LCInfo
+                    label="Port of Shipment"
+                    value={(lcData && lcData.shipmentPort?.port) || ""}
+                    noBorder
+                  />
+
+                  <h2 className="text-xl font-semibold mt-3">Exporter Info</h2>
+                  <LCInfo
+                    label="Beneficiary"
+                    value={
+                      (lcData && lcData.exporterInfo?.beneficiaryName) || ""
+                    }
+                  />
+                  <LCInfo
+                    label="Country"
+                    value={
+                      (lcData && lcData.exporterInfo?.countryOfExport) || ""
+                    }
+                  />
+                  <LCInfo
+                    label="Charges on account of"
+                    value="Beneficiary"
+                    noBorder
+                  />
+                </div>
+              </div>
+            </>
+          )}
           {/* Right Section */}
           <div className="w-full h-full flex flex-col justify-start px-5">
             {/* Filter Section */}
@@ -337,14 +514,19 @@ export const TableDialog = ({
             <div className="flex flex-col gap-y-4 max-h-[65vh] overflow-y-auto overflow-x-hidden mt-5">
               {isBank
                 ? userBids &&
-                  userBids.length > 0 &&
-                  userBids.map((data: any) => (
-                    <BidCard data={data} key={data._id} isBank />
+                  userBids?.length > 0 &&
+                  userBids?.map((data: any) => (
+                    <BidCard
+                      isRisk={isRisk}
+                      data={data}
+                      key={data._id}
+                      isBank
+                    />
                   ))
                 : bids &&
                   bids.length > 0 &&
                   bids.map((data: any) => (
-                    <BidCard data={data} key={data._id} />
+                    <BidCard data={data} key={data._id} isRisk={isRisk} />
                   ))}
             </div>
           </div>

@@ -36,7 +36,7 @@ export const DisclaimerDialog = ({
     }, 1000);
     const handleScroll = () => {
       console.log("Scrolling...");
-      console.log(ref.current.scrollTop + ref.current.clientHeight);
+      // console.log(ref.current.scrollTop + ref.current.clientHeight);
       console.log(ref.current?.scrollHeight, "sc");
       if (
         ref.current &&

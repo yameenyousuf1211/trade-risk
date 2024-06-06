@@ -15,9 +15,12 @@ export const ProductFilter = ({ isRisk }: { isRisk: boolean }) => {
 
   const handleFilter = (lcType: string) => {
     const queryParams = new URLSearchParams(searchParams);
-    queryParams.set("filter", lcType.toString());
+    if (isRisk) {
+      queryParams.set("createdBy", lcType.toString());
+    } else {
+      queryParams.set("filter", lcType.toString());
+    }
     queryParams.set("page", "1");
-
     const queryString = queryParams.toString();
     router.push(`${pathname}?${queryString}`, { scroll: false });
   };
@@ -29,8 +32,8 @@ export const ProductFilter = ({ isRisk }: { isRisk: boolean }) => {
       </SelectTrigger>
       {isRisk ? (
         <SelectContent className="font-roboto">
-          <SelectItem value="My Risks">My Risks</SelectItem>
-          <SelectItem value="Other Risks">Other Risks</SelectItem>
+          <SelectItem value={"true"}>My Risks</SelectItem>
+          <SelectItem value={"false"}>Other Risks</SelectItem>
         </SelectContent>
       ) : (
         <SelectContent className="font-roboto">

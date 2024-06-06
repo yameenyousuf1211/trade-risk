@@ -335,8 +335,24 @@ export interface IRisk {
   transaction: string;
   transhipment: boolean;
   currency: string;
+  bids: IBidsInfo[];
+  bidsCount: number;
   __v: number;
   _id: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface IBidsInfo {
+  _id: string;
+  validity: Date;
+  bidBy: string;
+  amount: number;
+  status: string;
+  userInfo: {
+    name: string;
+    email: string;
+    _id: string;
+    country: string;
+  };
 }

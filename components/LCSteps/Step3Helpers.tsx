@@ -34,7 +34,7 @@ export const ValidatingCalendar = ({
   onClose: any;
   isPast?: boolean;
   maxDate?: Date | string | undefined;
-  startDate?: Date | string | undefined;
+  startDate?: Date 
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
@@ -58,7 +58,7 @@ export const ValidatingCalendar = ({
     <Calendar
       mode="single"
       selected={selectedDate}
-      disabled={selectedDate && { before: startDate }} // Disable all previous dates
+      disabled={selectedDate && { before: startDate as Date }} // Disable all previous dates
       // @ts-ignore
       onSelect={handleDateSelect}
       initialFocus

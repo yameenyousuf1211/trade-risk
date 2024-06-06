@@ -37,7 +37,7 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   });
 
   const handleSubmit = async (status: string, id: string) => {
-    const { success, response } = await mutateAsync({ status, id });
+    const { success, response } = await mutateAsync({ status, id, key: "lc" });
     if (!success) return toast.error(response as string);
     else return toast.success(`Bid ${status}`);
   };

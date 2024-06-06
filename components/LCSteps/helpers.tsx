@@ -44,7 +44,9 @@ export const DDInput = ({
   return (
     <label
       id={id}
-      className={`${type !== 'baseRate' && "border"} text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white`}
+      className={`${
+        type !== "baseRate" && "border"
+      } text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white`}
     >
       {type !== "baseRate" && <p className="text-lightGray">{label}</p>}
       <Popover open={ddOpen} onOpenChange={setDdOpen}>
@@ -66,7 +68,15 @@ export const DDInput = ({
               : value
               ? value
               : placeholder}
-            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronDown
+              className={`${
+                type === "baseRate"
+                  ? "ml-6"
+                  : type === "styles"
+                  ? "ml-6"
+                  : "ml-2"
+              } h-4 w-4 shrink-0 opacity-50`}
+            />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-fit p-0">

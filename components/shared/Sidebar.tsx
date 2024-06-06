@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TableDialog } from "./TableDialog";
+import { usePathname } from "next/navigation";
 
 const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   const queryClient = useQueryClient();
@@ -31,7 +32,7 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["fetch-lcs"] });
+      queryClient.invalidateQueries({ queryKey: ["fetch-lcs", "fetch-risks"] });
     },
   });
 
@@ -117,7 +118,7 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
                 isDiscount={
                   (data.type && data.type.includes("Discount")) || false
                 }
-                lcId={data._id}
+                id={data._id}
               />
             </div>
           </>
@@ -179,6 +180,7 @@ export const Sidebar = ({
   createMode?: boolean;
 }) => {
   const { user } = useAuth();
+  const pathname = usePathname();
   const { startLoading, stopLoading, isLoading } = useLoading();
 
   const {
@@ -346,7 +348,6 @@ export const Sidebar = ({
       stopLoading();
     }
   };
-  console.log(data,"SIDEBAR")
 
   const [generateType, setGenerateType] = useState("csv");
 
@@ -396,7 +397,6 @@ export const Sidebar = ({
           </Button>
         </div>
       )}
-
       <div className="bg-white border border-borderCol py-4 px-5 mt-5 rounded-lg min-h-[70%] max-h-[80%] overflow-y-auto overflow-x-hidden flex flex-col justify-between">
         <div>
           <h4
@@ -406,19 +406,21 @@ export const Sidebar = ({
           >
             {isBank ? "Needs Action" : "Needs your attention"}
           </h4>
-          <div className="flex flex-col gap-y-5">
-            {isBank
-              ? allLcs &&
-                allLcs.data &&
-                allLcs.data.map((item: ILcs) => (
-                  <RequestCard isBank={isBank} data={item} key={item._id} />
-                ))
-              : data &&
-                data.data &&
-                data.data.map((item: ILcs) => (
-                  <RequestCard isBank={isBank} data={item} key={item._id} />
-                ))}
-          </div>
+          {pathname.includes("risk") || (
+            <div className="flex flex-col gap-y-5">
+              {isBank
+                ? allLcs &&
+                  allLcs.data &&
+                  allLcs.data.map((item: ILcs) => (
+                    <RequestCard isBank={isBank} data={item} key={item._id} />
+                  ))
+                : data &&
+                  data.data &&
+                  data.data.map((item: ILcs) => (
+                    <RequestCard isBank={isBank} data={item} key={item._id} />
+                  ))}
+            </div>
+          )}
         </div>
         {/* {isBank && ( */}
         <Button className="mt-4 w-full rounded-xl py-6 bg-borderCol hover:bg-borderCol/90 text-[#696974] text-[16px]">

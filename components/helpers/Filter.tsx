@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-export const Filter = () => {
+export const Filter = ({isRisk}:{isRisk:boolean}) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -24,7 +24,7 @@ export const Filter = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="font-roboto flex items-center gap-x-2">
+      <DropdownMenuTrigger disabled={isRisk} className="font-roboto flex items-center gap-x-2">
         {" "}
         <ListFilter />
         <p>Filter</p>

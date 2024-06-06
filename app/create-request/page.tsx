@@ -41,7 +41,7 @@ const CreateRequestPage = () => {
   const queryClient = useQueryClient();
   const setValues = useConfirmationStore((state) => state.setValues);
   const confirmationData = useConfirmationStore((state) => state);
-  const { setStepStatus } = useStepStore();
+  const { setStepStatus, submit } = useStepStore();
 
   useEffect(() => {
     if (confirmationData && confirmationData?._id) {
@@ -92,10 +92,13 @@ const CreateRequestPage = () => {
   const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async ({
     data,
     isDraft,
+    isProceed = false,
   }: {
     isDraft: boolean;
     data: any;
+    isProceed?: boolean;
   }) => {
+    submit();
     if (
       data.confirmingBank &&
       data.issuingBank.country === data.confirmingBank.country
@@ -194,7 +197,7 @@ const CreateRequestPage = () => {
       const validationResult = confirmationSchema.safeParse(preparedData);
       if (validationResult.success) {
         const validatedData = validationResult.data;
-        if (proceed) {
+        if (isProceed) {
           const { confirmingBank2, extraInfo, ...rest } = validatedData;
           reqData = {
             ...rest,
@@ -223,7 +226,8 @@ const CreateRequestPage = () => {
           let openDisclaimerBtn = document.getElementById("open-disclaimer");
           // @ts-ignore
           openDisclaimerBtn.click();
-          setProceed(true);
+          console.log("hellooooojeee asssalamualaikum");
+          // setProceed(true);
         }
       } else {
         if (
@@ -249,6 +253,7 @@ const CreateRequestPage = () => {
       setValues(getStateValues(useConfirmationStore.getInitialState()));
       reset();
       useStepStore.getState().setStepStatus(null, null);
+      useStepStore.getState().resetSubmit();
     };
 
     handleRouteChange();
@@ -306,7 +311,11 @@ const CreateRequestPage = () => {
             setStepCompleted={handleStepCompletion}
             title="Confirmation Charges"
           />
-          <Step7 register={register} step={7} />
+          <Step7
+            register={register}
+            step={7}
+            setStepCompleted={handleStepCompletion}
+          />
         </div>
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
@@ -335,7 +344,9 @@ const CreateRequestPage = () => {
           title="Submit Request"
           className="hidden"
           setProceed={setProceed}
-          onAccept={handleSubmit((data) => onSubmit({ data, isDraft: false }))}
+          onAccept={handleSubmit((data) =>
+            onSubmit({ data, isDraft: false, isProceed: true })
+          )}
         />
       </form>
     </CreateLCLayout>

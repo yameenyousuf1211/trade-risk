@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BankRadioInput } from "./RiskHelpers";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrenncy } from "@/services/apis/helpers.api";
@@ -23,16 +23,11 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
     queryKey: ["currency"],
     queryFn: () => getCurrenncy(),
   });
-
-  const [isFunded, setIsFunded] = useState(false);
-
   const [currencyValue, setCurrencyValue] = useState<string | number>();
   const [rawValue, setRawValue] = useState("");
-
+  const amount = watch("riskParticipationTransaction.amount");
   const handleChange = (e: any) => {
     const { value } = e.target;
-    console.log(value);
-
     const digitsOnly = value.replace(/\D/g, "");
     if (digitsOnly) {
       const formattedValue = parseInt(digitsOnly).toLocaleString();
@@ -45,6 +40,18 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
       setValue("riskParticipationTransaction.amount", "");
     }
   };
+
+  useEffect(() => {
+    if (amount) {
+      const digitsOnly = amount?.toString().replace(/\D/g, "");
+      if (digitsOnly) {
+        const formattedValue = parseInt(digitsOnly).toLocaleString();
+        setCurrencyValue(formattedValue);
+        setValue("riskParticipationTransaction.amount", digitsOnly);
+
+      }
+    }
+  }, [amount]);
 
   const handleBlur = () => {
     if (rawValue) {
@@ -168,7 +175,9 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
               />
             </div>
             <div
-              className={`flex ${isFunded && "flex-col"} gap-2 gap-y-3 my-2`}
+              className={`flex ${
+                watch("riskParticipation") === "Funded" && "flex-col"
+              } gap-2 gap-y-3 my-2`}
             >
               <div className="w-full">
                 <p className="font-semibold text-sm text-lightGray mb-2 ml-2">
@@ -233,7 +242,7 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
                     register={register}
                   />
                   {watch("riskParticipation") === "Non-Funded" && (
-                    <div className="bg-white rounded-lg py-3 px-3 w-[80%] flex items-center justify-between gap-x-2">
+                    <div className="bg-white border rounded-sm py-3 px-3 h-[53.5px] w-[80%] flex items-center justify-between gap-x-2">
                       <input
                         type="number"
                         inputMode="numeric"
@@ -263,6 +272,7 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
                           id="select-base-rate"
                           type="text"
                           name="select-base-rate"
+                          {...register("riskParticipationTransaction.baseRate")}
                           className="block bg-none text-sm border-none outline-none w-[100px]"
                           placeholder="Select Value"
                           onKeyUp={(event: any) => {
@@ -291,10 +301,12 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
                             placeholder="Value"
                             type="number"
                             inputMode="numeric"
-                            value={pricePerAnnum}
+                            {...register("")}
                             required
                             max={100}
-                            // {...register("riskParticipationTransaction.perAnnum")}
+                            {...register(
+                              "riskParticipationTransaction.perAnnum"
+                            )}
                             className="border-none outline-none text-sm max-w-[70px] w-fit"
                             // onChange={(e) => setPricePerAnnum(e.target.value)}
                             onKeyUp={(event: any) => {
@@ -325,7 +337,7 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
               <p className="font-semibold text-sm text-lightGray ml-2">
                 Participation is offered for
               </p>
-              <div className="bg-[#E9E9F0] rounded-lg py-3 px-3 max-w-[130px] flex items-center justify-between gap-x-2">
+              <div className="bg-[#E9E9F0] border rounded-sm py-3 px-3 max-w-[130px] flex items-center justify-between gap-x-2">
                 <input
                   type="number"
                   inputMode="numeric"

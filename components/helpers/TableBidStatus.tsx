@@ -9,14 +9,17 @@ import { useState } from "react";
 export const TableBidStatus = ({
   id,
   lcData,
+  isRisk = false,
 }: {
   id: string;
   lcData: ILcs;
+  isRisk?: boolean;
 }) => {
   const { data } = useQuery({
-    queryKey: ["bid-status", "fetch-lcs", id],
-    queryFn: () => getBankLcStatus(id),
+    queryKey: ["bid-status", "fetch-lcs", "fetch-risks", id],
+    queryFn: () => getBankLcStatus(id, isRisk ? "risk" : "lc"),
   });
+  console.log(data, "data_1212");
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
 
   return (
@@ -30,7 +33,8 @@ export const TableBidStatus = ({
           isDiscount={
             (lcData.type && lcData.type.includes("Discount")) || false
           }
-          lcId={lcData._id}
+          id={lcData._id}
+          isRisk={isRisk}
         />
       ) : (
         <Button

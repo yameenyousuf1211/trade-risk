@@ -54,7 +54,7 @@ export const Step6 = ({
     if (behalfOf && pricePerAnnum && baseRate) {
       setStepCompleted(5, true);
     }
-  }, [behalfOf,pricePerAnnum,baseRate]);
+  }, [behalfOf, pricePerAnnum, baseRate]);
 
   const handleIncrement = () => {
     const currentValue = isDiscount
@@ -188,7 +188,7 @@ export const Step6 = ({
           className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
         >
           <p className="text-lightGray text-sm">Pricing Per Annum</p>
-          <div className="flex items-center gap-x-2 relative">
+          <div className="flex items-center gap- x-2 relative">
             <Button
               type="button"
               variant="ghost"
@@ -202,7 +202,7 @@ export const Step6 = ({
               type="text"
               inputMode="numeric"
               className={cn(
-                "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0 "
+                "flex h-10 !w-[70px] text-center rounded-md border border-input bg-background p x-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0 "
               )}
               max={100}
               {...register(
@@ -211,7 +211,15 @@ export const Step6 = ({
                   : "confirmationInfo.pricePerAnnum"
               )}
               onChange={(event) => {
-                const newValue = event.target.value.replace(/[^0-9.]/g, "");
+                let newValue = event.target.value.replace(/[^0-9.]/g, "");
+
+                // Allow only 4 digits after the decimal point
+                if (newValue.includes(".")) {
+                  const parts = newValue.split(".");
+                  parts[1] = parts[1].slice(0, 4);
+                  newValue = parts.join(".");
+                }
+
                 event.target.value = newValue;
               }}
               onBlur={(event) => {
@@ -220,14 +228,18 @@ export const Step6 = ({
                   event.target.value.length === 0
                 )
                   return;
-                event.target.value += "%";
+
+                // Ensure the value has at most 4 decimal places
+                // let value = parseFloat(event.target.value).toFixed(4);
+                event.target.value = `${event.target.value}%`;
               }}
-              onKeyUp={(event: any) => {
+              onKeyUp={(event) => {
                 if (Number(event.target.value.replace("%", "")) > 100) {
                   event.target.value = "100.0%";
                 }
               }}
             />
+
             <Button
               type="button"
               variant="ghost"

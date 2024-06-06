@@ -201,6 +201,7 @@ export const confirmationDiscountSchema = z.lazy(() =>
           .refine((value) => parseFloat(value) <= 100, {
             message: "Price per annum must be less than 100",
           }),
+          basePerRate: z.string({ message: "Base Rate is required" }),
       }),
     })
   )

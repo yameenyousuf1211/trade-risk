@@ -63,11 +63,10 @@ export const RiskStep3 = ({
   useEffect(() => {
     if (watch("paymentTerms") !== "Tenor Lc") {
       setValue("days", undefined);
+    } else {
+      setValue("days", watch("days"));
     }
-    else {
-      setValue('days',watch('days'))
-    }
-  }, [watch("paymentTerms"),watch('days')]);
+  }, [watch("paymentTerms"), watch("days")]);
 
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
@@ -201,16 +200,19 @@ export const RiskStep3 = ({
                     inputMode="numeric"
                     disabled={watch("paymentTerms") !== "Tenor LC"}
                     type="text"
-                    value={days}
-                    {...register("days")}
+                    value={dayss}
+                    max={100}
+                    // {...register("days")}
+                    onChange={(e) => setDays(Number(e.target.value))}
                     className="text-sm text-lightGray border-none max-w-[150px] bg-transparent outline-none"
                   />
                   <div className="flex items-center gap-x-1">
                     <button
                       type="button"
                       className="rounded-sm border border-para size-6 center mb-2"
-                      onClick={() => {
-                        setDays((prev: any) => Number(prev) + 1);
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDays((prev: any) => prev + 1);
                       }}
                     >
                       +
@@ -218,9 +220,12 @@ export const RiskStep3 = ({
                     <button
                       type="button"
                       className="rounded-sm border border-para size-6 center mb-2"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log("onclicked");
+                        console.log(days);
                         setDays((prev: any) =>
-                          Number(prev) > 1 ? Number(prev) - 1 : 1
+                          prev > 1 ? Number(prev) - 1 : 1
                         );
                       }}
                     >

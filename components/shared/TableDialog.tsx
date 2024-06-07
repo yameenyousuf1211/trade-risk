@@ -37,9 +37,9 @@ const BidCard = ({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
       // queryClient.invalidateQueries({ queryKey: [`fetch-lcs`, `fetch-risks`] });
-      queryClient.invalidateQueries({
-        queryKey: ["bid-status"],
-      });
+        queryClient.invalidateQueries({
+          queryKey: ["bid-status"],
+        });
     },
   });
 

@@ -27,7 +27,15 @@ import { TableDialog } from "./TableDialog";
 import { usePathname } from "next/navigation";
 import { fetchRisk } from "@/services/apis/risk.api";
 
-const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
+const SliderCard = ({
+  info,
+  isRisk = false,
+  lcData,
+}: {
+  info: IBids;
+  isRisk?: boolean;
+  lcData: ILcs;
+}) => {
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation({
@@ -40,7 +48,11 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   });
 
   const handleSubmit = async (status: string, id: string) => {
-    const { success, response } = await mutateAsync({ status, id, key: "lc" });
+    const { success, response } = await mutateAsync({
+      status,
+      id,
+      key: isRisk ? "risk" : "lc",
+    });
     if (!success) return toast.error(response as string);
     else return toast.success(`Bid ${status}`);
   };
@@ -98,10 +110,9 @@ const RequestCard = ({
     <>
       {isBank && riskType !== "myRisk" ? (
         showData &&
-        data.status !== "Expired" && (data.status == "Add Bid" || data.status == "Pending")   &&
-         (
+        data.status !== "Expired" &&
+        (data.status == "Add Bid" || data.status == "Pending") && (
           <>
-          
             <div className="px-3 py-2 flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
               {/* Data */}
               <div className="font-roboto">
@@ -199,7 +210,12 @@ const RequestCard = ({
             >
               {pendingBids.map((info: IBids) => (
                 <SwiperSlide key={info._id}>
-                  <SliderCard info={info} lcData={data} key={info._id} />
+                  <SliderCard
+                    isRisk={isRisk}
+                    info={info}
+                    lcData={data}
+                    key={info._id}
+                  />
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -238,7 +254,7 @@ export const Sidebar = ({
     data: allLcs,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
-      queryKey: ["bid-status","fetch-all-lcs"],
+      queryKey: ["bid-status", "fetch-all-lcs"],
       queryFn: () => fetchAllLcs({ limit: 20 }),
       enabled: !!user?._id,
     });

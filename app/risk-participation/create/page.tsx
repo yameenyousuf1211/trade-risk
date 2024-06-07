@@ -29,7 +29,7 @@ import useRiskStore from "@/store/risk.store";
 import { IRisk } from "@/types/type";
 
 const RiskFundedPage = () => {
-  const { register, setValue, reset, watch, getValues, handleSubmit } = useForm<
+  const { register, setValue, reset, watch, getValues,control, handleSubmit } = useForm<
     z.infer<typeof generalRiskSchema>
   >({});
   const { startLoading, stopLoading, isLoading } = useLoading();
@@ -123,6 +123,7 @@ const RiskFundedPage = () => {
         expectedDiscounting: data?.expectedDiscounting === "no" ? false : true,
         transhipment: data?.transhipment === "no" ? false : true,
         currency: data?.currency ? data?.currency : "usd",
+        days: data?.paymentTerms == "Tenor LC" ? 22 : undefined,
       };
       // @ts-ignore
       delete reqData?.draft;
@@ -216,6 +217,7 @@ const RiskFundedPage = () => {
           register={register}
           watch={watch}
           setValue={setValue}
+          control={control}
         />
         <RiskStep4
           countries={countries}

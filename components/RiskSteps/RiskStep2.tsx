@@ -48,7 +48,6 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
         const formattedValue = parseInt(digitsOnly).toLocaleString();
         setCurrencyValue(formattedValue);
         setValue("riskParticipationTransaction.amount", digitsOnly);
-
       }
     }
   }, [amount]);
@@ -65,22 +64,24 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
   const [pricePerAnnum, setPricePerAnnum] = useState("0");
 
   const handleIncrement = () => {
-    const currentValue = pricePerAnnum || "0";
+    const currentValue = watch("riskParticipationTransaction.perAnnum") || "0";
     const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
     if (Number(newValue) > 100) {
       return;
     }
-    setPricePerAnnum(newValue);
+    setValue("riskParticipationTransaction.perAnnum", `${newValue}%`);
   };
+  console.log(watch("riskParticipationTransaction.perAnnum"))
 
   const handleDecrement = () => {
-    const currentValue = pricePerAnnum || "0";
-    let newValue: any = parseFloat(currentValue) - 0.5;
+    console.log("newValue")
+    const currentValue = watch("riskParticipationTransaction.perAnnum") || "0";
+    let newValue = parseFloat(currentValue) - 0.5;
 
     if (newValue < 0) newValue = 0;
     // @ts-ignore
     newValue = newValue.toFixed(1);
-    setPricePerAnnum(newValue);
+    setValue("riskParticipationTransaction.perAnnum", `${newValue}%`);
   };
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
@@ -299,7 +300,7 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
                           </Button>
                           <input
                             placeholder="Value"
-                            type="number"
+                            type="text"
                             inputMode="numeric"
                             {...register("")}
                             required

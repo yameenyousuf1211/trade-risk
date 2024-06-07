@@ -127,7 +127,7 @@ const CreateDiscountPage = () => {
       type: "LC Discounting",
       transhipment: data.transhipment === "yes" ? true : false,
       amount: {
-        price: data.amount,
+        price: `${data.amount}.00`,
       },
       period: {
         ...data.period,

@@ -309,6 +309,7 @@ interface ShipmentPort {
 }
 
 export interface IRisk {
+  refId?: string;
   advisingBank: Bank;
   attachment: any[]; // Adjust the type as needed for attachments
   banks: string[];

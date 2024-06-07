@@ -200,8 +200,7 @@ export const RequestTable = ({
                       >
                         <div
                           className={`capitalize flex text-[#44444F]  items-center gap-x-2 justify-center text-[12px] font-semibold ${
-                            header == "LC Issuing Bank" &&
-                            "!justify-start"
+                            header == "LC Issuing Bank" && "!justify-start"
                           }`}
                         >
                           {header}
@@ -315,9 +314,7 @@ export const RequestTable = ({
                     <TableCell className="px-1 py-1 min-w-[90px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <div className="tex-sm truncate text-lightGray">
-                          {item?.refId
-                            ? item?.refId
-                            : Math.floor(Math.random() * 1000000)}
+                          {item?.refId ? item?.refId : item?.refId}
                         </div>
                       </div>
                     </TableCell>

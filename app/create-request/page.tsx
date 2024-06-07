@@ -129,7 +129,7 @@ const CreateRequestPage = () => {
       type: "LC Confirmation",
       transhipment: data.transhipment === "yes" ? true : false,
       amount: {
-        price: data.amount,
+        price: `${data.amount}.00`,
       },
       period: {
         ...data.period,
@@ -155,6 +155,8 @@ const CreateRequestPage = () => {
         ...baseData,
         draft: "true",
       };
+      console.log(reqData,"REQDAATA")
+
       setLoader(true);
       const { response, success } = confirmationData?._id
         ? await onUpdateLC({

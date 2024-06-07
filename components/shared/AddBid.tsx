@@ -57,7 +57,7 @@ export const AddBid = ({
   isCorporate,
   isBank,
   bidData,
-  isRisk=false,
+  isRisk = false,
 }: {
   isDiscount?: boolean;
   isInfo?: boolean;
@@ -88,8 +88,10 @@ export const AddBid = ({
   const { mutateAsync } = useMutation({
     mutationFn: addBid,
     onSuccess: () => {
+      console.log("onsuccess.... invalidating queries");
       queryClient.invalidateQueries({
-        queryKey: ["bid-status", "fetch-lcs","fetch-risks"],
+        queryKey: ["bid-status"],
+        // queryKey: [ "fetch-risks"],
       });
     },
   });
@@ -132,11 +134,9 @@ export const AddBid = ({
       type: "Risk",
       validity: data.validity,
     };
-    console.log(riskReqData,"4iss")
     const { success, response } = await mutateAsync(
       isRisk ? riskReqData : reqData
     );
-    console.log(response,"RESPONSE!")
 
     if (!success) return toast.error(response);
     else {
@@ -146,46 +146,84 @@ export const AddBid = ({
       toast.success("Bid added");
     }
   };
-  console.log(lcData,"LCDATA")
 
   return (
     <Dialog>
+      {isRisk ? (
       <DialogTrigger
-        className={`${
-          lcData &&
-          (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
-          (status === "Add bid" || status === "Rejected")
-            ? "bg-[#1A1A26] text-white text-sm"
-            : status === "Rejected"
-            ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
-                border && "border border-[#D20000]"
-              }`
-            : status === "Accepted"
-            ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
-                border && "border border-[#29C084]"
-              }`
-            : status === "Expired"
-            ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
-                border &&
-                "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
-              }`
-            : status === "Add bid" && !isBank
-            ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
-            : status === "Add bid" && isBank
-            ? "bg-[#1A1A26] text-white text-sm"
-            : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
-        } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
-        disabled={
-          (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
-          (status === "Add bid" || status === "Rejected")
-        }
-      >
-        {lcData &&
-        (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
+      className={`${
+        riskData &&
+        (riskData?.status === "Expired" || riskData?.status === "Accepted") &&
         (status === "Add bid" || status === "Rejected")
-          ? "Not Applicable"
-          : triggerTitle || "Pending"}
-      </DialogTrigger>
+          ? "bg-[#1A1A26] text-white text-sm"
+          : status === "Rejected"
+          ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
+              border && "border border-[#D20000]"
+            }`
+          : status === "Accepted"
+          ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
+              border && "border border-[#29C084]"
+            }`
+          : status === "Expired"
+          ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
+              border &&
+              "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
+            }`
+          : status === "Add bid" 
+          ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
+          : status === "Add bid" 
+          ? "bg-[#1A1A26] text-white text-sm"
+          : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
+      } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
+      disabled={
+        (riskData?.status === "Expired" || riskData?.status === "Accepted") &&
+        (status === "Add bid" || status === "Rejected")
+      }
+    >
+      {riskData &&
+      (riskData?.status === "Expired" || riskData?.status === "Accepted") &&
+      (status === "Add bid" || status === "Rejected")
+        ? "Not Applicable"
+        : triggerTitle || "Pending"}
+    </DialogTrigger>
+      ) : (
+        <DialogTrigger
+          className={`${
+            lcData &&
+            (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
+            (status === "Add bid" || status === "Rejected")
+              ? "bg-[#1A1A26] text-white text-sm"
+              : status === "Rejected"
+              ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
+                  border && "border border-[#D20000]"
+                }`
+              : status === "Accepted"
+              ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
+                  border && "border border-[#29C084]"
+                }`
+              : status === "Expired"
+              ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
+                  border &&
+                  "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
+                }`
+              : status === "Add bid" && !isBank
+              ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
+              : status === "Add bid" && isBank
+              ? "bg-[#1A1A26] text-white text-sm"
+              : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
+          } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
+          disabled={
+            (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
+            (status === "Add bid" || status === "Rejected")
+          }
+        >
+          {lcData &&
+          (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
+          (status === "Add bid" || status === "Rejected")
+            ? "Not Applicable"
+            : triggerTitle || "Pending"}
+        </DialogTrigger>
+      )}
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">

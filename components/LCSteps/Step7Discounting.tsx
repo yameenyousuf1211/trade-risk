@@ -21,6 +21,8 @@ export const Step7Disounting = ({
 }) => {
   const discountAtSight = watch("discountingInfo.discountAtSight");
   const behalfOf = watch("discountingInfo.behalfOf");
+  const baseRate = watch("discountingInfo.basePerRate");
+
 
   let pricePerAnnum = getValues("discountingInfo.pricePerAnnum");
   useEffect(() => {
@@ -99,13 +101,24 @@ export const Step7Disounting = ({
 
       <div className="border border-borderCol py-3 px-2 rounded-md mt-5 bg-[#F5F7F9]">
         <p className="font-semibold ml-3 mb-2">Expected charges</p>
+        <div className="text-end mb-3">
+              <DDInput
+                id="discountingInfo.basePerRate"
+                label="Select Base Rate"
+                type="styles"
+                value={baseRate}
+                placeholder="Select Value"
+                setValue={setValue}
+                data={["KIBOR", "LIBOR", "SOFR"]}
+              />
+            </div>
 
         <label
           id="expected-pricing"
           className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
         >
           <p className="text-lightGray text-sm">Per Annum(%)</p>
-          <div className="flex items-center gap-x-2">
+          <div className="flex items-center gap- x-2">
             <Button
               type="button"
               variant="ghost"
@@ -118,11 +131,20 @@ export const Step7Disounting = ({
               placeholder="Value (%)"
               type="text"
               inputMode="numeric"
-              className="border-none text-[13px] outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
+              className="border-none !w-[70px] text-center text-[13px] outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
               max={100}
               {...register("discountingInfo.pricePerAnnum")}
+           
               onChange={(event) => {
-                const newValue = event.target.value.replace(/[^0-9.]/g, "");
+                let newValue = event.target.value.replace(/[^0-9.]/g, "");
+
+                // Allow only 4 digits after the decimal point
+                if (newValue.includes(".")) {
+                  const parts = newValue.split(".");
+                  parts[1] = parts[1].slice(0, 4);
+                  newValue = parts.join(".");
+                }
+
                 event.target.value = newValue;
               }}
               onBlur={(event) => {

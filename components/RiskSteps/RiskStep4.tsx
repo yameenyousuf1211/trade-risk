@@ -17,6 +17,7 @@ export const RiskStep4 = ({
   setValue,
   watch,
 }: Props) => {
+  const {importerInfo} = watch()
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">
@@ -36,6 +37,7 @@ export const RiskStep4 = ({
           <Input
             type="text"
             name="importerInfo.applicantName"
+            value={importerInfo?.applicantName}
             register={register}
             className="text-sm block bg-none text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Enter name"
@@ -45,6 +47,7 @@ export const RiskStep4 = ({
           placeholder="Select a country"
           label="Country of Import"
           id="importerInfo.countryOfImport"
+          value={importerInfo?.countryOfImport}
           data={countries}
           setValue={setValue}
           flags={flags}

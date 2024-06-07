@@ -104,10 +104,9 @@ export const onUpdateLC = async ({
   }
 };
 
-export const getBankLcStatus = async (id: string) => {
+export const getBankLcStatus = async (requestId: string, key: string) => {
   try {
-    const response = await api.get(`/lcs/status/check/${id}`);
-
+    const response = await api.get(`/lcs/status/check/${requestId}?key=${key}`);
     return { success: true, response: response.data };
   } catch (error) {
     console.error(error);

@@ -16,7 +16,7 @@ export const generalRiskSchema = z
       message: "Select transaction type",
     }),
     outrightSales: z
-      .enum(["Pre Sales", "Asset On Books", ], {
+      .enum(["Pre Sales", "Asset On Books"], {
         message: "Outright sales cannot be empty",
       })
       .optional(),
@@ -49,7 +49,7 @@ export const generalRiskSchema = z
         message: "Return offer",
       }),
 
-      baseRate: z.string({ message: '"Enter base rate"' }),
+      baseRate: z.string({ message: '"Enter base rate"' }).optional(),
       // .nonempty("Enter base rate"),
       // // .refine((value) => /^\d+$/.test(value),
       //  {
@@ -61,7 +61,8 @@ export const generalRiskSchema = z
       //   .nonempty("Enter per annum rate")
       //   .refine((value) => /^\d+$/.test(value), {
       //     message: "Enter a valid number",
-      //   }),
+      //   })
+      //   .optional(),
       participationRate: z.string({
         message: "Enter participation rate",
       }),
@@ -107,7 +108,7 @@ export const generalRiskSchema = z
     }),
     transhipment: z.string({ message: "Select transhipment" }),
     expectedDateConfirmation: z.date({
-      message: "sExpected date for confirmation cannot be empty",
+      message: "Expected date for confirmation cannot be empty",
     }),
     description: z
       .string()
@@ -137,24 +138,51 @@ export const generalRiskSchema = z
     attachment: z.any().optional(),
     note: z.string().nonempty({ message: "Note cannot be empty" }),
     // draft: z.boolean(),
-    // days: z
-    //   .string()
-    //   .nonempty("Enter days")
-    //   .refine((value) => /^\d+$/.test(value), {
-    //     message: "Enter a valid number",
-    //   }),
+    // days: z.string({ message: 'Enter days' }).optional())
+
+    days: z.string({ message: "Enter days" }).optional(),
   })
-  // .refine(
-  //   (data) => {
-  //     // If the transaction is "Outright Sales", outrightSales should be defined
-  //     if (data.transaction === "Outright Sales") {
-  //       return !!data.outrightSales;
-  //     }
-  //     return true;
-  //   },
-  //   {
-  //     message:
-  //       "Outright sales cannot be empty when transaction is 'Outright Sales'",
-  //     path: ["outrightSales"], // Indicate which field is causing the error
-  //   }
-  // );
+  .refine(
+    (data) => {
+      if (data.paymentTerms === "tenor" && !data.days) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Days cannot be empty when payment terms is 'Tenor LC'",
+      path: ["days"], // Indicate which field is causing the error
+    }
+  )
+  .refine(
+    (data) => {
+      if (
+        data.riskParticipation === "Funded" &&
+        !data.riskParticipationTransaction.perAnnum
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message:
+        "Base rate cannot be empty when risk participation is 'Funded'",
+      path: ["baseRate"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (
+        data.riskParticipation === "Funded" &&
+        !data.riskParticipationTransaction.perAnnum
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message:
+        "Per annum rate cannot be empty when risk participation is 'Funded'",
+      path: ["perAnnum"],
+    }
+  );

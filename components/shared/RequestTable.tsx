@@ -19,7 +19,7 @@ import {
 import { Button } from "../ui/button";
 import { TableDialog } from "./TableDialog";
 import { columnHeaders, bankColumnHeaders } from "@/utils/data";
-import { ApiResponse, Country, ILcs } from "@/types/type";
+import { ApiResponse, Country, ILcs, IRisk } from "@/types/type";
 import { compareValues, convertDateToString } from "@/utils";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -43,9 +43,11 @@ export const RequestTable = ({
   isBank,
   data,
   isLoading,
+  isRisk = false,
 }: {
   isBank: boolean;
-  data: ApiResponse<ILcs> | undefined;
+  isRisk?: boolean;
+  data: ApiResponse<ILcs> | IRisk | undefined;
   isLoading: boolean;
 }) => {
   const [allCountries, setAllCountries] = useState<Country[]>([]);
@@ -151,7 +153,7 @@ export const RequestTable = ({
           <div className="flex items-center gap-x-2">
             {isBank && (
               <>
-                <ProductFilter />
+                <ProductFilter isRisk={isRisk} />
                 <BidsCountrySelect />
               </>
             )}
@@ -175,7 +177,12 @@ export const RequestTable = ({
                         className="font-roboto px-2 h-8 py-0.5 min-w-32"
                         onClick={() => handleSort(header.name)}
                       >
-                        <div className="capitalize flex text-[#44444F] items-center gap-x-2 justify-center text-[12px] font-semibold">
+                        <div
+                          className={`capitalize flex text-[#44444F] items-center gap-x-2 justify-center text-[12px] font-semibold ${
+                            header?.name == "LC Issuing Bank" &&
+                            "!justify-start"
+                          }`}
+                        >
                           {header.name}
                           <div
                             onClick={() => handleSort(header.key)}
@@ -191,14 +198,18 @@ export const RequestTable = ({
                         key={`${header}-${idx}`}
                         className="font-roboto rounded-md px-2 h-8 py-0.5 min-w-32"
                       >
-                        <div className="capitalize flex text-[#44444F]  items-center gap-x-2 justify-center text-[12px] font-semibold">
+                        <div
+                          className={`capitalize flex text-[#44444F]  items-center gap-x-2 justify-center text-[12px] font-semibold ${
+                            header == "LC Issuing Bank" && "!justify-start"
+                          }`}
+                        >
                           {header}
                           <div
                             onClick={() => handleSort(header)}
                             className={`border border-primaryCol center rounded-full size-4 ${
                               sortedKey.includes(header) &&
                               "bg-primaryCol text-white"
-                            } hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer`}
+                            }  hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer`}
                           >
                             <ChevronUp className="size-4" />
                           </div>
@@ -223,21 +234,26 @@ export const RequestTable = ({
                   <TableRow key={index} className="border-none font-roboto">
                     <TableDataCell
                       data={
-                        item.period &&
-                        item.period.startDate &&
-                        convertDateToString(item.period.startDate)
+                        item?.period?.startDate
+                          ? convertDateToString(item?.period?.startDate)
+                          : convertDateToString((item as IRisk)?.startDate)
                       }
                     />
                     <TableDataCell
                       data={
-                        item.period &&
-                        item.period.endDate &&
-                        convertDateToString(item.period.endDate)
+                        item?.period?.endDate
+                          ? convertDateToString(item?.period?.endDate)
+                          : convertDateToString((item as IRisk)?.expiryDate)
                       }
                     />
-                    <TableDataCell data={item.type || ""} />
+                    <TableDataCell
+                      data={
+                        item?.type ||
+                        (item as IRisk).riskParticipationTransaction?.type
+                      }
+                    />
                     <TableCell className="px-1 py-1 max-w-[180px]">
-                      <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
+                      <div className="flex items-center justify-start gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <p className="text-[16px] emoji-font">
                           {item.issuingBank &&
                             allCountries &&
@@ -256,18 +272,39 @@ export const RequestTable = ({
                     />
                     <TableDataCell
                       data={
-                        `${
-                          item.currency ? item.currency.toUpperCase() : "USD"
-                        } ` +
-                        item.amount?.price?.toLocaleString() +
-                        ".00"
+                        item?.amount
+                          ? `${
+                              item?.currency
+                                ? item.currency.toUpperCase()
+                                : "USD"
+                            } ` +
+                            item?.amount?.price?.toLocaleString() +
+                            ".00"
+                          : `${
+                              item?.currency
+                                ? item.currency.toUpperCase()
+                                : "USD"
+                            } ` +
+                            (
+                              item as IRisk
+                            )?.riskParticipationTransaction?.amount?.toLocaleString() +
+                            ".00"
                       }
                     />
                     <TableCell className="px-1 py-1 max-w-[200px]">
-                      <TableBidStatus id={item._id} lcData={item} />
+                      <TableBidStatus
+                        id={item._id}
+                        lcData={item}
+                        isRisk={isRisk}
+                      />
                     </TableCell>
                     <TableCell className="px-1 py-1 max-w-[200px]">
-                      <TableDialog lcId={item._id} bids={item.bids} isBank />
+                      <TableDialog
+                        lcId={item._id}
+                        bids={item.bids}
+                        isBank
+                        isRisk={isRisk}
+                      />
                     </TableCell>
                   </TableRow>
                 ))
@@ -277,24 +314,34 @@ export const RequestTable = ({
                     <TableCell className="px-1 py-1 min-w-[90px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <div className="tex-sm truncate text-lightGray">
-                          {item.refId}
+                          {item?.refId ? item?.refId : item?.refId}
                         </div>
                       </div>
                     </TableCell>
                     <TableDataCell
                       data={
-                        item.period &&
-                        convertDateToString(item.period?.startDate)
+                        (item as ILcs)?.period
+                          ? convertDateToString(item?.period?.startDate)
+                          : (item as IRisk)?.startDate &&
+                            convertDateToString((item as IRisk)?.startDate)
                       }
                     />
                     <TableDataCell
                       data={
-                        item.period && convertDateToString(item.period?.endDate)
+                        (item as ILcs)?.period
+                          ? convertDateToString(item?.period?.endDate)
+                          : (item as IRisk)?.expiryDate &&
+                            convertDateToString((item as IRisk)?.expiryDate)
                       }
                     />
-                    <TableDataCell data={item.type} />
+                    <TableDataCell
+                      data={
+                        item?.type ||
+                        (item as IRisk)?.riskParticipationTransaction?.type
+                      }
+                    />
                     <TableCell className="px-1 py-1 max-w-[180px]">
-                      <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
+                      <div className="flex items-center justify-start gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <p className="text-[16px] emoji-font">
                           {item.issuingBank &&
                             allCountries &&
@@ -321,11 +368,23 @@ export const RequestTable = ({
                     />
                     <TableDataCell
                       data={
-                        `${
-                          item.currency ? item.currency.toUpperCase() : "USD"
-                        } ` +
-                        item.amount?.price?.toLocaleString() +
-                        ".00"
+                        item?.amount
+                          ? `${
+                              item?.currency
+                                ? item.currency.toUpperCase()
+                                : "USD"
+                            } ` +
+                            item?.amount?.price?.toLocaleString() +
+                            ".00"
+                          : `${
+                              item?.currency
+                                ? item.currency.toUpperCase()
+                                : "USD"
+                            } ` +
+                            (
+                              item as IRisk
+                            )?.riskParticipationTransaction?.amount?.toLocaleString() +
+                            ".00"
                       }
                     />
 
@@ -338,7 +397,11 @@ export const RequestTable = ({
                       </Button>
                     </TableCell>
                     <TableCell className="px-1 py-1 max-w-[200px]">
-                      <TableDialog lcId={item._id} bids={item.bids} />
+                      <TableDialog
+                        lcId={item._id}
+                        bids={item.bids}
+                        isRisk={isRisk}
+                      />
                     </TableCell>
                   </TableRow>
                 ))

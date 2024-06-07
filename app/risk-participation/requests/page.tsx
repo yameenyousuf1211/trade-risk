@@ -22,7 +22,7 @@ interface Props {
   };
 }
 
-const RiskParticipationPage = ({ searchParams }: Props) => {
+const RiskRequestPage = ({ searchParams }: Props) => {
   const { page, limit, search, filter } = searchParams;
   const { user } = useAuth();
   const pathname = usePathname();
@@ -35,7 +35,7 @@ const RiskParticipationPage = ({ searchParams }: Props) => {
       queryFn: () =>
         fetchRisk({
           draft: false,
-          createdBy: true,
+          createdBy: false,
           page: page,
           limit: 7,
         }),
@@ -58,7 +58,7 @@ const RiskParticipationPage = ({ searchParams }: Props) => {
                 >
                   My Risks
                 </Link>
-                {pathname.includes("/risk-participation") && (
+                {pathname == "/risk-participation" && (
                   <div className="absolute bottom-0 h-0.5 w-full bg-primaryCol" />
                 )}
               </div>
@@ -69,17 +69,22 @@ const RiskParticipationPage = ({ searchParams }: Props) => {
                 >
                   Other Requests
                 </Link>
-                {pathname.includes("/requests") && (
+                {pathname == "/risk-participation/requests" && (
                   <div className="absolute bottom-0 h-0.5 w-full bg-primaryCol" />
                 )}
               </div>
             </div>
-            <RequestTable data={data} isLoading={isLoading} isRisk={true} />
+            <RequestTable
+              data={data}
+              isBank={true}
+              isLoading={isLoading}
+              isRisk={true}
+            />
           </div>
         </div>
 
         <div className="2xl:w-1/6 w-1/5 sticky top-10 h-[80vh]">
-          <Sidebar riskType="myRisk" isRisk={true} isBank={false} createMode />
+          <Sidebar riskType="other" isRisk={true} isBank={true} createMode />
         </div>
       </div>
 
@@ -111,4 +116,4 @@ const RiskParticipationPage = ({ searchParams }: Props) => {
   );
 };
 
-export default RiskParticipationPage;
+export default RiskRequestPage;

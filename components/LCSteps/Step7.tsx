@@ -44,11 +44,19 @@ const FileCard = ({
 export const Step7 = ({
   register,
   step,
+  setStepCompleted,
 }: {
   register: UseFormRegister<any>;
   step: number;
+  setStepCompleted: any;
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
+
+  useEffect(() => {
+    if (selectedFiles && selectedFiles?.length > 0) {
+      setStepCompleted(6, true);
+    }
+  }, [selectedFiles]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;

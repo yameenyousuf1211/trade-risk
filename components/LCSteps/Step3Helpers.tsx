@@ -27,12 +27,14 @@ export const ValidatingCalendar = ({
   onClose,
   isPast,
   maxDate,
+  startDate,
 }: {
   initialDate: Date | undefined;
   onChange: (date: Date) => void;
   onClose: any;
   isPast?: boolean;
   maxDate?: Date | string | undefined;
+  startDate?: Date | string;
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
@@ -56,6 +58,8 @@ export const ValidatingCalendar = ({
     <Calendar
       mode="single"
       selected={selectedDate}
+      defaultMonth={(startDate as Date) && (startDate as Date)} // Start the calendar from this date
+      disabled={(startDate as Date) && { before: startDate as Date }} // Disable all previous dates
       // @ts-ignore
       onSelect={handleDateSelect}
       initialFocus
@@ -77,6 +81,7 @@ export const Period = ({
   let lcStartDate = watch("period.startDate");
   let lcEndDate = watch("period.endDate");
   let lcPeriodType = watch("period.expectedDate");
+  const [startDate, setStartDate] = useState<any>("");
 
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
@@ -103,7 +108,7 @@ export const Period = ({
   useEffect(() => {
     const fetchPorts = async () => {
       const { success, response } = await getPorts(shipmentCountry);
-      if (success) setPorts(response[0].ports);
+      if (success) setPorts(response[0]?.ports);
       else setPorts([]);
     };
 
@@ -185,6 +190,7 @@ export const Period = ({
                   initialDate={lcStartDate}
                   onChange={(date) => {
                     updateValue("period.startDate", date);
+                    setStartDate(date);
                   }}
                   onClose={() => setDatePopoverOpen(false)}
                   isPast
@@ -194,6 +200,7 @@ export const Period = ({
                   initialDate={lcStartDate}
                   onChange={(date) => {
                     updateValue("period.startDate", date);
+                    setStartDate(date);
                   }}
                   onClose={() => setDatePopoverOpen(false)}
                 />
@@ -223,9 +230,11 @@ export const Period = ({
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <ValidatingCalendar
+                startDate={startDate}
                 initialDate={lcEndDate}
                 onChange={(date) => {
                   updateValue("period.endDate", date);
+                  setStartDate("");
                 }}
                 onClose={() => setIsPopoverOpen(false)}
               />

@@ -49,13 +49,21 @@ export const Step2 = ({
   const [rawValue, setRawValue] = useState("");
   const [otherValue, setOtherValue] = useState("");
 
+  useEffect(() => {
+    if (paymentTerms === "Sight LC") {
+      setValue("extraInfo", undefined);
+    }
+  }, [paymentTerms]);
+
   const handleChange = (e: any) => {
     const { value } = e.target;
 
     const digitsOnly = value.replace(/\D/g, "");
     if (digitsOnly) {
       const formattedValue = parseInt(digitsOnly).toLocaleString();
+      console.log(formattedValue, "FORMATTED");
       setCurrencyValue(formattedValue);
+      console.log(currencyValue);
       setRawValue(digitsOnly);
       setValue("amount", digitsOnly);
     } else {
@@ -72,13 +80,25 @@ export const Step2 = ({
       ).toLocaleString()}.00`;
       setCurrencyValue(formattedValueWithCents);
     }
+    
   };
 
+  // useEffect(() => {
+  //   if (amount) {
+  //     setValue("amount", amount.toString());
+  //     setCurrencyValue(amount);
+  //     setRawValue(amount);
+  //   }
+  // }, [amount]);
   useEffect(() => {
     if (amount) {
-      setValue("amount", amount.toString());
-      setCurrencyValue(amount);
-      setRawValue(amount);
+      const digitsOnly = amount?.toString().replace(/\D/g, "");
+      if (digitsOnly) {
+        const formattedValue = parseInt(digitsOnly).toLocaleString();
+        setCurrencyValue(formattedValue);
+        setRawValue(amount);
+        setValue("amount", amount.toString());
+      }
     }
   }, [amount]);
 
@@ -86,7 +106,7 @@ export const Step2 = ({
     if (amount && paymentTerms) {
       setStepCompleted(1, true);
     }
-    if (paymentTerms !== "Sight LC") setValue("extraInfo", undefined);
+    // if (paymentTerms !== "Sight LC") setValue("extraInfo", undefined);
   }, [amount, paymentTerms]);
 
   return (

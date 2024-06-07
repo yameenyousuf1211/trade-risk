@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { AddBid } from "./AddBid";
 import { fetchAllLcs, fetchLcs } from "@/services/apis/lcs.api";
-import { ApiResponse, IBids, ILcs } from "@/types/type";
+import { ApiResponse, IBids, ILcs, IRisk } from "@/types/type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatLeftDate, formatLeftDays } from "@/utils";
 import useLoading from "@/hooks/useLoading";
@@ -24,19 +24,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TableDialog } from "./TableDialog";
+import { usePathname } from "next/navigation";
+import { fetchRisk } from "@/services/apis/risk.api";
 
-const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
+const SliderCard = ({
+  info,
+  isRisk = false,
+  lcData,
+}: {
+  info: IBids;
+  isRisk?: boolean;
+  lcData: ILcs;
+}) => {
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["fetch-lcs"] });
+      queryClient.invalidateQueries({
+        queryKey: ["bid-status"],
+      });
     },
   });
 
   const handleSubmit = async (status: string, id: string) => {
-    const { success, response } = await mutateAsync({ status, id });
+    const { success, response } = await mutateAsync({
+      status,
+      id,
+      key: isRisk ? "risk" : "lc",
+    });
     if (!success) return toast.error(response as string);
     else return toast.success(`Bid ${status}`);
   };
@@ -72,19 +88,30 @@ const SliderCard = ({ info, lcData }: { info: IBids; lcData: ILcs }) => {
   );
 };
 
-const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
+const RequestCard = ({
+  isBank,
+  isRisk,
+  riskType,
+  data,
+}: {
+  isBank: boolean;
+  isRisk?: boolean;
+  riskType?: string;
+  data: ILcs | IRisk;
+}) => {
   const { user } = useAuth();
   const pendingBids =
-    data.status !== "Expired"
+    data?.status !== "Expired"
       ? data.bids.filter((bid) => bid.status === "Pending")
       : [];
   const showData = !data.bids.some((bid) => bid.bidBy === user?._id);
+
   return (
     <>
-      {isBank ? (
+      {isBank && riskType !== "myRisk" ? (
         showData &&
         data.status !== "Expired" &&
-        data.status === "Add bid" && (
+        (data.status == "Add Bid" || data.status == "Pending") && (
           <>
             <div className="px-3 py-2 flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
               {/* Data */}
@@ -93,20 +120,30 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
                   Request #{data.refId}
                 </p>
                 <p className="capitalize text-lg font-semibold my-1">
-                  {data.createdBy?.[0]?.name || ""}
+                  {(data as ILcs).createdBy?.[0]?.name || ""}
                 </p>
 
                 <p className="text-sm flex items-center flex-wrap">
-                  <span className="text-text">{data.type || ""}</span>
+                  <span className="text-text">
+                    {(data as ILcs)?.type ||
+                      (data as IRisk)?.riskParticipationTransaction?.type}
+                  </span>
                 </p>
 
                 <p className="text-para text-sm">Request Expiry</p>
                 <p className="text-red-500 font-medium text-sm mb-2">
-                  {formatLeftDate(data.period?.endDate) || ""}
+                  {(data as ILcs)?.period?.endDate
+                    ? formatLeftDays((data as ILcs)?.period?.endDate)
+                    : formatLeftDays((data as IRisk)?.expiryDate)}{" "}
                 </p>
                 <h3 className="font-poppins text-xl font-semibold uppercase">
                   {data.currency ?? "USD"}{" "}
-                  {data.amount?.price?.toLocaleString() + ".00"}
+                  {(data as ILcs)?.amount
+                    ? (data as ILcs).amount?.price?.toLocaleString() + ".00"
+                    : (
+                        data as IRisk
+                      ).riskParticipationTransaction?.amount?.toLocaleString() +
+                      ".00"}
                 </h3>
               </div>
 
@@ -115,9 +152,12 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
                 status="Add bid"
                 isBank
                 isDiscount={
-                  (data.type && data.type.includes("Discount")) || false
+                  ((data as ILcs).type &&
+                    (data as ILcs).type.includes("Discount")) ||
+                  false
                 }
-                lcId={data._id}
+                id={data._id}
+                isRisk={isRisk}
               />
             </div>
           </>
@@ -131,15 +171,25 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
             </p>
 
             <p className="font-roboto text-sm flex items-center flex-wrap">
-              <span className="text-text">{data.type}</span>
+              <span className="text-text">
+                {(data as ILcs)?.type ||
+                  (data as IRisk)?.riskParticipationTransaction?.type}
+              </span>
               <span className="text-para text-[10px] flex items-center">
                 <Dot />
-                {formatLeftDays(data.period?.endDate)}
+                {(data as ILcs)?.period?.endDate
+                  ? formatLeftDays((data as ILcs)?.period?.endDate)
+                  : formatLeftDays((data as IRisk)?.expiryDate)}
               </span>
             </p>
             <h3 className="text-xl font-semibold uppercase">
               {data.currency || "USD"}{" "}
-              {data.amount?.price?.toLocaleString() + ".00"}
+              {(data as ILcs)?.amount
+                ? (data as ILcs).amount?.price?.toLocaleString() + ".00"
+                : (
+                    data as IRisk
+                  ).riskParticipationTransaction?.amount?.toLocaleString() +
+                  ".00"}
             </h3>
             <div className="flex items-center justify-between gap-x-2">
               <p className="font-roboto text-gray-500 text-sm">
@@ -160,7 +210,12 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
             >
               {pendingBids.map((info: IBids) => (
                 <SwiperSlide key={info._id}>
-                  <SliderCard info={info} lcData={data} key={info._id} />
+                  <SliderCard
+                    isRisk={isRisk}
+                    info={info}
+                    lcData={data}
+                    key={info._id}
+                  />
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -174,18 +229,23 @@ const RequestCard = ({ isBank, data }: { isBank: boolean; data: ILcs }) => {
 export const Sidebar = ({
   isBank,
   createMode,
+  isRisk = false,
+  riskType,
 }: {
   isBank: boolean;
   createMode?: boolean;
+  isRisk?: boolean;
+  riskType?: string;
 }) => {
   const { user } = useAuth();
+  const pathname = usePathname();
   const { startLoading, stopLoading, isLoading } = useLoading();
 
   const {
     data,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
-      queryKey: ["fetch-lcs"],
+      queryKey: ["bid-status", "fetch-lcs", "fetch-risks"],
       queryFn: () => fetchLcs({ userId: user._id }),
       enabled: !!user?._id,
     });
@@ -194,10 +254,23 @@ export const Sidebar = ({
     data: allLcs,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
-      queryKey: ["fetch-all-lcs"],
+      queryKey: ["bid-status", "fetch-all-lcs"],
       queryFn: () => fetchAllLcs({ limit: 20 }),
       enabled: !!user?._id,
     });
+
+  const {
+    data: allRisk,
+  }: { data: ApiResponse<IRisk> | undefined; error: any; isLoading: boolean } =
+    useQuery({
+      queryKey: ["bid-status", "fetch-risks"],
+      queryFn: () =>
+        fetchRisk({ createdBy: riskType === "myRisk" ? true : false }),
+      enabled: !!user?._id,
+    });
+
+  console.log(allRisk, "ALL_RISKS");
+  console.log(allLcs, "ALL_LCS");
 
   const getHeaders = (data: any) => {
     const headers = new Set();
@@ -346,7 +419,6 @@ export const Sidebar = ({
       stopLoading();
     }
   };
-  console.log(data,"SIDEBAR")
 
   const [generateType, setGenerateType] = useState("csv");
 
@@ -396,7 +468,6 @@ export const Sidebar = ({
           </Button>
         </div>
       )}
-
       <div className="bg-white border border-borderCol py-4 px-5 mt-5 rounded-lg min-h-[70%] max-h-[80%] overflow-y-auto overflow-x-hidden flex flex-col justify-between">
         <div>
           <h4
@@ -407,7 +478,19 @@ export const Sidebar = ({
             {isBank ? "Needs Action" : "Needs your attention"}
           </h4>
           <div className="flex flex-col gap-y-5">
-            {isBank
+            {isRisk
+              ? allRisk &&
+                allRisk?.data &&
+                allRisk?.data.map((item: ILcs) => (
+                  <RequestCard
+                    riskType={riskType}
+                    isRisk={isRisk}
+                    isBank={isBank}
+                    data={item}
+                    key={item._id}
+                  />
+                ))
+              : isBank
               ? allLcs &&
                 allLcs.data &&
                 allLcs.data.map((item: ILcs) => (

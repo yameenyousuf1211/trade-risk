@@ -309,6 +309,7 @@ interface ShipmentPort {
 }
 
 export interface IRisk {
+  refId?: string;
   advisingBank: Bank;
   attachment: any[]; // Adjust the type as needed for attachments
   banks: string[];
@@ -334,8 +335,25 @@ export interface IRisk {
   startDate: string; // ISO date string
   transaction: string;
   transhipment: boolean;
+  currency: string;
+  bids: IBidsInfo[];
+  bidsCount: number;
   __v: number;
   _id: string;
-  createdAt :Date
+  createdAt: Date;
+  updatedAt: Date;
 }
 
+export interface IBidsInfo {
+  _id: string;
+  validity: Date;
+  bidBy: string;
+  amount: number;
+  status: string;
+  userInfo: {
+    name: string;
+    email: string;
+    _id: string;
+    country: string;
+  };
+}

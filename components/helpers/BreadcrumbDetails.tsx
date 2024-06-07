@@ -14,7 +14,8 @@ import { ApiResponse, ILcs } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import { fetchLcs } from "@/services/apis/lcs.api";
 import useStepStore from "@/store/lcsteps.store";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, XIcon } from "lucide-react";
+import Link from "next/link";
 
 const Separator = () => {
   return (
@@ -41,7 +42,7 @@ export const BreadcrumbDetails = () => {
     "Attachments",
   ];
 
-  const { stepStatus } = useStepStore();
+  const { stepStatus, isSubmitted } = useStepStore();
 
   const { user } = useAuth();
   const pathname = usePathname();
@@ -63,11 +64,11 @@ export const BreadcrumbDetails = () => {
     data.data.length > 0 &&
     data?.data.filter((draft) => {
       if (isConfirmation) {
-        return draft.lcType === "LC Confirmation";
+        return draft.type === "LC Confirmation";
       } else if (isDiscounting) {
-        return draft.lcType === "LC Discounting";
+        return draft.type === "LC Discounting";
       } else if (isConfirmationDiscounting) {
-        return draft.lcType === "LC Confirmation & Discounting";
+        return draft.type === "LC Confirmation & Discounting";
       } else {
         return true;
       }
@@ -85,6 +86,11 @@ export const BreadcrumbDetails = () => {
                     <CheckIcon color="#29C084" size={20} />
                   </div>
                 )}
+                {isSubmitted && !stepStatus[idx] && (
+                  <div>
+                    <XIcon color="red" size={20} />
+                  </div>
+                )}
                 <BreadcrumbItem key={`${crumb}-${idx}`}>
                   <BreadcrumbLink href={`${pathname}#step${idx + 1}`}>
                     {crumb}
@@ -96,10 +102,11 @@ export const BreadcrumbDetails = () => {
           ))}
         </BreadcrumbList>
       </Breadcrumb>
-
-      <Button className="bg-transparent text-para hover:bg-para hover:text-white rounded-lg py-1 border border-para">
-        Drafts ({(filteredData && filteredData.length) || 0})
-      </Button>
+      <Link href="#step7">
+        <Button className="bg-transparent text-para hover:bg-para hover:text-white rounded-lg py-1 border border-para">
+          Drafts ({(filteredData && filteredData.length) || 0})
+        </Button>
+      </Link>
     </div>
   );
 };

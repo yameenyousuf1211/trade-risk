@@ -140,6 +140,8 @@ const RiskFundedPage = () => {
       delete reqData?._id;
       // @ts-ignore
       delete reqData?.status;
+      // @ts-ignore
+      delete reqData?.refId;
 
       try {
         startLoading();

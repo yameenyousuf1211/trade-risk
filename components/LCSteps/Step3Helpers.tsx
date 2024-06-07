@@ -21,20 +21,20 @@ import {
   UseFormSetValue,
 } from "react-hook-form";
 
+let startDate: Date;
+
 export const ValidatingCalendar = ({
   initialDate,
   onChange,
   onClose,
   isPast,
   maxDate,
-  startDate,
 }: {
   initialDate: Date | undefined;
   onChange: (date: Date) => void;
   onClose: any;
   isPast?: boolean;
   maxDate?: Date | string | undefined;
-  startDate?: Date 
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
@@ -58,7 +58,8 @@ export const ValidatingCalendar = ({
     <Calendar
       mode="single"
       selected={selectedDate}
-      disabled={selectedDate && { before: startDate as Date }} // Disable all previous dates
+      defaultMonth={startDate && startDate} // Start the calendar from this date
+      disabled={startDate && { before: startDate as Date }} // Disable all previous dates
       // @ts-ignore
       onSelect={handleDateSelect}
       initialFocus
@@ -197,6 +198,7 @@ export const Period = ({
                   initialDate={lcStartDate}
                   onChange={(date) => {
                     updateValue("period.startDate", date);
+                    startDate = date;
                   }}
                   onClose={() => setDatePopoverOpen(false)}
                 />
@@ -226,7 +228,6 @@ export const Period = ({
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <ValidatingCalendar
-                startDate={lcStartDate}
                 initialDate={lcEndDate}
                 onChange={(date) => {
                   updateValue("period.endDate", date);

@@ -80,6 +80,7 @@ export const Step2 = ({
       ).toLocaleString()}.00`;
       setCurrencyValue(formattedValueWithCents);
     }
+    
   };
 
   // useEffect(() => {

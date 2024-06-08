@@ -22,6 +22,7 @@ import { fetchSingleLc } from "@/services/apis/lcs.api";
 import { cn } from "@/lib/utils";
 import { fetchSingleRisk } from "@/services/apis/risk.api";
 import { IRisk } from "@/types/type";
+import { DDInput } from "../LCSteps/helpers";
 
 const LCInfo = ({
   label,
@@ -150,42 +151,44 @@ export const AddBid = ({
   return (
     <Dialog>
       {isRisk ? (
-      <DialogTrigger
-      className={`${
-        riskData &&
-        (riskData?.status === "Expired" || riskData?.status === "Accepted") &&
-        (status === "Add bid" || status === "Rejected")
-          ? "bg-[#1A1A26] text-white text-sm"
-          : status === "Rejected"
-          ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
-              border && "border border-[#D20000]"
-            }`
-          : status === "Accepted"
-          ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
-              border && "border border-[#29C084]"
-            }`
-          : status === "Expired"
-          ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
-              border &&
-              "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
-            }`
-          : status === "Add bid" 
-          ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
-          : status === "Add bid" 
-          ? "bg-[#1A1A26] text-white text-sm"
-          : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
-      } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
-      disabled={
-        (riskData?.status === "Expired" || riskData?.status === "Accepted") &&
-        (status === "Add bid" || status === "Rejected")
-      }
-    >
-      {riskData &&
-      (riskData?.status === "Expired" || riskData?.status === "Accepted") &&
-      (status === "Add bid" || status === "Rejected")
-        ? "Not Applicable"
-        : triggerTitle || "Pending"}
-    </DialogTrigger>
+        <DialogTrigger
+          className={`${
+            riskData &&
+            (riskData?.status === "Expired" ||
+              riskData?.status === "Accepted") &&
+            (status === "Add bid" || status === "Rejected")
+              ? "bg-[#1A1A26] text-white text-sm"
+              : status === "Rejected"
+              ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
+                  border && "border border-[#D20000]"
+                }`
+              : status === "Accepted"
+              ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
+                  border && "border border-[#29C084]"
+                }`
+              : status === "Expired"
+              ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
+                  border &&
+                  "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
+                }`
+              : status === "Add bid"
+              ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
+              : status === "Add bid"
+              ? "bg-[#1A1A26] text-white text-sm"
+              : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
+          } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
+          disabled={
+            (riskData?.status === "Expired" ||
+              riskData?.status === "Accepted") &&
+            (status === "Add bid" || status === "Rejected")
+          }
+        >
+          {riskData &&
+          (riskData?.status === "Expired" || riskData?.status === "Accepted") &&
+          (status === "Add bid" || status === "Rejected")
+            ? "Not Applicable"
+            : triggerTitle || "Pending"}
+        </DialogTrigger>
       ) : (
         <DialogTrigger
           className={`${
@@ -720,19 +723,31 @@ export const AddBid = ({
                     <div className="flex flex-col gap-y-3 items-center w-full">
                       <label
                         id="base-rate"
-                        className="border border-borderCol py-2.5 px-3 rounded-md w-full flex items-center justify-between"
+                        className="border border-borderCol py -2 .5 px-3 rounded-md w-full flex items-center justify-between"
                       >
-                        <p className="text-sm w-full text-muted-foreground">
+                        <p className="text-sm w-full text-black text-m uted-foreground">
                           Select Base Rate
                         </p>
-                        <input
+                        {/* <input
                           type="number"
                           id="base-rate"
                           value={discountBaseRate}
                           onChange={(e) => setDiscountBaseRate(e.target.value)}
                           className="max-w-[120px] text-sm block bg-none border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                           placeholder="0"
-                        />
+                        /> */}
+                        <div className="text-end">
+                          <DDInput
+                            id="baseRate"
+                            label="Base Rate"
+                            type="baseRate"
+                            value={discountBaseRate}
+                            placeholder="Select Value"
+                            setValue={setValue}
+                            onSelectValue={(value) => setDiscountBaseRate(value)}
+                            data={["KIBOR", "LIBOR", "SOFR"]}
+                          />
+                        </div>
                       </label>
                       <Plus strokeWidth={4.5} className="size-4" />
                       <input

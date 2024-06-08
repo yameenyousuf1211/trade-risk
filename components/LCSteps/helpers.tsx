@@ -27,6 +27,7 @@ export const DDInput = ({
   setValue,
   flags,
   type,
+  onSelectValue,
 }: {
   id: string;
   label: string;
@@ -37,6 +38,7 @@ export const DDInput = ({
   disabled?: boolean;
   type?: string;
   setValue: UseFormSetValue<any>;
+  onSelectValue?: (value: string) => void;
 }) => {
   const [ddOpen, setDdOpen] = useState(false);
   const [ddVal, setDdVal] = useState("");
@@ -98,6 +100,7 @@ export const DDInput = ({
                       );
                       setDdOpen(false);
                       setValue(id, currentValue, { shouldValidate: true });
+                      onSelectValue && onSelectValue(currentValue);
                     }}
                   >
                     <Check

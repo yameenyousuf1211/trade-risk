@@ -72,7 +72,7 @@ export const addBid = async ({
       ? {
           ...baseData,
           discountMargin,
-          discountBaseRate,
+          discountBaseRate: 20,
         }
       : baseData;
     const { data } = await api.post(`/bids`, reqData);

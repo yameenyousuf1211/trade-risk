@@ -277,3 +277,7 @@ input[type="checkbox"]:checked::after {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+.scroll-target {
+  scroll-margin-top: 80px; /* Adjust the value as needed */
+}

@@ -40,17 +40,28 @@ export const Step3 = ({
   let confirmingBank = watch("confirmingBank.bank");
   let confirming2Country = watch("confirmingBank2.country");
   let confirming2Bank = watch("confirmingBank2.bank");
-  let expectedDate = watch("lcPeriod.expectedDate");
-  let startDate = watch("lcPeriod.startDate");
-  let endDate = watch("lcPeriod.endDate");
+  let expectedDate = isDiscount
+    ? watch("expectedDiscountingDate")
+    : watch("expectedConfirmationDate");
+  let startDate = watch("period.startDate");
+  let endDate = watch("period.endDate");
   let productDescription = watch("productDescription");
+  let shipmentCountry = watch("shipmentPort.country");
+  let shipmentPort = watch("shipmentPort.port");
+  let transhipment = watch("transhipment");
 
   useEffect(() => {
     if (
       issuingCountry &&
-      issuingBank 
+      issuingBank &&
+      startDate &&
+      endDate &&
+      expectedDate &&
+      productDescription &&
+      shipmentCountry &&
+      shipmentPort &&
+      transhipment
     ) {
-
       setStepCompleted(2, true);
     }
     if (confirmingCountry) setShowConfirmingBank(true);
@@ -59,11 +70,15 @@ export const Step3 = ({
     }
   }, [
     issuingCountry,
+    issuingBank,
     confirmingCountry,
     startDate,
     endDate,
     productDescription,
     expectedDate,
+    shipmentCountry,
+    shipmentPort,
+    transhipment,
   ]);
 
   const { data: issuingBanks } = useQuery({
@@ -87,7 +102,7 @@ export const Step3 = ({
   return (
     <div
       id="step3"
-      className="py-3 px-2 border border-borderCol rounded-lg w-full"
+      className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target"
     >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">

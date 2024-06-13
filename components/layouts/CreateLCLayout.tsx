@@ -3,6 +3,7 @@ import { BreadcrumbDetails, CreateTabs } from "../helpers";
 import { DraftsSidebar } from "../shared/DraftsSidebar";
 import { Button } from "../ui/button";
 import { BankDraftsSidebar } from "../shared/BansDraftsSidebar";
+import Link from "next/link";
 
 export default function AuthLayout({
   children,
@@ -29,9 +30,11 @@ export default function AuthLayout({
                 Select a request type to start creating a new request
               </p>
               {isRisk && (
-                <Button className="bg-transparent text-para hover:bg-para hover:text-white rounded-lg py-1 border border-para font-roboto">
-                  Drafts (0)
-                </Button>
+                <Link href="#draft">
+                  <Button className="bg-transparent text-para hover:bg-para hover:text-white rounded-lg py-1 border border-para font-roboto">
+                    Draft
+                  </Button>
+                </Link>
               )}
             </div>
             {!isRisk && (

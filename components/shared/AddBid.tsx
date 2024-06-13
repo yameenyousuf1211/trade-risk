@@ -22,7 +22,7 @@ import { fetchSingleLc } from "@/services/apis/lcs.api";
 import { cn } from "@/lib/utils";
 import { fetchSingleRisk } from "@/services/apis/risk.api";
 import { IRisk } from "@/types/type";
-import { DDInput } from "../LCSteps/helpers";
+import { BgRadioInput, DDInput } from "../LCSteps/helpers";
 
 const LCInfo = ({
   label,
@@ -75,6 +75,8 @@ export const AddBid = ({
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
+  const [confirmationPriceType, setConfirmationPriceType] = useState("");
+
   // Get LC
   const { data: lcData, isLoading } = useQuery({
     queryKey: [`single-lc`, id],
@@ -711,6 +713,27 @@ export const AddBid = ({
                     </span>
                   )}
                 </div>
+                <div className="flex gap-3">
+                  <BgRadioInput
+                    id="perAnnum"
+                    label="Per Annum"
+                    name="confirmationPriceType"
+                    value={"perAnnum"}
+                    register={register}
+                    onChange={(value) => setConfirmationPriceType(value)}
+                    checked={confirmationPriceType === "perAnnum"}
+                    
+                  />
+                  <BgRadioInput
+                    id="flat"
+                    label="Flat"
+                    name="confirmationPriceType"
+                    value={"flat"}
+                    register={register}
+                    checked={confirmationPriceType === "flat"}
+                    onChange={(value) => setConfirmationPriceType(value)}
+                  />
+                </div>
 
                 {isDiscount && (
                   <div className="">
@@ -744,7 +767,9 @@ export const AddBid = ({
                             value={discountBaseRate}
                             placeholder="Select Value"
                             setValue={setValue}
-                            onSelectValue={(value) => setDiscountBaseRate(value)}
+                            onSelectValue={(value) =>
+                              setDiscountBaseRate(value)
+                            }
                             data={["KIBOR", "LIBOR", "SOFR"]}
                           />
                         </div>

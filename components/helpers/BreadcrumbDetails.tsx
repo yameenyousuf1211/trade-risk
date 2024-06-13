@@ -16,6 +16,7 @@ import { fetchLcs } from "@/services/apis/lcs.api";
 import useStepStore from "@/store/lcsteps.store";
 import { CheckIcon, XIcon } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 const Separator = () => {
   return (
@@ -49,6 +50,11 @@ export const BreadcrumbDetails = () => {
   const isConfirmation = pathname === "/create-request";
   const isDiscounting = pathname === "/create-request/discount";
   const isConfirmationDiscounting = pathname === "/create-request/confirmation";
+
+  const  scrollToForm = () => {
+    document?.querySelector('#step1')?.scroll({behavior: 'smooth'});
+  }
+
 
   const {
     data,
@@ -91,10 +97,11 @@ export const BreadcrumbDetails = () => {
                     <XIcon color="red" size={20} />
                   </div>
                 )}
-                <BreadcrumbItem key={`${crumb}-${idx}`}>
-                  <BreadcrumbLink href={`${pathname}#step${idx + 1}`}>
+                
+                <BreadcrumbItem key={`${crumb}-${idx}`} >
+                  <Link  href={`${pathname}#step${idx + 1}`}>
                     {crumb}
-                  </BreadcrumbLink>
+                  </Link>
                 </BreadcrumbItem>
               </div>
               {idx !== crumbs.length - 1 && <Separator />}
@@ -104,7 +111,8 @@ export const BreadcrumbDetails = () => {
       </Breadcrumb>
       <Link href="#step7">
         <Button className="bg-transparent text-para hover:bg-para hover:text-white rounded-lg py-1 border border-para">
-          Drafts ({(filteredData && filteredData.length) || 0})
+          Draft
+          {/* ({(filteredData && filteredData.length) || 0}) */}
         </Button>
       </Link>
     </div>

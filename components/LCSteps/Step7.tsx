@@ -88,7 +88,7 @@ export const Step7 = ({
   return (
     <div
       id="step7"
-      className="w-full border border-borderCol rounded-lg py-3 px-4 h-full"
+      className="w-full border border-borderCol rounded-lg py-3 px-4 h-full scroll-target"
     >
       <div className="flex items-center gap-x-2 ml-2 mb-3">
         <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold text-sm">
@@ -98,7 +98,7 @@ export const Step7 = ({
       </div>
 
       <p className="font-semibold ml-3 text-sm">
-        Add Documents (PDF,JPG,PNG,TIFF)
+        Add Documents: <span className="font-medium"> e.g Drafts / Invoice </span> (PDF,JPG,PNG,TIFF)
       </p>
       <div className="bg-[#F5F7F9] p-1 mt-2 rounded-md">
         <label

@@ -26,11 +26,12 @@ const HomePage = ({ searchParams }: SearchParams) => {
     data,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
-      queryKey: ["fetch-lcs", page, limit, search, filter],
+      queryKey: ["bid-status", page, limit, search, filter],
       queryFn: () =>
         fetchLcs({ page, limit, search, filter, userId: user._id }),
       enabled: !!user?._id,
     });
+    console.log("fetching LCSSS",data)
 
   if (user && user.role !== "corporate") {
     redirect("/dashboard");

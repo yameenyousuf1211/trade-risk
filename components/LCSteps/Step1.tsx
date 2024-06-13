@@ -20,7 +20,7 @@ export const Step1 = ({
   return (
     <div
       id="step1"
-      className="py-3 px-2 border border-borderCol rounded-lg w-full"
+      className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target"
     >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">

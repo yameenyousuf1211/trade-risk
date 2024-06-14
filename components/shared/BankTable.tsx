@@ -26,6 +26,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "../../services/apis/helpers.api";
 import { TableDialog } from "./TableDialog";
 import { useAuth } from "@/context/AuthProvider";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const TableDataCell = ({ data }: { data: string | number }) => {
   return (
@@ -52,6 +53,8 @@ export const BankTable = ({
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [tableData, setTableData] = useState<(IBids | IRisk)[]>([]);
   const { user } = useAuth();
+  const filterParams = useSearchParams();
+  const filter = filterParams.get("filter");
 
   useEffect(() => {
     if (data && data.data) {
@@ -137,6 +140,13 @@ export const BankTable = ({
     setTableData(sortedData);
   };
 
+  const filteredHeaders =
+    filter === "LC Confirmation"
+      ? myBidsColumnHeaders.filter(
+          (header) => !["Discounting Rate", "Discount Margin"].includes(header)
+        )
+      : myBidsColumnHeaders;
+
   return (
     <div className="">
       <div className="flex items-center justify-between hide-scrollbar overflow-x-auto xl:gap-x-2 mb-2">
@@ -155,7 +165,7 @@ export const BankTable = ({
         <Table>
           <TableHeader className="bg-[#F0F0F0] hover:bg-[#F0F0F0]/90 p-2 rounded-lg">
             <TableRow className="py-0">
-              {myBidsColumnHeaders.map((header, idx) => (
+              {filteredHeaders?.map((header, idx) => (
                 <React.Fragment key={`${header}-${idx}`}>
                   {idx === 2 && isCorporate && (
                     <TableHead
@@ -231,23 +241,26 @@ export const BankTable = ({
                       "Not Applicable"
                     }
                   />
-                  <TableDataCell
-                    data={
-                      (item as IBids)?.discountBaseRate
-                        ? (item as IBids).discountBaseRate?.toLocaleString() +
-                          ".00%"
-                        : "Not Applicable"
-                    }
-                  />
+                  {filter !== "LC Confirmation" && (
+                    <>
+                      <TableDataCell
+                        data={
+                          (item as IBids)?.discountBaseRate
+                            ? (item as IBids).discountBaseRate
+                            : "Not Applicable"
+                        }
+                      />
 
-                  <TableDataCell
-                    data={
-                      (item as IBids)?.discountMargin
-                        ? (item as IBids).discountMargin?.toLocaleString() +
-                          ".00%"
-                        : "Not Applicable"
-                    }
-                  />
+                      <TableDataCell
+                        data={
+                          (item as IBids)?.discountMargin
+                            ? (item as IBids).discountMargin?.toLocaleString() +
+                              ".00%"
+                            : "Not Applicable"
+                        }
+                      />
+                    </>
+                  )}
                   <TableDataCell
                     data={
                       "USD " +

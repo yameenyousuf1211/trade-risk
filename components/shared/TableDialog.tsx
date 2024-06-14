@@ -31,15 +31,16 @@ const BidCard = ({
   isBank?: boolean;
   isRisk?: boolean;
 }) => {
+  console.log(data, "hhhhhhh");
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      // queryClient.invalidateQueries({ queryKey: [`fetch-lcs`, `fetch-risks`] });
-        queryClient.invalidateQueries({
-          queryKey: ["bid-status"],
-        });
+      queryClient.invalidateQueries({ queryKey: ["bid-status"] });
+      // queryClient.invalidateQueries({
+      //   queryKey: ["bid-status"],
+      // });
     },
   });
 
@@ -80,30 +81,34 @@ const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Confirmation Rate</p>
           <p className="text-lg font-semibold text-text">
-            {data.amount}% per annum
+            {data.amount}% {data?.perAnnum ? "per annum" : "flat"}
           </p>
         </div>
+        {/* {data.discountBaseRate && (
+          <div className={data.status === "Expired" ? "opacity-50" : ""}>
+            <p className="text-sm text-para mb-1">Discount Rate</p>
+            <p className="text-lg font-semibold ">
+              {data?.discountBaseRate
+                ? "USD " + data.discountBaseRate + ".00"
+                : "Not Applicable"}
+            </p>
+          </div>
+        )} */}
+        {data?.discountMargin && (
+          <div className={data.status === "Expired" ? "opacity-50" : ""}>
+            <p className="text-sm text-para mb-1">Discount Spread</p>
+            <p className="text-lg font-semibold ">
+              {data.discountMargin
+                ? data.discountMargin + "%"
+                : "Not Applicable"}
+            </p>
+          </div>
+        )}
 
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="text-sm text-para mb-1">Discount Rate</p>
-          <p className="text-lg font-semibold ">
-            {data.discountBaseRate
-              ? "USD " + data.discountBaseRate + ".00"
-              : "Not Applicable"}
-          </p>
-        </div>
-
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="text-sm text-para mb-1">Discount Margin</p>
-          <p className="text-lg font-semibold ">
-            {data.discountMargin ? data.discountMargin + "%" : "Not Applicable"}
-          </p>
-        </div>
-
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+        {/* <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Minimum Charges</p>
           <p className="text-lg font-semibold text-text">AED 30,000.00</p>
-        </div>
+        </div> */}
 
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Recieved</p>
@@ -232,10 +237,10 @@ export const TableDialog = ({
       >
         {isViewAll ? <p>View all</p> : <Eye className="size-5" />}
       </DialogTrigger>
-      <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
+      <DialogContent className="w-full max-w-4xl !p-0 !max-h-[95vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">
-            {(lcData && lcData.lcType) || ""}
+            {(lcData && lcData?.type) || ""}
           </h2>
           <DialogClose>
             <X className="size-7" />
@@ -394,7 +399,7 @@ export const TableDialog = ({
           ) : (
             <>
               <div className="w-full pb-5 border-r-2 border-r-borderCol h-full overflow-y-scroll max-h-[90vh] min-h-[85vh]">
-                <div className="px-4 pt-5 bg-[#F5F7F9]">
+                <div className="px-4 pt-2 bg-[#F5F7F9]">
                   <h2 className="text-2xl font-semibold mb-1">
                     <span className="text-para font-normal">LC Amount:</span>{" "}
                     USD{" "}
@@ -411,7 +416,7 @@ export const TableDialog = ({
                     </span>
                   </p>
 
-                  <div className="h-[2px] w-full bg-neutral-800 mt-5" />
+                  <div className="h-[2px] w-full bg-neutral-800 mt-3" />
                 </div>
                 {/* Main Info */}
                 <div className="px-4  bg-[#F5F7F9]">
@@ -440,7 +445,7 @@ export const TableDialog = ({
                 {/* Separator */}
                 <div className="h-[2px] w-full bg-borderCol mt- 5" />
                 {/* LC Details */}
-                <div className="px-4 mt-4">
+                <div className="px-4 mt-2">
                   <h2 className="text-xl font-semibold">LC Details</h2>
                   <LCInfo
                     label="LC Issuance (Expected)"
@@ -472,7 +477,7 @@ export const TableDialog = ({
                     noBorder
                   />
 
-                  <h2 className="text-xl font-semibold mt-3">Exporter Info</h2>
+                  <h2 className="text-xl font-semibold">Exporter Info</h2>
                   <LCInfo
                     label="Beneficiary"
                     value={

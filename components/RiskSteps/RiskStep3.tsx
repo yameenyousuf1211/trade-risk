@@ -208,16 +208,20 @@ export const RiskStep3 = ({
                   />
                   <div className="flex items-center gap-x-1">
                     <button
+                      disabled={watch("paymentTerms") !== "Tenor LC"}
                       type="button"
                       className="rounded-sm border border-para size-6 center mb-2"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setDays((prev: any) => prev + 1);
+                        setDays((prev: any) =>
+                          prev >= 1 ? Number(prev) + 1 : 1
+                        );
                       }}
                     >
                       +
                     </button>
                     <button
+                      disabled={watch("paymentTerms") !== "Tenor LC"}
                       type="button"
                       className="rounded-sm border border-para size-6 center mb-2"
                       onClick={(e) => {

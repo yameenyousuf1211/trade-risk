@@ -265,10 +265,21 @@ export const RequestTable = ({
                       </div>
                     </TableCell>
                     <TableDataCell
-                      data={item.exporterInfo?.beneficiaryName || ""}
+                      data={
+                        (item.exporterInfo &&
+                          item.exporterInfo?.beneficiaryName) ||
+                          item?.lgDetails?.lgIssueFavorOf || 
+
+                        ""
+                      }
                     />
                     <TableDataCell
-                      data={item.importerInfo?.applicantName || ""}
+                      data={
+                        (item.importerInfo &&
+                          item.importerInfo?.applicantName) ||
+                          item?.lgDetails?.lgIssueBehalfOf || 
+                        ""
+                      }
                     />
                     <TableDataCell
                       data={
@@ -356,6 +367,8 @@ export const RequestTable = ({
                       data={
                         (item.exporterInfo &&
                           item.exporterInfo?.beneficiaryName) ||
+                          item?.lgDetails?.lgIssueFavorOf || 
+
                         ""
                       }
                     />
@@ -363,6 +376,7 @@ export const RequestTable = ({
                       data={
                         (item.importerInfo &&
                           item.importerInfo?.applicantName) ||
+                          item?.lgDetails?.lgIssueBehalfOf || 
                         ""
                       }
                     />

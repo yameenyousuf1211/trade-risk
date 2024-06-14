@@ -22,7 +22,7 @@ import { fetchSingleLc } from "@/services/apis/lcs.api";
 import { cn } from "@/lib/utils";
 import { fetchSingleRisk } from "@/services/apis/risk.api";
 import { IRisk } from "@/types/type";
-import { DDInput } from "../LCSteps/helpers";
+import { BgRadioInput, DDInput } from "../LCSteps/helpers";
 
 const LCInfo = ({
   label,
@@ -75,6 +75,8 @@ export const AddBid = ({
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
+  const [confirmationPriceType, setConfirmationPriceType] = useState("");
+
   // Get LC
   const { data: lcData, isLoading } = useQuery({
     queryKey: [`single-lc`, id],
@@ -126,6 +128,7 @@ export const AddBid = ({
           ...baseData,
           discountMargin,
           discountBaseRate,
+          perAnnum: confirmationPriceType === "perAnnum" ? true : false,
         }
       : baseData;
     // @ts-ignore
@@ -711,6 +714,57 @@ export const AddBid = ({
                     </span>
                   )}
                 </div>
+                {isDiscount && (
+                  <div className="flex gap-3">
+                    {/* <BgRadioInput
+                      id="perAnnum"
+                      label="Per Annum"
+                      name="confirmationPriceType"
+                      value={"perAnnum"}
+                      register={register}
+                      onChange={(value) => setConfirmationPriceType(value)}
+                      checked={confirmationPriceType === "perAnnum"}
+                    /> */}
+                    <label
+                      className={`px-3 py-4 w-full transition-colors duration-100 ${
+                        confirmationPriceType === "perAnnum"
+                          ? "bg-[#EEE9FE]"
+                          : "border border-borderCol bg-white"
+                      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
+                    >
+                      <input
+                        type="radio"
+                        name="confirmationPriceType"
+                        value={"perAnnum"}
+                        onChange={(e) => {
+                          console.log(e.target.value);
+                          setConfirmationPriceType(e.target.value);
+                        }}
+                        className="accent-primaryCol size-4"
+                      />
+                      Per Annum
+                    </label>
+                    <label
+                      className={`px-3 py-4 w-full transition-colors duration-100 ${
+                        confirmationPriceType === "flat"
+                          ? "bg-[#EEE9FE]"
+                          : "border border-borderCol bg-white"
+                      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
+                    >
+                      <input
+                        type="radio"
+                        name="confirmationPriceType"
+                        value={"flat"}
+                        onChange={(e) => {
+                          console.log(e.target.value);
+                          setConfirmationPriceType(e.target.value);
+                        }}
+                        className="accent-primaryCol size-4"
+                      />
+                      Flat
+                    </label>
+                  </div>
+                )}
 
                 {isDiscount && (
                   <div className="">
@@ -744,7 +798,9 @@ export const AddBid = ({
                             value={discountBaseRate}
                             placeholder="Select Value"
                             setValue={setValue}
-                            onSelectValue={(value) => setDiscountBaseRate(value)}
+                            onSelectValue={(value) =>
+                              setDiscountBaseRate(value)
+                            }
                             data={["KIBOR", "LIBOR", "SOFR"]}
                           />
                         </div>

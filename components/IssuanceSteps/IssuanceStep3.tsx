@@ -1,7 +1,7 @@
 "use client";
 import { getCurrenncy } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -10,10 +10,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "../ui/button";
+import {
+  SetFieldValue,
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 
-const NumberInput = () => {
+const NumberInput = ({
+  name,
+  setValue,
+  watch,
+}: {
+  name: string;
+  setValue: SetFieldValue<any>;
+  watch: any;
+}) => {
   const [currencyValue, setCurrencyValue] = useState<string | number>();
   const [rawValue, setRawValue] = useState("");
+  const { amount } = watch();
 
   const handleChange = (e: any) => {
     const { value } = e.target;
@@ -23,11 +38,26 @@ const NumberInput = () => {
       const formattedValue = parseInt(digitsOnly).toLocaleString();
       setCurrencyValue(formattedValue);
       setRawValue(digitsOnly);
+      setValue(name, digitsOnly);
     } else {
       setCurrencyValue("");
       setRawValue("");
+      setValue(name, "");
     }
   };
+  useEffect(() => {
+    if (amount) {
+      const digitsOnly = amount?.price?.toString().replace(/\D/g, "");
+      if (digitsOnly) {
+        const formattedValue = parseInt(digitsOnly).toLocaleString();
+        setCurrencyValue(formattedValue);
+        setRawValue(amount);
+        setValue("amount.price", amount?.price?.toString());
+        setValue("amount.margin", amount?.price?.toString());
+
+      }
+    }
+  }, [amount]);
 
   const handleBlur = () => {
     if (rawValue) {
@@ -42,7 +72,7 @@ const NumberInput = () => {
       <input
         type="text"
         inputMode="numeric"
-        name="amount"
+        name={name}
         value={currencyValue}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -52,7 +82,14 @@ const NumberInput = () => {
   );
 };
 
-export const IssuanceStep3 = () => {
+interface Props {
+  register: UseFormRegister<any>;
+  watch: UseFormWatch<any>;
+  setValue: UseFormSetValue<any>;
+}
+
+export const IssuanceStep3 = ({ register, watch, setValue }: Props) => {
+  const { amount } = watch();
   const { data: currency } = useQuery({
     queryKey: ["currency"],
     queryFn: () => getCurrenncy(),
@@ -60,23 +97,43 @@ export const IssuanceStep3 = () => {
 
   const [pricePerAnnum, setPricePerAnnum] = useState("0");
 
+  // const handleIncrement = () => {
+  //   const currentValue = pricePerAnnum || "0";
+  //   const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
+  //   if (Number(newValue) > 100) {
+  //     return;
+  //   }
+  //   setPricePerAnnum(newValue);
+  // };
+
+  // const handleDecrement = () => {
+  //   const currentValue = pricePerAnnum || "0";
+  //   let newValue: any = parseFloat(currentValue) - 0.5;
+
+  //   if (newValue < 0) newValue = 0;
+  //   // @ts-ignore
+  //   newValue = newValue.toFixed(1);
+  //   setPricePerAnnum(newValue);
+  // };
+
   const handleIncrement = () => {
-    const currentValue = pricePerAnnum || "0";
-    const newValue = (parseFloat(currentValue) + 0.5).toFixed(1);
+    const currentValue = watch("amount.amountPercentage") || "0";
+    const numericValue = parseFloat(currentValue.replace('%', '')) || 0;
+    const newValue = (numericValue + 0.5).toFixed(1);
     if (Number(newValue) > 100) {
       return;
     }
-    setPricePerAnnum(newValue);
+    setValue("amount.amountPercentage", `${newValue}%`);
   };
 
   const handleDecrement = () => {
-    const currentValue = pricePerAnnum || "0";
-    let newValue: any = parseFloat(currentValue) - 0.5;
+    const currentValue = watch("amount.amountPercentage") || "0";
+    const numericValue = parseFloat(currentValue.replace('%', '')) || 0;
+    let newValue = numericValue - 0.5;
 
     if (newValue < 0) newValue = 0;
-    // @ts-ignore
     newValue = newValue.toFixed(1);
-    setPricePerAnnum(newValue);
+    setValue("amount.amountPercentage", `${newValue}%`);
   };
 
   return (
@@ -113,7 +170,11 @@ export const IssuanceStep3 = () => {
                   ))}
               </SelectContent>
             </Select>
-            <NumberInput />
+            <NumberInput
+              watch={watch}
+              setValue={setValue}
+              name="amount.price"
+            />
           </div>
         </div>
         <div className="w-full">
@@ -137,7 +198,11 @@ export const IssuanceStep3 = () => {
                   ))}
               </SelectContent>
             </Select>
-            <NumberInput />
+            <NumberInput
+              watch={watch}
+              setValue={setValue}
+              name="amount.margin"
+            />
           </div>
         </div>
         <div className="w-full">
@@ -160,18 +225,38 @@ export const IssuanceStep3 = () => {
               </Button>
               <input
                 placeholder="Value"
-                type="number"
+                type="text"
                 inputMode="numeric"
-                value={pricePerAnnum}
                 required
                 max={100}
                 className="border-none outline-none text-sm max-w-[70px] w-fit"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setPricePerAnnum(e.target.value)
-                }
-                onKeyUp={(event: any) => {
-                  if (event.target?.value > 100) {
-                    event.target.value = "100.0";
+                {...register("amount.amountPercentage")}
+                onChange={(event) => {
+                  let newValue = event.target.value.replace(/[^0-9.]/g, "");
+
+                  // Allow only 4 digits after the decimal point
+                  if (newValue.includes(".")) {
+                    const parts = newValue.split(".");
+                    parts[1] = parts[1].slice(0, 4);
+                    newValue = parts.join(".");
+                  }
+
+                  event.target.value = newValue;
+                }}
+                onBlur={(event) => {
+                  if (
+                    event.target.value.includes("%") ||
+                    event.target.value.length === 0
+                  )
+                    return;
+
+                  // Ensure the value has at most 4 decimal places
+                  // let value = parseFloat(event.target.value).toFixed(4);
+                  event.target.value = `${event.target.value}%`;
+                }}
+                onKeyUp={(event) => {
+                  if (Number(event.target.value.replace("%", "")) > 100) {
+                    event.target.value = "100.0%";
                   }
                 }}
               />

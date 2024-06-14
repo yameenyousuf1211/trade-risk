@@ -1,7 +1,18 @@
 import React from "react";
 import { Textarea } from "../ui/textarea";
+import {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 
-export const IssuanceStep8 = () => {
+interface Props {
+  register: UseFormRegister<any>;
+  watch: UseFormWatch<any>;
+  setValue: UseFormSetValue<any>;
+}
+
+export const IssuanceStep8 = ({ register, watch, setValue }: Props) => {
   return (
     <div
       id="step8"
@@ -17,8 +28,8 @@ export const IssuanceStep8 = () => {
       </div>
       <div className="p-2 bg-[#F5F7F9] rounded-lg">
         <Textarea
-          name="productDescription"
-          register={() => ""}
+          name="remarks"
+          register={register}
           placeholder="Add remarks"
           className="bg-white border border-borderCol placeholder:text-para resize-none focus-visible:ring-0 focus-visible:ring-offset-0 "
           rows={5}

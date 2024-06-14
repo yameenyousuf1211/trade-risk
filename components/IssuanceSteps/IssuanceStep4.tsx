@@ -9,8 +9,24 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { format } from "date-fns";
 import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
+import {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 
-const DateInput = ({ title }: { title: string; noBorder?: boolean }) => {
+const DateInput = ({
+  title,
+  name,
+  value,
+  setValue,
+}: {
+  title: string;
+  name: string;
+  value: Date;
+  noBorder?: boolean;
+  setValue: any;
+}) => {
   const [lcExpiryDate, setLcExpiryDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -27,8 +43,8 @@ const DateInput = ({ title }: { title: string; noBorder?: boolean }) => {
             className="w-fit justify-start text-left font-normal border-none text-[#B5B5BE]"
             id="period-expiry-date"
           >
-            {lcExpiryDate ? (
-              format(lcExpiryDate, "PPP")
+            {value ? (
+              format(value, "PPP")
             ) : (
               <span>DD/MM/YYYY</span>
             )}
@@ -37,10 +53,10 @@ const DateInput = ({ title }: { title: string; noBorder?: boolean }) => {
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
           <ValidatingCalendar
-            initialDate={lcExpiryDate}
+            initialDate={value}
             onChange={(date) => {
               setLcExpiryDate(date);
-              // updateValue("lcPeriod.endDate", date);
+              setValue(name, date);
             }}
             onClose={() => setIsPopoverOpen(false)}
           />
@@ -50,7 +66,14 @@ const DateInput = ({ title }: { title: string; noBorder?: boolean }) => {
   );
 };
 
-export const IssuanceStep4 = () => {
+interface Props {
+  register: UseFormRegister<any>;
+  watch: UseFormWatch<any>;
+  setValue: UseFormSetValue<any>;
+}
+
+export const IssuanceStep4 = ({ register, watch, setValue }: Props) => {
+  const { period } = watch();
   return (
     <div
       id="step4"
@@ -63,8 +86,18 @@ export const IssuanceStep4 = () => {
         <p className="font-semibold text-[16px] text-lightGray">LG Period</p>
       </div>
       <div className="flex items-center justify-between gap-x-2">
-        <DateInput title="Date Issued / Expected Date of Issuance" />
-        <DateInput title="LG Expiry Date" />
+        <DateInput
+          value={period?.startDate}
+          name="period.startDate"
+          setValue={setValue}
+          title="Date Issued / Expected Date of Issuance"
+        />
+        <DateInput
+          value={period?.endDate}
+          name="period.endDate"
+          setValue={setValue}
+          title="LG Expiry Date"
+        />
       </div>
     </div>
   );

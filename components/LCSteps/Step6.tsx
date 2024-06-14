@@ -51,7 +51,7 @@ export const Step6 = ({
   }, [pricePerAnnum]);
 
   useEffect(() => {
-    if (behalfOf && pricePerAnnum && baseRate) {
+    if (behalfOf && pricePerAnnum) {
       setStepCompleted(5, true);
     }
   }, [behalfOf, pricePerAnnum, baseRate]);
@@ -86,7 +86,7 @@ export const Step6 = ({
   return (
     <div
       id="step6"
-      className="py-3 px-2 border border-borderCol rounded-lg w-full h-full"
+      className="py-3 px-2 border border-borderCol rounded-lg w-full h-full scroll-target"
     >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
@@ -96,10 +96,10 @@ export const Step6 = ({
       </div>
       {isDiscount && (
         <div className="border border-borderCol py-3 px-2 rounded-md mb-4 bg-[#F5F7F9]">
-          <p className="font-semibold ml-3 mb-2">Discount at sight</p>
+          <p className="font-semibold ml-3 mb-2">Discounted At</p>
           <BgRadioInput
             id="discount-yes"
-            label="Yes"
+            label="Sight"
             name={
               isDiscount ? "discountingInfo.discountAtSight" : "discountAtSight"
             }
@@ -109,7 +109,7 @@ export const Step6 = ({
           />
           <BgRadioInput
             id="discount-no"
-            label="No"
+            label="Acceptance Date"
             name={
               isDiscount ? "discountingInfo.discountAtSight" : "discountAtSight"
             }
@@ -153,14 +153,14 @@ export const Step6 = ({
             ? "Expected pricing"
             : "Expected charges"}
         </p>
-        {/* {isDiscount && ( */}
-        <div className="mb-3 bg-white">
-          <label
-            id="selectBaseRate"
-            className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
-          >
-            <p className="w-full text-sm text-lightGray">Select base rate</p>
-            {/* <Input
+        {isDiscount && (
+          <div className="mb-3 bg-white">
+            <label
+              id="selectBaseRate"
+              className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
+            >
+              <p className="w-full text-sm text-lightGray">Select base rate</p>
+              {/* <Input
                 id="selectBaseRate"
                 inputMode="numeric"
                 type="number"
@@ -169,20 +169,20 @@ export const Step6 = ({
                 className="block bg-none text-sm border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                 placeholder="Select Value"
               /> */}
-            <div className="text-end">
-              <DDInput
-                id="baseRate"
-                label="Base Rate"
-                type="baseRate"
-                value={baseRate}
-                placeholder="Select Value"
-                setValue={setValue}
-                data={["KIBOR", "LIBOR", "SOFR"]}
-              />
-            </div>
-          </label>
-        </div>
-        {/* )} */}
+              <div className="text-end">
+                <DDInput
+                  id="baseRate"
+                  label="Base Rate"
+                  type="baseRate"
+                  value={baseRate}
+                  placeholder="Select Value"
+                  setValue={setValue}
+                  data={["KIBOR", "LIBOR", "SOFR"]}
+                />
+              </div>
+            </label>
+          </div>
+        )}
         <label
           id="expected-pricing"
           className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"

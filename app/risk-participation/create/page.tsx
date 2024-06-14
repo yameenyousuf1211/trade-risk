@@ -243,6 +243,7 @@ const RiskFundedPage = () => {
 
         <div className="py-4 px-4 border border-borderCol rounded-lg w-full bg-white flex items-center justify-between gap-x-4">
           <Button
+          id="draft"
             variant="ghost"
             className="w-1/3 py-6 text-[16px] text-lightGray bg-[#F1F1F5]"
             onClick={handleSubmit(onSaveAsDraft)}

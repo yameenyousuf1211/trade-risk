@@ -28,6 +28,8 @@ export const ValidatingCalendar = ({
   isPast,
   maxDate,
   startDate,
+  endDate,
+  isEndDate = false,
 }: {
   initialDate: Date | undefined;
   onChange: (date: Date) => void;
@@ -35,6 +37,8 @@ export const ValidatingCalendar = ({
   isPast?: boolean;
   maxDate?: Date | string | undefined;
   startDate?: Date | string;
+  endDate?: Date | string;
+  isEndDate?: boolean;
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
@@ -42,7 +46,7 @@ export const ValidatingCalendar = ({
     const today = new Date();
     if (isPast && date > today)
       return toast.error("Please dont select a date from future");
-    if (!isPast && date < today)
+    if (!isPast && date < today && !isEndDate)
       return toast.error("Please don't select a past date ");
     if (maxDate) {
       const max = new Date(maxDate);
@@ -59,8 +63,10 @@ export const ValidatingCalendar = ({
       mode="single"
       selected={selectedDate}
       defaultMonth={(startDate as Date) && (startDate as Date)} // Start the calendar from this date
-      disabled={(startDate as Date) && { before: startDate as Date }} // Disable all previous dates
-      // @ts-ignore
+      disabled={{
+        before: startDate ? new Date(startDate) : undefined,
+        after: endDate ? new Date(endDate) : undefined,
+      }} // @ts-ignore
       onSelect={handleDateSelect}
       initialFocus
     />
@@ -82,6 +88,7 @@ export const Period = ({
   let lcEndDate = watch("period.endDate");
   let lcPeriodType = watch("period.expectedDate");
   const [startDate, setStartDate] = useState<any>("");
+  const [endDate, setEndDate] = useState<any>("");
 
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
@@ -129,7 +136,9 @@ export const Period = ({
   return (
     <div className="flex items-start gap-x-4 my-5 h-full">
       <div className="border border-borderCol py-3 px-2 rounded-md w-[60%] bg-[#F5F7F9]">
-        <p className="font-semibold mb-2 ml-3">LC Period</p>
+        {/* <p className="font-semibold mb-2 ml-3">LC Period</p> */}
+        <p className="font-semibold mb-2 ml-3"> LC Issuance</p>
+
         <div className="flex bg-white items-center gap-x-4 justify-between border border-borderCol rounded-md py-2 px-3 mb-3">
           <div className="w-full rounded-md flex items-center gap-x-2">
             <input
@@ -230,11 +239,12 @@ export const Period = ({
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <ValidatingCalendar
+                isEndDate={true}
                 startDate={startDate}
                 initialDate={lcEndDate}
                 onChange={(date) => {
                   updateValue("period.endDate", date);
-                  setStartDate("");
+                  // setStartDate("");
                 }}
                 onClose={() => setIsPopoverOpen(false)}
               />
@@ -283,6 +293,7 @@ export const Transhipment = ({
   watch: UseFormWatch<any>;
 }) => {
   const transhipment = watch("transhipment");
+  const { period } = watch();
 
   let expectedDate = isDiscount
     ? watch("expectedDiscountingDate")
@@ -300,14 +311,25 @@ export const Transhipment = ({
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const currentDate = new Date();
-  const nextWeekDate = addDays(currentDate, 7);
-  const twoWeeksDate = addDays(currentDate, 14);
+  const nextWeekDate = addDays(
+    period?.startDate ? period?.startDate : currentDate,
+    7
+  );
+  const twoWeeksDate = addDays(
+    period?.startDate ? period?.startDate : currentDate,
+    14
+  );
 
   const [showDescErr, setShowDescErr] = useState(false);
 
   const handleDescChange = (desc: string) => {
     if (/^\d+$/.test(desc)) setShowDescErr(true);
     else setShowDescErr(false);
+    if (/^\d+$/.test(desc)) {
+      return;
+    } else {
+      setValue("productDescription", desc);
+    }
   };
 
   return (
@@ -366,6 +388,8 @@ export const Transhipment = ({
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <ValidatingCalendar
+                startDate={period?.startDate}
+                endDate={period?.endDate}
                 initialDate={expectedDate}
                 onChange={(date) => {
                   setDate(date);

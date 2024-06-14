@@ -60,10 +60,10 @@ export const Step7Disounting = ({
       </div>
 
       <div className="border border-borderCol py-3 px-2 rounded-md mb-4 bg-[#F5F7F9]">
-        <p className="font-semibold ml-3 mb-2">Discount at sight</p>
+        <p className="font-semibold ml-3 mb-2">Discounted at </p>
         <BgRadioInput
           id="discount-yes"
-          label="Yes"
+          label="Sight"
           name="discountingInfo.discountAtSight"
           value="yes"
           register={register}
@@ -71,7 +71,7 @@ export const Step7Disounting = ({
         />
         <BgRadioInput
           id="discount-no"
-          label="No"
+          label="Acceptance Date"
           name="discountingInfo.discountAtSight"
           value="no"
           register={register}

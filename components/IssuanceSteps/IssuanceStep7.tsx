@@ -1,7 +1,19 @@
 "use client";
+import {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 import { BgRadioInput, DDInput } from "../LCSteps/helpers";
 
-export const IssuanceStep7 = () => {
+interface Props {
+  register: UseFormRegister<any>;
+  watch: UseFormWatch<any>;
+  setValue: UseFormSetValue<any>;
+}
+
+export const IssuanceStep7 = ({ register, watch, setValue }: Props) => {
+  const { chargesBehalfOf, instrument } = watch();
   return (
     <div
       id="step7"
@@ -23,16 +35,16 @@ export const IssuanceStep7 = () => {
             label="Yes"
             name="instrument"
             value="yes"
-            register={() => ""}
-            checked={false}
+            register={register}
+            checked={instrument === "yes"}
           />
           <BgRadioInput
             id="instrument-no"
             label="No"
             name="instrument"
             value="no"
-            register={() => ""}
-            checked={false}
+            register={register}
+            checked={instrument === "no"}
           />
         </div>
 
@@ -56,18 +68,18 @@ export const IssuanceStep7 = () => {
           <BgRadioInput
             id="lg-applicant"
             label="Applicant"
-            name="accountOf"
+            name="chargesBehalfOf"
             value="applicant"
-            register={() => ""}
-            checked={false}
+            register={register}
+            checked={chargesBehalfOf === "applicant"}
           />
           <BgRadioInput
             id="lg-beneficiary"
             label="Beneficiary"
-            name="accountOf"
+            name="chargesBehalfOf"
             value="beneficiary"
-            register={() => ""}
-            checked={false}
+            register={register}
+            checked={chargesBehalfOf === "beneficiary"}
           />
         </div>
       </div>

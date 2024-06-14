@@ -72,6 +72,16 @@ export const DiscountBanks = ({
   };
 
   useEffect(() => {
+ 
+    if (isChecked && advisingBank?.bank && advisingBank?.country) {
+      setValue("confirmingBank.country", advisingBank.country);
+      setValue("confirmingBank.bank", advisingBank.bank);
+    }
+    console.log(isChecked,advisingBank,confirmingBank)
+  
+  }, [advisingBank?.bank, advisingBank?.country,confirmingBank?.bank,confirmingBank?.country]);
+
+  useEffect(() => {
     if (advisingBank && confirmingBank !== undefined) {
       if (
         advisingBank?.country === confirmingBank?.country &&

@@ -215,6 +215,7 @@ export interface IBids {
   discountBaseRate?: number;
   amount: number;
   validity?: Date;
+  perAnnum?:boolean
   bidBy: {
     _id?: string;
     name?: string;

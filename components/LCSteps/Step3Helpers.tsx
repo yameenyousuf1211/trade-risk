@@ -37,7 +37,7 @@ export const ValidatingCalendar = ({
   isPast?: boolean;
   maxDate?: Date | string | undefined;
   startDate?: Date | string;
-  endDate?:Date | string
+  endDate?: Date | string;
   isEndDate?: boolean;
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
@@ -66,7 +66,7 @@ export const ValidatingCalendar = ({
       disabled={{
         before: startDate ? new Date(startDate) : undefined,
         after: endDate ? new Date(endDate) : undefined,
-      }}      // @ts-ignore
+      }} // @ts-ignore
       onSelect={handleDateSelect}
       initialFocus
     />
@@ -311,8 +311,14 @@ export const Transhipment = ({
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const currentDate = new Date();
-  const nextWeekDate = addDays(currentDate, 7);
-  const twoWeeksDate = addDays(currentDate, 14);
+  const nextWeekDate = addDays(
+    period?.startDate ? period?.startDate : currentDate,
+    7
+  );
+  const twoWeeksDate = addDays(
+    period?.startDate ? period?.startDate : currentDate,
+    14
+  );
 
   const [showDescErr, setShowDescErr] = useState(false);
 

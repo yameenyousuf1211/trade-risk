@@ -92,7 +92,6 @@ export const generalLcSchema = z.object({
       { message: "Extra info is required" }
     )
     .optional(),
-  // baseRate: z.string({ message: "Base Rate is required" }),
 });
 
 export const confirmationSchema = z.lazy(() =>
@@ -138,6 +137,8 @@ export const discountingSchema = z.lazy(() =>
           message: "Select beneficiary country",
         }),
       }),
+      baseRate: z.string({ message: "Base Rate is required" }),
+
       discountingInfo: z.object({
         discountAtSight: z.enum(["yes", "no"], {
           message: "Specify discount at sight",
@@ -201,8 +202,79 @@ export const confirmationDiscountSchema = z.lazy(() =>
           .refine((value) => parseFloat(value) <= 100, {
             message: "Price per annum must be less than 100",
           }),
-          basePerRate: z.string({ message: "Base Rate is required" }),
+        basePerRate: z.string({ message: "Base Rate is required" }),
       }),
     })
   )
 );
+
+export const lcIssuanceSchema = z.object({
+  lgIssueAgainst: z.string({ message: "LG Issue against is required" }),
+  issuingBank: z.object({
+    bank: z.string({ message: "Issuing bank name is required" }),
+    country: z.string({ message: "Issuing bank country is required" }),
+  }),
+  standardSAMA: z.string({ message: "Select standardSAMA" }),
+  priceCurrency: z.string({ message: "Currency is required" }).default("USD"),
+  marginCurrency: z.string({ message: "Currency is required" }).default("USD"),
+  amount: z.object({
+    amountPercentage: z.string({ message: "Amount percentage is required" }),
+    margin: z.string({ message: "Margin is required" }),
+    price: z.string({ message: "Enter amount" }),
+  }),
+  period: z.object(
+    {
+      startDate: z.date({ message: "Select issuance date" }),
+      endDate: z.date({ message: "Select expiry date" }),
+    },
+    { message: "LC Period is required" }
+  ),
+  lgType: z.enum(["bid", "advance", "payment", "cg", "performance"], {
+    message: "Select LG Type",
+  }),
+  productDescription: z
+    .string({ message: "Add product description" })
+    .min(1, { message: "Product Description is required" })
+    .max(300, { message: "Description cannot be more than 300 characters" }),
+  lgDetail: z.object(
+    {
+      lgIssueBehalfOf: z
+        .string({ message: "Applicant name is required" })
+        .min(1, {
+          message: "Applicant name required",
+        }),
+      applicantCountry: z
+        .string({ message: "Applicant country is required" })
+        .min(1, {
+          message: "Applicant country is required",
+        }),
+      lgIssueFavorOf: z.string({ message: "Beneficiary is required" }).min(1, {
+        message: "Beneficiary is required",
+      }),
+      address: z.string({ message: "Address is required" }).min(1, {
+        message: "Address is required",
+      }),
+      benficiaryCountry: z
+        .string({
+          message: "Beneficiary country is required",
+        })
+        .min(1, {
+          message: "Beneficiary country is required",
+        }),
+    },
+    { message: "LG Detail is required" }
+  ),
+  chargesBehalfOf: z.enum(["applicant", "beneficiary"], {
+    message: "Select Charges BehalfOf",
+  }),
+  instrument: z.enum(["yes", "no"], {
+    message: "Select Instrument",
+  }),
+  benificiaryBankName: z
+    .string({ message: "Beneficiary Bank Name is required" })
+    .optional(),
+  remarks: z.string({ message: "Remarks is required" }).min(1, {
+    message: "Remarks is required",
+  }),
+  priceType: z.string({ message: "Select Price Type" }),
+});

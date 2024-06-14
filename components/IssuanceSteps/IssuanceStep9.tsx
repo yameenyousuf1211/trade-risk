@@ -1,6 +1,18 @@
+import {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 import { BgRadioInput } from "../LCSteps/helpers";
 
-export const IssuanceStep9 = () => {
+interface Props {
+  register: UseFormRegister<any>;
+  watch: UseFormWatch<any>;
+  setValue: UseFormSetValue<any>;
+}
+
+export const IssuanceStep9 = ({ register, watch, setValue }: Props) => {
+  const { priceType } = watch();
   return (
     <div
       id="step9"
@@ -18,18 +30,18 @@ export const IssuanceStep9 = () => {
         <BgRadioInput
           id="lowest-price"
           label="Lowest Price Quoted"
-          name="quotes"
-          value="lowest-price"
-          register={() => ""}
-          checked={false}
+          name="priceType"
+          value="lowestPrice"
+          register={register}
+          checked={priceType === "lowestPrice"}
         />
         <BgRadioInput
           id="all-prices"
           label="All Prices Quoted"
-          name="quotes"
-          value="all-prices"
-          register={() => ""}
-          checked={false}
+          name="priceType"
+          value="allPrices"
+          register={register}
+          checked={priceType === "allPrices"}
         />
       </div>
     </div>

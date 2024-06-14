@@ -14,6 +14,7 @@ import { usePathname } from "next/navigation";
 import useConfirmationStore from "@/store/lc.store";
 import useDiscountingStore from "@/store/discounting.store";
 import useConfirmationDiscountingStore from "@/store/confirmationDiscounting.store";
+import useLcIssuance from "@/store/issueance.store";
 
 const DraftCard = ({
   noBorder,
@@ -21,12 +22,14 @@ const DraftCard = ({
   isConfirmation,
   isConfirmationDiscounting,
   isDiscounting,
+  isLCIssuance,
 }: {
   noBorder?: boolean;
   draft: ILcs;
   isConfirmation: boolean;
   isDiscounting: boolean;
   isConfirmationDiscounting: boolean;
+  isLCIssuance: boolean;
 }) => {
   const queryClient = useQueryClient();
   const { mutateAsync, isPending } = useMutation({
@@ -50,6 +53,7 @@ const DraftCard = ({
   const setConfirmationDiscountingValues = useConfirmationDiscountingStore(
     (state) => state.setValues
   );
+  const setLCIssuance = useLcIssuance((state) => state.setValues);
 
   const handleEditLC = async () => {
     try {
@@ -58,6 +62,7 @@ const DraftCard = ({
       isConfirmation && setConfirmationValues(response);
       isDiscounting && setDiscountingValues(response);
       isConfirmationDiscounting && setConfirmationDiscountingValues(response);
+      isLCIssuance && setLCIssuance(response);
     } catch (error) {}
   };
 
@@ -104,6 +109,7 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
   const isConfirmation = pathname === "/create-request";
   const isDiscounting = pathname === "/create-request/discount";
   const isConfirmationDiscounting = pathname === "/create-request/confirmation";
+  const isLCIssuance = pathname === "/create-request/issuance";
 
   const {
     isLoading,
@@ -154,6 +160,7 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
                     isConfirmation={isConfirmation}
                     isDiscounting={isDiscounting}
                     isConfirmationDiscounting={isConfirmationDiscounting}
+                    isLCIssuance={isLCIssuance}
                   />
                 ))}
             </div>

@@ -128,6 +128,7 @@ export const AddBid = ({
           ...baseData,
           discountMargin,
           discountBaseRate,
+          perAnnum: confirmationPriceType === "perAnnum" ? true : false,
         }
       : baseData;
     // @ts-ignore
@@ -713,27 +714,57 @@ export const AddBid = ({
                     </span>
                   )}
                 </div>
-                <div className="flex gap-3">
-                  <BgRadioInput
-                    id="perAnnum"
-                    label="Per Annum"
-                    name="confirmationPriceType"
-                    value={"perAnnum"}
-                    register={register}
-                    onChange={(value) => setConfirmationPriceType(value)}
-                    checked={confirmationPriceType === "perAnnum"}
-                    
-                  />
-                  <BgRadioInput
-                    id="flat"
-                    label="Flat"
-                    name="confirmationPriceType"
-                    value={"flat"}
-                    register={register}
-                    checked={confirmationPriceType === "flat"}
-                    onChange={(value) => setConfirmationPriceType(value)}
-                  />
-                </div>
+                {isDiscount && (
+                  <div className="flex gap-3">
+                    {/* <BgRadioInput
+                      id="perAnnum"
+                      label="Per Annum"
+                      name="confirmationPriceType"
+                      value={"perAnnum"}
+                      register={register}
+                      onChange={(value) => setConfirmationPriceType(value)}
+                      checked={confirmationPriceType === "perAnnum"}
+                    /> */}
+                    <label
+                      className={`px-3 py-4 w-full transition-colors duration-100 ${
+                        confirmationPriceType === "perAnnum"
+                          ? "bg-[#EEE9FE]"
+                          : "border border-borderCol bg-white"
+                      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
+                    >
+                      <input
+                        type="radio"
+                        name="confirmationPriceType"
+                        value={"perAnnum"}
+                        onChange={(e) => {
+                          console.log(e.target.value);
+                          setConfirmationPriceType(e.target.value);
+                        }}
+                        className="accent-primaryCol size-4"
+                      />
+                      Per Annum
+                    </label>
+                    <label
+                      className={`px-3 py-4 w-full transition-colors duration-100 ${
+                        confirmationPriceType === "flat"
+                          ? "bg-[#EEE9FE]"
+                          : "border border-borderCol bg-white"
+                      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
+                    >
+                      <input
+                        type="radio"
+                        name="confirmationPriceType"
+                        value={"flat"}
+                        onChange={(e) => {
+                          console.log(e.target.value);
+                          setConfirmationPriceType(e.target.value);
+                        }}
+                        className="accent-primaryCol size-4"
+                      />
+                      Flat
+                    </label>
+                  </div>
+                )}
 
                 {isDiscount && (
                   <div className="">

@@ -88,7 +88,7 @@ export const Step7 = ({
   return (
     <div
       id="step7"
-      className="w-full border border-borderCol rounded-lg py-3 px-4 h-full scroll-target"
+      className="w-full border border-borderCol rounded-lg py-3 px-4 h-full scroll-tar get"
     >
       <div className="flex items-center gap-x-2 ml-2 mb-3">
         <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold text-sm">

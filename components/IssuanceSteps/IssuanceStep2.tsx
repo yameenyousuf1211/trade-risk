@@ -2,14 +2,36 @@
 import React, { useState } from "react";
 import { BgRadioInput, DDInput } from "../LCSteps/helpers";
 import Image from "next/image";
+import {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
+import { getBanks } from "@/services/apis/helpers.api";
 
-export const IssuanceStep2 = ({
-  countries,
-  flags,
-}: {
+interface Props {
+  register: UseFormRegister<any>;
+  watch: UseFormWatch<any>;
+  setValue: UseFormSetValue<any>;
   countries: string[];
   flags: string[];
-}) => {
+}
+
+export const IssuanceStep2 = ({
+  register,
+  watch,
+  setValue,
+  countries,
+  flags,
+}: Props) => {
+  const { issuingBank, standardSAMA } = watch();
+
+  const { data: issuingBanks } = useQuery({
+    queryKey: ["issuing-banks", issuingBank?.country],
+    queryFn: () => getBanks(issuingBank?.country),
+    enabled: !!issuingBank?.country,
+  });
   return (
     <div
       id="step2"
@@ -33,18 +55,25 @@ export const IssuanceStep2 = ({
               id="issuingBank.country"
               data={countries}
               flags={flags}
-              //   value={importerCountry}
-              setValue={() => ""}
+              value={issuingBank?.country}
+              setValue={setValue}
             />
 
             <DDInput
               placeholder="Select bank"
               label="Bank"
               id="issuingBank.bank"
-              // data={countries}
-              disabled={true}
-              //   value={importerCountry}
-              setValue={() => ""}
+              disabled={
+                !issuingBanks ||
+                !issuingBanks?.success ||
+                !issuingBanks?.response ||
+                !issuingBanks.success
+              }
+              data={
+                issuingBanks && issuingBanks.success && issuingBanks.response
+              }
+              value={issuingBank?.bank}
+              setValue={setValue}
             />
           </div>
         </div>
@@ -57,20 +86,18 @@ export const IssuanceStep2 = ({
             <BgRadioInput
               id="issue-lg-yes"
               label="Yes"
-              name="issueLg"
+              name="standardSAMA"
               value="yes"
-              // register={register}
-              register={() => ""}
-              checked={false}
+              register={register}
+              checked={standardSAMA === "yes"}
             />
             <BgRadioInput
               id="issue-lg-no"
               label="No"
-              name="issueLg"
+              name="standardSAMA"
               value="no"
-              // register={register}
-              register={() => ""}
-              checked={false}
+              register={register}
+              checked={standardSAMA === "no"}
             />
           </div>
           <label

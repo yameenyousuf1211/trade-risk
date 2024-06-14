@@ -103,3 +103,26 @@ interface LcConfrimationDiscounting extends TransactionData {
 export type UseConfrimationDiscountingStore = LcConfrimationDiscounting & {
   setValues: (values: Partial<LcConfrimationDiscounting>) => void;
 };
+
+interface LCIssueance {
+  _id: string;
+  lgIssueAgainst: string;
+  standardSAMA: string;
+  issuingBank: Bank;
+  amount: {
+    price: string;
+    margin: string;
+    amountPercentage: string;
+  };
+  period: LcPeriod;
+  lgType: string;
+  productDescription: string;
+  chargesBehalfOf: string;
+  remarks: string;
+  priceType: string;
+  instrument: string;
+}
+
+export type UseIssueanceStore = LCIssueance & {
+  setValues: (values: Partial<LCIssueance>) => void;
+};

@@ -50,6 +50,7 @@ export const addBid = async ({
   discountBaseRate,
   discountMargin,
   risk,
+  perAnnum
 }: {
   type: string;
   lc?: string;
@@ -58,6 +59,7 @@ export const addBid = async ({
   confirmationPrice: string;
   discountBaseRate?: string;
   discountMargin?: string;
+  perAnnum?:boolean
 }) => {
   try {
     const baseData = {
@@ -72,9 +74,11 @@ export const addBid = async ({
       ? {
           ...baseData,
           discountMargin,
-          discountBaseRate: 20,
+          discountBaseRate,
+          perAnnum
         }
       : baseData;
+      console.log(reqData,"addbidreq")
     const { data } = await api.post(`/bids`, reqData);
 
     return {

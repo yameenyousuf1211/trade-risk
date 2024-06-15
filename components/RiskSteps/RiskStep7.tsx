@@ -79,7 +79,7 @@ export const RiskStep7 = () => {
         <p className="font-semibold text-[16px] text-lightGray">Attachments</p>
       </div>
       <p className="font-semibold ml-3 text-sm">
-        Add Documents (PDF,JPG,PNG,TIFF)
+        Add Documents: <span className="font-medium"> e.g Drafts / Invoice </span> (PDF,JPG,PNG,TIFF)
       </p>
 
       <div className="bg-[#F5F7F9] p-1 mt-2 rounded-md">

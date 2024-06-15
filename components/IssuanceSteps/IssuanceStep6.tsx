@@ -1,14 +1,28 @@
 import React from "react";
 import { Input } from "../ui/input";
 import { DDInput } from "../LCSteps/helpers";
+import {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 
-export const IssuanceStep6 = ({
-  countries,
-  flags,
-}: {
+interface Props {
+  register: UseFormRegister<any>;
+  watch: UseFormWatch<any>;
+  setValue: UseFormSetValue<any>;
   countries: string[];
   flags: string[];
-}) => {
+}
+
+export const IssuanceStep6 = ({
+  register,
+  watch,
+  setValue,
+  countries,
+  flags,
+}: Props) => {
+  const { lgDetail } = watch();
   return (
     <div
       id="step6"
@@ -30,8 +44,8 @@ export const IssuanceStep6 = ({
           </p>
           <Input
             type="text"
-            name="importerInfo.applicantName"
-            register={() => ""}
+            name="lgDetail.lgIssueBehalfOf"
+            register={register}
             className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Applicant name"
           />
@@ -40,10 +54,10 @@ export const IssuanceStep6 = ({
         <DDInput
           placeholder="Select a country"
           label="Applicant's Country"
-          id="importerInfo.countryOfImport"
+          id="lgDetail.applicantCountry"
           data={countries}
-          //   value={importerCountry}
-          setValue={() => ""}
+          value={lgDetail?.applicantCountry}
+          setValue={setValue}
           flags={flags}
         />
 
@@ -54,8 +68,8 @@ export const IssuanceStep6 = ({
           <p className="w-full text-sm text-lightGray">LG Issued in favor of</p>
           <Input
             type="text"
-            name="importerInfo.applicantName"
-            register={() => ""}
+            name="lgDetail.lgIssueFavorOf"
+            register={register}
             className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Beneficiary name"
           />
@@ -70,8 +84,8 @@ export const IssuanceStep6 = ({
           </p>
           <Input
             type="text"
-            name="importerInfo.applicantName"
-            register={() => ""}
+            name="lgDetail.address"
+            register={register}
             className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Enter address"
           />
@@ -80,10 +94,10 @@ export const IssuanceStep6 = ({
         <DDInput
           placeholder="Select a country"
           label="Beneficiary's Country"
-          id="importerInfo.countryOfImport"
+          id="lgDetail.benficiaryCountry"
           data={countries}
-          //   value={importerCountry}
-          setValue={() => ""}
+          value={lgDetail?.benficiaryCountry}
+          setValue={setValue}
           flags={flags}
         />
       </div>

@@ -132,6 +132,7 @@ export const BgRadioInput = ({
   name,
   value,
   register,
+  onChange,
 }: {
   id: string;
   label: string;

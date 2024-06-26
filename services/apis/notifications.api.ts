@@ -58,3 +58,22 @@ export const sendNotification = async ({
     };
   }
 };
+
+export const fetchNotifications = async ({
+  page,
+  limit,
+}: {
+  page?: number;
+  limit?: number;
+}) => {
+  try {
+    const { data } = await api.get(
+      `/notification?page=${page}&limit=${10}`
+    );
+
+    return data.data;
+  } catch (error: any) {
+    console.log(error);
+    return error.response?.data?.message || "Something went wrong";
+  }
+};

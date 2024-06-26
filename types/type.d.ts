@@ -215,7 +215,7 @@ export interface IBids {
   discountBaseRate?: number;
   amount: number;
   validity?: Date;
-  perAnnum?:boolean
+  perAnnum?: boolean;
   bidBy: {
     _id?: string;
     name?: string;
@@ -357,4 +357,12 @@ export interface IBidsInfo {
     _id: string;
     country: string;
   };
+}
+
+//  notifications
+export interface INotifications {
+  _id: string;
+  isDeleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }

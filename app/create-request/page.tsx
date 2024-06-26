@@ -155,7 +155,7 @@ const CreateRequestPage = () => {
         ...baseData,
         draft: "true",
       };
-      console.log(reqData,"REQDAATA")
+      console.log(reqData, "REQDAATA");
 
       setLoader(true);
       const { response, success } = confirmationData?._id
@@ -215,10 +215,11 @@ const CreateRequestPage = () => {
           stopLoading();
           if (!success) return toast.error(response);
           else {
-            // await sendNotification({
-            //   title: "New LC Confirmation Request",
-            //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-            // });
+            const notificationResp = await sendNotification({
+              title: "New LC Confirmation Request",
+              body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} b`,
+            });
+            console.log(notificationResp)
             setValues(getStateValues(useConfirmationStore.getInitialState()));
             toast.success("LC created successfully");
             reset();

@@ -9,25 +9,49 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogoutBtn } from "./LogoutBtn";
 import { useAuth } from "@/context/AuthProvider";
+import NotificationCard from "../notifications/Notificatoncard";
+import { useState } from "react";
+import { Dialog, DialogClose, DialogContent } from "../ui/dialog";
+import { DialogTrigger } from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
 
 export const UserProfile = () => {
   const hasNotifications = true;
+  const [isShowNotifications, setIsShowNotifications] =
+    useState<boolean>(false);
   const { user } = useAuth();
 
   return (
     <div className="flex items-center gap-x-4">
-      <div className="relative">
-        <Image
-          src="/images/notif.png"
-          alt="notifications"
-          width={20}
-          height={20}
-          className="size-6"
-        />
-        {hasNotifications && (
-          <div className="absolute top-0 -right-0.5 size-3 bg-primaryCol rounded-full" />
-        )}
-      </div>
+      <Dialog>
+        <DialogTrigger id="open-disclai mer">
+          <div
+            className="relative"
+            onClick={() => setIsShowNotifications(!isShowNotifications)}
+          >
+            <Image
+              src="/images/notif.png"
+              alt="notifications"
+              width={20}
+              height={20}
+              className="size-6"
+            />
+            {hasNotifications && (
+              <div className="absolute top-0 -right-0.5 size-3 bg-primaryCol rounded-full" />
+            )}
+          </div>{" "}
+        </DialogTrigger>
+        <DialogContent className="w-[20%] absolute top-[340px] left-[1150px] p-0 !max-h-[78vh] h-full">
+          <NotificationCard />
+        </DialogContent>
+      </Dialog>
+
+      {/* {isShowNotifications && (
+        <div className="absolute top-[60px] right-[100px] z-[999]">
+          {" "}
+          <NotificationCard />{" "}
+        </div>
+      )} */}
       <div className="flex items-center gap-x-2 cursor-pointer">
         <Avatar>
           <AvatarImage src="/images/user.png" />

@@ -44,19 +44,23 @@ export default function LoginPage() {
     const register = await navigator.serviceWorker.register(
       "/service-worker.js"
     );
+    console.log(register)
     const subscription = await register.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(
         "BKOPYlgOw1eAWgeVCt8uZWCTAaBUd4ReGVd9Qfs2EtK_DvRXuI_LFQSiyxjMN8rg47BWP9_8drlyE0O1GXMP4ew"
       ),
     });
-    // console.log(subscription);
+    console.log(subscription);
     const authToken = arrayBufferToBase64(
       subscription.getKey("auth") as ArrayBuffer
     );
     const hashKey = arrayBufferToBase64(
       subscription.getKey("p256dh") as ArrayBuffer
     );
+    console.log(subscription)
+    console.log(authToken);
+    console.log(hashKey)
     if (subscription) {
       const gcmToken = await registerGCMToken({
         endpoint: subscription.endpoint,
@@ -64,22 +68,23 @@ export default function LoginPage() {
         authToken,
         hashKey,
       });
+      console.log(gcmToken,"gcmtoken")
     }
   };
 
   const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (data) => {
     const { response, success } = await mutateAsync(data);
     if (success) {
-      // const permission = await Notification.requestPermission();
-      // setNotificationPermission(permission);
-      // if (permission === "granted") {
-      //   if ("serviceWorker" in navigator) {
-      //     await registerServiceWorker();
-      //   }
-      // }
-      setUser(response.data.user);
-      toast.success("Login successfull");
-      router.push(response.data.user.role === "corporate" ? "/" : "/dashboard");
+      const permission = await Notification.requestPermission();
+      setNotificationPermission(permission);
+      if (permission === "granted") {
+        if ("serviceWorker" in navigator) {
+          await registerServiceWorker();
+        }
+      }
+      // setUser(response.data.user);
+      // toast.success("Login successfull");
+      // router.push(response.data.user.role === "corporate" ? "/" : "/dashboard");
     } else return toast.error(response as string);
   };
 

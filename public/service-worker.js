@@ -16,21 +16,18 @@ const activateEvent = () => {
 };
 activateEvent();
 
-self.addEventListener("push", async (event) => {
-  console.log("Pushing ")
+self.addEventListener("push", (event) => {
   const data = event.data.json();
-  const title = data.title;
-  const body = data.message;
-  const icon = "some-icon.png";
-  const notificationOptions = {
-    body: body,
+  console.log("Push Received...");
+  console.log(data);
+
+  const options = {
+    body: data.body,
+    icon:
+      data.icon ||
+      "https://images.unsplash.com/photo-1514464750060-00e6e34c8b8c?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bm90aWZpY2F0aW9uc3xlbnwwfHwwfHx8MA%3D%3D", // Ensure icon is properly defined
     tag: "simple-push-notification-example",
-    icon: icon,
   };
 
-  return self.Notification.requestPermission().then((permission) => {
-    if (permission === "granted") {
-      return new self.Notification(title, notificationOptions);
-    }
-  });
+  self.registration.showNotification(data.title, options);
 });

@@ -23,6 +23,8 @@ import { cn } from "@/lib/utils";
 import { fetchSingleRisk } from "@/services/apis/risk.api";
 import { IRisk } from "@/types/type";
 import { BgRadioInput, DDInput } from "../LCSteps/helpers";
+import { sendNotification } from "@/services/apis/notifications.api";
+import { useAuth } from "@/context/AuthProvider";
 
 const LCInfo = ({
   label,
@@ -76,6 +78,7 @@ export const AddBid = ({
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
   const [confirmationPriceType, setConfirmationPriceType] = useState("");
+  const {user} = useAuth()
 
   // Get LC
   const { data: lcData, isLoading } = useQuery({
@@ -107,7 +110,7 @@ export const AddBid = ({
   } = useForm<z.infer<typeof addBidTypes>>({
     resolver: zodResolver(addBidTypes),
   });
-
+  console.log(lcData, "lcData");
   const onSubmit: SubmitHandler<z.infer<typeof addBidTypes>> = async (
     data: z.infer<typeof addBidTypes>
   ) => {
@@ -144,6 +147,13 @@ export const AddBid = ({
 
     if (!success) return toast.error(response);
     else {
+      console.log(response?.data, "response?.data");
+      const notificationResp = await sendNotification({
+        userId: isRisk ? riskData?.createdBy : lcData?.createdBy,
+        title: `New ${isRisk ? riskData?.type : lcData?.type } Request`,
+        body: `Ref no ${isRisk ? riskData?.refId : lcData?.refId}  by ${user?.name}`,
+      });
+      console.log(notificationResp,"response notification")
       let closeBtn = document.getElementById("submit-button-close");
       // @ts-ignore
       closeBtn.click();

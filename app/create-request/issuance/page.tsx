@@ -26,8 +26,12 @@ import { bankCountries } from "@/utils/data";
 import { useEffect, useState } from "react";
 import Loader from "@/components/ui/loader";
 import useLcIssuance, { getStateValues } from "@/store/issueance.store";
+import { sendNotification } from "@/services/apis/notifications.api";
+import { useAuth } from "@/context/AuthProvider";
 
 const IssuancePage = () => {
+  const { user } = useAuth();
+
   const { countries, flags } = useCountries();
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
@@ -155,12 +159,18 @@ const IssuancePage = () => {
         if (!success) {
           toast.error(response);
         } else {
+          const notificationResp = await sendNotification({
+            role: "bank",
+            title: "New LC Issuance Request",
+            body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
+          });
+          console.log(notificationResp, "res");
           toast.success("LC created successfully");
           reset();
           router.push("/");
         }
       } catch (error) {
-        console.error(error);
+        console.error(error, "error");
         toast.error("An unexpected error occurred");
       } finally {
         stopLoading();

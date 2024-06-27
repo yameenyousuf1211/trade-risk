@@ -27,11 +27,13 @@ import { toast } from "sonner";
 import { z } from "zod";
 import useRiskStore from "@/store/risk.store";
 import { IRisk } from "@/types/type";
+import { sendNotification } from "@/services/apis/notifications.api";
+import { useAuth } from "@/context/AuthProvider";
 
 const RiskFundedPage = () => {
-  const { register, setValue, reset, watch, getValues,control, handleSubmit } = useForm<
-    z.infer<typeof generalRiskSchema>
-  >({});
+  const { user } = useAuth();
+  const { register, setValue, reset, watch, getValues, control, handleSubmit } =
+    useForm<z.infer<typeof generalRiskSchema>>({});
   const { startLoading, stopLoading, isLoading } = useLoading();
   const [isDraftLoading, setIsDraftLoading] = useState<boolean>(false);
   const router = useRouter();
@@ -151,6 +153,11 @@ const RiskFundedPage = () => {
         if (!success) {
           toast.error(response);
         } else {
+          const notificationResp = await sendNotification({
+            role: "bank",
+            title: "New Risk Participation Request",
+            body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
+          });
           toast.success("Risk created successfully");
           reset();
           router.push("/risk-participation");
@@ -243,7 +250,7 @@ const RiskFundedPage = () => {
 
         <div className="py-4 px-4 border border-borderCol rounded-lg w-full bg-white flex items-center justify-between gap-x-4">
           <Button
-          id="draft"
+            id="draft"
             variant="ghost"
             className="w-1/3 py-6 text-[16px] text-lightGray bg-[#F1F1F5]"
             onClick={handleSubmit(onSaveAsDraft)}

@@ -10,16 +10,36 @@ import {
 import { LogoutBtn } from "./LogoutBtn";
 import { useAuth } from "@/context/AuthProvider";
 import NotificationCard from "../notifications/Notificatoncard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogClose, DialogContent } from "../ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import { ApiResponse, INotifications } from "@/types/type";
+import { fetchNotifications } from "@/services/apis/notifications.api";
+import { useQuery } from "@tanstack/react-query";
 
 export const UserProfile = () => {
   const hasNotifications = true;
   const [isShowNotifications, setIsShowNotifications] =
     useState<boolean>(false);
   const { user } = useAuth();
+
+  const {
+    isLoading,
+    data,
+  }: {
+    data: ApiResponse<INotifications> | undefined;
+    error: any;
+    isLoading: boolean;
+  } = useQuery({
+    queryKey: ["fetch-notifications"],
+    queryFn: () =>
+      fetchNotifications({
+        page: 1,
+        limit: 3,
+      }),
+  });
+  console.log(data,"nnnnn")
 
   return (
     <div className="flex items-center gap-x-4">
@@ -42,16 +62,10 @@ export const UserProfile = () => {
           </div>{" "}
         </DialogTrigger>
         <DialogContent className="w-[20%] absolute top-[340px] left-[1150px] p-0 !max-h-[78vh] h-full">
-          <NotificationCard />
+          <NotificationCard notifications={data?.data} />
         </DialogContent>
       </Dialog>
 
-      {/* {isShowNotifications && (
-        <div className="absolute top-[60px] right-[100px] z-[999]">
-          {" "}
-          <NotificationCard />{" "}
-        </div>
-      )} */}
       <div className="flex items-center gap-x-2 cursor-pointer">
         <Avatar>
           <AvatarImage src="/images/user.png" />

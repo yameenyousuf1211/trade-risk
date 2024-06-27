@@ -27,8 +27,10 @@ import { bankCountries } from "@/utils/data";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
+import { useAuth } from "@/context/AuthProvider";
 
 const CreateRequestPage = () => {
+  const { user } = useAuth();
   const { register, setValue, reset, watch, handleSubmit } = useForm<
     z.infer<typeof confirmationSchema>
   >({});
@@ -216,10 +218,11 @@ const CreateRequestPage = () => {
           if (!success) return toast.error(response);
           else {
             const notificationResp = await sendNotification({
+              role: "bank",
               title: "New LC Confirmation Request",
-              body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} b`,
+              body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
             });
-            console.log(notificationResp)
+            console.log(notificationResp);
             setValues(getStateValues(useConfirmationStore.getInitialState()));
             toast.success("LC created successfully");
             reset();

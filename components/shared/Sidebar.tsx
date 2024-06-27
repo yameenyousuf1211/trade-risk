@@ -284,7 +284,7 @@ export const Sidebar = ({
       });
     };
 
-    data.forEach((item: any) => extractHeaders(item));
+    data?.forEach((item: any) => extractHeaders(item));
     return Array.from(headers);
   };
 
@@ -305,7 +305,7 @@ export const Sidebar = ({
     const csvRows = [];
 
     csvRows.push(headers.join(","));
-    data.forEach((item: any) => {
+    data?.forEach((item: any) => {
       const values = headers.map((header) => formatValue(header, item));
       csvRows.push(values.join(","));
     });

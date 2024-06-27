@@ -44,7 +44,8 @@ export default function LoginPage() {
     const register = await navigator.serviceWorker.register(
       "/service-worker.js"
     );
-    console.log(register)
+    const registrationReady = await navigator.serviceWorker.ready;
+    console.log(registrationReady)
     const subscription = await register.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(
@@ -82,9 +83,9 @@ export default function LoginPage() {
           await registerServiceWorker();
         }
       }
-      // setUser(response.data.user);
-      // toast.success("Login successfull");
-      // router.push(response.data.user.role === "corporate" ? "/" : "/dashboard");
+      setUser(response.data.user);
+      toast.success("Login successfull");
+      router.push(response.data.user.role === "corporate" ? "/" : "/dashboard");
     } else return toast.error(response as string);
   };
 

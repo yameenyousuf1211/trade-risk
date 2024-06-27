@@ -10,7 +10,7 @@ import {
 import { LogoutBtn } from "./LogoutBtn";
 import { useAuth } from "@/context/AuthProvider";
 import NotificationCard from "../notifications/Notificatoncard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogClose, DialogContent } from "../ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
@@ -39,6 +39,7 @@ export const UserProfile = () => {
         limit: 3,
       }),
   });
+  console.log(data,"nnnnn")
 
   return (
     <div className="flex items-center gap-x-4">
@@ -64,7 +65,6 @@ export const UserProfile = () => {
           <NotificationCard notifications={data?.data} />
         </DialogContent>
       </Dialog>
-
 
       <div className="flex items-center gap-x-2 cursor-pointer">
         <Avatar>

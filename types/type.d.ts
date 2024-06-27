@@ -311,6 +311,7 @@ interface ShipmentPort {
 
 export interface IRisk {
   refId?: string;
+  type?:string
   advisingBank: Bank;
   attachment: any[]; // Adjust the type as needed for attachments
   banks: string[];
@@ -362,7 +363,11 @@ export interface IBidsInfo {
 //  notifications
 export interface INotifications {
   _id: string;
+  title: string;
+  message: string;
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
+  user: string;
+  isRead: boolean;
 }

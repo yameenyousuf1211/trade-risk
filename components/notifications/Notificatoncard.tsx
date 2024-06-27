@@ -24,7 +24,10 @@ const NotificationCard = ({
               //   return;
               // }
               return (
-                <div className=" bg-[#F8F8FA] border-b border-b-[#EBEBED] p-3 flex flex-col gap-3">
+                <div
+                  key={notification?._id}
+                  className=" bg-[#F8F8FA] border-b border-b-[#EBEBED] p-3 flex flex-col gap-3"
+                >
                   <div className="flex items-center gap-2">
                     <h1 className="font-medium text-[16px] font-poppins">
                       {notification?.title}

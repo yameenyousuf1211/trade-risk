@@ -79,6 +79,7 @@ const NotificationsPage = ({ searchParams }: Props) => {
           {data?.data?.map((notification: INotifications) => {
             return (
               <div
+              key={notification?._id}
                 className="flex cursor-pointer  justify-between items-center w-full bg-[#EFEFF0] py-5 p-3 rounded-[8px]"
                 onClick={() => handleReadNotification(notification?._id)}
               >

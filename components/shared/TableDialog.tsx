@@ -105,10 +105,7 @@ const BidCard = ({
           </div>
         )}
 
-        {/* <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="text-sm text-para mb-1">Minimum Charges</p>
-          <p className="text-lg font-semibold text-text">AED 30,000.00</p>
-        </div> */}
+       
 
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Recieved</p>
@@ -122,6 +119,10 @@ const BidCard = ({
           <p className="font-semibold text-lg">
             {convertDateToYYYYMMDD(data.validity)}
           </p>
+        </div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          {/* <p className="text-sm text-para mb-1">Minimum Charges</p>
+          <p className="text-lg font-semibold text-text">AED 30,000.00</p> */}
         </div>
         {data.status === "Pending" && !isBank && (
           <>

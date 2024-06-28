@@ -111,7 +111,7 @@ const RequestCard = ({
       {isBank && riskType !== "myRisk" ? (
         showData &&
         data.status !== "Expired" &&
-        (data.status == "Add Bid" || data.status == "Pending") && (
+        (data.status == "Add Bid" || data.status !== "Pending") && (
           <>
             <div className="px-3 py-2 flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
               {/* Data */}

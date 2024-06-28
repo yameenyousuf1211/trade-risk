@@ -2,6 +2,7 @@
 import { Pagination } from "@/components/helpers";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthProvider";
 import {
   fetchNotifications,
   updateNotification,
@@ -18,6 +19,7 @@ interface Props {
 }
 
 const NotificationsPage = ({ searchParams }: Props) => {
+  const { user } = useAuth();
   const { page = 1, limit } = searchParams;
   const queryClient = useQueryClient();
 
@@ -79,7 +81,7 @@ const NotificationsPage = ({ searchParams }: Props) => {
           {data?.data?.map((notification: INotifications) => {
             return (
               <div
-              key={notification?._id}
+                key={notification?._id}
                 className="flex cursor-pointer  justify-between items-center w-full bg-[#EFEFF0] py-5 p-3 rounded-[8px]"
                 onClick={() => handleReadNotification(notification?._id)}
               >
@@ -105,7 +107,14 @@ const NotificationsPage = ({ searchParams }: Props) => {
                     </span>
                   </p>{" "} */}
                 </div>
-                <Button>Add Bid</Button>
+                {user?.role === "bank" ? (
+                  <Button className="w-fit mt-2">Add Bid</Button>
+                ) : (
+                  <div className="flex gap-3 mt-2">
+                    <Button className="w-fit">Accept</Button>
+                    <Button className="w-fit">Reject</Button>
+                  </div>
+                )}{" "}
               </div>
             );
           })}

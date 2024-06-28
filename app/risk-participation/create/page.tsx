@@ -148,11 +148,22 @@ const RiskFundedPage = () => {
 
       try {
         startLoading();
-        const { response, success } = await onCreateRisk(reqData);
+        let result;
+        if (formData?._id) {
+          result = await onUpdateRisk({
+            id: formData?._id,
+            payload: reqData,
+          });
+        } else {
+          result = await onCreateRisk(reqData);
+        }
+
+        const { response, success } = result;
 
         if (!success) {
           toast.error(response);
         } else {
+          console.log(response,"response")
           const notificationResp = await sendNotification({
             role: "bank",
             title: "New Risk Participation Request",

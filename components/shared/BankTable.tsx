@@ -66,6 +66,7 @@ export const BankTable = ({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
   });
+  console.log(tableData, "dddd");
 
   useEffect(() => {
     if (
@@ -147,6 +148,8 @@ export const BankTable = ({
         )
       : myBidsColumnHeaders;
 
+  console.log(tableData, "_______");
+
   return (
     <div className="">
       <div className="flex items-center justify-between hide-scrollbar overflow-x-auto xl:gap-x-2 mb-2">
@@ -210,12 +213,14 @@ export const BankTable = ({
                         {allCountries &&
                           getCountryFlagByName(
                             (item as IBids)?.lcInfo?.[1]?.country ||
-                              (item as IRisk)?.issuingBank?.country
+                              (item as IRisk)?.issuingBank?.country ||
+                              (item as IRisk)?.risk[2]?.country
                           )}
                       </p>
                       <div className="truncate text-lightGray capitalize">
                         {(item as IBids)?.lcInfo?.[1]?.country ||
-                          (item as IRisk)?.issuingBank?.country}
+                          (item as IRisk)?.issuingBank?.country ||
+                          (item as IRisk)?.risk[2]?.country}
                       </div>
                     </div>
                   </TableCell>
@@ -285,7 +290,7 @@ export const BankTable = ({
                         }
                         border
                         bidData={item}
-                        id={item?._id}
+                        id={isCorporate ? item?.lc[0] : item?._id}
                         isRisk={isRisk}
                         isCorporate={isCorporate}
                       />

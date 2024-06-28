@@ -43,6 +43,7 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
   if (user && user.role !== "corporate") {
     redirect("/dashboard");
   }
+  console.log(data,"qulllilllmata")
 
   const params = useSearchParams();
   const router = useRouter();

@@ -61,7 +61,7 @@ export const UserProfile = () => {
             )}
           </div>{" "}
         </DialogTrigger>
-        <DialogContent className="w-[20%] absolute top-[340px] left-[1150px] p-0 !max-h-[78vh] h-full">
+        <DialogContent className="w-[20%] absolute top-[340px] left-[77%] p-0 !max-h-[78vh] h-full">
           <NotificationCard notifications={data?.data} />
         </DialogContent>
       </Dialog>

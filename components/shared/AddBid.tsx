@@ -78,7 +78,8 @@ export const AddBid = ({
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
   const [confirmationPriceType, setConfirmationPriceType] = useState("");
-  const {user} = useAuth()
+  const { user } = useAuth();
+  console.log(id, "_______-id");
 
   // Get LC
   const { data: lcData, isLoading } = useQuery({
@@ -101,6 +102,7 @@ export const AddBid = ({
       });
     },
   });
+  console.log(lcData, "lcccdatatata");
 
   const {
     handleSubmit,
@@ -110,7 +112,6 @@ export const AddBid = ({
   } = useForm<z.infer<typeof addBidTypes>>({
     resolver: zodResolver(addBidTypes),
   });
-  console.log(lcData, "lcData");
   const onSubmit: SubmitHandler<z.infer<typeof addBidTypes>> = async (
     data: z.infer<typeof addBidTypes>
   ) => {
@@ -150,10 +151,11 @@ export const AddBid = ({
       console.log(response?.data, "response?.data");
       const notificationResp = await sendNotification({
         userId: isRisk ? riskData?.createdBy : lcData?.createdBy,
-        title: `New ${isRisk ? riskData?.type : lcData?.type } Request`,
-        body: `Ref no ${isRisk ? riskData?.refId : lcData?.refId}  by ${user?.name}`,
+        title: `New ${isRisk ? riskData?.type : lcData?.type} Request`,
+        body: `Ref no ${isRisk ? riskData?.refId : lcData?.refId}  by ${
+          user?.name
+        }`,
       });
-      console.log(notificationResp,"response notification")
       let closeBtn = document.getElementById("submit-button-close");
       // @ts-ignore
       closeBtn.click();

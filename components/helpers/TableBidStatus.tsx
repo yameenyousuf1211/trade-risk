@@ -30,9 +30,9 @@ export const TableBidStatus = ({
           isInfo={data.response.data !== "Add bid" && !isAddNewBid}
           setIsAddNewBid={setIsAddNewBid}
           isDiscount={
-            (lcData.type && lcData.type.includes("Discount")) || false
+            (lcData?.type && lcData?.type?.includes("Discount")) || false
           }
-          id={lcData._id}
+          id={lcData?._id}
           isRisk={isRisk}
         />
       ) : (

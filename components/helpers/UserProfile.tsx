@@ -17,6 +17,7 @@ import { X } from "lucide-react";
 import { ApiResponse, INotifications } from "@/types/type";
 import { fetchNotifications } from "@/services/apis/notifications.api";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 export const UserProfile = () => {
   const hasNotifications = true;
@@ -39,7 +40,7 @@ export const UserProfile = () => {
         limit: 3,
       }),
   });
-  console.log(data,"nnnnn")
+  console.log(data, "nnnnn");
 
   return (
     <div className="flex items-center gap-x-4">
@@ -61,8 +62,10 @@ export const UserProfile = () => {
             )}
           </div>{" "}
         </DialogTrigger>
-        <DialogContent className="w-[20%] absolute top-[340px] left-[77%] p-0 !max-h-[78vh] h-full">
-          <NotificationCard notifications={data?.data} />
+        <DialogContent className="w-[20%] absolute top-[32%] left-[77%] p-0 !max-h-[78vh] h-full">
+          {data?.data?.map((data: INotifications, index: number) => {
+            return <NotificationCard index={index} notification={data} />;
+          })}
         </DialogContent>
       </Dialog>
 

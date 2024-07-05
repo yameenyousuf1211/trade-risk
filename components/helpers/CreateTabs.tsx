@@ -52,14 +52,14 @@ export const CreateTabs = () => {
           <div className="absolute bottom-0 h-1 w-full bg-primaryCol" />
         )}
       </div>
-      <div className="relative py-3">
+      {/* <div className="relative py-3">
         <Link href="/create-request/issuance" className="text-lightGray">
           LC Issuance
         </Link>
         {pathname === "/create-request/issuance" && (
           <div className="absolute bottom-0 h-1 w-full bg-primaryCol" />
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

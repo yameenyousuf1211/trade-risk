@@ -165,11 +165,11 @@ const RiskFundedPage = () => {
           toast.error(response);
         } else {
           console.log(response, "response");
-          const notificationResp = await sendNotification({
-            role: "bank",
-            title: "New Risk Participation Request",
-            body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
-          });
+          // const notificationResp = await sendNotification({
+          //   role: "bank",
+          //   title: "New Risk Participation Request",
+          //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
+          // });
           toast.success("Risk created successfully");
           reset();
           router.push("/risk-participation");

@@ -1,6 +1,7 @@
 "use client";
 import { Pagination } from "@/components/helpers";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
+import Notification from "@/components/notifications/Notification";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthProvider";
 import {
@@ -80,42 +81,10 @@ const NotificationsPage = ({ searchParams }: Props) => {
         <div className="mt-5 flex flex-col gap-3">
           {data?.data?.map((notification: INotifications) => {
             return (
-              <div
+              <Notification
                 key={notification?._id}
-                className="flex cursor-pointer  justify-between items-center w-full bg-[#EFEFF0] py-5 p-3 rounded-[8px]"
-                onClick={() => handleReadNotification(notification?._id)}
-              >
-                <div className="flex gap-3 flex-col items-start">
-                  <div className="flex gap-2 items-center">
-                    {!notification?.isRead && (
-                      <div className="w-[9px] h-[9px] rounded-full bg-[#5625F2]"></div>
-                    )}
-
-                    <h1 className="text-[18px] font-poppins font-medium">
-                      {notification?.title}
-                    </h1>
-                  </div>
-                  <p className="text-[14px] font-regular">
-                    {notification?.message}
-                  </p>
-                  {/* <p className="text-[14px] font-regular">
-                    <span className="font-medium underline">Ref no 100930</span>{" "}
-                    from National Bank of Egypt by{" "}
-                    <span className="font-medium">
-                      {" "}
-                      Rional Massi Corporation{" "}
-                    </span>
-                  </p>{" "} */}
-                </div>
-                {user?.role === "bank" ? (
-                  <Button className="w-fit mt-2">Add Bid</Button>
-                ) : (
-                  <div className="flex gap-3 mt-2">
-                    <Button className="w-fit">Accept</Button>
-                    <Button className="w-fit">Reject</Button>
-                  </div>
-                )}{" "}
-              </div>
+                notification={notification}
+              />
             );
           })}
         </div>

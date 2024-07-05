@@ -1,14 +1,19 @@
 import React from "react";
 
 interface Props {
+  watch: any;
   register: any;
 }
 
-export const RiskStep8 = ({ register }: Props) => {
+export const RiskStep8 = ({ register, watch }: Props) => {
+  const riskParticipationTransaction = watch(
+    "riskParticipationTransaction.type"
+  );
   return (
     <div className="h-full py-4 pt-[2.2rem] px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">
         <p className="size-6 rounded-full bg-[#255EF2] center text-white font-semibold text-sm">
+          {/* {riskParticipationTransaction === "LC Confirmation" ? 7 : 8} */}
           8
         </p>
         <p className="font-semibold text-[16px] text-lightGray">

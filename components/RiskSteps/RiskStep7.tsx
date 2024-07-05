@@ -40,8 +40,11 @@ const FileCard = ({
   );
 };
 
-export const RiskStep7 = () => {
+export const RiskStep7 = ({ watch }: any) => {
   const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
+  const riskParticipationTransaction = watch(
+    "riskParticipationTransaction.type"
+  );
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -74,12 +77,15 @@ export const RiskStep7 = () => {
     <div className="h-full py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="size-6 rounded-full bg-[#255EF2] center text-white font-semibold text-sm">
+          {/* {riskParticipationTransaction === "LC Confirmation" ? 6 : 7} */}
           7
         </p>
         <p className="font-semibold text-[16px] text-lightGray">Attachments</p>
       </div>
       <p className="font-semibold ml-3 text-sm">
-        Add Documents: <span className="font-medium"> e.g Drafts / Invoice </span> (PDF,JPG,PNG,TIFF)
+        Add Documents:{" "}
+        <span className="font-medium"> e.g Drafts / Invoice </span>{" "}
+        (PDF,JPG,PNG,TIFF)
       </p>
 
       <div className="bg-[#F5F7F9] p-1 mt-2 rounded-md">

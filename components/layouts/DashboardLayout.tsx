@@ -19,9 +19,9 @@ export default function AuthLayout({
           message: data.body,
         });
 
-        setTimeout(() => {
-          setNotification(null);
-        }, 5000); // Auto-close after 5 seconds
+        // setTimeout(() => {
+        //   setNotification(null);
+        // }, 5000); // Auto-close after 5 seconds
       });
     }
   }, []);

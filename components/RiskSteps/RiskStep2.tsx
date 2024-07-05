@@ -119,7 +119,7 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
               Transaction offered under Risk Participation
             </p>
 
-            <div className="flex items-center justify-between gap-x-2 w-full">
+            <div className="flex items-center  justify-between gap-x-2 w-full">
               <BankRadioInput
                 id="transaction-confirmation"
                 label="LC Confirmation"
@@ -144,7 +144,7 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
               />
               <BankRadioInput
                 id="transaction-supply"
-                label="Supply Chain Finance"
+                label="Supply Chain Finance (Payable Finance)"
                 name="riskParticipationTransaction.type"
                 value="Supply Chain Finance"
                 checked={

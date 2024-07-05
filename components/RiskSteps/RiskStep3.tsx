@@ -22,6 +22,9 @@ export const RiskStep3 = ({
 }: Props) => {
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
+  const riskParticipationTransaction = watch(
+    "riskParticipationTransaction.type"
+  );
   const {
     shipmentPort,
     expectedDateDiscounting,
@@ -84,60 +87,61 @@ export const RiskStep3 = ({
         setValue={setValue}
         watch={watch}
       />
+      {riskParticipationTransaction !== "LC Confirmation" && (
+        <div className="relative flex items-center justify-between gap-x-3 w-full my-4">
+          <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-[274px]">
+            <p className="text-sm font-semibold mb-2 ml-2">
+              Is the LC Discounted?
+            </p>
+            <BankRadioInput
+              id="discounted-yes"
+              label="Yes"
+              name="isLcDiscounting"
+              value="yes"
+              checked={watch("isLcDiscounting") === "yes"}
+              register={register}
+            />
+            <BankRadioInput
+              id="discounted-no"
+              label="No"
+              name="isLcDiscounting"
+              value="no"
+              checked={watch("isLcDiscounting") === "no"}
+              register={register}
+            />
+          </div>
 
-      <div className="relative flex items-center justify-between gap-x-3 w-full my-4">
-        <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-[274px]">
-          <p className="text-sm font-semibold mb-2 ml-2">
-            Is the LC Discounted?
-          </p>
-          <BankRadioInput
-            id="discounted-yes"
-            label="Yes"
-            name="isLcDiscounting"
-            value="yes"
-            checked={watch("isLcDiscounting") === "yes"}
-            register={register}
-          />
-          <BankRadioInput
-            id="discounted-no"
-            label="No"
-            name="isLcDiscounting"
-            value="no"
-            checked={watch("isLcDiscounting") === "no"}
-            register={register}
-          />
+          <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9]">
+            <p className="text-sm font-semibold mb-2 ml-2">
+              Is it expected to be discounted?
+            </p>
+            <BankRadioInput
+              id="expected-yes"
+              label="Yes"
+              name="expectedDiscounting"
+              value="yes"
+              checked={watch("expectedDiscounting") === "yes"}
+              register={register}
+            />
+            <BankRadioInput
+              id="expected-no"
+              label="No"
+              name="expectedDiscounting"
+              value="no"
+              checked={watch("expectedDiscounting") === "no"}
+              register={register}
+            />
+
+            <DateInput
+              name="expectedDateDiscounting"
+              value={expectedDateDiscounting}
+              setValue={setValue}
+              title="Expected Date of Discounting"
+              noBorder
+            />
+          </div>
         </div>
-
-        <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9]">
-          <p className="text-sm font-semibold mb-2 ml-2">
-            Is it expected to be discounted?
-          </p>
-          <BankRadioInput
-            id="expected-yes"
-            label="Yes"
-            name="expectedDiscounting"
-            value="yes"
-            checked={watch("expectedDiscounting") === "yes"}
-            register={register}
-          />
-          <BankRadioInput
-            id="expected-no"
-            label="No"
-            name="expectedDiscounting"
-            value="no"
-            checked={watch("expectedDiscounting") === "no"}
-            register={register}
-          />
-
-          <DateInput
-            name="expectedDateDiscounting"
-            value={expectedDateDiscounting}
-            setValue={setValue}
-            title="Expected Date of Discounting"
-            noBorder
-          />
-        </div>
-      </div>
+      )}
 
       <div className="flex items-center justify-between gap-x-3 w-full my-4">
         <DateInput
@@ -187,7 +191,7 @@ export const RiskStep3 = ({
                   <input
                     type="radio"
                     id="payment-tenor"
-                    value="Tenor LC"
+                    value="LC Tenor"
                     {...register("paymentTerms")}
                     checked={watch("paymentTerms") === "Tenor LC"}
                     className="accent-[#255EF2] size-4"

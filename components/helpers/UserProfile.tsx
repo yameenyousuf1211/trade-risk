@@ -9,25 +9,83 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogoutBtn } from "./LogoutBtn";
 import { useAuth } from "@/context/AuthProvider";
+import NotificationCard from "../notifications/Notificatoncard";
+import { useEffect, useState } from "react";
+import { Dialog, DialogClose, DialogContent } from "../ui/dialog";
+import { DialogTrigger } from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
+import { ApiResponse, INotifications } from "@/types/type";
+import { fetchNotifications } from "@/services/apis/notifications.api";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 export const UserProfile = () => {
   const hasNotifications = true;
+  const [isShowNotifications, setIsShowNotifications] =
+    useState<boolean>(false);
   const { user } = useAuth();
+
+  const {
+    isLoading,
+    data,
+  }: {
+    data: ApiResponse<INotifications> | undefined;
+    error: any;
+    isLoading: boolean;
+  } = useQuery({
+    queryKey: ["fetch-notifications"],
+    queryFn: () =>
+      fetchNotifications({
+        page: 1,
+        limit: 3,
+      }),
+  });
+  console.log(data, "nnnnn");
 
   return (
     <div className="flex items-center gap-x-4">
-      <div className="relative">
-        <Image
-          src="/images/notif.png"
-          alt="notifications"
-          width={20}
-          height={20}
-          className="size-6"
-        />
-        {hasNotifications && (
-          <div className="absolute top-0 -right-0.5 size-3 bg-primaryCol rounded-full" />
-        )}
-      </div>
+      <Dialog>
+        <DialogTrigger id="open-disclai mer">
+          <div
+            className="relative"
+            onClick={() => setIsShowNotifications(!isShowNotifications)}
+          >
+            <Image
+              src="/images/notif.png"
+              alt="notifications"
+              width={20}
+              height={20}
+              className="size-6"
+            />
+            {hasNotifications && (
+              <div className="absolute top-0 -right-0.5 size-3 bg-primaryCol rounded-full" />
+            )}
+          </div>{" "}
+        </DialogTrigger>
+        <DialogContent className="w-[20%] absolute top-[330px] left-[77%] p-0 !max-h-[78vh] h-full">
+          {!isLoading && data?.data?.length === 0 && (
+            <div className="p-4">
+              {" "}
+              <h1 className="font-medium text-[18px] font-poppins ">
+                Notifications
+              </h1>
+              <h1 className="font-regular text-[15px] font-poppins mt-4">
+                No Notifications yet!
+              </h1>
+            </div>
+          )}
+          {data?.data?.map((data: INotifications, index: number) => {
+            return (
+              <NotificationCard
+                key={data?._id}
+                index={index}
+                notification={data}
+              />
+            );
+          })}
+        </DialogContent>
+      </Dialog>
+
       <div className="flex items-center gap-x-2 cursor-pointer">
         <Avatar>
           <AvatarImage src="/images/user.png" />

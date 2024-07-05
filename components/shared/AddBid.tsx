@@ -23,6 +23,8 @@ import { cn } from "@/lib/utils";
 import { fetchSingleRisk } from "@/services/apis/risk.api";
 import { IRisk } from "@/types/type";
 import { BgRadioInput, DDInput } from "../LCSteps/helpers";
+import { sendNotification } from "@/services/apis/notifications.api";
+import { useAuth } from "@/context/AuthProvider";
 
 const LCInfo = ({
   label,
@@ -76,6 +78,8 @@ export const AddBid = ({
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
   const [confirmationPriceType, setConfirmationPriceType] = useState("");
+  const { user } = useAuth();
+  console.log(id, "_______-id");
 
   // Get LC
   const { data: lcData, isLoading } = useQuery({
@@ -98,6 +102,7 @@ export const AddBid = ({
       });
     },
   });
+  console.log(lcData, "lcccdatatata");
 
   const {
     handleSubmit,
@@ -107,7 +112,6 @@ export const AddBid = ({
   } = useForm<z.infer<typeof addBidTypes>>({
     resolver: zodResolver(addBidTypes),
   });
-
   const onSubmit: SubmitHandler<z.infer<typeof addBidTypes>> = async (
     data: z.infer<typeof addBidTypes>
   ) => {
@@ -144,6 +148,16 @@ export const AddBid = ({
 
     if (!success) return toast.error(response);
     else {
+      console.log(response?.data, "response?.data");
+      const notificationResp = await sendNotification({
+        userId: isRisk ? riskData?.createdBy : lcData?.createdBy,
+        title: `New ${isRisk ? riskData?.type : lcData?.type} Request ${
+          isRisk ? riskData?._id : lcData?._id
+        }`,
+        body: `Ref no ${isRisk ? riskData?.refId : lcData?.refId}  by ${
+          user?.name
+        }`,
+      });
       let closeBtn = document.getElementById("submit-button-close");
       // @ts-ignore
       closeBtn.click();
@@ -233,7 +247,9 @@ export const AddBid = ({
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">
-            {lcData?.type + " Request" || ""}
+            {(lcData?.type && lcData?.type + " Request") ||
+              "Risk Participation Request" +
+                ` (${isRisk ? riskData?.refId : lcData?.refId})`}
           </h2>
           <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>
             <X className="size-7" />

@@ -105,11 +105,6 @@ const BidCard = ({
           </div>
         )}
 
-        {/* <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="text-sm text-para mb-1">Minimum Charges</p>
-          <p className="text-lg font-semibold text-text">AED 30,000.00</p>
-        </div> */}
-
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Recieved</p>
           <p className="font-semibold text-lg">
@@ -122,6 +117,10 @@ const BidCard = ({
           <p className="font-semibold text-lg">
             {convertDateToYYYYMMDD(data.validity)}
           </p>
+        </div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          {/* <p className="text-sm text-para mb-1">Minimum Charges</p>
+          <p className="text-lg font-semibold text-text">AED 30,000.00</p> */}
         </div>
         {data.status === "Pending" && !isBank && (
           <>
@@ -203,11 +202,13 @@ export const TableDialog = ({
   bids,
   isBank,
   isViewAll,
+  buttonTitle,
   isRisk = false,
 }: {
   lcId: string;
   bids: IBids[];
   isBank?: boolean;
+  buttonTitle?: string;
   isViewAll?: boolean;
   isRisk?: boolean;
 }) => {
@@ -221,10 +222,11 @@ export const TableDialog = ({
     queryKey: [`single-risk`, lcId],
     queryFn: () => fetchSingleRisk(lcId),
   });
+  console.log(lcId, "LC++");
 
   const { user } = useAuth();
   const userBids =
-    isBank && user && bids.filter((bid) => bid.bidBy === user._id);
+    isBank && user && bids?.filter((bid) => bid.bidBy === user._id);
 
   return (
     <Dialog>
@@ -235,12 +237,20 @@ export const TableDialog = ({
             : "center border border-borderCol rounded-md w-full px-1 py-2"
         }`}
       >
-        {isViewAll ? <p>View all</p> : <Eye className="size-5" />}
+        {isViewAll ? (
+          <p>View all</p>
+        ) : buttonTitle ? (
+          <p>{buttonTitle}</p>
+        ) : (
+          <Eye className="size-5" />
+        )}
       </DialogTrigger>
       <DialogContent className="w-full max-w-4xl !p-0 !max-h-[95vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">
-            {(lcData && lcData?.type) || ""}
+            {(lcData && lcData?.type) ||
+              "Risk Participation Request" +
+                ` (${isRisk ? riskData?.refId : lcData?.refId})`}
           </h2>
           <DialogClose>
             <X className="size-7" />
@@ -505,7 +515,7 @@ export const TableDialog = ({
             <div className="flex items-center justify-between w-full pt-5">
               <div className="flex items-center gap-x-2">
                 <p className="bg-primaryCol text-white font-semibold text-lg rounded-xl py-1 px-3">
-                  {isBank ? userBids?.length : bids.length}
+                  {isBank ? userBids?.length : bids?.length}
                 </p>
                 <p className="text-xl font-semibold">Bids recieved</p>
               </div>

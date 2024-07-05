@@ -111,7 +111,7 @@ const RequestCard = ({
       {isBank && riskType !== "myRisk" ? (
         showData &&
         data.status !== "Expired" &&
-        (data.status == "Add Bid" || data.status == "Pending") && (
+        (data.status == "Add Bid" || data.status !== "Pending") && (
           <>
             <div className="px-3 py-2 flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
               {/* Data */}
@@ -284,7 +284,7 @@ export const Sidebar = ({
       });
     };
 
-    data.forEach((item: any) => extractHeaders(item));
+    data?.forEach((item: any) => extractHeaders(item));
     return Array.from(headers);
   };
 
@@ -305,7 +305,7 @@ export const Sidebar = ({
     const csvRows = [];
 
     csvRows.push(headers.join(","));
-    data.forEach((item: any) => {
+    data?.forEach((item: any) => {
       const values = headers.map((header) => formatValue(header, item));
       csvRows.push(values.join(","));
     });

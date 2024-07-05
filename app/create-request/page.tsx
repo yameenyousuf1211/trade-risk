@@ -27,8 +27,10 @@ import { bankCountries } from "@/utils/data";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
+import { useAuth } from "@/context/AuthProvider";
 
 const CreateRequestPage = () => {
+  const { user } = useAuth();
   const { register, setValue, reset, watch, handleSubmit } = useForm<
     z.infer<typeof confirmationSchema>
   >({});
@@ -155,7 +157,7 @@ const CreateRequestPage = () => {
         ...baseData,
         draft: "true",
       };
-      console.log(reqData,"REQDAATA")
+      console.log(reqData, "REQDAATA");
 
       setLoader(true);
       const { response, success } = confirmationData?._id
@@ -215,10 +217,13 @@ const CreateRequestPage = () => {
           stopLoading();
           if (!success) return toast.error(response);
           else {
-            // await sendNotification({
-            //   title: "New LC Confirmation Request",
-            //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-            // });
+            console.log(response?.data?._id,"hi response")
+            const notificationResp = await sendNotification({
+              role: "bank",
+              title: `New LC Confirmation Request ${response?.data?._id}`,
+              body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
+            });
+            console.log(notificationResp);
             setValues(getStateValues(useConfirmationStore.getInitialState()));
             toast.success("LC created successfully");
             reset();

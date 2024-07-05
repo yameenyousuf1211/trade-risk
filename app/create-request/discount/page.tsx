@@ -27,8 +27,11 @@ import { bankCountries } from "@/utils/data";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
+import { useAuth } from "@/context/AuthProvider";
 
 const CreateDiscountPage = () => {
+  const { user } = useAuth();
+
   const { register, setValue, reset, handleSubmit, watch } = useForm<
     z.infer<typeof discountingSchema>
   >({});
@@ -213,10 +216,11 @@ const CreateDiscountPage = () => {
           stopLoading();
           if (!success) return toast.error(response);
           else {
-            // await sendNotification({
-            //   title: "New LC Confirmation Request",
-            //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user.name}`,
-            // });
+            const notificationResp = await sendNotification({
+              role: "bank",
+              title: "New LC Discounting Request",
+              body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
+            });
             setValues(getStateValues(useDiscountingStore.getInitialState()));
             toast.success("LC created successfully");
             reset();

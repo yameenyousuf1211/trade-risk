@@ -41,6 +41,7 @@ const RiskFundedPage = () => {
   const { countries, flags } = useCountries();
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
+  const riskParticipationTransaction = watch("riskParticipationTransaction.type");
 
   const formData = useRiskStore((state) => state);
   const setFormData = useRiskStore((state) => state.setValues);
@@ -163,7 +164,7 @@ const RiskFundedPage = () => {
         if (!success) {
           toast.error(response);
         } else {
-          console.log(response,"response")
+          console.log(response, "response");
           const notificationResp = await sendNotification({
             role: "bank",
             title: "New Risk Participation Request",
@@ -252,11 +253,13 @@ const RiskFundedPage = () => {
           countries={countries}
           flags={flags}
         />
-        <RiskStep6 register={register} watch={watch} />
+        {/* {riskParticipationTransaction !== "LC Confirmation" && ( */}
+          <RiskStep6 register={register} watch={watch} />
+        {/* )} */}
 
         <div className="relative flex items-center justify-between w-full h-full gap-x-2">
-          <RiskStep7 />
-          <RiskStep8 register={register} />
+          <RiskStep7 watch={watch} />
+          <RiskStep8 watch={watch} register={register} />
         </div>
 
         <div className="py-4 px-4 border border-borderCol rounded-lg w-full bg-white flex items-center justify-between gap-x-4">

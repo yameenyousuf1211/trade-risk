@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";
 import { useAuth } from "@/context/AuthProvider";
+import { TableDialog } from "../shared/TableDialog";
 
 const NotificationPopup = ({
   title,
@@ -14,6 +15,12 @@ const NotificationPopup = ({
   onClose: () => void;
 }) => {
   const { user } = useAuth();
+  const processedTitle = title.split(" ");
+  const requestId = processedTitle[processedTitle?.length - 1];
+  console.log(processedTitle,"title")
+  const handleAddBid = () => {
+    console.log(requestId, "REQUESTid");
+  };
   return (
     <div className="fixed bottom-5 right-5 z-50 w-[360px] h-[144px]">
       <div className="bg-[#2F3031] text-white p-5 rounded-[12px] flex flex-col gap-1">
@@ -22,8 +29,14 @@ const NotificationPopup = ({
             <div>
               <CheckIcon />
             </div>
-
-            <h2 className="text-[16px] font-medium  text-white">{title}</h2>
+            {processedTitle?.map((tit, index) => {
+              if (index === processedTitle?.length - 1) {
+                return;
+              }
+              return (
+                <h2 className="text-[16px] font-medium  text-white">{tit}</h2>
+              );
+            })}
           </div>
           <X cursor="pointer" width={25} height={25} onClick={onClose} />
         </div>
@@ -34,11 +47,15 @@ const NotificationPopup = ({
         </p> */}
         <p className="text-[14px] font-regular text-white">{message}</p>
         {user?.role === "bank" ? (
-          <Button className="w-fit mt-2">Add Bid</Button>
+          // <TableDialog buttonTitle="Add Bid" lcId={requestId} isBank isRisk={false} />
+          <Button onClick={handleAddBid}>Add </Button>
         ) : (
           <div className="flex gap-3 mt-2">
-            <Button className="w-fit">Accept</Button>
-            <Button className="w-fit">Reject</Button>
+            <Button>Accept</Button>
+            <Button>Reject</Button>
+
+            {/* <TableDialog lcId={requestId} isRisk={false} buttonTitle="Accept" />
+            <TableDialog lcId={requestId} isRisk={false} buttonTitle="Reject" /> */}
           </div>
         )}{" "}
       </div>

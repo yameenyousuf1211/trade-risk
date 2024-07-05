@@ -245,7 +245,8 @@ export const AddBid = ({
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">
-            {lcData?.type + " Request" || ""}
+            {lcData?.type && lcData?.type + " Request" || "Risk Participation Request" +
+                ` (${isRisk ? riskData?.refId : lcData?.refId})`}
           </h2>
           <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>
             <X className="size-7" />

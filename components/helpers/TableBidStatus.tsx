@@ -20,7 +20,6 @@ export const TableBidStatus = ({
     queryFn: () => getBankLcStatus(id, isRisk ? "risk" : "lc"),
   });
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
-  
 
   return (
     <>

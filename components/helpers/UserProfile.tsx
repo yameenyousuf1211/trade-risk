@@ -40,7 +40,6 @@ export const UserProfile = () => {
         limit: 3,
       }),
   });
-  console.log(data, "nnnnn");
 
   return (
     <div className="flex items-center gap-x-4">
@@ -64,7 +63,13 @@ export const UserProfile = () => {
         </DialogTrigger>
         <DialogContent className="w-[20%] absolute top-[32%] left-[77%] p-0 !max-h-[78vh] h-full">
           {data?.data?.map((data: INotifications, index: number) => {
-            return <NotificationCard index={index} notification={data} />;
+            return (
+              <NotificationCard
+                key={data?._id}
+                index={index}
+                notification={data}
+              />
+            );
           })}
         </DialogContent>
       </Dialog>

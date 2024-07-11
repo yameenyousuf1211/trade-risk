@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Pen } from 'lucide-react'
+import { Suspense } from 'react'
 const invoices = [
   {
     invoice: "INV001",
@@ -68,10 +69,14 @@ export default function page() {
         <div className='flex justify-between items-center'>
           <h1 className='font-semibold text-;g'>Users</h1>
           <div className='flex gap-8'>
+            <Suspense fallback={<div>Loading</div>}>
             <Search
               placeholder='Search for a user'
               className='flex bg-[#F0F0F0]  text-[#92929D] border border-[#E2E2EA] font-light w-full rounded-md placeholder:text-[13px] pr-5 h-8 max-w-[200px] bg-back ground px-3 py-2 text-sm placeholder:text-muted-foreground' />
+            </Suspense>
+            <Suspense>
             <Filter isRisk={false} />
+            </Suspense>
             <AddUser />
           </div>
         </div>

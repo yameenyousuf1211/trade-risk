@@ -34,7 +34,7 @@ const NotificationPopup = ({
                 return;
               }
               return (
-                <h2 className="text-[16px] font-medium  text-white">{tit}</h2>
+                <h2 className="text-[16px] font-medium  text-white" key={tit+index}>{tit}</h2>
               );
             })}
           </div>

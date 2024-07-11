@@ -17,6 +17,7 @@ import { X } from "lucide-react";
 import { ApiResponse, INotifications } from "@/types/type";
 import { fetchNotifications } from "@/services/apis/notifications.api";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 export const UserProfile = () => {
   const hasNotifications = true;
@@ -87,6 +88,9 @@ export const UserProfile = () => {
         <DropdownMenuContent align="end" className="w-[150px]">
           <DropdownMenuItem>
             <LogoutBtn />
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+          <Link href={'/setting'}>Settings</Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

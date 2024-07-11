@@ -419,7 +419,6 @@ const CurrentBankingPage = () => {
               ))}
           </div>
         </div>
-
         <div className="flex flex-col gap-y-2">
           <Button
             type="button"
@@ -430,7 +429,6 @@ const CurrentBankingPage = () => {
           >
             Submit
           </Button>
-
           <Link
             href="/register/corporate/point-contact"
             className="text-center"

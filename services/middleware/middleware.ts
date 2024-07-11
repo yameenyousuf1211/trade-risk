@@ -9,7 +9,6 @@ const api = axios.create({
   // baseURL: "https://trade-prod.yameenyousuf.com/api",
   baseURL: "https://trade.yameenyousuf.com/api",
   // baseURL: "http://localhost:8080/api",
-
   // baseURL: 'http://128.199.30.51:8080/api'
 });
 api.interceptors.request.use(

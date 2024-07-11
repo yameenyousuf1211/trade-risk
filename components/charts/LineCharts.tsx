@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 import { LineChart, Line } from "recharts";
 
-const CountrySearch = () => {
+ const CountrySearch = () => {
   return (
     <div className="font-roboto relative">
       <input

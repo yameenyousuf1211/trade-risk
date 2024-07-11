@@ -51,7 +51,16 @@ const NotificationPopup = ({
                 );
               })}
             </div>
-            <X cursor="pointer" width={25} height={25} onClick={onClose} />
+
+            {processedTitle?.map((tit, index) => {
+              if (index === processedTitle?.length - 1) {
+                return;
+              }
+              return (
+                <h2 className="text-[16px] font-medium  text-white" key={tit+index}>{tit}</h2>
+              );
+            })}
+
           </div>
           {/* <p className="text-[14px] font-regular text-white">
           <span className="font-medium underline">Ref no 100930</span> from

@@ -103,6 +103,7 @@ export interface ApiResponse<T> {
 
 export interface IUser {
   _id?: string;
+  businessNature:string
   name?: string;
   email: string;
   role: string;
@@ -370,4 +371,21 @@ export interface INotifications {
   updatedAt: Date;
   user: string;
   isRead: boolean;
+}
+
+
+export interface IAddRole {
+  roleName: string;
+}
+
+interface IRole  {
+  _id:string
+  name: string;
+  creator: Schema.Types.ObjectId;
+  changeRequest: boolean;
+  viewBids: boolean;
+  acceptAndRejectBids: boolean;
+  manageUsers: boolean;
+  manageCompany: boolean;
+  manageRequests: boolean;
 }

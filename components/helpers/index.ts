@@ -15,7 +15,8 @@ import { FloatingInput } from "@/components/helpers/FloatingInput";
 import { DateRangePicker } from "./DateRangePicker";
 import { SearchBar } from "./SearchBar";
 import { Filter } from "./Filter";
-
+import {AddRole} from "./AddRole";
+import {Roles} from "./Roles";
 export {
   Filter,
   SearchBar,
@@ -34,4 +35,6 @@ export {
   BidsCountrySelect,
   NumberInput,
   BidsSort,
+  AddRole,
+  Roles
 };

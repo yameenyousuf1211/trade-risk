@@ -75,6 +75,7 @@ export default function LoginPage() {
 
   const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (data) => {
     const { response, success } = await mutateAsync(data);
+    console.log(response);
     if (success) {
       const permission = await Notification.requestPermission();
       setNotificationPermission(permission);

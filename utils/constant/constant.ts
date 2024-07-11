@@ -6,4 +6,13 @@ export const STATUS = Object.freeze({
     "NOT_FOUND":404,
     "UNPROCESSABLE_ENTITY":422,
     "INTERNAL_SERVER_ERROR":500
-    });
+});
+
+export const permissions = [
+    "Change Request",
+    "Edit & Manage Requests",
+    "View Bids",
+    "Accept/Reject Bids",
+    "Manage Users",
+    "Manage Company"
+  ];

@@ -10,9 +10,8 @@ export default function Sidebar({active}:{active:number}) {
                 {sidebarItems.map((item, index) => {
                     const isActive = active === item.id;
                     return (
-                        <Link href={item.link}>
+                        <Link href={item.link} key={item.id}>
                         <div
-                            key={item.link+item.id}
                             className={`p-5 ${isActive ? 'border-l-2 border-l-[#5625F2] font-bold' : ''}`}
                         >
                             <p className={`opacity-90 ${isActive ? 'text-[#5625F2]' : 'text-[#696974]'}`}>

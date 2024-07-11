@@ -151,7 +151,9 @@ export const AddBid = ({
       console.log(response?.data, "response?.data");
       const notificationResp = await sendNotification({
         userId: isRisk ? riskData?.createdBy : lcData?.createdBy,
-        title: `New ${isRisk ? riskData?.type : lcData?.type} Request`,
+        title: `New ${isRisk ? riskData?.type : lcData?.type} Request ${
+          isRisk ? riskData?._id : lcData?._id
+        }`,
         body: `Ref no ${isRisk ? riskData?.refId : lcData?.refId}  by ${
           user?.name
         }`,
@@ -245,7 +247,8 @@ export const AddBid = ({
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">
-            {lcData?.type && lcData?.type + " Request" || "Risk Participation Request" +
+            {(lcData?.type && lcData?.type + " Request") ||
+              "Risk Participation Request" +
                 ` (${isRisk ? riskData?.refId : lcData?.refId})`}
           </h2>
           <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>

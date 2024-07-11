@@ -68,6 +68,17 @@ export const fetchSingleLc = async (id: string) => {
   }
 };
 
+export const fetchSingleLc2 = async (id: string) => {
+  try {
+    const { data } = await api.get(`/lcs?lc=${id}`);
+
+    return data.data.updatedData?.data[0];
+  } catch (error: any) {
+    console.log(error);
+    return error.response?.data?.message || "Something went wrong";
+  }
+};
+
 export const onCreateLC = async (payload: any) => {
   try {
     const response = await api.post("/lcs/create", payload);

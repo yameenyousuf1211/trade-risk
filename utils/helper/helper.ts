@@ -170,6 +170,16 @@ export const calculateDaysLeft = (futureDate: any) => {
   return daysDifference > 0 ? daysDifference : 0;
 };
 
+
 export const formatPhoneNumber = (phoneNumber:string) => {
   return phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
 };
+
+export const removeId = (title: string) => {
+  const idPattern = /\b[0-9a-fA-F]{24}\b/; // pattern to match a 24-character hexadecimal string
+  const removedIdTitle = title.split(" ").filter(word => !idPattern.test(word));
+  const plainText = removedIdTitle.join(" ");
+  console.log(plainText, "hi");
+  return plainText;
+};
+

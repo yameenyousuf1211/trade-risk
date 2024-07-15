@@ -67,7 +67,7 @@ export const bankCountriesPlain = [
 ];
 
 export const sidebarItems = [
-  { name: "Users Profile",  link: "/setting",id:1 },
+  { name: "User Profile",  link: "/setting",id:1 },
   { name: "Roles & Permission",  link: "/setting/roles-permission",id:2 },
   { name: "User Management",  link: "/setting/user-management",id:3 },
   { name: "Company Info",  link: "/setting/company-infomation",id:4 },

@@ -79,7 +79,7 @@ export const AddBid = ({
   const [discountMargin, setDiscountMargin] = useState("");
   const [confirmationPriceType, setConfirmationPriceType] = useState("");
   const { user } = useAuth();
-  console.log(id, "_______-id");
+  // console.log(id, "_______-id");
 
   // Get LC
   const { data: lcData, isLoading } = useQuery({
@@ -102,7 +102,6 @@ export const AddBid = ({
       });
     },
   });
-  console.log(lcData, "lcccdatatata");
 
   const {
     handleSubmit,
@@ -165,6 +164,8 @@ export const AddBid = ({
     }
   };
 
+  console.log(lcData, "lcData");
+  
   return (
     <Dialog>
       {isRisk ? (
@@ -308,20 +309,20 @@ export const AddBid = ({
                       <LCInfo
                         label="Value of Transaction"
                         value={
-                          riskData?.riskParticipationTransaction?.amount || ""
+                          riskData?.riskParticipationTransaction?.amount.toString() || "-"
                         }
                       />
                       <LCInfo
                         label="Return"
                         value={
                           riskData?.riskParticipationTransaction?.returnOffer ||
-                          ""
+                          "-"
                         }
                       />
                       <LCInfo
                         label="Participation Offered"
                         value={
-                          riskData?.riskParticipationTransaction?.perAnnum || ""
+                          riskData?.riskParticipationTransaction?.perAnnum || "-"
                         }
                         noBorder
                       />
@@ -333,15 +334,15 @@ export const AddBid = ({
                       <h2 className="text-xl font-semibold">LC Details</h2>
                       <LCInfo
                         label="LC Issuing Bank"
-                        value={riskData?.issuingBank?.bank || ""}
+                        value={riskData?.issuingBank?.bank || "-"}
                       />
                       <LCInfo
                         label="LC Advising Bank"
-                        value={riskData?.advisingBank?.bank || ""}
+                        value={riskData?.advisingBank?.bank || "-"}
                       />
                       <LCInfo
                         label="Confirming Bank"
-                        value={riskData?.confirmingBank?.bank || ""}
+                        value={riskData?.confirmingBank?.bank || "-"}
                       />
                       <LCInfo
                         label="LC Discounted"
@@ -446,15 +447,15 @@ export const AddBid = ({
                     <div className="px-4 bg-bg pb-5">
                       <LCInfo
                         label="LC Issuing Bank"
-                        value={lcData?.issuingBank?.bank || ""}
+                        value={lcData?.issuingBank?.bank || "-"}
                       />
                       <LCInfo
                         label="Country of LC Issuing Bank"
-                        value={lcData?.issuingBank?.country || ""}
+                        value={lcData?.issuingBank?.country || "-"}
                       />
                       <LCInfo
                         label="LC Applicant"
-                        value={lcData?.importerInfo?.applicantName || ""}
+                        value={lcData?.importerInfo?.applicantName || "-"}
                       />
                       <LCInfo
                         label="LC Advising Bank"
@@ -462,11 +463,11 @@ export const AddBid = ({
                       />
                       <LCInfo
                         label="Confirming Bank"
-                        value={lcData?.confirmingBank?.bank || ""}
+                        value={lcData?.confirmingBank?.bank || "-"}
                       />
                       <LCInfo
                         label="Payments Terms"
-                        value={lcData?.paymentTerms || ""}
+                        value={lcData?.paymentTerms || "-"}
                         noBorder
                       />
                       <div className=" bg-white border border-borderCol p-2 flex items-center justify-between w-full gap-x-2 rounded-lg">

@@ -75,25 +75,26 @@ export default function AddBank() {
     }, [citiesData, isoCode]);
 
     const handleBank = async () => {
-        if(!countryVal || !bankVal || !cityVal) return toast.error('Please fill all fields');
-        const {success} = await addBank({ country: countryVal, name: bankVal, city: cityVal,action:'add' })
-        if(!success) return toast.error('Failed to add bank')
+        if (!countryVal || !bankVal || !cityVal) return toast.error('Please fill all fields');
+        const { success } = await addBank({ country: countryVal, name: bankVal, city: cityVal, action: 'add' })
+        if (!success) return toast.error('Failed to add bank')
         toast.success('Bank added successfully')
-        queryClient.invalidateQueries({queryKey: ['user']})
+        queryClient.invalidateQueries({ queryKey: ['user'] })
+        setCountryVal('')
+        setBankVal('')
+        setCityVal('')
     }
 
- 
-
     return (
-        <div className='flex gap-3 border-2 rounded-lg p-2 mt-1 flex-col w-full'>
-            <h1 className='text-lg'>Add Bank</h1>
+        <div className='flex gap-3 border-[#E2E2EA] border rounded-lg p-2 mt-1 flex-col w-full'>
+            <h1 className='text-md font-bold text-[#44444f]'>Add Bank</h1>
             <Popover open={countryOpen} onOpenChange={setCountryOpen}>
                 <PopoverTrigger asChild>
                     <Button
                         variant="outline"
                         role="combobox"
                         aria-expanded={countryOpen}
-                        className="font-roboto capitalize w-full justify-between font-normal py-6"
+                        className="font-roboto capitalize w-full justify-between font-normal py-3"
                     >
                         {countryVal
                             ? countries?.find(
@@ -149,7 +150,7 @@ export default function AddBank() {
                         variant="outline"
                         role="combobox"
                         aria-expanded={bankOpen}
-                        className="capitalize font-roboto w-full justify-between truncate font-normal py-6"
+                        className="capitalize font-roboto w-full justify-between truncate font-normal py-3"
                         disabled={countryVal === ""}
                     >
                         {bankVal
@@ -204,7 +205,7 @@ export default function AddBank() {
                         variant="outline"
                         role="combobox"
                         aria-expanded={cityOpen}
-                        className="capitalize font-roboto w-full justify-between font-normal py-6"
+                        className="capitalize font-roboto w-full justify-between font-normal py-3"
                         disabled={countryVal === ""}
                     >
                         {cityVal
@@ -251,7 +252,13 @@ export default function AddBank() {
                     </Command>
                 </PopoverContent>
             </Popover>
-            <Button className='bg-[#F5F7F9] text-[#92929D] hover:bg-[#d9dcdf]' onClick={handleBank}>Add Bank</Button>
+            <Button 
+            className='bg-[#F5F7F9] text-[#92929D] hover:bg-[#d9dcdf] disabled:bg-[#d9dcdf23]' 
+            onClick={handleBank} 
+            disabled={!countryVal || !bankVal || !cityVal}
+            >
+            Add Bank
+            </Button>
         </div>
     )
 }

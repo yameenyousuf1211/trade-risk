@@ -30,12 +30,29 @@ export const deleteRole = async (id: string) => {
     }
 }
 
-export const updateRole = async (id: string, data:any) => {
+export const updateRole = async ({id, data}:{id:string,data:any}) => {
     try {
         const response = await api.put(`/role/${id}`, data);
         return { success: true, response: response.data };
     } catch (error) {
         console.error(error);
         return { success: false, response: (error as any).response.data.message };
+    }
+}
+
+export const fetchSingleRole = async (role: string) => {
+    try {
+        const response = await api.get(`/role/${role}`);
+        return {
+            response: response.data.data,
+            success:true
+        }
+    } catch (error) {
+        console.log(error);
+        return {
+            response: (error as any).response.data.message,
+            success:false
+        }
+                
     }
 }

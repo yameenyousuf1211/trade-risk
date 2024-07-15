@@ -8,14 +8,15 @@ interface SettingLayoutProps {
     subTitle: string;
     children: React.ReactNode;
     hasButton: boolean;
-    active:number
+    active:number;
+    handleSave?:()=>void;
 }
 
-const SettingLayout: FC<SettingLayoutProps> = ({ title, subTitle, children, hasButton,active }) => {
+const SettingLayout: FC<SettingLayoutProps> = ({ title, subTitle, children, hasButton,active,handleSave }) => {
     return (
         <div>
             <Header />
-            <div className='p-16 bg-bg relative min-h-[88vh] w-full'>
+            <div className='p-16 bg-bg relative min-h-[88vh] w-full font-roboto'>
                 <h1 className='font-semibold text-4xl mb-8'>Settings</h1>
                 <div className='flex space-x-6'>
                     <Sidebar active={active}/>
@@ -23,12 +24,12 @@ const SettingLayout: FC<SettingLayoutProps> = ({ title, subTitle, children, hasB
                         <div className='flex justify-between'>
                             <div className='rounded-lg'>
                                 <h1 className='font-semibold text-2xl mb-2'>{title}</h1>
-                                <h4 className='text-lg text-gray-600'>{subTitle}</h4>
+                                <h4 className='text-md text-gray-600'>{subTitle}</h4>
                             </div>
                             {hasButton &&
                                 <div className='flex gap-5 items-centerms'>
-                                    <Button className='p-8 bg-white text-black rounded-md hover:bg-white'>Cancel</Button>
-                                    <Button className='p-8 bg-[#5625F2] rounded-md hover:bg-[#5525f2af]' >Save</Button>
+                                    <Button className='p-8 bg-white text-black rounded-md hover:bg-white font-semibold'>Cancel</Button>
+                                    <Button className='p-8 bg-[#5625F2] rounded-md hover:bg-[#5525f2af] font-semibold' onClick={handleSave}>Save</Button>
                                 </div>
                             }
                         </div>

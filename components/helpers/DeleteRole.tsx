@@ -15,6 +15,6 @@ export default function DeleteRole({id,setSelectedRole}:{id:string, setSelectedR
         setSelectedRole('');
     }
   return (
-    <Trash onClick={()=>handleDelete(id)}/>
+    <Trash onClick={()=>handleDelete(id)} size={20}/>
   )
 }

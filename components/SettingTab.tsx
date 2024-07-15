@@ -10,12 +10,12 @@ interface SettingTabProps {
 }
 
 const SettingTab: FC<SettingTabProps> = ({ onClick, label, text, children, className }) => {
-  const defaultClasses = 'my-1 p-3 flex justify-between  font-roboto items-center border-black border-[1px] border-opacity-25 rounded-md ';
+  const defaultClasses = 'my-1 p-3 flex justify-between  font-roboto items-center border-[#E2E2EA] border  rounded-md ';
 
   return (
     <div className={cn(defaultClasses, className)} onClick={onClick}>
-      <p className='text-sm font-semibold'>{label}</p>
-      {children ? children : <p>{text}</p>}
+      <p className='text-sm font-semibold text-[#44444F]'>{label}</p>
+      {children ? children : <p className='text-[#44444F]'>{text}</p>}
     </div>
   );
 };

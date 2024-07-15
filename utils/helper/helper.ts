@@ -169,6 +169,7 @@ export const calculateDaysLeft = (futureDate: any) => {
   const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
   return daysDifference > 0 ? daysDifference : 0;
 };
+<<<<<<< HEAD
 export const removeId = (title: string) => {
   const idPattern = /\b[0-9a-fA-F]{24}\b/; // pattern to match a 24-character hexadecimal string
   const removedIdTitle = title.split(" ").filter(word => !idPattern.test(word));
@@ -176,3 +177,9 @@ export const removeId = (title: string) => {
   console.log(plainText, "hi");
   return plainText;
 };
+=======
+
+export const formatPhoneNumber = (phoneNumber:string) => {
+  return phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+};
+>>>>>>> de71406 (fixed setting bugs)

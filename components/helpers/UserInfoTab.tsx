@@ -5,7 +5,7 @@ import { Pen } from 'lucide-react'
 export default function UserInfoTab() {
   return (
     <div className='border border-gray-400 flex justify-between items-center rounded-lg mb-2 px-5'>
-    <Switch className='h-6' />
+    <Switch className=''/>
     <div className='flex items-center gap-3 py-4 px-2 w-1/4'>
       Ali Osaid
     </div>

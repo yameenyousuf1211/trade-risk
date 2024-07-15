@@ -16,3 +16,12 @@ export const permissions = [
     "Manage Users",
     "Manage Company"
   ];
+
+export const permissionMapping: Record<string, string> = {
+    changeRequest: "Change Request",
+    manageRequests: "Edit & Manage Requests",
+    viewBids: "View Bids",
+    acceptAndRejectBids: "Accept/Reject Bids",
+    manageUsers: "Manage Users",
+    manageCompany: "Manage Company"
+  };

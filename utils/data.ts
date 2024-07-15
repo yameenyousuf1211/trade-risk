@@ -65,3 +65,11 @@ export const bankCountriesPlain = [
   "Nigeria",
   "India",
 ];
+
+export const sidebarItems = [
+  { name: "User Profile",  link: "/setting",id:1 },
+  { name: "Roles & Permission",  link: "/setting/roles-permission",id:2 },
+  { name: "User Management",  link: "/setting/user-management",id:3 },
+  { name: "Company Info",  link: "/setting/company-infomation",id:4 },
+  { name: "Notification preferences",  link: "/setting/notification-preferences",id:5 },
+];

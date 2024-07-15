@@ -103,6 +103,7 @@ export interface ApiResponse<T> {
 
 export interface IUser {
   _id?: string;
+  businessNature:string
   name?: string;
   email: string;
   role: string;
@@ -312,6 +313,7 @@ interface ShipmentPort {
 export interface IRisk {
   refId?: string;
   type?:string
+  status: string;
   advisingBank: Bank;
   attachment: any[]; // Adjust the type as needed for attachments
   banks: string[];
@@ -371,3 +373,22 @@ export interface INotifications {
   user: string;
   isRead: boolean;
 }
+
+
+export interface IAddRole {
+  roleName: string;
+}
+
+interface IRole  {
+  _id:string
+  name: string;
+  creator: Schema.Types.ObjectId;
+  changeRequest: boolean;
+  viewBids: boolean;
+  acceptAndRejectBids: boolean;
+  manageUsers: boolean;
+  manageCompany: boolean;
+  manageRequests: boolean;
+}
+
+type PermissionValues = Record<string, boolean>;

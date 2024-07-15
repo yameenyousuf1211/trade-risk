@@ -108,6 +108,9 @@ export const UserProfile = () => {
           <DropdownMenuItem>
             <LogoutBtn />
           </DropdownMenuItem>
+          <DropdownMenuItem>
+          <Link href={'/setting'}>Settings</Link>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

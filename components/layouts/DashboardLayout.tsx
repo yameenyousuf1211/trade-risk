@@ -30,7 +30,7 @@ export default function AuthLayout({
     <>
       <Header />
       {notification && <NotificationPopup title={notification?.title} message={notification?.message} onClose={() => setNotification(null)}/>}
-      <main className="bg-bg px-2 relative w-full min-h-[88vh] w-full flex flex-col items-center justify-center py-10">
+      <main className="bg-bg px-2 relative min-h-[88vh] w-full flex flex-col items-center justify-center py-10">
         {children}
       </main>
     </>

@@ -24,10 +24,6 @@ export default function Page() {
   );
 
   const handleSave = async () => {
-    console.log('save')
-
-  
-  
   const { response, success } = await updateRole({ data: {
     changeRequest: permissionValues['Change Request'],
     manageRequests: permissionValues['Edit & Manage Requests'],

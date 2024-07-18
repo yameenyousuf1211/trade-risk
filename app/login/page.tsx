@@ -45,23 +45,23 @@ export default function LoginPage() {
       "/service-worker.js"
     );
     const registrationReady = await navigator.serviceWorker.ready;
-    console.log(registrationReady)
+    // console.log(registrationReady)
     const subscription = await register.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(
         "BKOPYlgOw1eAWgeVCt8uZWCTAaBUd4ReGVd9Qfs2EtK_DvRXuI_LFQSiyxjMN8rg47BWP9_8drlyE0O1GXMP4ew"
       ),
     });
-    console.log(subscription);
+    // console.log(subscription);
     const authToken = arrayBufferToBase64(
       subscription.getKey("auth") as ArrayBuffer
     );
     const hashKey = arrayBufferToBase64(
       subscription.getKey("p256dh") as ArrayBuffer
     );
-    console.log(subscription)
-    console.log(authToken);
-    console.log(hashKey)
+    // console.log(subscription)
+    // console.log(authToken);
+    // console.log(hashKey)
     if (subscription) {
       const gcmToken = await registerGCMToken({
         endpoint: subscription.endpoint,
@@ -86,7 +86,7 @@ export default function LoginPage() {
         }
       }
       setUser(response.data.user);
-      toast.success("Login successfull");
+      toast.success("Login successfully");
       router.push(response.data.user.role === "corporate" ? "/" : "/dashboard");
     } else return toast.error(response as string);
   };

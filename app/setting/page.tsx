@@ -76,12 +76,15 @@ export default function Setting() {
           {companyEdit && (
             <AddBank />
           )}
+
           <div className="font-roboto col-span-2 mt-2 border border-borderCol rounded-md h-64 overflow-y-auto w-full grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-3">
             {Object.keys(groupedBanks).map((country, index) => (
               <div key={country + index}>
-                <h3 className="font-normal text-[#44444F] w-full border-b border-b-neutral-400 mb-1 capitalize">
-                  {country}
-                </h3>
+                {country !== 'null' && country !== 'undefined' &&
+                  <h3 className="font-normal text-[#44444F] w-full border-b border-b-neutral-400 mb-1 capitalize">
+                    {country}
+                  </h3>
+                }
                 <div className="flex flex-col gap-y-2">
                   {groupedBanks[country].map((bank: any, idx: number) => (
                     <div key={`${bank._id}-${idx}`} className="flex items-start gap-x-2">

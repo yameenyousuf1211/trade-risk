@@ -16,7 +16,7 @@ export const onLogin = async (payload: ILoginFields) => {
     Cookies.set("accessToken", data.data.accessToken, { expires: 7 });
     return { success: true, response: data };
   } catch (error: any) {
-    // console.error(error);
+    console.error(error);
     return {
       success: false,
       response: error.response?.data?.message || "Something went wrong",

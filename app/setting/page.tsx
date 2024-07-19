@@ -8,7 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Bank } from '@/types/type';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
-
 import AddBank from '@/components/helpers/AddBank';
 import { formatPhoneNumber } from '@/utils';
 import RemoveBank from '@/components/helpers/RemoveBank';

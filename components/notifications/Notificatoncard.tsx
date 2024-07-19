@@ -1,13 +1,12 @@
 import React from "react";
-import { Button } from "../ui/button";
+
 import Link from "next/link";
 import { INotifications } from "@/types/type";
 import { useAuth } from "@/context/AuthProvider";
 import { removeId } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
 import {
-  fetchAllLcs,
-  fetchSingleLc,
+
   fetchSingleLc2,
 } from "@/services/apis/lcs.api";
 import { TableBidStatus } from "../helpers";
@@ -30,13 +29,13 @@ const NotificationCard = ({
   });
   return (
     <div className="">
-      {index === 0 && (
+      {/* {index === 0 && (
         <div className="bg-white p-3 shadow-2xl rounded-t-[12px]">
           <h1 className="font-medium text-[18px] font-poppins ">
             Notifications
           </h1>
         </div>
-      )}
+      )} */}
       <div className=" bg-[#F8F8FA] border-b border-b-[#EBEBED] p-3 flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <h1 className="font-medium text-[16px] font-poppins">

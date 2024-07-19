@@ -677,6 +677,7 @@ export const AddBid = ({
                     </label>
                     <DatePicker
                       setValue={setValue}
+                      key={lcData?._id}
                       maxDate={lcData?.period?.endDate}
                     />
                   </div>

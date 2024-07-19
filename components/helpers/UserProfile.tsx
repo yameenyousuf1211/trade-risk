@@ -131,11 +131,11 @@ export const UserProfile = () => {
           <div className="self-end w-0 h-0 border-b-transparent border-t-[10px] border-r-transparent border-r-[8px] border-t-para border-b-[10px] border-l-transparent border-l-[8px] rounded-[1px]" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[150px]">
-          <DropdownMenuItem>
-            <LogoutBtn />
+        <DropdownMenuItem>
+          <Link href={'/setting'}>Settings</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-          <Link href={'/setting'}>Settings</Link>
+            <LogoutBtn />
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

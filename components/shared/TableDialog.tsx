@@ -22,7 +22,7 @@ import { BidsSort } from "../helpers";
 import { fetchSingleRisk } from "@/services/apis/risk.api";
 import Image from "next/image";
 
-const BidCard = ({
+export const BidCard = ({
   data,
   isBank,
   isRisk,
@@ -240,7 +240,7 @@ export const TableDialog = ({
         {isViewAll ? (
           <p>View all</p>
         ) : buttonTitle ? (
-          <p>{buttonTitle}</p>
+          <p> {buttonTitle}</p>
         ) : (
           <Eye className="size-5" />
         )}

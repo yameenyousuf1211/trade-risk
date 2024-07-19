@@ -45,7 +45,6 @@ const Notification = ({ notification }: { notification: INotifications }) => {
           {!notification?.isRead && (
             <div className="w-[9px] h-[9px] rounded-full bg-[#5625F2]"></div>
           )}
-
           <h1 className="text-[18px] font-poppins font-medium">
             {removeId(notification?.title)}
           </h1>
@@ -66,18 +65,22 @@ const Notification = ({ notification }: { notification: INotifications }) => {
         </div>
       ) : (
         <div className="flex gap-3 mt-2">
-          <TableDialog
-            bids={data?.bids}
-            lcId={requestId}
-            isRisk={false}
-            buttonTitle="Accept"
-          />
-          <TableDialog
-            bids={data?.bids}
-            lcId={requestId}
-            isRisk={false}
-            buttonTitle="Reject"
-          />
+          {data?.status !== 'Accepted' ?
+            <>
+              <TableDialog
+                bids={data?.bids}
+                lcId={requestId}
+                isRisk={false}
+                buttonTitle="Accept"
+              />
+              <TableDialog
+                bids={data?.bids}
+                lcId={requestId}
+                isRisk={false}
+                buttonTitle="Reject"
+              />
+            </>
+            : <div className="border-gray-300 cursor-default bg-green-500 text-white py-2 px-8 rounded-lg">Accepted</div>}
         </div>
       )}{" "}
     </div>

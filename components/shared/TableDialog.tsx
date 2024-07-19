@@ -234,7 +234,7 @@ export const TableDialog = ({
         className={`${
           isViewAll
             ? "font-roboto text-sm text-primaryCol font-light underline"
-            : "center border border-borderCol rounded-md w-full px-1 py-2"
+            : `center border border-borderCol rounded-md w-full px-1 py-2 ${buttonTitle === 'Accept' ? "bg-primaryCol text-white" : "bg-white border-borderCol"}`
         }`}
       >
         {isViewAll ? (

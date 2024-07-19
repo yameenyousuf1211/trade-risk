@@ -2,22 +2,22 @@
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { LogoutBtn } from "./LogoutBtn";
 import { useAuth } from "@/context/AuthProvider";
 import NotificationCard from "../notifications/Notificatoncard";
-import { useEffect, useState } from "react";
-import { Dialog, DialogClose, DialogContent } from "../ui/dialog";
-import { DialogTrigger } from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
+import { useState } from "react";
 import { ApiResponse, INotifications } from "@/types/type";
 import { fetchNotifications } from "@/services/apis/notifications.api";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 export const UserProfile = () => {
   const hasNotifications = true;
@@ -37,32 +37,59 @@ export const UserProfile = () => {
     queryFn: () =>
       fetchNotifications({
         page: 1,
-        limit: 3,
+        limit: 5,
       }),
   });
-  console.log(data, "nnnnn");
 
   return (
     <div className="flex items-center gap-x-4">
-      <Dialog>
-        <DialogTrigger id="open-disclai mer">
-          <div
-            className="relative"
-            onClick={() => setIsShowNotifications(!isShowNotifications)}
-          >
-            <Image
-              src="/images/notif.png"
-              alt="notifications"
-              width={20}
-              height={20}
-              className="size-6"
-            />
-            {hasNotifications && (
-              <div className="absolute top-0 -right-0.5 size-3 bg-primaryCol rounded-full" />
-            )}
-          </div>{" "}
-        </DialogTrigger>
-        <DialogContent className="w-[20%] absolute top-[330px] left-[77%] p-0 !max-h-[78vh] h-full">
+      <div>
+        <Sheet>
+          <SheetTrigger>
+            <div
+              className="relative"
+            >
+              <Image
+                src="/images/notif.png"
+                alt="notifications"
+                width={20}
+                height={20}
+                className="size-6"
+              />
+              {hasNotifications && (
+                <div className="absolute top-0 -right-0.5 size-3 bg-primaryCol rounded-full" />
+              )}
+            </div>{" "}
+          </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                {data?.data?.length === 0 && !isLoading ? ( // Check for empty data and loading state
+                  <div className="text-center flex justify-center items-center  p-4 min-h-screen flex-col gap-1">
+                    <h1 className="font-roboto text-xl font-bold">
+                      No Notifications 
+                    </h1>
+                    <p className="text-sm">we will notify you when something arrives</p>
+                  </div>
+                ) : (
+                  <SheetTitle className="text-center">
+                    Notifications
+                  </SheetTitle>
+                )}
+                <SheetDescription>
+                  {data?.data?.map((data: INotifications, index: number) => (
+                    <NotificationCard
+                      key={data?._id}
+                      index={index}
+                      notification={data}
+                    />
+                  ))}
+                </SheetDescription>
+              </SheetHeader>
+            </SheetContent>
+        </Sheet>
+
+
+        {/* <DialogContent className="w-[20%] absolute top-[330px] left-[77%] p-0 !max-h-[78vh] h-full">
           {!isLoading && data?.data?.length === 0 && (
             <div className="p-4">
               {" "}
@@ -83,9 +110,8 @@ export const UserProfile = () => {
               />
             );
           })}
-        </DialogContent>
-      </Dialog>
-
+        </DialogContent> */}
+      </div>
       <div className="flex items-center gap-x-2 cursor-pointer">
         <Avatar>
           <AvatarImage src="/images/user.png" />

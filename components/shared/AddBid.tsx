@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
 import { cn } from "@/lib/utils";
 import { fetchSingleRisk } from "@/services/apis/risk.api";
@@ -79,7 +79,7 @@ export const AddBid = ({
   const [discountMargin, setDiscountMargin] = useState("");
   const [confirmationPriceType, setConfirmationPriceType] = useState("");
   const { user } = useAuth();
-  // console.log(id, "_______-id");
+  const buttonRef = useRef<HTMLButtonElement>(null);  // console.log(id, "_______-id");
 
   // Get LC
   const { data: lcData, isLoading } = useQuery({
@@ -157,9 +157,10 @@ export const AddBid = ({
           user?.name
         }`,
       });
-      let closeBtn = document.getElementById("submit-button-close");
-      // @ts-ignore
-      closeBtn.click();
+      // let closeBtn = document.getElementById("submit-button-close");
+      // // @ts-ignore
+      // closeBtn.click();
+      buttonRef?.current?.click();
       toast.success("Bid added");
     }
   };
@@ -677,6 +678,7 @@ export const AddBid = ({
                     </label>
                     <DatePicker
                       setValue={setValue}
+                      key={lcData?._id}
                       maxDate={lcData?.period?.endDate}
                     />
                   </div>
@@ -860,7 +862,8 @@ export const AddBid = ({
 
                 <div className="flex items-center gap-x-2 mt-2">
                   <DialogClose
-                    id="submit-button-close"
+                  ref={buttonRef}
+                    // id="submit-button-close"
                     className="hidden"
                   ></DialogClose>
                   <Button

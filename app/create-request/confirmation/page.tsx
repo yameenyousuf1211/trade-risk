@@ -91,7 +91,6 @@ const ConfirmationPage = () => {
   }, [confirmationData]);
 
   const [proceed, setProceed] = useState(false);
-
   const [loader, setLoader] = useState(false);
 
   const onSubmit: SubmitHandler<
@@ -222,7 +221,7 @@ const ConfirmationPage = () => {
           else {
             const notificationResp = await sendNotification({
               role: "bank",
-              title: "New LC Confirmation & Discounting Request",
+              title: `New LC Confirmation & Discounting Request ${response.data._id}`,
               body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
             });
             console.log(notificationResp,"notif")

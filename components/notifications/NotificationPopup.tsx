@@ -74,7 +74,6 @@ const NotificationPopup = ({
             <div className="flex gap-3 mt-2">
               {/* <Button>Accept</Button>
               <Button>Reject</Button> */}
-
               <TableDialog
                 bids={data?.bids}
                 lcId={requestId}

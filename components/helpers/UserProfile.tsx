@@ -9,15 +9,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-
-
 import { LogoutBtn } from "./LogoutBtn";
 import { useAuth } from "@/context/AuthProvider";
 import NotificationCard from "../notifications/Notificatoncard";
 import { useState } from "react";
-import { Dialog, DialogContent } from "../ui/dialog";
-import { DialogTrigger } from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
 import { ApiResponse, INotifications } from "@/types/type";
 import { fetchNotifications } from "@/services/apis/notifications.api";
 import { useQuery } from "@tanstack/react-query";
@@ -70,7 +65,6 @@ export const UserProfile = () => {
               <SheetHeader>
                 {data?.data?.length === 0 && !isLoading ? ( // Check for empty data and loading state
                   <div className="text-center flex justify-center items-center  p-4 min-h-screen flex-col gap-1">
-                    
                     <h1 className="font-roboto text-xl font-bold">
                       No Notifications 
                     </h1>
@@ -118,7 +112,6 @@ export const UserProfile = () => {
           })}
         </DialogContent> */}
       </div>
-
       <div className="flex items-center gap-x-2 cursor-pointer">
         <Avatar>
           <AvatarImage src="/images/user.png" />

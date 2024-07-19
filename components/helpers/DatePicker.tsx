@@ -15,6 +15,7 @@ import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
 export const DatePicker = ({
   setValue,
   maxDate,
+  
 }: {
   setValue: any;
   maxDate: Date | string | any;
@@ -23,7 +24,7 @@ export const DatePicker = ({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   return (
-    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={true}> 
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}

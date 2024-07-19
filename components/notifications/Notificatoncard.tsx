@@ -6,7 +6,6 @@ import { useAuth } from "@/context/AuthProvider";
 import { removeId } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
 import {
-
   fetchSingleLc2,
 } from "@/services/apis/lcs.api";
 import { TableBidStatus } from "../helpers";
@@ -66,7 +65,7 @@ const NotificationCard = ({
         )}
      
       </div>
-      {index === 2 && (
+      {index === 4 && (
           <Link href="/notifications">
             <div className="bg-white p-3 shadow-2xl rounded-b-[12px] cursor-pointer">
               <h1 className="font-medium text-[16px] font-roboto text-[#5625F2]  text-center">

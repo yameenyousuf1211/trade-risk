@@ -42,7 +42,7 @@ export const UserProfile = () => {
     queryFn: () =>
       fetchNotifications({
         page: 1,
-        limit: 7,
+        limit: 5,
       }),
   });
 
@@ -74,7 +74,7 @@ export const UserProfile = () => {
                     <h1 className="font-roboto text-xl font-bold">
                       No Notifications 
                     </h1>
-                    <p className="text-sm">we'll notify you when something arrives</p>
+                    <p className="text-sm">we will notify you when something arrives</p>
                   </div>
                 ) : (
                   <SheetTitle className="text-center">

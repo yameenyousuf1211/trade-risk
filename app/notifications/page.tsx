@@ -20,7 +20,6 @@ interface Props {
 }
 
 const NotificationsPage = ({ searchParams }: Props) => {
-  const { user } = useAuth();
   const { page = 1, limit } = searchParams;
   const queryClient = useQueryClient();
 
@@ -51,7 +50,7 @@ const NotificationsPage = ({ searchParams }: Props) => {
   });
 
   const handleReadNotification = async (id: string | undefined) => {
-    const { success, response } = await mutateAsync(id);
+    const { success, response } = await mutateAsync(id!);
     console.log(response, "hii");
   };
 
@@ -67,7 +66,7 @@ const NotificationsPage = ({ searchParams }: Props) => {
               <span className="font-regular text-[#5625F2]">3 New</span>
             </div>
             <div
-              className="font-medium font-[20px] text-[#5625F2] cursor-pointer"
+              className="font-medium  text-[#5625F2] cursor-pointer"
               onClick={() => handleReadNotification(undefined)}
             >
               Mark all as read
@@ -97,5 +96,4 @@ const NotificationsPage = ({ searchParams }: Props) => {
     </DashboardLayout>
   );
 };
-
 export default NotificationsPage;

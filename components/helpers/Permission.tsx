@@ -9,8 +9,6 @@ import { PermissionValues } from '@/types/type';
 
 export default function Permission({ role, allowAll,setPermissionValues,permissionValues }: { role: string, allowAll: boolean,setPermissionValues: React.Dispatch<React.SetStateAction<PermissionValues>>,permissionValues:PermissionValues }) {
 
- 
-
   useEffect(() => {
     if (allowAll) {
       setPermissionValues(permissions.reduce<PermissionValues>((acc, permission) => {
@@ -47,13 +45,13 @@ export default function Permission({ role, allowAll,setPermissionValues,permissi
   }, [data]);
 
   return (
-    <div className='flex flex-col space-y-3 justify-center p-2 w-full border border-[#E2E2EA] rounded-lg'>
+    <div className='flex flex-col space-y-3 justify-center p-4 w-full border border-[#E2E2EA] rounded-lg'>
       {isLoading ? (
         <div className='flex items-center  justify-center h-44'><Loader2 className='animate-spin'/></div>
       ) : (
         permissions.map((permission) => (
           <div key={permission} className='flex justify-between w-full items-center'>
-            <p className='text-sm text-[#44444F]'>{permission}</p>
+            <p className='text-[#44444F] text-[15px]'>{permission}</p>
             <Switch
               checked={permissionValues[permission]}
               onClick={() => handleSwitchChange(permission)}

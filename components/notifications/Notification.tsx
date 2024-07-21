@@ -1,10 +1,9 @@
 import { INotifications } from "@/types/type";
 import React from "react";
-import { Button } from "../ui/button";
 import { updateNotification } from "@/services/apis/notifications.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthProvider";
-import { fetchSingleLc, fetchSingleLc2 } from "@/services/apis/lcs.api";
+import { fetchSingleLc2 } from "@/services/apis/lcs.api";
 import { TableBidStatus } from "../helpers";
 import { removeId } from "@/utils";
 import { TableDialog } from "../shared/TableDialog";
@@ -15,7 +14,7 @@ const Notification = ({ notification }: { notification: INotifications }) => {
   const processedTitle = notification?.title.split(" ");
   const requestId = processedTitle[processedTitle?.length - 1];
 
-  const { data: data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: [`fetch-data`, requestId],
     queryFn: () => fetchSingleLc2(requestId),
   });
@@ -32,12 +31,12 @@ const Notification = ({ notification }: { notification: INotifications }) => {
 
   const handleReadNotification = async (id: string | undefined) => {
     const { success, response } = await mutateAsync(id as string);
-    console.log(response, "hii");
   };
+
   return (
     <div
       key={notification?._id}
-      className="flex cursor-pointer  justify-between items-center w-full bg-[#EFEFF0] py-5 p-3 rounded-[8px]"
+      className="flex cursor-pointer justify-between items-center w-full bg-[#EFEFF0] py-5 p-3 rounded-[8px]"
       onClick={() => handleReadNotification(notification?._id)}
     >
       <div className="flex gap-3 flex-col items-start">
@@ -50,22 +49,20 @@ const Notification = ({ notification }: { notification: INotifications }) => {
           </h1>
         </div>
         <p className="text-[14px] font-regular">{notification?.message}</p>
-        {/* <p className="text-[14px] font-regular">
-                    <span className="font-medium underline">Ref no 100930</span>{" "}
-                    from National Bank of Egypt by{" "}
-                    <span className="font-medium">
-                      {" "}
-                      Rional Massi Corporation{" "}
-                    </span>
-                  </p>{" "} */}
       </div>
       {user?.role === "bank" ? (
         <div className="w-[150px]">
-          <TableBidStatus id={requestId} lcData={data} isRisk={false} />
+          {isLoading ? (
+            <div className="text-center">Loading...</div>
+          ) : (
+            <TableBidStatus id={requestId} lcData={data} isRisk={false} isNotification={true}/>
+          )}
         </div>
       ) : (
         <div className="flex gap-3 mt-2">
-          {data?.status !== 'Accepted' ?
+          {isLoading ? (
+            <div className="text-center">Loading...</div>
+          ) : data?.status !== 'Accepted' ? (
             <>
               <TableDialog
                 bids={data?.bids}
@@ -80,9 +77,11 @@ const Notification = ({ notification }: { notification: INotifications }) => {
                 buttonTitle="Reject"
               />
             </>
-            : <div className="border-gray-300 cursor-default bg-green-500 text-white py-2 px-8 rounded-lg">Accepted</div>}
+          ) : (
+            <div className="border-gray-300 cursor-default bg-[#2F3031] text-white py-2 px-20 rounded-lg">Accepted</div>
+          )}
         </div>
-      )}{" "}
+      )}
     </div>
   );
 };

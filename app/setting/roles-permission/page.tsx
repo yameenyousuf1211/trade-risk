@@ -40,11 +40,11 @@ export default function Page() {
 
   return (
     <SettingLayout title="Roles & Permissions" subTitle="User roles and permission settings" hasButton active={2} handleSave={handleSave}>
-      <div className="w-full bg-white p-6">
-        <div className="flex gap-10">
+      <div className="w-full bg-white p-3 border-[#E2E2EA] border rounded-lg">
+        <div className="flex gap-5">
           <div className="w-1/2">
             <div className="flex flex-col ">
-              <div className="flex justify-between items-center mb-3 px-3">
+              <div className="flex justify-between items-center mb-2 px-2">
                 <h1 className="text-lg font-semibold text-[#44444f] ">User roles</h1>
                 <PlusSquareIcon className="cursor-pointer" onClick={() => {
                   setAddMode(true);
@@ -55,11 +55,11 @@ export default function Page() {
             </div>
           </div>
           <div className="w-1/2">
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-3">
               <div className='flex justify-between items-center'>
-              <h1 className="text-lg font-semibold">Permissions</h1>
+              <h1 className="text-lg font-semibold text-[#44444F] pl-2">Permissions</h1>
                 <div className='flex gap-3 pr-2 items-center'>
-                  <h1>Allow all</h1>
+                  <h1 className='text-sm'>Allow all</h1>
                   <Switch
                         className=''
                         checked={allowAll}

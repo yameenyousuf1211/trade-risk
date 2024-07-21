@@ -61,90 +61,86 @@ export const BidCard = ({
 
   return (
     <div className="border border-borderCol py-5 px-3 rounded-lg">
-      <div className="grid grid-cols-2 gap-y-4">
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="text-sm text-para mb-1">Bid Number</p>
-          <p className="font-semibold text-lg">
-            {data._id?.slice(1, 6) || "12365"}
-          </p>
-        </div>
+    <div className="grid grid-cols-2 gap-y-4">
+  <div className={data.status === "Expired" ? "opacity-50" : ""}>
+    <p className="text-sm text-para mb-1">Bid Number</p>
+    <p className="font-semibold text-lg">
+      {data._id?.slice(1, 6) || "12365"}
+    </p>
+  </div>
 
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="capitalize text-lg font-semibold mb-1">
-            {data.userInfo?.name || ""}
-          </p>
-          <p className="capitalize text-sm text-para">
-            {data.userInfo?.country || ""}
-          </p>
-        </div>
+  <div className={data.status === "Expired" ? "opacity-50" : ""}>
+    <p className="capitalize text-lg font-semibold mb-1">
+      {data.userInfo?.name || ""}
+    </p>
+    <p className="capitalize text-sm text-para">
+      {data.userInfo?.country || ""}
+    </p>
+  </div>
 
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="text-sm text-para mb-1">Confirmation Rate</p>
-          <p className="text-lg font-semibold text-text">
-            {data.amount}% {data?.perAnnum ? "per annum" : "flat"}
-          </p>
-        </div>
-        {/* {data.discountBaseRate && (
-          <div className={data.status === "Expired" ? "opacity-50" : ""}>
-            <p className="text-sm text-para mb-1">Discount Rate</p>
-            <p className="text-lg font-semibold ">
-              {data?.discountBaseRate
-                ? "USD " + data.discountBaseRate + ".00"
-                : "Not Applicable"}
-            </p>
-          </div>
-        )} */}
-        {data?.discountMargin && (
-          <div className={data.status === "Expired" ? "opacity-50" : ""}>
-            <p className="text-sm text-para mb-1">Discount Spread</p>
-            <p className="text-lg font-semibold ">
-              {data.discountMargin
-                ? data.discountMargin + "%"
-                : "Not Applicable"}
-            </p>
-          </div>
-        )}
+  <div className={data.status === "Expired" ? "opacity-50" : ""}>
+    <p className="text-sm text-para mb-1">Confirmation Rate</p>
+    <p className="text-lg font-semibold text-text">
+      {data.amount}% {data?.perAnnum ? "per annum" : "flat"}
+    </p>
+  </div>
 
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="text-sm text-para mb-1">Bid Recieved</p>
-          <p className="font-semibold text-lg">
-            {convertDateToYYYYMMDD(data.createdAt)}
-          </p>
-        </div>
+  {data?.discountMargin && (
+    <div className={data.status === "Expired" ? "opacity-50" : ""}>
+      <p className="text-sm text-para mb-1">Discount Spread</p>
+      <p className="text-lg font-semibold ">
+        {data.discountMargin
+          ? data.discountMargin + "%"
+          : "Not Applicable"}
+      </p>
+    </div>
+  )}
 
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="text-sm text-para mb-1">Bid Expiry</p>
-          <p className="font-semibold text-lg">
-            {convertDateToYYYYMMDD(data.validity)}
-          </p>
-        </div>
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          {/* <p className="text-sm text-para mb-1">Minimum Charges</p>
-          <p className="text-lg font-semibold text-text">AED 30,000.00</p> */}
-        </div>
-        {data.status === "Pending" && !isBank && (
-          <>
-            <DialogClose id="close-button" className="hidden"></DialogClose>
-            <Button
-              size="lg"
-              className="mt-2 bg-[#29C084] hover:bg-[#29C084]/90"
-              onClick={() => handleSubmit("Accepted", data._id)}
-              disabled={isPending}
-            >
-              Accept
-            </Button>
-            <Button
-              size="lg"
-              className="mt-2 text-para"
-              variant="ghost"
-              onClick={() => handleSubmit("Rejected", data._id)}
-              disabled={isPending}
-            >
-              Reject
-            </Button>
-          </>
-        )}
+  <div className={data.status === "Expired" ? "opacity-50" : ""}>
+    <p className="text-sm text-para mb-1">Bid Recieved</p>
+    <p className="font-semibold text-lg">
+      {convertDateToYYYYMMDD(data.createdAt)}
+    </p>
+  </div>
+
+  <div className={data.status === "Expired" ? "opacity-50" : ""}>
+    <p className="text-sm text-para mb-1">Bid Expiry</p>
+    <p className="font-semibold text-lg">
+      {convertDateToYYYYMMDD(data.validity)}
+    </p>
+  </div>
+
+  <div className={data.status === "Expired" ? "opacity-50" : ""}>
+    {/* <p className="text-sm text-para mb-1">Minimum Charges</p>
+    <p className="text-lg font-semibold text-text">AED 30,000.00</p> */}
+  </div>
+
+  {data.status === "Pending" && !isBank && (
+    <>
+      <DialogClose id="close-button" className="hidden"></DialogClose>
+      <div className="col-span-2 flex gap-4 mt-2">
+        <Button
+          size="lg"
+          className="bg-[#29C084] hover:bg-[#29C084]/90 flex-1"
+          onClick={() => handleSubmit("Accepted", data._id)}
+          disabled={isPending}
+        >
+          Accept
+        </Button>
+        <Button
+          size="lg"
+          className="text-para flex-1"
+          variant="ghost"
+          onClick={() => handleSubmit("Rejected", data._id)}
+          disabled={isPending}
+        >
+          Reject
+        </Button>
       </div>
+    </>
+  )}
+</div>
+
       {data.status !== "Pending" && (
         <Button
           className={`${
@@ -234,13 +230,13 @@ export const TableDialog = ({
         className={`${
           isViewAll
             ? "font-roboto text-sm text-primaryCol font-light underline"
-            : `center border border-borderCol rounded-md w-full px-1 py-2 ${buttonTitle === 'Accept' ? "bg-primaryCol text-white" : "bg-white border-borderCol"}`
+            : `center border  rounded-md w-full px-1 py-2 ${buttonTitle === 'Accept' || buttonTitle === 'Reject' ? "bg-[#2F3031] text-white px-7" : null} `
         }`}
       >
         {isViewAll ? (
           <p>View all</p>
         ) : buttonTitle ? (
-          <p> {buttonTitle}</p>
+          <p > {buttonTitle}</p>
         ) : (
           <Eye className="size-5" />
         )}

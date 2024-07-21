@@ -3,7 +3,6 @@ import { Button } from "../ui/button";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatFileSize } from "@/utils";
-import { filter } from "d3-array";
 import { UseFormRegister } from "react-hook-form";
 
 const FileCard = ({

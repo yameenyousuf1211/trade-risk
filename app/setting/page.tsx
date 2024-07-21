@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import SettingLayout from '@/components/layouts/SettingLayout'
-import { Eye, Pencil, X } from 'lucide-react';
+import { Edit, Eye, Pencil, X } from 'lucide-react';
 import SettingTab from '@/components/SettingTab';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Bank } from '@/types/type';
@@ -11,11 +11,13 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import AddBank from '@/components/helpers/AddBank';
 import { formatPhoneNumber } from '@/utils';
 import RemoveBank from '@/components/helpers/RemoveBank';
+import { Button } from '@/components/ui/button';
 
 export default function Setting() {
 
   const [companyEdit, setComapnyBank] = useState<boolean>(false)
   const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [editMode, setEditMode] = useState(false);
 
   const { user, isLoading } = useCurrentUser()
   if (isLoading) return <div>Loading...</div>
@@ -28,13 +30,25 @@ export default function Setting() {
     return acc;
   }, {});
 
+
+
+
   return (
     <SettingLayout subTitle='Update your profile and login details' title='User Profile' hasButton={false} active={1}>
       <div className='flex gap-10 font-roboto '>
         <div className='bg-white p-3 rounded-lg w-[40%] h-[470px] border border-[#E2E2EA]'>
           <div className='flex justify-between items-center px-2'>
             <h1 className='font-semibold text-lg text-[#44444F]'>User Info</h1>
-            <Pencil size={20} />
+            {
+              editMode &&
+              <div className='flex gap-3'>
+                <button className='bg-[#F5F7F9] py-[5px] rounded-lg px-4   text-[#292929]' onClick={()=>setEditMode(false)}>cancel</button>
+                <button className='bg-[#5625F2] py-[5px] rounded-lg  text-white px-6'>Save</button>
+              </div>
+            }
+            {editMode == false &&
+              <Pencil size={20} onClick={() => setEditMode(true)} />
+            }
           </div>
           <SettingTab label='Profile Picture' className='my-2'>
             <div className='flex items-center gap-3'>
@@ -65,11 +79,14 @@ export default function Setting() {
           </SettingTab>
         </div>
         <div className='bg-white p-3 rounded-lg w-[60%] border border-[#E2E2EA]'>
-          <div className='flex justify-between items-center px-2'>
+          <div className='flex justify-between items-center px-2 mb-2'>
             <h1 className='font-semibold text-md text-[#44444F]'>Current Banking</h1>
             {!companyEdit ?
               <Pencil size={20} onClick={() => setComapnyBank(true)} className='cursor-pointer' />
-              : <div><button className='bg-[#F5F7F9] p-2 rounded-lg font-semibold' onClick={() => setComapnyBank(false)} >Cancel</button></div>
+              : <div className='flex gap-4 '>
+                <button className='bg-[#F5F7F9] py-[5px] rounded-lg px-4   text-[#292929]' onClick={() => setComapnyBank(false)} >Cancel</button>
+                <button className='bg-[#5625F2] py-[5px] rounded-lg  text-white px-6' onClick={() => setComapnyBank(false)} >Save</button>
+                </div>
             }
           </div>
           {companyEdit && (

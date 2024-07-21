@@ -1,14 +1,6 @@
 "use client";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
 import { LogoutBtn } from "./LogoutBtn";
 import { useAuth } from "@/context/AuthProvider";
 import NotificationCard from "../notifications/Notificatoncard";
@@ -18,6 +10,16 @@ import { fetchNotifications } from "@/services/apis/notifications.api";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
 
 export const UserProfile = () => {
   const hasNotifications = true;
@@ -37,14 +39,14 @@ export const UserProfile = () => {
     queryFn: () =>
       fetchNotifications({
         page: 1,
-        limit: 5,
+        limit: 4,
       }),
   });
 
   return (
     <div className="flex items-center gap-x-4">
       <div>
-        <Sheet>
+        {/* <Sheet>
           <SheetTrigger>
             <div
               className="relative"
@@ -86,8 +88,38 @@ export const UserProfile = () => {
                 </SheetDescription>
               </SheetHeader>
             </SheetContent>
-        </Sheet>
-
+        </Sheet> */}
+        <Dialog >
+          <DialogTrigger>
+            <div
+              className="relative"
+            >
+              <Image
+                src="/images/notif.png"
+                alt="notifications"
+                width={20}
+                height={20}
+                className="size-6"
+              />
+              {hasNotifications && (
+                <div className="absolute top-0 -right-0.5 size-3 bg-primaryCol rounded-full" />
+              )}
+            </div>
+          </DialogTrigger>
+          <DialogContent className="w-[15%] absolute  left-[91%]  overflow-auto h-[90%] p-0 flex flex-col gap-0">
+            {data?.data?.map((data: INotifications, index: number) => {
+              return (
+                <div className="">
+                  <NotificationCard
+                    key={data?._id}
+                    index={index}
+                    notification={data}
+                  />
+                </div>
+              );
+            })}
+          </DialogContent>
+        </Dialog>
 
         {/* <DialogContent className="w-[20%] absolute top-[330px] left-[77%] p-0 !max-h-[78vh] h-full">
           {!isLoading && data?.data?.length === 0 && (
@@ -131,8 +163,8 @@ export const UserProfile = () => {
           <div className="self-end w-0 h-0 border-b-transparent border-t-[10px] border-r-transparent border-r-[8px] border-t-para border-b-[10px] border-l-transparent border-l-[8px] rounded-[1px]" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuItem>
-          <Link href={'/setting'}>Settings</Link>
+          <DropdownMenuItem>
+            <Link href={'/setting'}>Settings</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <LogoutBtn />

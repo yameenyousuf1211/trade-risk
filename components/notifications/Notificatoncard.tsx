@@ -7,6 +7,16 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchSingleLc2 } from "@/services/apis/lcs.api";
 import { TableBidStatus } from "../helpers";
 import { TableDialog } from "../shared/TableDialog";
+import { Loader2 } from "lucide-react";
+
+const ButtonSkeleton = () => {
+  const { user } = useAuth();
+  return (
+    <div className="animate-pulse">
+      <div className={`bg-gray-300 rounded-lg h-10 ${user.role !== 'bank' ? 'w-full' : 'w-28'} flex justify-center items-center"><Loader2 className="animate-spin`}/>
+    </div>
+  );
+};
 
 const NotificationCard = ({ notification, index }: { notification: INotifications; index: number; }) => {
   const { user } = useAuth();
@@ -18,16 +28,14 @@ const NotificationCard = ({ notification, index }: { notification: INotification
     queryFn: () => fetchSingleLc2(requestId),
   });
 
-  console.log("Notification BIDS DATA", data?.bids);
-
   const renderBankContent = () => (
-    <TableBidStatus id={requestId} lcData={data} isRisk={false} />
+    <TableBidStatus id={requestId} lcData={data} isRisk={false} isNotification={true}/>
   );
 
   const renderUserContent = () => {
     if (data?.status === 'Accepted') {
       return (
-        <div className="border-gray-300 cursor-default bg-green-500 text-white py-2 px-8 rounded-lg flex-1 text-center">
+        <div className="border-gray-300 cursor-default bg-[#2F3031] text-white py-2 px-8 rounded-lg flex-1 text-center">
           Accepted
         </div>
       );
@@ -51,12 +59,18 @@ const NotificationCard = ({ notification, index }: { notification: INotification
         </>
       );
     }
-
     return null;
   };
 
   return (
-    <div className="">
+    <>
+          {index === 0 && (
+        <div className="bg-white p-3 shadow-2xl rounded-t-[12px]">
+          <h1 className="font-medium text-[18px] font-poppins ">
+            Notifications
+          </h1>
+        </div>
+      )}
       <div className="bg-[#F8F8FA] border-b border-b-[#EBEBED] p-3 flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <h1 className="font-medium text-[16px] font-poppins">
@@ -64,9 +78,15 @@ const NotificationCard = ({ notification, index }: { notification: INotification
           </h1>
         </div>
         <p className="text-[14px] font-regular">{notification?.message}</p>
-        {user?.role === "bank" ? renderBankContent() : <div className="flex gap-3">{renderUserContent()}</div>}
+        {isLoading ? (
+          <ButtonSkeleton />
+        ) : user?.role === "bank" ? (
+          renderBankContent()
+        ) : (
+          <div className="flex gap-3">{renderUserContent()}</div>
+        )}
       </div>
-      {index === 4 && (
+      {index === 3 && (
         <Link href="/notifications">
           <div className="bg-white p-3 shadow-2xl rounded-b-[12px] cursor-pointer">
             <h1 className="font-medium text-[16px] font-roboto text-[#5625F2] text-center">
@@ -75,7 +95,7 @@ const NotificationCard = ({ notification, index }: { notification: INotification
           </div>
         </Link>
       )}
-    </div>
+    </>
   );
 };
 

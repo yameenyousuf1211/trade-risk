@@ -41,7 +41,7 @@ export default function NotificationPreferences() {
                 {isLoading == true ? <div className='flex justify-center items-center h-44 animate-spin'><Loader2 size={15} /></div> :
                     <>
                         <div className='flex justify-between items-center px-5 pt-4'>
-                            <h1>Notification</h1>
+                            <h1 className='font-bold text-[#44444F]'>Notifications</h1>
                             <Switch className='' checked={allowNotification} onCheckedChange={
                                 (e) => handleToggleChange(setAllowNotification, e)
                             } />
@@ -50,13 +50,13 @@ export default function NotificationPreferences() {
                             <Switch className='' checked={allowNewRequestNotification} onCheckedChange={
                                 (e) => handleToggleChange(setAllowNewRequestNotification, e)
                             } />
-                            <h1 className='font-bold'>New Requests</h1>
+                            <h1 className='font-bold text-[#44444F] text-md'>New Requests</h1>
                         </div>
                         <div className='border-2 border-opacity-45 p-4 mb-2 rounded-lg mx-2 flex gap-5 items-center'>
                             <Switch className='' checked={allowBidsNotification} onCheckedChange={
                                 (e) => handleToggleChange(setAllowBidsNotification, e)
                             } />
-                            <h1 className='font-bold'>New Bids</h1>
+                            <h1 className='font-bold text-[#44444F] text-md'>New Bids</h1>
 
                         </div>
                     </>

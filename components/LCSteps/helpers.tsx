@@ -51,7 +51,7 @@ export const DDInput = ({
       } text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white`}
     >
       {type !== "baseRate" && <p className="text-lightGray">{label}</p>}
-      <Popover open={ddOpen} onOpenChange={setDdOpen}>
+      <Popover open={ddOpen} onOpenChange={setDdOpen} modal={true}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -82,7 +82,7 @@ export const DDInput = ({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-fit p-0">
-          <Command>
+          <Command >
             <CommandInput placeholder={placeholder} />
             <CommandEmpty>No country found.</CommandEmpty>
             <CommandGroup className="max-h-[300px] overflow-y-auto">

@@ -25,7 +25,7 @@ export default function CompanyInformation() {
     return <div>Loading...</div>
   }
 
-  if(!user) {
+  if (!user) {
     return <div>No user found</div>
   }
 
@@ -37,15 +37,15 @@ export default function CompanyInformation() {
     return acc;
   }, {});
 
-  console.log(user);
-  
+
+
   return (
     <SettingLayout subTitle='Manage contracts, countries, products, banks you have accounts with' title='Company Info' hasButton={false} active={4}>
       <div className='flex gap-10 w-full font-roboto'>
-        <div className='flex flex-col bg-white p-5 w-full rounded-lg shadow'>
-          <div className='flex justify-between items-center mb-4'>
+        <div className='flex flex-col bg-white p-2 w-full rounded-lg shadow'>
+          <div className='flex justify-between items-center my-2 px-3'>
             <h1 className='text-lg font-semibold text-[#44444F]'>Company Info</h1>
-            <Pen className='cursor-pointer' onClick={() => setEdit(true)} />
+            <Pen className='cursor-pointer' onClick={() => setEdit(true)} size={20} />
           </div>
           <SettingTab label='Company Name' text={user?.name || '-'} />
           <SettingTab label='Company Logo (1:1)'>
@@ -63,32 +63,34 @@ export default function CompanyInformation() {
           <div className='bg-white p-3 rounded-lg w-full'>
             <div className='flex justify-between items-center px-2'>
               <h1 className='font-semibold text-lg'>Current Banking</h1>
-              <button className='bg-[#F5F7F9] p-2 rounded-lg font-semibold' onClick={() => setEdit(false)} >Cancel</button>
+              <div className='flex gap-3'>
+                <button className='bg-[#F5F7F9] py-[5px] rounded-lg px-4   text-[#292929]' onClick={() => setEdit(false)}>cancel</button>
+                <button className='bg-[#5625F2] py-[5px] rounded-lg  text-white px-6' onClick={() => setEdit(false)}>Save</button>
+              </div>
             </div>
             <AddBank />
             <div className="font-roboto col-span-2 mt-2 border border-borderCol rounded-md h-64 overflow-y-auto w-full grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-3">
-            {Object.keys(groupedBanks).map((country, index) => (
-              <div key={country + index}>
-                <h3 className="font-roboto text-sm text-[#44444F] w-full border-b border-b-neutral-400 mb-1 capitalize">
-                  {country}
-                </h3>
-                <div className="flex flex-col gap-y-2">
-                  {groupedBanks[country].map((bank: any, idx: number) => (
-                    <div key={`${bank._id}-${idx}`} className="flex items-start gap-x-2">
-                        <RemoveBank id={bank._id}/>
-                      <p className="text-[#44444F] text-xs capitalize">
-                        {bank.name}
-                      </p>
-                    </div>
-                  ))}
+              {Object.keys(groupedBanks).map((country, index) => (
+                <div key={country + index}>
+                  <h3 className="font-roboto text-sm text-[#44444F] w-full border-b border-b-neutral-400 mb-1 capitalize">
+                    {country}
+                  </h3>
+                  <div className="flex flex-col gap-y-2">
+                    {groupedBanks[country].map((bank: any, idx: number) => (
+                      <div key={`${bank._id}-${idx}`} className="flex items-start gap-x-2">
+                        <RemoveBank id={bank._id} />
+                        <p className="text-[#44444F] text-xs capitalize">
+                          {bank.name}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
           </div>
         }
       </div>
-
     </SettingLayout>
   )
 }

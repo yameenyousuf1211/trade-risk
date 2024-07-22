@@ -25,6 +25,7 @@ export function middleware(request: NextRequest) {
     "/risk-participation",
     "/risk-assessment",
     "/notifications",
+    "/setting"
 
   ];
   const isPrivatePath = privatePaths.includes(path);

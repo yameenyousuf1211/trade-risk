@@ -32,7 +32,7 @@ export const Roles: React.FC<RolesProps> = ({ selectedRole, setSelectedRole, add
         <SettingTab
           key={role._id}
           label={role.name}
-          className={`cursor-pointer ${selectedRole === role.name ? 'border-[#5625F2] border' : ''}`}
+          className={`cursor-pointer py-4 ${selectedRole === role.name ? 'border-[#5625F2] border' : ''}`}
           onClick={() => {
             setSelectedRole(role.name);
             setAddMode(false);

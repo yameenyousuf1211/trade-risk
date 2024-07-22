@@ -28,8 +28,8 @@ const SettingLayout: FC<SettingLayoutProps> = ({ title, subTitle, children, hasB
                             </div>
                             {hasButton &&
                                 <div className='flex gap-5 items-centerms'>
-                                    <Button className='p-8 bg-white text-black rounded-md hover:bg-white font-semibold'>Cancel</Button>
-                                    <Button className='p-8 bg-[#5625F2] rounded-md hover:bg-[#5525f2af] font-semibold' onClick={handleSave}>Save</Button>
+                                    <Button className='p-8 bg-white text-black rounded-md hover:bg-white font-bold'>Cancel</Button>
+                                    <Button className='p-8 bg-[#5625F2] rounded-md hover:bg-[#5525f2af] font-bold' onClick={handleSave}>Save</Button>
                                 </div>
                             }
                         </div>

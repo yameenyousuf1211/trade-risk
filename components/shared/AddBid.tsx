@@ -50,6 +50,7 @@ const LCInfo = ({
 };
 
 export const AddBid = ({
+  isNotification = false,
   isDiscount,
   isInfo,
   status,
@@ -63,6 +64,7 @@ export const AddBid = ({
   isRisk = false,
 }: {
   isDiscount?: boolean;
+  isNotification?: boolean;
   isInfo?: boolean;
   status?: string;
   triggerTitle: string;
@@ -149,6 +151,7 @@ export const AddBid = ({
     else {
       console.log(response?.data, "response?.data");
       const notificationResp = await sendNotification({
+        role: "corporate",
         userId: isRisk ? riskData?.createdBy : lcData?.createdBy,
         title: `New ${isRisk ? riskData?.type : lcData?.type} Request ${
           isRisk ? riskData?._id : lcData?._id
@@ -164,8 +167,6 @@ export const AddBid = ({
       toast.success("Bid added");
     }
   };
-
-  console.log(lcData, "lcData");
   
   return (
     <Dialog>
@@ -210,41 +211,43 @@ export const AddBid = ({
         </DialogTrigger>
       ) : (
         <DialogTrigger
-          className={`${
-            lcData &&
-            (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
-            (status === "Add bid" || status === "Rejected")
-              ? "bg-[#1A1A26] text-white text-sm"
-              : status === "Rejected"
-              ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
-                  border && "border border-[#D20000]"
-                }`
-              : status === "Accepted"
-              ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
-                  border && "border border-[#29C084]"
-                }`
-              : status === "Expired"
-              ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
-                  border &&
-                  "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
-                }`
-              : status === "Add bid" && !isBank
-              ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
-              : status === "Add bid" && isBank
-              ? "bg-[#1A1A26] text-white text-sm"
-              : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
-          } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
-          disabled={
-            (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
-            (status === "Add bid" || status === "Rejected")
-          }
-        >
-          {lcData &&
+        className={`${
+          isNotification
+            ? "bg-[#2F3031] text-white hover:bg-[#2F3031] hover:text-white"
+            : lcData &&
+              (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
+              (status === "Add bid" || status === "Rejected")
+            ? "bg-[#1A1A26] text-white text-sm"
+            : status === "Rejected"
+            ? ` bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
+                border && "border border-[#D20000]"
+              }`
+            : status === "Accepted"
+            ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
+                border && "border border-[#29C084]"
+              }`
+            : status === "Expired"
+            ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
+                border && "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
+              }`
+            : status === "Add bid" && !isBank
+            ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
+            : status === "Add bid" && isBank
+            ? "bg-[#1A1A26] text-white text-sm"
+            : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
+        } rounded-md w-full ${isNotification ? 'w-28' : ''} p-2 capitalize hover:opacity-85 font-roboto`}
+        disabled={
           (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
           (status === "Add bid" || status === "Rejected")
-            ? "Not Applicable"
-            : triggerTitle || "Pending"}
-        </DialogTrigger>
+        }
+      >
+        {lcData &&
+        (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
+        (status === "Add bid" || status === "Rejected")
+          ? "Not Applicable"
+          : triggerTitle || "Pending"}
+      </DialogTrigger>
+      
       )}
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
@@ -860,7 +863,7 @@ export const AddBid = ({
                   </div>
                 )}
 
-                <div className="flex items-center gap-x-2 mt-2">
+                <div className="flex items-center gap-2 mt-2">
                   <DialogClose
                   ref={buttonRef}
                     // id="submit-button-close"

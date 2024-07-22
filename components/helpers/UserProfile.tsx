@@ -109,9 +109,8 @@ export const UserProfile = () => {
           <DialogContent className="w-[15%] absolute  left-[91%]  overflow-auto h-[90%] p-0 flex flex-col gap-0">
             {data?.data?.map((data: INotifications, index: number) => {
               return (
-                <div className="">
+                <div key={data?._id}>
                   <NotificationCard
-                    key={data?._id}
                     index={index}
                     notification={data}
                   />

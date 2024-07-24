@@ -132,6 +132,8 @@ const ProductInfoPage = () => {
     setValues({
       productInfo: values,
     });
+    
+    console.log("Checking Product Values Schema",values);
     localStorage.setItem("productData", JSON.stringify(values));
     router.push("/register/corporate/point-contact");
   };

@@ -35,7 +35,7 @@ export const getCities = async (country: string) => {
   }
 };
 
-export const getCurrenncy = async () => {
+export const getCurrency = async () => {
   try {
     const response = await api.get(`/country/currencies/list`);
 

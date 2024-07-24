@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getCurrenncy } from "@/services/apis/helpers.api";
+import { getCurrency } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 const numberToText = require("number-to-text");
 require("number-to-text/converters/en-us");
@@ -35,7 +35,7 @@ export const Step2 = ({
 }) => {
   const { data: currency } = useQuery({
     queryKey: ["currency"],
-    queryFn: () => getCurrenncy(),
+    queryFn: () => getCurrency(),
   });
 
   let amount = watch("amount");

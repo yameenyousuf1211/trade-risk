@@ -59,6 +59,7 @@ export const BidCard = ({
     }
   };
 
+  
   return (
     <div className="border border-borderCol py-5 px-3 rounded-lg">
     <div className="grid grid-cols-2 gap-y-4">
@@ -415,7 +416,7 @@ export const TableDialog = ({
                   <p className="font-roboto text-sm text-para">
                     Created at,{" "}
                     {lcData &&
-                      convertDateAndTimeToString(lcData.period?.startDate)}
+                      convertDateAndTimeToString(lcData.createdAt)}
                     , by{" "}
                     <span className="text-text capitalize">
                       {(lcData && lcData.exporterInfo?.beneficiaryName) || ""}

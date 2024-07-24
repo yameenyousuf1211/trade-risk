@@ -25,3 +25,5 @@ export const permissionMapping: Record<string, string> = {
     manageUsers: "Manage Users",
     manageCompany: "Manage Company"
   };
+
+export  const values = ["Payment Guarantee", "Financial Guarantee to secure Credit Facilities", "Stand by letter of credit (SBLC)", "Stand by Letter of credit (SBLC) to secure credit facilities","Other Type of LG (Need to type)"];

@@ -461,14 +461,18 @@ export const AddBid = ({
                         label="LC Applicant"
                         value={lcData?.importerInfo?.applicantName || "-"}
                       />
+                      {lcData?.advisingBank?.bank &&
                       <LCInfo
                         label="LC Advising Bank"
-                        value={lcData?.advisingBank?.bank || "-"}
+                        value={lcData?.advisingBank?.bank }
                       />
+                      }
+                      {lcData?.confirmingBank?.bank &&
                       <LCInfo
                         label="Confirming Bank"
-                        value={lcData?.confirmingBank?.bank || "-"}
+                        value={lcData?.confirmingBank?.bank}
                       />
+  }
                       <LCInfo
                         label="Payments Terms"
                         value={lcData?.paymentTerms || "-"}

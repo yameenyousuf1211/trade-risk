@@ -10,15 +10,8 @@ import { fetchNotifications } from "@/services/apis/notifications.api";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
+
 
 
 export const UserProfile = () => {
@@ -46,7 +39,7 @@ export const UserProfile = () => {
   return (
     <div className="flex items-center gap-x-4">
       <div>
-        {/* <Sheet>
+        <Sheet>
           <SheetTrigger>
             <div
               className="relative"
@@ -88,8 +81,8 @@ export const UserProfile = () => {
                 </SheetDescription>
               </SheetHeader>
             </SheetContent>
-        </Sheet> */}
-        <Dialog >
+        </Sheet>
+        {/* <Dialog >
           <DialogTrigger>
             <div
               className="relative"
@@ -107,18 +100,9 @@ export const UserProfile = () => {
             </div>
           </DialogTrigger>
           <DialogContent className="w-[15%] absolute  left-[91%]  overflow-auto h-[90%] p-0 flex flex-col gap-0">
-            {data?.data?.map((data: INotifications, index: number) => {
-              return (
-                <div key={data?._id}>
-                  <NotificationCard
-                    index={index}
-                    notification={data}
-                  />
-                </div>
-              );
-            })}
+
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
 
         {/* <DialogContent className="w-[20%] absolute top-[330px] left-[77%] p-0 !max-h-[78vh] h-full">
           {!isLoading && data?.data?.length === 0 && (

@@ -57,7 +57,10 @@ export default function CompanyInformation() {
           <SettingTab label='Telephone' text={formatPhoneNumber(user.phone || user.pocPhone || '-')} />
           <SettingTab label='Nature of Business' text={user?.businessNature || '-'} />
           <SettingTab label='Business Sector' text={user?.businessType || '-'} />
-          <SettingTab label='Products' text={user?.productInfo?.product[0] || '-'} />
+          <SettingTab
+            label='Products'
+            text={user?.productInfo?.products?.join(', ') || '-'}
+          />
         </div>
         {edit &&
           <div className='bg-white p-3 rounded-lg w-full'>

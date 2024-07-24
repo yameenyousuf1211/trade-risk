@@ -25,20 +25,22 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
 
-interface TableDataCellProps {
-  data?: string | number | Date | undefined;
-}
 
-const TableDataCell = ({ data }: TableDataCellProps) => {
+type TableDataCellProps = {
+  data?: string | number | Date | undefined;
+  children?: React.ReactNode;
+  className?: string;
+};
+
+export const TableDataCell: React.FC<TableDataCellProps> = ({ data, children, className }) => {
   return (
-    <TableCell className="px-1 py-1 max-w-[180px]">
+    <TableCell className={`px-1 py-1 max-w-[180px] ${className}`}>
       <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-lightGray text-sm text-center">
-        {data !== undefined ? String(data) : "-"}
+        {children ? children : data !== undefined ? String(data) : "-"}
       </div>
     </TableCell>
   );
 };
-
 export const RequestTable = ({
   isBank,
   data,

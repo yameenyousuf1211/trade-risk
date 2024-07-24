@@ -8,9 +8,11 @@ import Link from "next/link";
 export default function AuthLayout({
   children,
   isRisk,
+  isLg,
 }: Readonly<{
   children: React.ReactNode;
   isRisk: boolean;
+  isLg?: boolean;
 }>) {
   return (
     <>

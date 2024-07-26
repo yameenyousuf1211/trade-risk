@@ -8,7 +8,6 @@ import { Input } from '../ui/input';
 import { DatePicker } from '../helpers';
 import { useQuery } from '@tanstack/react-query';
 import { getCurrency } from '@/services/apis/helpers.api';
-import { DDInput } from '../LCSteps/helpers';
 import { values } from '@/utils';
 
 const LgIssuanceTableRow: FC<LgStepsProps5> = ({
@@ -35,7 +34,6 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </SelectItem>
     ))
   ), [currency]);
-
   const lgDetails = watch("lgDetail");
   return (
     <TableRow className={`mt-5 ${checkedValue ? 'bg-white' : 'bg-[#F5F7F9]'}`} id={`${name}`} key={`${name + listValue!}`}>
@@ -66,6 +64,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       }
       <TableCell className=''>
         <Select
+          disabled={!checkedValue}
           onValueChange={(value) => {
             setValue(`${name}.currencyType`, value);
           }}
@@ -80,6 +79,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <Input
+          disabled={!checkedValue}
           inputMode='numeric'
           register={register}
           name={`${name}.cashMargin`}
@@ -89,6 +89,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <Input
+          disabled={!checkedValue}
           register={register}
           name={`${name}.valueInPercentage`}
           placeholder='%'
@@ -98,6 +99,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       <TableCell>
         <DatePicker
           setValue={setValue}
+          disabled={!checkedValue}
           name={`${name}.expectedDate`}
           maxDate={
             new Date(
@@ -110,6 +112,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <DatePicker
+          disabled={!checkedValue}
           setValue={setValue}
           name={`${name}.lgExpiryDate`}
           maxDate={
@@ -125,6 +128,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
         <>
           <TableCell className='flex gap-2'>
             <Select
+              disabled={!checkedValue}
               onValueChange={(value) => {
                 setValue(`${name}.lgTenor.lgTenorType`, value);
               }}
@@ -141,6 +145,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
               </SelectContent>
             </Select>
             <Input
+              disabled={!checkedValue}
               register={register}
               name={`${name}.lgTenor.lgTenorValue`}
               placeholder='No.'

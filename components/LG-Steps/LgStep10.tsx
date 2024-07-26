@@ -21,7 +21,7 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step }) 
   };
 
   return (
-    <div id="lg-step2" className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target">
+    <div id={`lg-step${step}`} className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
           {step || 10}

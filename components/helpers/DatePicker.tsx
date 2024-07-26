@@ -16,12 +16,14 @@ export const DatePicker = ({
   setValue,
   maxDate,
   name,
-  isLg
+  isLg,
+  disabled
 }: {
   setValue: any;
   maxDate: Date | string | any;
   name?:string
   isLg?:boolean
+  disabled?:boolean
 }) => {
   const [date, setDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -30,6 +32,7 @@ export const DatePicker = ({
     <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={true}> 
       <PopoverTrigger asChild>
         <Button
+          disabled={disabled}
           variant={"outline"}
           className={cn(
             `w-full ${isLg ? 'gap-2 justify-end border-none' : 'justify-between text-left'}  font-normal`,

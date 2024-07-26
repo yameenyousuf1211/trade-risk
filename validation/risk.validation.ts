@@ -139,7 +139,6 @@ export const generalRiskSchema = z
     note: z.string().nonempty({ message: "Note cannot be empty" }),
     // draft: z.boolean(),
     // days: z.string({ message: 'Enter days' }).optional())
-
     days: z.string({ message: "Enter days" }).optional(),
   })
   .refine(

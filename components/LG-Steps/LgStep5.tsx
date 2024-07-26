@@ -5,9 +5,19 @@ import LgStep5Helper from './LgStep5Helper';
 
 const LgStep5: React.FC<LgStepsProps5> = ({ register, watch, setStepCompleted,setValue }) => {
   const lgDetailsType = watch("lgDetailsType");
+  const bidBond = watch("bidBond.Contract");
+  const advancePaymentBond = watch("advancePaymentBond.Contract");
+  const performanceBond = watch("performanceBond.Contract");
+  const retentionMoneyBond = watch("retentionMoneyBond.Contract");
+
+  useEffect(() => {
+    if (lgDetailsType && bidBond || advancePaymentBond || performanceBond || retentionMoneyBond) {
+      setStepCompleted(5, true);
+    }
+  }, [lgDetailsType,bidBond,advancePaymentBond,performanceBond,retentionMoneyBond]);
   return (
     <div
-      id="lg-step2"
+      id="lg-step5"
       className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target"
     >
       <div className="flex items-center gap-x-2 ml-3 mb-3">

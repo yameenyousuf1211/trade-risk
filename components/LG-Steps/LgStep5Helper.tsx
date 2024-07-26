@@ -1,4 +1,4 @@
-import React, { useState, useTransition, useMemo } from 'react';
+import React, { useState, useTransition, useMemo, useEffect } from 'react';
 import { FC } from 'react';
 import {
     Table,
@@ -26,6 +26,11 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
         { name: 'performanceBond', listValue: 'Retention Bond' },
         { name: 'retentionMoneyBond', listValue: 'Performance Bond' },
     ], []);
+
+    const bidBondAmount = parseInt(watch('bidBond.cashMargin') || 0);
+    const advancePaymentBondAmount = parseInt(watch('advancePaymentBond.cashMargin') || 0);
+    const performanceBondAmount = parseInt(watch('performanceBond.cashMargin') || 0);
+    const retentionMoneyBondAmount = parseInt(watch('retentionMoneyBond.cashMargin') || 0);
 
     return (
         <Table className='my-2' id={`TableData`}>
@@ -92,7 +97,7 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
                             Total LGs Amount
                         </TableCell>
                         <TableCell className="text-start" colSpan={5}>
-                            $2,500.00
+                            {bidBondAmount + advancePaymentBondAmount + performanceBondAmount + retentionMoneyBondAmount}
                         </TableCell>
                     </TableRow>
                 </TableFooter>

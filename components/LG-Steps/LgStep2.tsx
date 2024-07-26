@@ -9,6 +9,12 @@ const LgStep2: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
     const company = watch("applicantDetails.company");
     const crNumber = watch("applicantDetails.crNumber");
 
+    useEffect(() => {
+        if (country && company && crNumber) {
+          setStepCompleted(1, true);
+        }
+      }, [country, company, crNumber]);
+  
     return (
         <div
             id="lg-step2"

@@ -5,11 +5,14 @@ import  { LgStepsProps1 } from '@/types/lg'
 const LgStep1: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted }) => {
 
     const lgIssuance = watch("lgIssuance");
-  
+    
+    useEffect(() => {
+      setStepCompleted(0, lgIssuance);
+    }, [lgIssuance]);
 
   return (
     <div
-      id="lg-step2"
+      id="lg-step1"
       className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target"
     >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -46,9 +49,6 @@ const LgStep1: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted })
         checked={lgIssuance === "LG Advising"}
       />
       </div>
-      
-      
-        
     </div>
   )
 }

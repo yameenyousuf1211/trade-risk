@@ -13,6 +13,7 @@ export const Step1 = ({
   setStepCompleted: (index: number, status: boolean) => void;
 }) => {
   const participantRole = watch("participantRole");
+  
   useEffect(() => {
     setStepCompleted(0, participantRole);
   }, [participantRole]);

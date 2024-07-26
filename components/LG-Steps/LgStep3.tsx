@@ -4,7 +4,8 @@ import { LgStepsProps3 } from '@/types/lg';
 import { Input } from '../ui/input';
 import { useQuery } from '@tanstack/react-query';
 import { getBanks } from '@/services/apis/helpers.api';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, XCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 const LgStep3: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, data, flags, setValue }) => {
     const issuingCountry = watch("issuingBank.country");
@@ -12,6 +13,7 @@ const LgStep3: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, d
     const swiftCode = watch("issuingBank.swiftCode");
 
     const [isStepCompleted, setIsStepCompleted] = useState(false);
+    const [additionalBanks, setAdditionalBanks] = useState<number[]>([]);
 
     const { data: issuingBanks } = useQuery({
         queryKey: ["issuing-banks", issuingCountry],
@@ -20,12 +22,22 @@ const LgStep3: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, d
     });
 
     useEffect(() => {
-        const stepCompleted = !!(issuingCountry && bank && swiftCode);
-        if (stepCompleted !== isStepCompleted) {
-            setIsStepCompleted(stepCompleted);
-            setStepCompleted(3, stepCompleted);
+        if (issuingCountry && bank && swiftCode) {
+            setStepCompleted(2, true);
         }
-    }, [issuingCountry, bank, swiftCode, isStepCompleted, setStepCompleted]);
+    }, [issuingCountry, swiftCode, bank]);
+
+    const handleAddBank = () => {
+        if (additionalBanks.length < 2) {
+            setAdditionalBanks([...additionalBanks, additionalBanks.length + 1]);
+        } else {
+            toast.error('You can add up to 2 additional banks only');
+        }
+    };
+
+    const handleRemoveBank = (index: number) => {
+        setAdditionalBanks(additionalBanks.filter((_, i) => i !== index));
+    };
 
     return (
         <div
@@ -82,13 +94,56 @@ const LgStep3: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, d
                     </label>
                 </div>
             </div>
-            <div className='border border-dashed border-spacing-7 rounded-lg border-[#E2E2EA] flex items-center justify-center mt-4 p-12'>
-                <div className='flex flex-col items-center'>
-                    <PlusCircle />
-                    <p className='font-semibold font-poppins'>Add other Bank</p>
-                </div>
-            </div>
 
+            {additionalBanks.map((bankId, index) => (
+                <div key={bankId} className='border border-[#E2E2EA] bg-[#F5F7F9] rounded-lg mt-4'>
+                    <div className='flex justify-between items-center px-4 pt-2'>
+                        <p className='font-semibold text-[#1A1A26] font-poppins'>Issuing Bank (Optional)</p>
+                        <XCircle className="cursor-pointer text-red-500" onClick={() => handleRemoveBank(index)} />
+                    </div>
+                    <div className='flex items-center gap-3 pt-2 px-2 pb-2'>
+                        <DDInput
+                            placeholder="Select Country"
+                            label="Issuing Bank Country"
+                            value={issuingCountry}
+                            id={`issuingBank${bankId}.country`}
+                            data={data}
+                            setValue={setValue}
+                            flags={flags}
+                        />
+                        <DDInput
+                            placeholder="Select Bank"
+                            label="Bank"
+                            id={`issuingBank${bankId}.bank`}
+                            setValue={setValue}
+                            data={issuingBanks && issuingBanks.success && issuingBanks.response}
+                            disabled={!issuingCountry || (issuingBanks && issuingBanks.success && !issuingBanks.response)}
+                        />
+                        <label
+                            id={`issuingBank${bankId}.swiftCode`}
+                            className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+                        >
+                            <p className="w-full text-sm text-lightGray">Swift Code</p>
+                            <Input
+                                register={register}
+                                name={`issuingBank${bankId}.swiftCode`}
+                                type="text"
+                                className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+                                placeholder="Enter Code"
+                            />
+                        </label>
+                    </div>
+                </div>
+            ))}
+
+            {additionalBanks.length < 2 && (
+                <div className='border border-dashed border-spacing-7 rounded-lg border-[#E2E2EA] flex items-center justify-center mt-4 p-12'>
+                    <div className='flex flex-col items-center cursor-pointer' onClick={handleAddBank}>
+                        <PlusCircle />
+                        <p className='font-semibold font-poppins'>Add other Bank</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

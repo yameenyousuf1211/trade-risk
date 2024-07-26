@@ -5,7 +5,7 @@ const LgStep8: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted })
 
     return (
         <div
-            id="lg-step2"
+            id="lg-step7"
             className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target"
         >
             <div className="flex items-center gap-x-2 ml-3 mb-3">

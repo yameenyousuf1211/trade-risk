@@ -3,7 +3,6 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
-  BreadcrumbLink,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "../ui/button";
@@ -32,7 +31,7 @@ const Separator = () => {
   );
 };
 
-export const BreadcrumbDetails = () => {
+export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
   const crumbs = [
     "Transaction as",
     "Amount",
@@ -43,6 +42,19 @@ export const BreadcrumbDetails = () => {
     "Attachments",
   ];
 
+  const lgCrumbs = [
+    "Choose Type",
+    "Applicant Details",
+    "LG issuing Bank",
+    "Type of LG",
+    "Standard Text",
+    "LG Details",
+    "Beneficiary",
+    "Physical LG",
+    "Remarks",
+    "Price Quote",
+  ];
+
   const { stepStatus, isSubmitted } = useStepStore();
 
   const { user } = useAuth();
@@ -50,15 +62,13 @@ export const BreadcrumbDetails = () => {
   const isConfirmation = pathname === "/create-request";
   const isDiscounting = pathname === "/create-request/discount";
   const isConfirmationDiscounting = pathname === "/create-request/confirmation";
+  const isLgIssuance = pathname === "/create-request/lg-issuance";
 
-  const  scrollToForm = () => {
-    document?.querySelector('#step1')?.scroll({behavior: 'smooth'});
-  }
+  const scrollToForm = () => {
+    document?.querySelector('#step1')?.scroll({ behavior: 'smooth' });
+  };
 
-
-  const {
-    data,
-  }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
+  const { data }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["fetch-lcs-drafts"],
       queryFn: () => fetchLcs({ draft: true, userId: user._id }),
@@ -75,16 +85,20 @@ export const BreadcrumbDetails = () => {
         return draft.type === "LC Discounting";
       } else if (isConfirmationDiscounting) {
         return draft.type === "LC Confirmation & Discounting";
+      } else if (isLgIssuance) {
+        return draft.type === "LG Issuance";
       } else {
         return true;
       }
     });
 
+  const breadcrumbItems = isLg ? lgCrumbs : crumbs;
+
   return (
     <div className="bg-bg sticky top-0 relative z-[2] flex items-center justify-between gap-x-2">
       <Breadcrumb>
         <BreadcrumbList>
-          {crumbs.map((crumb, idx) => (
+          {breadcrumbItems.map((crumb, idx) => (
             <div className="flex items-center gap-x-2" key={`${crumb}-${idx}`}>
               <div className="flex gap-1 items-center">
                 {stepStatus[idx] && (
@@ -97,14 +111,14 @@ export const BreadcrumbDetails = () => {
                     <XIcon color="red" size={20} />
                   </div>
                 )}
-                
-                <BreadcrumbItem key={`${crumb}-${idx}`} >
-                  <Link  href={`${pathname}#step${idx + 1}`}>
+
+                <BreadcrumbItem key={`${crumb}-${idx}`}>
+                  <Link href={`${pathname}#${isLg ? 'lg-step' : 'step'}${idx + 1}`}>
                     {crumb}
                   </Link>
                 </BreadcrumbItem>
               </div>
-              {idx !== crumbs.length - 1 && <Separator />}
+              {idx !== breadcrumbItems.length - 1 && <Separator />}
             </div>
           ))}
         </BreadcrumbList>

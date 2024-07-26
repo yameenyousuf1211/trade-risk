@@ -2,12 +2,9 @@ import React, { useEffect } from 'react'
 import { BgRadioInput } from '../LCSteps/helpers'
 import  { LgStepsProps1 } from '@/types/lg'
 
-const LgStep9: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted }) => {
+const LgStep9: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted,step }) => {
 
-    const receivePrice = watch("receivePrice");
-
-   
-
+    const priceQuotes = watch("priceQuotes");
   return (
     <div
       id="lg-step2"
@@ -15,7 +12,7 @@ const LgStep9: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted })
     >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
-          9
+          {step}
         </p>
         <p className="font-semibold text-[16px] text-lightGray">
         Would you require to receive the lowest Price or all Price quotes?
@@ -25,19 +22,20 @@ const LgStep9: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted })
       <BgRadioInput
         id="receivePrice1"
         label="Lowest Price Quoted"
-        name="receivePrice"
+        name="priceQuotes"
         value="Lowest Price Quoted"
         register={register}
-        checked={receivePrice === "Lowest Price Quoted"}
+        checked={priceQuotes === "Lowest Price Quoted"}
       />
       <BgRadioInput
         id="receivePrice2"
         label="All Prices Quoted"
-        name="receivePrice"
+        name="priceQuotes"
         value="All Prices Quoted"
         register={register}
-        checked={receivePrice === "All Prices Quoted"}
+        checked={priceQuotes === "All Prices Quoted"}
       />
+      
       </div>
     </div>
   )

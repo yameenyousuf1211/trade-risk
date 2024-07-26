@@ -7,7 +7,7 @@ import { getBanks } from '@/services/apis/helpers.api';
 
 const LgStep6: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, setValue }) => {
 
-    const issuingCountry = watch('beneficiary.country');
+    const issuingCountry = watch('beneficiaryDetails.country');
 
     const { data: issuingBanks } = useQuery({
         queryKey: ["issuing-banks", issuingCountry],
@@ -15,9 +15,6 @@ const LgStep6: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, s
         enabled: !!issuingCountry,
     });
 
-  
-    console.log("beneficiary.country",issuingCountry);
-    
     return (
         <div
             id="lg-step2"
@@ -37,19 +34,19 @@ const LgStep6: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, s
                 <DDInput
                     placeholder="Select Bank"
                     label="Beneficiary Bank"
-                    id="applicant.country"
+                    id="beneficiaryBanksDetails.bank"
                     data={issuingBanks && issuingBanks.response}
                     setValue={setValue}
                 />
                 <label
-                    id="applicant.crNumber"
+                    id="beneficiaryBanksDetails.swiftCode"
                     className="border p-1 px-3 rounded-md w-full flex items-center justify-between  bg-white"
                 >
                     <p className="w-full text-sm text-lightGray">Swift Code</p>
                     <Input
                         register={register}
                         type="text"
-                        name='applicant.crNumber'
+                        name='beneficiaryBanksDetails.swiftCode'
                         className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                         placeholder="Enter Code"
                     />

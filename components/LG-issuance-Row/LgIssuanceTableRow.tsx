@@ -20,7 +20,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   listValue
 }) => {
 
-  const checkedValue = watch(`${name}.checked`);
+  const checkedValue = watch(`${name}.Contract`);
 
   const { data: currency } = useQuery({
     queryKey: ["currency"],
@@ -36,13 +36,13 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     ))
   ), [currency]);
 
-  const lgDetails = watch("lgDetails");
+  const lgDetails = watch("lgDetail");
   return (
     <TableRow className={`mt-5 ${checkedValue ? 'bg-white' : 'bg-[#F5F7F9]'}`} id={`${name}`} key={`${name + listValue!}`}>
       {lgDetails !== "Choose any other type of LGs" ?
         <TableDataCell>
           <div className='flex gap-2 items-center'>
-            <input type="checkbox" className='bg-none' {...register(`${name}.checked`)} />
+            <input type="checkbox" className='bg-none' {...register(`${name}.Contract`)} />
             <p>{listValue}</p>
           </div>
         </TableDataCell>
@@ -67,7 +67,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       <TableCell className=''>
         <Select
           onValueChange={(value) => {
-            setValue(`${name}.currency`, value);
+            setValue(`${name}.currencyType`, value);
           }}
         >
           <SelectTrigger className="bg-borderCol/80">
@@ -80,15 +80,17 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <Input
+          inputMode='numeric'
           register={register}
-          name={`${name}.amount`}
+          name={`${name}.cashMargin`}
+          type='number'
           placeholder='Amount'
         />
       </TableCell>
       <TableCell>
         <Input
           register={register}
-          name={`${name}.percentage`}
+          name={`${name}.valueInPercentage`}
           placeholder='%'
           className='placeholder:text-end'
         />
@@ -96,6 +98,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       <TableCell>
         <DatePicker
           setValue={setValue}
+          name={`${name}.expectedDate`}
           maxDate={
             new Date(
               new Date().setFullYear(
@@ -108,6 +111,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       <TableCell>
         <DatePicker
           setValue={setValue}
+          name={`${name}.lgExpiryDate`}
           maxDate={
             new Date(
               new Date().setFullYear(
@@ -122,7 +126,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           <TableCell className='flex gap-2'>
             <Select
               onValueChange={(value) => {
-                setValue(`${name}.tenorUnit`, value);
+                setValue(`${name}.lgTenor.lgTenorType`, value);
               }}
             >
               <SelectTrigger className="bg-borderCol/80">
@@ -138,7 +142,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
             </Select>
             <Input
               register={register}
-              name={`${name}.tenor`}
+              name={`${name}.lgTenor.lgTenorValue`}
               placeholder='No.'
             />
           </TableCell>

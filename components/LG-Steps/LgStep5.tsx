@@ -4,7 +4,7 @@ import {  LgStepsProps5 } from '@/types/lg'
 import LgStep5Helper from './LgStep5Helper';
 
 const LgStep5: React.FC<LgStepsProps5> = ({ register, watch, setStepCompleted,setValue }) => {
-  const lgDetails = watch("lgDetails");
+  const lgDetailsType = watch("lgDetailsType");
   return (
     <div
       id="lg-step2"
@@ -22,18 +22,18 @@ const LgStep5: React.FC<LgStepsProps5> = ({ register, watch, setStepCompleted,se
         <BgRadioInput
           id="lgDetails1"
           label="Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)"
-          name="lgDetails"
+          name="lgDetailsType"
           value="Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)"
           register={register}
-          checked={lgDetails === "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)"}
+          checked={lgDetailsType === "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)"}
         />
         <BgRadioInput
           id="lgDetails2"
           label="Choose any other type of LGs"
-          name="lgDetails"
+          name="lgDetailsType"
           value="Choose any other type of LGs"
           register={register}
-          checked={lgDetails === "Choose any other type of LGs"}
+          checked={lgDetailsType === "Choose any other type of LGs"}
         />
       </div>
       <LgStep5Helper
@@ -41,7 +41,7 @@ const LgStep5: React.FC<LgStepsProps5> = ({ register, watch, setStepCompleted,se
         register={register}
         watch={watch}
         setStepCompleted={setStepCompleted}
-        listValue={lgDetails}
+        listValue={lgDetailsType}
       />
     </div>
   )

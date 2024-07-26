@@ -1,11 +1,11 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { X } from "lucide-react";
+import { FileCode, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatFileSize } from "@/utils";
 import { UseFormRegister } from "react-hook-form";
 
-const FileCard = ({
+ const FileCard = ({
   file,
   onRemoveFile,
 }: {
@@ -141,3 +141,5 @@ export const Step7 = ({
     </div>
   );
 };
+
+export { FileCard };

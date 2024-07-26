@@ -21,13 +21,11 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
 }) => {
 
     const bondTypes = useMemo(() => [
-        { name: 'BigBond', listValue: 'Big Bond' },
+        { name: 'bidBond', listValue: 'Big Bond' },
         { name: 'advancePaymentBond', listValue: 'Advance Payment Bond' },
-        { name: 'retentionBond', listValue: 'Retention Bond' },
-        { name: 'performanceBond', listValue: 'Performance Bond' },
+        { name: 'performanceBond', listValue: 'Retention Bond' },
+        { name: 'retentionMoneyBond', listValue: 'Performance Bond' },
     ], []);
-
-
 
     return (
         <Table className='my-2' id={`TableData`}>
@@ -62,8 +60,9 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
             <TableBody>
                 {listValue !== "Choose any other type of LGs" &&
                     bondTypes.map((bondType: any) => (
+                        <React.Fragment key={bondType.name}>
+                        <tr className='h-2 bg-white'></tr>
                         <LgIssuanceTableRow
-                            key={bondType.name}
                             register={register}
                             watch={watch}
                             setValue={setValue}
@@ -71,6 +70,7 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
                             name={bondType.name}
                             listValue={bondType.listValue}
                         />
+                        </React.Fragment>
                     ))
                 }
                 {listValue === "Choose any other type of LGs" &&
@@ -83,6 +83,7 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
                         listValue="Other Bond"
                     />
                 }
+
             </TableBody>
             {listValue !== "Choose any other type of LGs" &&
                 <TableFooter className='border-none'>

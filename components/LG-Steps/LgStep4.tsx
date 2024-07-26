@@ -4,10 +4,7 @@ import { LgStepsProps2 } from '@/types/lg';
 import { Input } from '../ui/input';
 import { PhoneInput } from '../ui/phone-input';
 
-const LgStep4: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, data, flags, setValue }) => {
-
-    const country = watch("Beneficiary.country");
-    const company = watch("Beneficiary.company");
+const LgStep4: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, data, flags, setValue,step }) => {
   
     return (
         <div
@@ -16,7 +13,7 @@ const LgStep4: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
         >
             <div className="flex items-center gap-x-2 ml-3 mb-3">
                 <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
-                    4
+                   {step || 4}
                 </p>
                 <p className="font-semibold text-[16px] text-lightGray">
                     Beneficiary Details
@@ -27,7 +24,7 @@ const LgStep4: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
                     <DDInput
                         placeholder="Select Country"
                         label="Beneficiary Country"
-                        id="beneficiary.country"
+                        id="beneficiaryDetails.country"
                         
                         data={data}
                         setValue={setValue}
@@ -36,35 +33,35 @@ const LgStep4: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
                     <DDInput
                         placeholder="Select"
                         label="Beneficiary Name"
-                        id="beneficiary.company"
+                        id="beneficiaryDetails.name"
                         data={['Company 1', 'Company 2', 'Company 3']}
                         setValue={setValue}
                     />
                 </div>
                 <div className='flex items-center gap-3'>
                     <label
-                        id="beneficiary.address"
+                        id="beneficiaryDetails.address"
                         className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
                     >
                         <p className="w-full text-sm text-lightGray">Beneficiary Address</p>
                         <Input
                             register={register}
-                            name="beneficiary.address"
+                            name="beneficiaryDetails.address"
                             type="text"
                             className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                             placeholder="Enter Text"
                         />
                     </label>
                     <label
-                        id="beneficiary.address"
+                        id="beneficiaryDetails.address"
                         className="border flex-1 p-1 px-3 rounded-md  flex items-center justify-between bg-white"
                     >
                         <p className=" text-sm w-32 text-lightGray">Phone Number</p>
                         <PhoneInput 
-                            name='beneficiary.phone'
+                            name='beneficiaryDetails.phoneNumber'
                             className=''
                             onChange={(value) => {
-                                setValue('beneficiary.phone', value);
+                                setValue('beneficiaryDetails.phoneNumber', value);
                             }}
                         />
                     </label>

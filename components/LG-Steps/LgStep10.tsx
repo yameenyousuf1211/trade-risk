@@ -4,27 +4,27 @@ import {  LgStepsProps10 } from '@/types/lg';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 
-const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue }) => {
-  const expectedPrice = watch("expectedPrice");
-  const pricingPerAnnum = watch("pricingPerAnnum");
+const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step }) => {
+  const expectedPrice = watch("expectedPrice.expectedPrice");
+  const pricingPerAnnum = watch("expectedPrice.pricePerAnnum");
 
   const handleIncrement = () => {
     const currentValue = parseFloat(pricingPerAnnum) || 0;
     const newValue = (currentValue + 1).toFixed(2);
-    setValue('pricingPerAnnum', parseFloat(newValue) > 100 ? '100.00' : newValue);
+    setValue('expectedPrice.pricePerAnnum', parseFloat(newValue) > 100 ? '100.00' : newValue);
   };
 
   const handleDecrement = () => {
     const currentValue = parseFloat(pricingPerAnnum) || 0;
     const newValue = (currentValue - 1).toFixed(2);
-    setValue('pricingPerAnnum', parseFloat(newValue) < 0 ? '0.00' : newValue);
+    setValue('expectedPrice.pricePerAnnum', parseFloat(newValue) < 0 ? '0.00' : newValue);
   };
 
   return (
     <div id="lg-step2" className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
-          10
+          {step || 10}
         </p>
         <p className="font-semibold text-[16px] text-lightGray">
           Do you have any expected price in mind?
@@ -34,7 +34,7 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue }) => {
         <BgRadioInput
           id="expectedPrice"
           label="Yes"
-          name="expectedPrice"
+          name="expectedPrice.expectedPrice"
           value="true"
           register={register}
           checked={expectedPrice === "true"}
@@ -42,7 +42,7 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue }) => {
         <BgRadioInput
           id="expectedPrice2"
           label="No"
-          name="expectedPrice"
+          name="expectedPrice.expectedPrice"
           value="false"
           register={register}
           checked={expectedPrice === "false"}
@@ -67,7 +67,7 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue }) => {
                 "flex h-10 text-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
               )}
               max={100}
-              {...register('pricingPerAnnum')}
+              {...register('expectedPrice.pricePerAnnum')}
               onChange={(event) => {
                 let newValue = event.target.value.replace(/[^0-9.]/g, "");
                 if (newValue.includes(".")) {
@@ -79,7 +79,7 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue }) => {
                   newValue = '100.00';
                 }
                 event.target.value = newValue;
-                setValue('pricingPerAnnum', newValue);
+                setValue('expectedPrice.pricePerAnnum', newValue || '0.00');
               }}
               onBlur={(event) => {
                 if (event.target.value.length === 0) return;
@@ -88,7 +88,7 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue }) => {
                   value = '100.00';
                 }
                 event.target.value = value;
-                setValue('pricingPerAnnum', value);
+                setValue('expectedPrice.pricePerAnnum', value || '0.00');
               }}
             />
             <Button type="button" variant="ghost" className="bg-none border-none text-lg" onClick={handleIncrement}>

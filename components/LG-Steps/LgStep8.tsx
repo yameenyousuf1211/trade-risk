@@ -10,7 +10,7 @@ const LgStep8: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted })
         >
             <div className="flex items-center gap-x-2 ml-3 mb-3">
                 <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
-                    7
+                    8
                 </p>
                 <p className="font-semibold text-[16px] text-lightGray">
                 Remarks / Other Requirements / Queries:

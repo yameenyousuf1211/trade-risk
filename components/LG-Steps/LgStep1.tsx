@@ -4,11 +4,8 @@ import  { LgStepsProps1 } from '@/types/lg'
 
 const LgStep1: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted }) => {
 
-    const lgType = watch("lgType");
-    useEffect(() => 
-        {
-      setStepCompleted(0, lgType);
-    }, [lgType]);
+    const lgIssuance = watch("lgIssuance");
+  
 
   return (
     <div
@@ -25,28 +22,28 @@ const LgStep1: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted })
       </div>
       <div className='flex gap-3 items-center border border-[#E2E2EA] bg-[#F5F7F9] pt-2 px-2 rounded-lg '>
       <BgRadioInput
-        id="Lg-Type"
+        id="lgIssuance1"
         label="LG 100% Cash Margin"
-        name="lgType"
+        name="lgIssuance"
         value="LG 100% Cash Margin"
         register={register}
-        checked={lgType === "LG 100% Cash Margin"}
+        checked={lgIssuance === "LG 100% Cash Margin"}
       />
       <BgRadioInput
-        id="Lg-Type2"
+        id="lgIssuance2"
         label="LG Re-issuance in another country"
-        name="lgType"
+        name="lgIssuance"
         value="LG Re-issuance in another country"
         register={register}
-        checked={lgType === "LG Re-issuance in another country"}
+        checked={lgIssuance === "LG Re-issuance in another country"}
       />
        <BgRadioInput
-        id="Lg-Type3"
+        id="lgIssuance3"
         label="LG Advising"
-        name="lgType"
+        name="lgIssuance"
         value="LG Advising"
         register={register}
-        checked={lgType === "LG Advising"}
+        checked={lgIssuance === "LG Advising"}
       />
       </div>
       

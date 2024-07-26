@@ -62,6 +62,7 @@ const DraftCard = ({
       isConfirmation && setConfirmationValues(response);
       isDiscounting && setDiscountingValues(response);
       isConfirmationDiscounting && setConfirmationDiscountingValues(response);
+      console.log(response);
       isLCIssuance && setLCIssuance(response);
     } catch (error) {}
   };
@@ -109,7 +110,7 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
   const isConfirmation = pathname === "/create-request";
   const isDiscounting = pathname === "/create-request/discount";
   const isConfirmationDiscounting = pathname === "/create-request/confirmation";
-  const isLCIssuance = pathname === "/create-request/issuance";
+  const isLCIssuance = pathname === "/create-request/lg-issuance";
 
   const {
     isLoading,
@@ -131,7 +132,8 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
         return draft.type === "LC Discounting";
       } else if (isConfirmationDiscounting) {
         return draft.type === "LC Confirmation & Discounting";
-      } else {
+      } 
+      else {
         return true;
       }
     });

@@ -5,20 +5,9 @@ import { Input } from '../ui/input';
 
 const LgStep2: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, data, flags, setValue }) => {
 
-    const country = watch("applicant.country");
-    const company = watch("applicant.company");
-    const crNumber = watch("applicant.crNumber");
-
-    // Track the completion status in local state to avoid infinite re-renders
-    const [isStepCompleted, setIsStepCompleted] = useState(false);
-
-    useEffect(() => {
-        const stepCompleted = country && company && crNumber;
-        if (stepCompleted !== isStepCompleted) {
-            setIsStepCompleted(stepCompleted);
-            setStepCompleted(2, stepCompleted);
-        }
-    }, [country, company, crNumber, isStepCompleted, setStepCompleted]);
+    const country = watch("applicantDetails.country");
+    const company = watch("applicantDetails.company");
+    const crNumber = watch("applicantDetails.crNumber");
 
     return (
         <div
@@ -37,7 +26,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
                 <DDInput
                     placeholder="Select Country"
                     label="Country"
-                    id="applicant.country"
+                    id="applicantDetails.country"
                     data={data}
                     setValue={setValue}
                     flags={flags}
@@ -45,20 +34,20 @@ const LgStep2: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
                 <DDInput
                     placeholder="Select"
                     label="Company"
-                    id="applicant.company"
+                    id="applicantDetails.company"
                     data={['Company 1', 'Company 2', 'Company 3']}
                     setValue={setValue}
                 />
 
                 <label
-                    id="applicant.crNumber"
+                    id="applicantDetails.crNumber"
                     className="border p-1 px-3 rounded-md w-full flex items-center justify-between  bg-white"
                 >
                     <p className="w-full text-sm text-lightGray">CR Number</p>
                     <Input
                         register={register}
                         type="text"
-                        name='applicant.crNumber'
+                        name='applicantDetails.crNumber'
                         className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                         placeholder="-"
                     />

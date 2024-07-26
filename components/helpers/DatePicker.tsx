@@ -15,10 +15,13 @@ import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
 export const DatePicker = ({
   setValue,
   maxDate,
-  
+  name,
+  isLg
 }: {
   setValue: any;
   maxDate: Date | string | any;
+  name?:string
+  isLg?:boolean
 }) => {
   const [date, setDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -29,14 +32,14 @@ export const DatePicker = ({
         <Button
           variant={"outline"}
           className={cn(
-            "w-full justify-between text-left font-normal",
+            `w-full ${isLg ? 'gap-2 justify-end border-none' : 'justify-between text-left'}  font-normal`,
             !date &&
-              "text-muted-foreground flex items-center justify-between w-full"
+              `text-muted-foreground flex items-center ${isLg ? 'gap-2 justify-end border-none' : 'justify-between'} w-full`
           )}
-          id="validity"
+          id={`${name || 'validity'}`}
         >
           {date ? format(date, "PPP") : <span>DD/MM/YYYY</span>}
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className=" h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
@@ -45,7 +48,7 @@ export const DatePicker = ({
           maxDate={maxDate}
           onChange={(date) => {
             setDate(date);
-            setValue("validity", date);
+            setValue(`${name || "validity"}`, date);
           }}
           onClose={() => setIsPopoverOpen(false)}
         />

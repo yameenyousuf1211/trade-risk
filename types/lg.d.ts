@@ -60,6 +60,7 @@ export interface BeneficiaryDetails {
 
 export interface LgDetails {
     data:{
+        _id?: string;
         lgIssuance?: string;
         applicantDetails?: ApplicantDetails;
         beneficiaryDetails?: BeneficiaryDetails;

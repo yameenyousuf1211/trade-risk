@@ -18,13 +18,14 @@ import LgStep9Part2 from "@/components/LG-Steps/LgStep9Part2";
 import { Button } from "@/components/ui/button";
 import useCountries from "@/hooks/useCountries";
 import { createLg } from "@/services/apis/lg.apis";
+import useLcIssuance from "@/store/issueance.store";
 import useStepStore from "@/store/lcsteps.store";
 import { LgDetails } from "@/types/lg";
 import { LG } from "@/utils";
 import { bankCountries } from "@/utils/data";
 import { lgValidator } from "@/validation/lg.validation";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -38,9 +39,33 @@ export default function LgIssuance() {
 
     const countryNames = bankCountries.map((country) => country.name);
     const countryFlags = bankCountries.map((country) => country.flag);
-
+    const  {data} = useLcIssuance();
     const { countries, flags } = useCountries()
     const lgIssuance = watch("lgIssuance");
+
+    useEffect(() => {
+    if (data && data?._id) {
+        console.log("Store Data",data);
+        
+      Object.entries(data).forEach(([key, value]: [string, any]) => {
+
+        if (typeof value === "number") {
+          setValue(key, value);
+        }
+        if (typeof value === "string" && value.length > 0) {
+          setValue(key, value);
+        }
+        if (typeof value === "object" && value !== null) {
+          const keys = Object.keys(value);
+          const hasOnlyEmptyValues = keys.every((k) => value[k] === "");
+      
+          if (!hasOnlyEmptyValues) {
+            setValue(key, value);
+          }
+        }
+      });
+    }
+  }, [data]);
 
     const onSubmit = async (data: LgDetails) => {
 

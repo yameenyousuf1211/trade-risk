@@ -1,41 +1,50 @@
-import {
-  LCIssueance,
-  LcDiscounting,
-  UseDiscountingStore,
-  UseIssueanceStore,
-} from "@/types/lc";
-import { create } from "zustand";
+import { create } from 'zustand';
+import { LgDetails } from '@/types/lg';
 
-type StateValues = Omit<UseIssueanceStore, "setValues">;
+type UseIssueanceStore = {
+  data: LgDetails['data'];
+  setValues: (values: Partial<LgDetails['data']> | null) => void;
+};
 
 const useLcIssuance = create<UseIssueanceStore>((set, get) => ({
-  _id: "",
-  lgIssueAgainst: "",
-  standardSAMA: "",
-  issuingBank: {
-    bank: "",
-    country: "",
+
+  data: {
+    draft: false,
+    lgIssuance: '',
+    _id: '',
+    applicantDetails: undefined,
+    beneficiaryDetails: undefined,
+    lgDetailsType: 'Choose any other type of LGs',
+    bidBond: undefined,
+    advancePaymentBond: undefined,
+    performanceBond: undefined,
+    retentionMoneyBond: undefined,
+    otherBond: undefined,
+    issuingBank: undefined,
+    beneficiaryBanksDetails: undefined,
+    purpose: '',
+    remarks: '',
+    priceQuotes: '',
+    expectedPrice: undefined,
+    typeOfLg: 'Custom',
+    issueLgWithStandardText: false,
+    lgStandardText: '',
+    physicalLg: false,
+    physicalLgCountry: '',
+    physicalLgBank: '',
+    physicalLgSwiftCode: null,
+    type: '',
   },
-  amount: {
-    price: "",
-    margin: "",
-    amountPercentage: "",
-  },
-  period: {
-    startDate: "",
-    endDate: "",
-  },
-  instrument: "",
-  lgType: "",
-  productDescription: "",
-  chargesBehalfOf: "",
-  remarks: "",
-  priceType: "",
-  setValues: (values: Partial<LCIssueance | null>) =>
-    set((state) => ({ ...state, ...values })),
+  setValues: (values: Partial<LgDetails['data']> | null) =>
+    set((state) => ({
+      data: {
+        ...state.data,
+        ...(values ?? {}),
+      },
+    })),
 }));
 
-export const getStateValues = (state: UseIssueanceStore): StateValues => {
+export const getStateValues = (state: UseIssueanceStore): Omit<UseIssueanceStore, 'setValues'> => {
   const { setValues, ...stateValues } = state;
   return stateValues;
 };

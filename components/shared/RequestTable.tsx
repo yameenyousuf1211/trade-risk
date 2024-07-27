@@ -144,6 +144,9 @@ export const RequestTable = ({
     setTableData(sortedData);
   };
 
+
+  console.log(data);
+  
   return (
     <div>
       <div className="rounded-md border px-4 py-4 bg-white">
@@ -270,7 +273,7 @@ export const RequestTable = ({
                       data={
                         (item.exporterInfo &&
                           item.exporterInfo?.beneficiaryName) ||
-                          item?.lgDetails?.lgIssueFavorOf || 
+                          item?.beneficiaryDetails?.name || 
 
                         ""
                       }
@@ -279,29 +282,31 @@ export const RequestTable = ({
                       data={
                         (item.importerInfo &&
                           item.importerInfo?.applicantName) ||
-                          item?.lgDetails?.lgIssueBehalfOf || 
+                          item?.applicantDetails?.name || 
                         ""
                       }
                     />
                     <TableDataCell
                       data={
-                        item?.amount
-                          ? `${
-                              item?.currency
-                                ? item.currency.toUpperCase()
-                                : "USD"
-                            } ` +
-                            item?.amount?.price?.toLocaleString() +
-                            ".00"
-                          : `${
-                              item?.currency
-                                ? item.currency.toUpperCase()
-                                : "USD"
-                            } ` +
-                            (
-                              item as IRisk
-                            )?.riskParticipationTransaction?.amount?.toLocaleString() +
-                            ".00"
+                        item.type == "LG Issuance"
+                        ? item.otherBond?.cashMargin
+                        : item?.amount
+                        ? `${
+                            item?.currency
+                              ? item.currency.toUpperCase()
+                              : "USD"
+                          } ` +
+                          item?.amount?.price?.toLocaleString() +
+                          ".00"
+                        : `${
+                            item?.currency
+                              ? item.currency.toUpperCase()
+                              : "USD"
+                          } ` +
+                          (
+                            item as IRisk
+                          )?.riskParticipationTransaction?.amount?.toLocaleString() +
+                          ".00"
                       }
                     />
                     <TableCell className="px-1 py-1 max-w-[200px]">
@@ -369,7 +374,7 @@ export const RequestTable = ({
                       data={
                         (item.exporterInfo &&
                           item.exporterInfo?.beneficiaryName) ||
-                          item?.lgDetails?.lgIssueFavorOf || 
+                          item?.beneficiaryDetails?.name || 
 
                         ""
                       }
@@ -378,29 +383,32 @@ export const RequestTable = ({
                       data={
                         (item.importerInfo &&
                           item.importerInfo?.applicantName) ||
-                          item?.lgDetails?.lgIssueBehalfOf || 
+                          item?.applicantDetails?.crNumber || 
                         ""
                       }
                     />
                     <TableDataCell
                       data={
-                        item?.amount
-                          ? `${
-                              item?.currency
-                                ? item.currency.toUpperCase()
-                                : "USD"
-                            } ` +
-                            item?.amount?.price?.toLocaleString() +
-                            ".00"
-                          : `${
-                              item?.currency
-                                ? item.currency.toUpperCase()
-                                : "USD"
-                            } ` +
-                            (
-                              item as IRisk
-                            )?.riskParticipationTransaction?.amount?.toLocaleString() +
-                            ".00"
+                        
+                        item.type == "LG Issuance"
+                        ? "USD " + item.otherBond?.cashMargin
+                        : item?.amount
+                        ? `${
+                            item?.currency
+                              ? item.currency.toUpperCase()
+                              : "USD"
+                          } ` +
+                          item?.amount?.price?.toLocaleString() +
+                          ".00"
+                        : `${
+                            item?.currency
+                              ? item.currency.toUpperCase()
+                              : "USD"
+                          } ` +
+                          (
+                            item as IRisk
+                          )?.riskParticipationTransaction?.amount?.toLocaleString() +
+                          ".00"
                       }
                     />
 

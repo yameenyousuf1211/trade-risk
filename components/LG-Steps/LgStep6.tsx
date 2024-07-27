@@ -8,7 +8,7 @@ import { getBanks } from '@/services/apis/helpers.api';
 const LgStep6: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, setValue }) => {
 
     const issuingCountry = watch('beneficiaryDetails.country');
-    
+        const beneficiaryBank = watch('beneficiaryBanksDetails.bank');
     const { data: issuingBanks } = useQuery({
         queryKey: ["issuing-banks", issuingCountry],
         queryFn: () => getBanks(issuingCountry),
@@ -32,6 +32,7 @@ const LgStep6: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, s
             <p className='py-2 font-semibold text-[#1A1A26] font-poppins px-2'>Beneficiary Bank</p>
             <div className='flex items-center gap-3'>
                 <DDInput
+                value={beneficiaryBank}
                     placeholder="Select Bank"
                     label="Beneficiary Bank"
                     id="beneficiaryBanksDetails.bank"

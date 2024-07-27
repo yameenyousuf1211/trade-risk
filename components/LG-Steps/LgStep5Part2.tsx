@@ -48,6 +48,9 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({ register, watch, setStepComplet
     }
   }, [selectedFiles]);
 
+
+  console.log("DATA COMING FROM FUCKINGGG STORE",lgStandardText);
+  
   return (
     <div
       id="lg-step5"
@@ -87,7 +90,7 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({ register, watch, setStepComplet
                 setValue("lgStandardText", value);
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger  value={lgStandardText}>
                 <SelectValue placeholder="Select LG Type" />
               </SelectTrigger>
               <SelectContent>

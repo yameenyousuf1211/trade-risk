@@ -37,6 +37,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
 
             <div className='flex items-center gap-3 border border-[#E2E2EA] bg-[#F5F7F9] pt-2 px-2 rounded-lg pb-2'>
                 <DDInput
+                value={country}
                     placeholder="Select Country"
                     label="Country"
                     id="applicantDetails.country"
@@ -45,6 +46,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
                     flags={flags}
                 />
                 <DDInput
+                    value={company}
                     placeholder="Select"
                     label="Company"
                     id="applicantDetails.company"
@@ -57,6 +59,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
                 >
                     <p className="w-full text-sm text-lightGray">CR Number</p>
                     <Input
+                        value={crNumber}
                         onChange={(e)=>handleOnChange(e)}
                         register={register}
                         type="text"

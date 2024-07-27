@@ -21,6 +21,13 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
 
   const checkedValue = watch(`${name}.Contract`);
   const expectedDate = watch(`${name}.expectedDate`);
+  const lgExpiryDate = watch(`${name}.lgExpiryDate`);
+  const cashMargin = watch(`${name}.cashMargin`);
+  const valueInPercentage = watch(`${name}.valueInPercentage`);
+  const currencyType = watch(`${name}.currencyType`);
+  const lgTenorType = watch(`${name}.lgTenor.lgTenorType`);
+  const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
+
   const { data: currency } = useQuery({
     queryKey: ["currency"],
     queryFn: getCurrency,
@@ -88,6 +95,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       <TableCell>
         <Input
           disabled={!checkedValue}
+          value={cashMargin}
           inputMode='numeric'
           register={register}
           onChange={(e) => handleOnChange(e, `${name}.cashMargin`)}
@@ -108,6 +116,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <DatePicker
+          value={new Date(expectedDate)}
           setValue={setValue}
           disabled={!checkedValue}
           name={`${name}.expectedDate`}
@@ -122,6 +131,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <DatePicker
+        value={new Date(lgExpiryDate)}
           disabled={!checkedValue}
           setValue={setValue}
           name={`${name}.lgExpiryDate`}
@@ -143,10 +153,11 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
                 setValue(`${name}.lgTenor.lgTenorType`, value);
               }}
             >
-              <SelectTrigger className="bg-borderCol/80" defaultValue={'Months'}>
+              <SelectTrigger className="bg-borderCol/80" defaultValue={'Months'} value={lgTenorType}>
                 <SelectValue placeholder="Months" />
               </SelectTrigger>
               <SelectContent>
+                
                 {["Months", "Years", "Days"].map((time: string, idx: number) => (
                   <SelectItem key={`${time}-${idx}`} value={time}>
                     {time}
@@ -157,6 +168,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
             <Input
               disabled={!checkedValue}
               register={register}
+              value={lgTenorValue}
               name={`${name}.lgTenor.lgTenorValue`}
               onChange={(e) => handleOnChange(e, `${name}.lgTenor.lgTenorValue`)}
               placeholder='No.'

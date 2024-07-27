@@ -67,6 +67,7 @@ const LgStep3: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, d
                         flags={flags}
                     />
                     <DDInput
+                    value={bank}
                         placeholder="Select Bank"
                         label="Bank"
                         id="issuingBank.bank"
@@ -85,6 +86,7 @@ const LgStep3: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, d
                     >
                         <p className="w-full text-sm text-lightGray">Swift Code</p>
                         <Input
+                        value={swiftCode}
                             register={register}
                             name="issuingBank.swiftCode"
                             type="text"

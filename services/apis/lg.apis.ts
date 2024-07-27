@@ -9,3 +9,13 @@ export const createLg = async (data: any) => {
         return { success: false, response: error.response?.data?.message || "Something went wrong" };
     }
 }
+
+export const updateLg = async (data: any,id:string) => {
+    try {
+        const response = await api.put(`/lcs/lg/${id}`, data);
+        return { success: true, response: response.data };
+    } catch (error: any) {
+        console.log(error);
+        return { success: false, response: error.response?.data?.message || "Something went wrong" };
+    }
+}

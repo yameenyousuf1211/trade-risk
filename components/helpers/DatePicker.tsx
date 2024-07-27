@@ -17,7 +17,7 @@ export const DatePicker = ({
   maxDate,
   name,
   isLg,
-  disabled
+  disabled,
 }: {
   setValue: any;
   maxDate: Date | string | any;

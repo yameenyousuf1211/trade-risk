@@ -38,7 +38,7 @@ const LgStep4: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
                         placeholder="Select Country"
                         label="Beneficiary Country"
                         id="beneficiaryDetails.country"
-
+                        value={beneficiaryCountry}
                         data={data}
                         setValue={setValue}
                         flags={flags}
@@ -77,6 +77,7 @@ const LgStep4: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
                     >
                         <p className=" text-sm w-32 text-lightGray">Phone Number</p>
                         <PhoneInput
+                        value={beneficiaryPhoneNumber}
                             name='beneficiaryDetails.phoneNumber'
                             className=''
                             onChange={(value) => {

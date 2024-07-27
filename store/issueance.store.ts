@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { LgDetails } from '@/types/lg';
 
 type UseIssueanceStore = {
+  _id: UseIssueanceStore;
   data: LgDetails['data'];
   setValues: (values: Partial<LgDetails['data']> | null) => void;
 };
@@ -34,6 +35,10 @@ const useLcIssuance = create<UseIssueanceStore>((set, get) => ({
     physicalLgBank: '',
     physicalLgSwiftCode: null,
     type: '',
+    createdAt: '',
+    updatedAt: '',
+    __v: 0,
+    
   },
   setValues: (values: Partial<LgDetails['data']> | null) =>
     set((state) => ({

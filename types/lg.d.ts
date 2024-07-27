@@ -59,7 +59,12 @@ export interface BeneficiaryDetails {
 }
 
 export interface LgDetails {
+    draft: boolean;
     data:{
+        test: any;
+        createdAt: any;
+        updatedAt: any;
+        __v: any;
         _id?: string;
         lgIssuance?: string;
         applicantDetails?: ApplicantDetails;

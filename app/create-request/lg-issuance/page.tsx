@@ -17,7 +17,7 @@ import LgStep9 from "@/components/LG-Steps/LgStep9";
 import LgStep9Part2 from "@/components/LG-Steps/LgStep9Part2";
 import { Button } from "@/components/ui/button";
 import useCountries from "@/hooks/useCountries";
-import { createLg } from "@/services/apis/lg.apis";
+import { createLg, updateLg } from "@/services/apis/lg.apis";
 import useLcIssuance from "@/store/issueance.store";
 import useStepStore from "@/store/lcsteps.store";
 import { LgDetails } from "@/types/lg";
@@ -39,19 +39,20 @@ export default function LgIssuance() {
 
     const countryNames = bankCountries.map((country) => country.name);
     const countryFlags = bankCountries.map((country) => country.flag);
-    const  {data} = useLcIssuance();
+    const  storeData = useLcIssuance();
     const { countries, flags } = useCountries()
     const lgIssuance = watch("lgIssuance");
 
     useEffect(() => {
-    if (data && data?._id) {
-        console.log("Store Data",data);
-        
-      Object.entries(data).forEach(([key, value]: [string, any]) => {
+    if (storeData.data && storeData?.data?._id) {
+      Object.entries(storeData.data).forEach(([key, value]: [string, any]) => {
 
+        console.log(key,value);
+        
         if (typeof value === "number") {
           setValue(key, value);
         }
+
         if (typeof value === "string" && value.length > 0) {
           setValue(key, value);
         }
@@ -63,9 +64,48 @@ export default function LgIssuance() {
             setValue(key, value);
           }
         }
+        if(key === "expectedPrice"){
+            setValue("expectedPrice.expectedPrice", value);
+
+        }
+        if(key === "lgDetailsType"){
+            setValue(key, value);  
+        }
+        if(key == "issueLgWithStandardText"){
+            if(value === true){
+                setValue("issueLgWithStandardText", "true");
+            }
+            else{
+                setValue("issueLgWithStandardText", "false");
+            }
+        }
+        if(key == 'lgStandardText'){
+            setValue('lgStandardText', value);
+        }
+        if(key == "physicalLg"){
+            if(value === true){
+                setValue("physicalLg", "true");
+            }
+            else{
+                setValue("physicalLg", "false");
+            }
+        }
+        if(key == 'physicalLgCountry'){
+            setValue('physicalLgCountry', value);
+        }
+
+        if(key ==  'expectedPrice'){
+            if(value.expectedPrice === true){
+                setValue('expectedPrice.expectedPrice', "true");
+            }
+            else{
+                setValue('expectedPrice.expectedPrice', "false");
+            }
+            setValue('expectedPrice.pricePerAnnum', value.pricePerAnnum);
+        }
       });
     }
-  }, [data]);
+  }, [storeData.data]);
 
     const onSubmit = async (data: LgDetails) => {
 
@@ -85,13 +125,32 @@ export default function LgIssuance() {
 
         if (responseData.draft) {
             setLoader(true);
-            const { response, success } = await createLg(responseData);
-            if (!success) {
-                toast.error(response);
+            
+            if(storeData.data._id){
+                delete responseData._id;
+                delete responseData.createdAt;
+                delete responseData.updatedAt;
+                delete responseData.__v;
+
+
+               const { response, success } = await updateLg(responseData, storeData.data._id);
+                if (!success) {
+                     toast.error(response);
+                }
+                if (success) {
+                    toast.success("LG Issuance request updated successfully");
+                    console.log(response);
+                }
             }
-            if (success) {
-                toast.success("LG Issuance request submitted successfully");
-                console.log(response);
+            else{
+                const { response, success } = await createLg(responseData);
+                if (!success) {
+                    toast.error(response);
+                }
+                if (success) {
+                    toast.success("LG Issuance request updated successfully");
+                    console.log(response);
+                }
             }
             setLoader(false);
         } else {

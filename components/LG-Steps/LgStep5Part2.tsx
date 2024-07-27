@@ -8,13 +8,18 @@ import { FileCard } from "../LCSteps/Step7";
 const LgStep5Part2: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, setValue }) => {
 
   const issueLgWithStandardText = watch("issueLgWithStandardText");
+  const  lgStandardText = watch("lgStandardText");
+
   const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
 
   useEffect(() => {
-    if (selectedFiles && selectedFiles.length > 0) {
-      setStepCompleted(6, true);
+    if (issueLgWithStandardText === "true" && lgStandardText) {
+      setStepCompleted(4, true);
     }
-  }, [selectedFiles]);
+    if(issueLgWithStandardText === "false" && selectedFiles && selectedFiles.length > 0){
+      setStepCompleted(4, true);
+    }
+  }, [issueLgWithStandardText]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;

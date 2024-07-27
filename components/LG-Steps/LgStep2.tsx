@@ -14,7 +14,13 @@ const LgStep2: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
           setStepCompleted(1, true);
         }
       }, [country, company, crNumber]);
-  
+      
+      const handleOnChange = (event:any) => {
+        const value = event.target.value;
+        const filteredValue = value.replace(/[^0-9]/g, '');
+        setValue('applicantDetails.crNumber', parseInt(filteredValue));
+      }
+
     return (
         <div
             id="lg-step2"
@@ -28,6 +34,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
                     Applicant Details
                 </p>
             </div>
+
             <div className='flex items-center gap-3 border border-[#E2E2EA] bg-[#F5F7F9] pt-2 px-2 rounded-lg pb-2'>
                 <DDInput
                     placeholder="Select Country"
@@ -44,13 +51,13 @@ const LgStep2: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
                     data={['Company 1', 'Company 2', 'Company 3']}
                     setValue={setValue}
                 />
-
                 <label
                     id="applicantDetails.crNumber"
                     className="border p-1 px-3 rounded-md w-full flex items-center justify-between  bg-white"
                 >
                     <p className="w-full text-sm text-lightGray">CR Number</p>
                     <Input
+                        onChange={(e)=>handleOnChange(e)}
                         register={register}
                         type="text"
                         name='applicantDetails.crNumber'

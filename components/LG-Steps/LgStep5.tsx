@@ -12,7 +12,7 @@ const LgStep5: React.FC<LgStepsProps5> = ({ register, watch, setStepCompleted,se
 
   useEffect(() => {
     if (lgDetailsType && bidBond || advancePaymentBond || performanceBond || retentionMoneyBond) {
-      setStepCompleted(5, true);
+      setStepCompleted(4, true);
     }
   }, [lgDetailsType,bidBond,advancePaymentBond,performanceBond,retentionMoneyBond]);
   return (

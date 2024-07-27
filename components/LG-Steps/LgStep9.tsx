@@ -5,6 +5,13 @@ import  { LgStepsProps1 } from '@/types/lg'
 const LgStep9: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted,step }) => {
 
     const priceQuotes = watch("priceQuotes");
+    
+    useEffect(() => {
+        if (priceQuotes) {
+            setStepCompleted(step! || 7, true);
+        }
+    }, [priceQuotes]);
+
   return (
     <div
       id={`lg-step${step}`}

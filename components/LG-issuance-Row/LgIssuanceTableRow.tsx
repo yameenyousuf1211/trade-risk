@@ -20,7 +20,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
 }) => {
 
   const checkedValue = watch(`${name}.Contract`);
-
+  const expectedDate = watch(`${name}.expectedDate`);
   const { data: currency } = useQuery({
     queryKey: ["currency"],
     queryFn: getCurrency,
@@ -35,6 +35,14 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     ))
   ), [currency]);
   const lgDetails = watch("lgDetail");
+
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>, name: string) => {
+    const value = event.target.value;
+    const filteredValue = value.replace(/[^0-9]/g, '');
+    setValue(name, parseInt(filteredValue));
+}
+
+
   return (
     <TableRow className={`mt-5 ${checkedValue ? 'bg-white' : 'bg-[#F5F7F9]'}`} id={`${name}`} key={`${name + listValue!}`}>
       {lgDetails !== "Choose any other type of LGs" ?
@@ -69,7 +77,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
             setValue(`${name}.currencyType`, value);
           }}
         >
-          <SelectTrigger className="bg-borderCol/80">
+          <SelectTrigger className="bg-borderCol/80" defaultValue={'USD'}>
             <SelectValue placeholder="USD" />
           </SelectTrigger>
           <SelectContent>
@@ -82,6 +90,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           disabled={!checkedValue}
           inputMode='numeric'
           register={register}
+          onChange={(e) => handleOnChange(e, `${name}.cashMargin`)}
           name={`${name}.cashMargin`}
           type='number'
           placeholder='Amount'
@@ -92,6 +101,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           disabled={!checkedValue}
           register={register}
           name={`${name}.valueInPercentage`}
+          onChange={(e) => handleOnChange(e, `${name}.valueInPercentage`)}
           placeholder='%'
           className='placeholder:text-end'
         />
@@ -133,7 +143,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
                 setValue(`${name}.lgTenor.lgTenorType`, value);
               }}
             >
-              <SelectTrigger className="bg-borderCol/80">
+              <SelectTrigger className="bg-borderCol/80" defaultValue={'Months'}>
                 <SelectValue placeholder="Months" />
               </SelectTrigger>
               <SelectContent>
@@ -148,6 +158,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
               disabled={!checkedValue}
               register={register}
               name={`${name}.lgTenor.lgTenorValue`}
+              onChange={(e) => handleOnChange(e, `${name}.lgTenor.lgTenorValue`)}
               placeholder='No.'
             />
           </TableCell>

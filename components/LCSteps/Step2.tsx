@@ -160,7 +160,7 @@ export const Step2 = ({
         <p className="font-semibold text-sm">
           {rawValue && numberToText.convertToText(rawValue.toString())}
           {/* {amount} */}{" "}
-          <span className="text-primaryCol uppe rcase">
+          <span className="text-primaryCol uppercase">
             {currencyVal
               ? currencyVal === "USD"
                 ? "US Dollars"

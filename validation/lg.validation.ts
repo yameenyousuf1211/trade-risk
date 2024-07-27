@@ -1,115 +1,99 @@
 import { LgDetails } from '@/types/lg';
+import { LG } from '@/utils';
 import { z } from 'zod';
-
 const bondSchema = z.object({
-  Contract: z.boolean(),
-  currencyType: z.string(),
-  cashMargin: z.number(),
-  valueInPercentage: z.number().optional(),
-  expectedDate: z.date(),
-  lgExpiryDate: z.date(),
-  lgTenor: z.object({
-    lgTenorType: z.string().optional(),
-    lgTenorValue: z.number().optional(),
-  }).required(),
-  draft: z.string().optional(),
-});
+    Contract: z.boolean({ message: "Contract is required" }).default(false),
+    currencyType: z.string({ message: "Currency Type is required" }).min(1).default("USD"),
+    cashMargin: z.string({ invalid_type_error: "Cash Margin must be a String" }).optional(),
+    valueInPercentage: z.string({ invalid_type_error: "Cash Margin Percentage should be a number" }).optional(),
+    expectedDate: z.date({ message: "Expected Date is required" }).optional(),
+    lgExpiryDate: z.date({ message: "LG Expiry Date is required" }).optional(),
+    lgTenor: z.object({
+      lgTenorType: z.string({ message: "LG Tenor Type is required" }).min(1).default('Months'),
+      lgTenorValue: z.string({ message: "LG Tenor Value is required" }).optional(),
+    }).optional().nullable(),
+    draft: z.string().optional(),
+  }).superRefine((input, ctx) => {
+    if (input.Contract === true) {
+     
+    //   if (typeof input.expectedDate === 'undefined') {
+    //     ctx.addIssue({
+    //       path: ['expectedDate'],
+    //       message: "Expected Date is required",
+    //       code: 'custom',
+    //     });
+    //   }
+    //   if (typeof input.lgExpiryDate === 'undefined') {
+    //     ctx.addIssue({
+    //       path: ['lgExpiryDate'],
+    //       message: "LG Expiry Date is required",
+    //       code: 'custom',
+    //     });
+    //   }
+   
+    }
+  });
 
-
+// Define the main schema with all fields and refinements
 export const lgValidator = z.object({
-    type: z.string({message:"Type is required"}).min(1),
-    lgIssuance: z.string({
-        message: "LG issuance is required"
-    }).min(1),
+    type: z.string({ message: "Type is required" }).min(1),
+    lgIssuance: z.string({ message: "LG Issuance is required" }).min(1),
     applicantDetails: z.object({
-        country: z.string({
-            message: "Country is required"
-        }).min(1),
-        company: z.string({
-            message: "Company is required"
-        }).min(1),
-        crNumber: z.string({
-            message: "CR number is required"
-        }).min(1),
+        country: z.string().min(1),
+        company: z.string().min(1),
+        crNumber: z.string().min(1),
     }).required(),
-    issuingBank: z.object({
-        bank: z.string({
-            message: "Issuing Bank is required"
-        }).min(1),
-        country: z.string({
-            message: "Issuing Country is required"
-        }).min(1),
-        swiftCode: z.string({
-            message: "Swift code is required"
-        }).min(1),
-    }).required(),
-
     beneficiaryDetails: z.object({
-        country: z.string({
-            message: "Country is required"
-        }).min(1),
-        name: z.string({
-            message: "Name is required"
-        }).min(1),
+        name: z.string({message:"Neneficiary Name is Required"}).min(1,{message:"Beneficiary Name is Required"}),
+        country: z.string({message:"Neneficiary Country is Required"}).min(1,{message:"Beneficiary Country is Required"}),
         address: z.string().optional().nullable(),
-        phoneNumber: z.string().optional().nullable(),
+        phone: z.string().optional().nullable(),
     }).required(),
-
-    lgDetailsType: z.enum([
-        'Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)',
-        'Choose any other type of LGs'
-    ]),
+    lgDetailsType: z.string().optional().default('Choose any other type of LGs'),
     bidBond: bondSchema.optional(),
     advancePaymentBond: bondSchema.optional(),
     performanceBond: bondSchema.optional(),
     retentionMoneyBond: bondSchema.optional(),
     otherBond: bondSchema.optional(),
-    beneficiaryBanksDetails: z.object({
-        bank: z.string({
-            message: "Beneficiary Bank is required"
-        }).min(1),
-        swiftCode: z.string({
-            message: "Beneficiary Bank Swift code is required"
-        }).min(1),
-    }).optional(),
-    purpose: z.string().optional().nullable(),
-    remarks: z.string().optional().nullable(),
-    priceQuotes: z.string({
-        message: "Price Quotes is required"
-    }),
-    expectedPrice: z.object({
-        expectedPrice: z.boolean({
-            message: "Expected Price is required",
-            invalid_type_error: "Expected Price should be Boolean"
-        }),
-        pricePerAnnum: z.string().min(1),
+    issuingBank: z.object({
+        bank: z.string({ message: "Issuing Bank is required" }).min(1,{message:"Issuing Bank is required"}),
+        country: z.string({ message: "Issuing Bank Country is required" }).min(1,{message:"Issuing Bank Country is required"}),
+        swiftCode: z.string({ message: "Issuing Bank Swift Code is required" }).min(1,{message:"Issuing Bank Swift Code is required"}),
     }).required(),
-
-    typeOfLg: z.enum([
-        'Bid Bond', 'Advance Payment Bond', 'Performance Bond', 'Retention Money Bond',
-        'Payment LG', 'Zakat', 'Custom', 'SBLC', 'Other'
-    ]).optional(),
-
-    issueLgWithStandardText: z.boolean({
-        message: "Issue LG with Standard Text is required",
-        invalid_type_error: "Issue LG with Standard Text should be Boolean"
+    beneficiaryBanksDetails: z.object({
+        bank: z.string().optional(),
+        swiftCode: z.string().optional(),
     }).optional(),
-    lgStandardText: z.string({
-        message: "LG Standard Text is required",
-        invalid_type_error: "LG Standard Text should be String"
-    }).optional(),
+    purpose: z.string().nullable(),
+    remarks: z.string().nullable(),
+    priceQuotes: z.string({ message: "Price Quotes is required" }).min(1,{message:"Price Quotes is required"}),
+    expectedPrice: z.object({
+        expectedPrice: z.string().min(1),
+        pricePerAnnum: z.string().optional().nullable(),
+    }).required(),
+    typeOfLg: z.string().optional(),
+    issueLgWithStandardText: z.boolean().optional(),
+    lgStandardText: z.string().optional().nullable(),
     draft: z.boolean().optional(),
-    refId: z.number(),
-    physicalLg: z.boolean({
-        invalid_type_error: "Physical LG should be Boolean"
-    }).optional(),
-    physicalLgCountry: z.string({
-        message: "Physical LG Country is required",
-        invalid_type_error: "Physical LG Country should be String"
-    }).optional(),
-    physicalLgBank: z.string({
-        invalid_type_error: "Physical LG Bank should be String"
-    }).optional(),
-    physicalLgBankSwiftCode: z.string().optional(),
-    physicalLgSwiftCode: z.string().optional(),
+    physicalLg: z.boolean().optional().nullable().default(false),
+    physicalLgBank: z.string().optional().nullable(),
+    physicalLgCountry: z.string().optional().nullable(),
+    physicalLgSwiftCode: z.string().optional().nullable(),
+})
+.refine((input) => {
+    if (input.type === LG.reIssuanceInAnotherCountry) {
+        return input.beneficiaryBanksDetails !== undefined;
+    }
+    return true;
+}, {
+    message: "beneficiaryBanksDetails is required when type is reIssuanceInAnotherCountry",
+})
+.refine((input) => {
+    if (input.type === LG.cashMargin) {
+        return input.issueLgWithStandardText !== undefined;
+    }
+    return true;
+}, {
+    path: ['issueLgWithStandardText'],
+    message: "issueLgWithStandardText is required when type is cashMargin",
 });

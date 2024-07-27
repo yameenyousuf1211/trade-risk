@@ -8,7 +8,7 @@ import { getBanks } from '@/services/apis/helpers.api';
 const LgStep6: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, setValue }) => {
 
     const issuingCountry = watch('beneficiaryDetails.country');
-
+    
     const { data: issuingBanks } = useQuery({
         queryKey: ["issuing-banks", issuingCountry],
         queryFn: () => getBanks(issuingCountry),

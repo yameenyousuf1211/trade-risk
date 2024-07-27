@@ -3,10 +3,15 @@ import { BgRadioInput, DDInput } from "../LCSteps/helpers";
 import { useQuery } from "@tanstack/react-query";
 import { getBanks } from "@/services/apis/helpers.api";
 import { Input } from "../ui/input";
+import { use, useEffect } from "react";
 
 const LgStep9Part2: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, data, flags, setValue }) => {
 
     const physicalLg = watch("physicalLg");
+    const physicalLgCountry = watch("physicalLgCountry");
+    const physicalLgBank = watch("physicalLgBank");
+    const physicalLgSwiftCode = watch("physicalLgSwiftCode");
+
     const country = watch("beneficiaryDetails.country");
 
     const { data: issuingBanks } = useQuery({
@@ -15,6 +20,15 @@ const LgStep9Part2: React.FC<LgStepsProps2> = ({ register, watch, setStepComplet
         enabled: !!country,
     });
 
+    useEffect(() => {
+        if (physicalLg === "true" && physicalLgCountry) {
+            setStepCompleted(7, true);
+        }
+        if(physicalLg === "false" && physicalLgBank && physicalLgSwiftCode){
+            setStepCompleted(7, true);
+        }
+
+    }, [physicalLg,physicalLgCountry,physicalLgBank,physicalLgSwiftCode]);
     
     return (
         <div

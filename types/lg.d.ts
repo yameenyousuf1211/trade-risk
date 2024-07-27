@@ -82,9 +82,9 @@ export interface LgDetails {
         physicalLgCountry?: string;
         physicalLgBank?: string;
         physicalLgSwiftCode?: string | null;
+        type: string;
+        draft: boolean;
     }
-    type: string;
-    draft: boolean;
     }
 
 export interface Bond {

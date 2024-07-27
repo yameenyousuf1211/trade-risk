@@ -33,7 +33,8 @@ export default function LgIssuance() {
     const { register, setValue, reset, watch, handleSubmit } = useForm();
     const { setStepStatus, submit } = useStepStore();
     const [isLoading, setIsLoading] = useState(false);
-  
+    const [loader, setLoader] = useState(false);
+
 
     const countryNames = bankCountries.map((country) => country.name);
     const countryFlags = bankCountries.map((country) => country.flag);
@@ -43,8 +44,79 @@ export default function LgIssuance() {
 
     const onSubmit = async (data: LgDetails) => {
 
-        const validationCheck = lgValidator.safeParse(data);
-        console.log(validationCheck.error?.message);
+        data.data.type = "LG Issuance";
+        data.data.draft = data.draft!;
+        delete data.data.test
+
+        const responseData = data.data;
+       
+        
+        if (responseData.lgDetailsType == undefined) {
+            responseData.lgDetailsType = "Choose any other type of LGs";
+        }
+        responseData.issueLgWithStandardText = Boolean(responseData.issueLgWithStandardText);
+        responseData.draft = Boolean(responseData.draft);
+        responseData.physicalLg = Boolean(responseData.physicalLg);
+
+        if (responseData.draft) {
+            setLoader(true);
+            const { response, success } = await createLg(responseData);
+            if (!success) {
+                toast.error(response);
+            }
+            if (success) {
+                toast.success("LG Issuance request submitted successfully");
+                console.log(response);
+            }
+            setLoader(false);
+        } else {
+
+            if(responseData.lgIssuance !== LG.cashMargin){
+                delete responseData.typeOfLg
+                delete responseData.physicalLgSwiftCode
+
+                if(responseData.lgDetailsType === "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)"){
+                    delete responseData.otherBond
+                }
+                else{
+                    delete responseData.bidBond;
+                    delete responseData.advancePaymentBond;
+                    delete responseData.performanceBond;
+                    delete responseData.retentionMoneyBond;
+                }
+            }           
+
+            const validation = lgValidator.safeParse(responseData);
+
+            console.log(validation.error?.message);
+            
+
+            if (validation.success) {
+                if (responseData.lgIssuance === LG.cashMargin) {
+                    delete responseData.bidBond;
+                    delete responseData.advancePaymentBond;
+                    delete responseData.performanceBond;
+                    delete responseData.retentionMoneyBond;
+                }
+                const { response, success } = await createLg(responseData);
+                if (!success) {
+                    toast.error(response);
+                }
+                if (success) {
+                    toast.success("LG Issuance request submitted successfully");
+                    console.log(response);
+                }
+                setIsLoading(false);
+            } else {
+                if (validation.error) {
+                    validation.error.errors.forEach((error) => {
+                        return toast.error(`Validation Error: ${error.message}`);
+                    });
+                }
+            }
+        }
+        // console.log(data.data);
+
 
         //         if (lgIssuance == LG.cashMargin) {
         //             data.data.lgDetailsType = "Choose any other type of LGs"
@@ -116,9 +188,7 @@ export default function LgIssuance() {
         //               }
         //           }
 
-        //         console.log(data.data.lgIssuance);
-        //         setIsLoading(true);
-        //         const { response, success } = await createLg({data:data.data ,draft: data.draft,type: "LG Issuance"});
+
 
         //         if (!success) {
         //             toast.error(response)
@@ -132,7 +202,7 @@ export default function LgIssuance() {
 
     const handleStepCompletion = (index: number, status: boolean) => {
         setStepStatus(index, status);
-      };
+    };
 
     return (
         <CreateLCLayout isRisk={false} isLg={true}>
@@ -264,8 +334,8 @@ export default function LgIssuance() {
                         className="!bg-[#F1F1F5] w-1/3"
                     // disabled={loader}
                     >
-                        {/* {loader ? <Loader /> : "Save as draft"} */}
-                        Save as Draft
+                        {loader ? <Loader2 className="animate-spin" /> : "Save as draft"}
+
                     </Button>
                     <Button
                         type="button"

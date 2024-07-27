@@ -13,7 +13,7 @@ const LgStep4: React.FC<LgStepsProps2> = ({ register, watch, setStepCompleted, d
 
     useEffect(() => {
         if (beneficiaryCountry && beneficiaryName) {
-            setStepCompleted(3, true);
+            setStepCompleted(step && step-1 || 3, true);
         }
     }, [beneficiaryCountry, beneficiaryName, beneficiaryAddress, beneficiaryPhoneNumber]);
 

@@ -6,6 +6,12 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({ register, watch, setStepComple
 
     const typeOfLg = watch("typeOfLg");
 
+    useEffect(() => {
+        if (typeOfLg) {
+            setStepCompleted(3, true);
+        }
+    }, [typeOfLg]);
+
     return (
         <div
             id="lg-step4"

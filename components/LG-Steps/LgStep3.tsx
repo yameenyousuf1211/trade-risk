@@ -106,7 +106,7 @@ const LgStep3: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, d
                             placeholder="Select Country"
                             label="Issuing Bank Country"
                             value={issuingCountry}
-                            id={`issuingBank${bankId}.country`}
+                            id={`test`}
                             data={data}
                             setValue={setValue}
                             flags={flags}
@@ -114,19 +114,19 @@ const LgStep3: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, d
                         <DDInput
                             placeholder="Select Bank"
                             label="Bank"
-                            id={`issuingBank${bankId}.bank`}
+                            id={`test`}
                             setValue={setValue}
                             data={issuingBanks && issuingBanks.success && issuingBanks.response}
                             disabled={!issuingCountry || (issuingBanks && issuingBanks.success && !issuingBanks.response)}
                         />
                         <label
-                            id={`issuingBank${bankId}.swiftCode`}
+                            id={`test`}
                             className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
                         >
                             <p className="w-full text-sm text-lightGray">Swift Code</p>
                             <Input
                                 register={register}
-                                name={`issuingBank${bankId}.swiftCode`}
+                                name={`test`}
                                 type="text"
                                 className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                                 placeholder="Enter Code"

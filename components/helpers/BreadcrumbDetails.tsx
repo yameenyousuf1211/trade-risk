@@ -15,6 +15,10 @@ import { fetchLcs } from "@/services/apis/lcs.api";
 import useStepStore from "@/store/lcsteps.store";
 import { CheckIcon, XIcon } from "lucide-react";
 import Link from "next/link";
+
+import { LG } from "@/utils";
+import { useForm } from "react-hook-form";
+import useBreadCrumbsTypeStore from "@/store/breadCrumbsType.store";
 import { useEffect } from "react";
 
 const Separator = () => {
@@ -32,6 +36,7 @@ const Separator = () => {
 };
 
 export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
+
   const crumbs = [
     "Transaction as",
     "Amount",
@@ -55,6 +60,15 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
     "Price Quote",
   ];
 
+  const lgCrumbs2 = [
+    "Choose Type",
+    "Applicant Details",
+    "LG issuing Bank",
+    "LG Details",
+    "Beneficiary",
+    "Remarks",
+    "price Quote",
+  ]
   const { stepStatus, isSubmitted } = useStepStore();
 
   const { user } = useAuth();
@@ -64,9 +78,7 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
   const isConfirmationDiscounting = pathname === "/create-request/confirmation";
   const isLgIssuance = pathname === "/create-request/lg-issuance";
 
-  const scrollToForm = () => {
-    document?.querySelector('#step1')?.scroll({ behavior: 'smooth' });
-  };
+  const {watch} = useForm();
 
   const { data }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
@@ -92,8 +104,15 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
       }
     });
 
-  const breadcrumbItems = isLg ? lgCrumbs : crumbs;
+    const {value} = useBreadCrumbsTypeStore()
+    
+    const breadcrumbItems = isLg
+      ? value == LG.reIssuanceInAnotherCountry
+        ? lgCrumbs2
+        : lgCrumbs
+      : crumbs;
 
+    
   return (
     <div className="bg-bg sticky top-0 relative z-[2] flex items-center justify-between gap-x-2">
       <Breadcrumb>

@@ -1,25 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BgRadioInput } from '../LCSteps/helpers';
 import {  LgStepsProps10 } from '@/types/lg';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 
-const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step }) => {
+const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step,setStepCompleted }) => {
   const expectedPrice = watch("expectedPrice.expectedPrice");
   const pricingPerAnnum = watch("expectedPrice.pricePerAnnum");
 
   const handleIncrement = () => {
-    const currentValue = parseFloat(pricingPerAnnum) || 0;
+    const currentValue = parseInt(pricingPerAnnum) || 0;
     const newValue = (currentValue + 1).toFixed(2);
-    setValue('expectedPrice.pricePerAnnum', parseFloat(newValue) > 100 ? '100.00' : newValue);
+    setValue('expectedPrice.pricePerAnnum', parseInt(newValue) > 100 ? '100.00' : newValue);
   };
 
   const handleDecrement = () => {
-    const currentValue = parseFloat(pricingPerAnnum) || 0;
+    const currentValue = parseInt(pricingPerAnnum) || 0;
     const newValue = (currentValue - 1).toFixed(2);
-    setValue('expectedPrice.pricePerAnnum', parseFloat(newValue) < 0 ? '0.00' : newValue);
+    setValue('expectedPrice.pricePerAnnum', parseInt(newValue) < 0 ? '0.00' : newValue);
   };
 
+  
   return (
     <div id={`lg-step${step}`} className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -75,7 +76,7 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step }) 
                   parts[1] = parts[1].slice(0, 2);
                   newValue = parts.join(".");
                 }
-                if (parseFloat(newValue) > 100) {
+                if (parseInt(newValue) > 100) {
                   newValue = '100.00';
                 }
                 event.target.value = newValue;
@@ -83,8 +84,8 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step }) 
               }}
               onBlur={(event) => {
                 if (event.target.value.length === 0) return;
-                let value = parseFloat(event.target.value).toFixed(2);
-                if (parseFloat(value) > 100) {
+                let value = parseInt(event.target.value).toFixed(2);
+                if (parseInt(value) > 100) {
                   value = '100.00';
                 }
                 event.target.value = value;

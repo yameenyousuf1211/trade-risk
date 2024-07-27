@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react'
 import { BgRadioInput } from '../LCSteps/helpers'
 import  { LgStepsProps1 } from '@/types/lg'
+import useBreadCrumbsTypeStore from '@/store/breadCrumbsType.store';
 
 const LgStep1: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted }) => {
 
     const lgIssuance = watch("lgIssuance");
-    
+    const {setValue} = useBreadCrumbsTypeStore()
     useEffect(() => {
       setStepCompleted(0, lgIssuance);
+      setValue(lgIssuance)
     }, [lgIssuance]);
 
   return (

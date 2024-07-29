@@ -3,7 +3,7 @@ import { DDInput } from '../LCSteps/helpers';
 import { LgStepsProps1 } from '@/types/lg';
 import { Input } from '../ui/input';
 
-const LgStep7: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted }) => {
+const LgStep7: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted, }) => {
 
     return (
         <div
@@ -21,6 +21,11 @@ const LgStep7: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted })
             <div className='flex items-center gap-3 border border-[#E2E2EA] bg-[#F5F7F9] pt-2 px-2 rounded-lg pb-2 p-4'>
                     <textarea
                         {...register('purpose')}
+                        onChange={(e) => {
+                            if(e.target.value?.trim()){
+                                setStepCompleted(6, true)
+                            }else setStepCompleted(6, false)
+                        }}
                         placeholder="Add Purpose"
                         className='p-2 w-full  bg-none text-sm  border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 '
                         rows={2}

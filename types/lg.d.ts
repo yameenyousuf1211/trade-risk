@@ -5,6 +5,7 @@ export interface LgStepsProps1 {
   watch: UseFormWatch<any>;
   setStepCompleted: (index: number, status: boolean) => void;
   step?: number;
+  setValue?: UseFormSetValue<any>;
 }
 
 export interface LgStepsProps2 {
@@ -16,6 +17,7 @@ export interface LgStepsProps2 {
     watch: UseFormWatch<any>;
     name?:string
     step?:number
+    stepStatus?: boolean[] | null[]
 }
 
 export interface LgStepsProps3 {

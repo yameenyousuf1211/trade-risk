@@ -70,6 +70,7 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
     "price Quote",
   ]
   const { stepStatus, isSubmitted } = useStepStore();
+  console.log("🚀 ~ BreadcrumbDetails ~ stepStatus:", stepStatus)
 
   const { user } = useAuth();
   const pathname = usePathname();

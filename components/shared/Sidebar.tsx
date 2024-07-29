@@ -276,10 +276,11 @@ export const Sidebar = ({
     const headers = new Set();
     const extractHeaders = (obj: any, prefix = "") => {
       Object.entries(obj).forEach(([key, value]) => {
+        const headerKey = `${prefix}${key}`.replace(/\./g, " ");
         if (value && typeof value === "object") {
           extractHeaders(value, `${prefix}${key}.`);
         } else {
-          headers.add(`${prefix}${key}`);
+          headers.add(headerKey);
         }
       });
     };

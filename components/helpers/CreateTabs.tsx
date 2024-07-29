@@ -54,7 +54,7 @@ export const CreateTabs = () => {
       </div>
       <div className="relative py-3">
         <Link href="/create-request/lg-issuance" className="text-lightGray">
-          LC Issuance
+          LG Issuance
         </Link>
         {pathname === "/create-request/lg-issuance" && (
           <div className="absolute bottom-0 h-1 w-full bg-primaryCol" />

@@ -384,6 +384,7 @@ export default function LgIssuance() {
         {lgIssuance === LG.cashMargin && (
           <LgStep8
             step={9}
+            setValue={setValue}
             register={register}
             watch={watch}
             setStepCompleted={handleStepCompletion}
@@ -417,9 +418,11 @@ export default function LgIssuance() {
         <div className="flex items-center gap-x-4 w-full">
           <Button
             // onClick={handleSubmit(saveAsDraft)}
-            onClick={handleSubmit((data) =>
-              onSubmit({ data: data, draft: true, type: "LG Issuance" })
-            )}
+            onClick={handleSubmit((data) => {
+              console.log("🚀 ~ LgIssuance ~ data:", data)
+
+              onSubmit({ data: data, draft: true, type: "LG Issuance" });
+            })}
             type="button"
             variant="ghost"
             className="!bg-[#F1F1F5] w-1/3"

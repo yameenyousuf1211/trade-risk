@@ -17,6 +17,8 @@ import {
   UseFormWatch,
   UseFormSetValue,
 } from "react-hook-form";
+import useStepStore from "@/store/lcsteps.store";
+import { AMOUNT } from "@/utils/constant/lg";
 
 export const Step2 = ({
   register,
@@ -48,6 +50,7 @@ export const Step2 = ({
   );
   const [rawValue, setRawValue] = useState("");
   const [otherValue, setOtherValue] = useState("");
+  const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
     if (paymentTerms === "Sight LC") {
@@ -80,7 +83,6 @@ export const Step2 = ({
       ).toLocaleString()}.00`;
       setCurrencyValue(formattedValueWithCents);
     }
-    
   };
 
   // useEffect(() => {
@@ -104,8 +106,8 @@ export const Step2 = ({
 
   useEffect(() => {
     if (amount && paymentTerms) {
-      setStepCompleted(1, true);
-    }
+      addStep(AMOUNT);
+    } else removeStep(AMOUNT);
     // if (paymentTerms !== "Sight LC") setValue("extraInfo", undefined);
   }, [amount, paymentTerms]);
 

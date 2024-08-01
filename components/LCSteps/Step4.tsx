@@ -7,6 +7,8 @@ import {
   UseFormWatch,
   UseFormSetValue,
 } from "react-hook-form";
+import useStepStore from "@/store/lcsteps.store";
+import { IMPORTER_INFO } from "@/utils/constant/lg";
 
 export const Step4 = ({
   register,
@@ -27,11 +29,12 @@ export const Step4 = ({
   let isImporter = watch("participantRole") === "importer";
   let importerCountry = watch("importerInfo.countryOfImport");
   let applicantName = watch("importerInfo.applicantName");
+  const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
     if (importerCountry && applicantName) {
-      setStepCompleted(3, true);
-    }
+      addStep(IMPORTER_INFO);
+    } else removeStep(IMPORTER_INFO);
     isImporter && setValue("importerInfo.applicantName", user ? user.name : "");
   }, [importerCountry, applicantName, isImporter]);
 

@@ -21,7 +21,6 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   setStepCompleted,
   setValue,
   name,
-  stepStatus,
 }) => {
   const { data: currency } = useQuery({
     queryKey: ["currency"],

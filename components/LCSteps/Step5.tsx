@@ -9,6 +9,8 @@ import {
   UseFormWatch,
   UseFormSetValue,
 } from "react-hook-form";
+import useStepStore from "@/store/lcsteps.store";
+import { EXPORTER_INFO } from "@/utils/constant/lg";
 
 export const Step5 = ({
   register,
@@ -33,6 +35,7 @@ export const Step5 = ({
   let beneficiaryCountry = watch("exporterInfo.beneficiaryCountry");
   let beneficiaryBank = watch("exporterInfo.bank");
   let beneficiaryName = watch("exporterInfo.beneficiaryName");
+  const { addStep, removeStep } = useStepStore();
 
   const { data: exporterBanks } = useQuery({
     queryKey: ["exporter-banks", countryOfExport],
@@ -42,8 +45,8 @@ export const Step5 = ({
 
   useEffect(() => {
     if (countryOfExport && beneficiaryCountry && beneficiaryName) {
-      setStepCompleted(4, true);
-    }
+      addStep(EXPORTER_INFO);
+    } else removeStep(EXPORTER_INFO);
     isExporter &&
       setValue("exporterInfo.beneficiaryName", user ? user.name : "");
   }, [isExporter, countryOfExport, beneficiaryBank, beneficiaryCountry]);

@@ -10,6 +10,8 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
+import useStepStore from "@/store/lcsteps.store";
+import { LC_DETAILS } from "@/utils/constant/lg";
 
 export const Step3 = ({
   register,
@@ -31,6 +33,7 @@ export const Step3 = ({
   const [showAdvisingBank, setShowAdvisingBank] = useState(false);
   const [showConfirmingBank, setShowConfirmingBank] = useState(false);
   const [showConfirmingBank2, setShowConfirmingBank2] = useState(false);
+  const { addStep, removeStep } = useStepStore();
 
   let issuingCountry = watch("issuingBank.country");
   let issuingBank = watch("issuingBank.bank");
@@ -62,8 +65,8 @@ export const Step3 = ({
       shipmentPort &&
       transhipment
     ) {
-      setStepCompleted(2, true);
-    }
+      addStep(LC_DETAILS);
+    } else removeStep(LC_DETAILS);
     if (confirmingCountry) setShowConfirmingBank(true);
     if (advisingCountry) {
       setShowAdvisingBank(true);

@@ -17,7 +17,7 @@ const LgStep7: React.FC<LgStepsProps1> = ({
   useEffect(() => {
     if (purpose?.trim()) addStep(PHYSICAL_LG);
     else removeStep(PHYSICAL_LG);
-  }, []);
+  }, [purpose]);
 
   return (
     <div

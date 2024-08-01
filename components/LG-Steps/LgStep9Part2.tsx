@@ -26,16 +26,6 @@ const LgStep9Part2: React.FC<LgStepsProps2> = ({
     enabled: !!country,
   });
 
-  // useEffect(() => {
-  //     if (physicalLg === "true" && physicalLgCountry) {
-  //         setStepCompleted(7, true);
-  //     }
-  //     if(physicalLg === "false" && physicalLgBank && physicalLgSwiftCode){
-  //         setStepCompleted(7, true);
-  //     }
-
-  // }, [physicalLg,physicalLgCountry,physicalLgBank,physicalLgSwiftCode]);
-
   return (
     <div
       id="lg-step10"

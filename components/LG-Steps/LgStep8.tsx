@@ -9,13 +9,13 @@ const LgStep8: React.FC<LgStepsProps1> = ({
   setStepCompleted,
   setValue,
 }) => {
-    const purpose = watch(`purpose`);
+    const remarks = watch(`remarks`);
     const { addStep, removeStep } = useStepStore();
   
     useEffect(() => {
-      if (purpose?.trim()) addStep(REMARKS);
+      if (remarks?.trim()) addStep(REMARKS);
       else removeStep(REMARKS);
-    }, []);
+    }, [remarks]);
   return (
     <div
       id="lg-step7"

@@ -129,12 +129,13 @@ export const ProgressCharts = ({
         Pending: 0,
       };
 
-      data?.forEach((item: Count) => {
-        // @ts-ignore
-        if (isBank) statusCounts[item._id] = item.count;
-        // @ts-ignore
-        else statusCounts[item.status] = item.count;
-      });
+      if (data && Array.isArray(data))
+        data?.forEach((item: Count) => {
+          // @ts-ignore
+          if (isBank) statusCounts[item._id] = item.count;
+          // @ts-ignore
+          else statusCounts[item.status] = item.count;
+        });
 
       setAccepted(statusCounts.Accepted);
       setRejected(statusCounts.Rejected);
@@ -153,7 +154,9 @@ export const ProgressCharts = ({
 
   return (
     <div
-      className={`bg-[white] ${isBank ? 'w-full' : 'w-[95%]'} xl:w-[29vw] rounded-lg border border-borderCol py-4 px-3`}
+      className={`bg-[white] ${
+        isBank ? "w-full" : "w-[95%]"
+      } xl:w-[29vw] rounded-lg border border-borderCol py-4 px-3`}
     >
       <div className="flex items-center gap-x-2 justify-between mb-3 w-full">
         <div className="flex items-center gap-x-2">

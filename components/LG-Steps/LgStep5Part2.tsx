@@ -1,25 +1,40 @@
 import { LgStepsProps3 } from "@/types/lg";
 import { useEffect, useState } from "react";
 import { BgRadioInput } from "../LCSteps/helpers";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import Image from "next/image";
 import { FileCard } from "../LCSteps/Step7";
+import useStepStore from "@/store/lcsteps.store";
+import { STANDARD_TEXT } from "@/utils/constant/lg";
 
-const LgStep5Part2: React.FC<LgStepsProps3> = ({ register, watch, setStepCompleted, setValue }) => {
-
+const LgStep5Part2: React.FC<LgStepsProps3> = ({
+  register,
+  watch,
+  setStepCompleted,
+  setValue,
+}) => {
   const issueLgWithStandardText = watch("issueLgWithStandardText");
-  const  lgStandardText = watch("lgStandardText");
+  const lgStandardText = watch("lgStandardText");
 
   const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
+  const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
-    if (issueLgWithStandardText === "true" && lgStandardText) {
-      setStepCompleted(4, true);
+    if (issueLgWithStandardText === "true") {
+      if (lgStandardText) addStep(STANDARD_TEXT);
+      else removeStep(STANDARD_TEXT);
     }
-    if(issueLgWithStandardText === "false" && selectedFiles && selectedFiles.length > 0){
-      setStepCompleted(4, true);
+    if (issueLgWithStandardText === "false") {
+      if (selectedFiles && selectedFiles.length > 0) addStep(STANDARD_TEXT);
+      else removeStep(STANDARD_TEXT);
     }
-  }, [issueLgWithStandardText]);
+  }, [issueLgWithStandardText, lgStandardText, selectedFiles]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -48,9 +63,8 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({ register, watch, setStepComplet
     }
   }, [selectedFiles]);
 
+  console.log("DATA COMING FROM FUCKINGGG STORE", lgStandardText);
 
-  console.log("DATA COMING FROM FUCKINGGG STORE",lgStandardText);
-  
   return (
     <div
       id="lg-step5"
@@ -61,11 +75,12 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({ register, watch, setStepComplet
           5
         </p>
         <p className="font-semibold text-[16px] text-lightGray">
-          Would you want to issue LG with standard Text (like SAMA text in Saudi Arabia)?
+          Would you want to issue LG with standard Text (like SAMA text in Saudi
+          Arabia)?
         </p>
       </div>
-      <div className='flex flex-wrap items-center pt-2  rounded-lg'>
-        <div className='flex gap-3 items-center w-full'>
+      <div className="flex flex-wrap items-center pt-2  rounded-lg">
+        <div className="flex gap-3 items-center w-full">
           <BgRadioInput
             id="issueLgWithStandardText1"
             label="Yes"
@@ -83,14 +98,16 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({ register, watch, setStepComplet
             checked={issueLgWithStandardText === "No"}
           />
         </div>
-        <div className='flex  items-center w-full '>
-          {issueLgWithStandardText === "true" ? 
+        <div className="flex  items-center w-full ">
+          {issueLgWithStandardText === "true" ? (
             <Select
               onValueChange={(value) => {
+                console.log("🚀 ~ value:", value);
                 setValue("lgStandardText", value);
               }}
+              value={lgStandardText}
             >
-              <SelectTrigger  value={lgStandardText}>
+              <SelectTrigger value={lgStandardText}>
                 <SelectValue placeholder="Select LG Type" />
               </SelectTrigger>
               <SelectContent>
@@ -99,7 +116,7 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({ register, watch, setStepComplet
                 <SelectItem value="Custom">Custom</SelectItem>
               </SelectContent>
             </Select>
-            : 
+          ) : (
             <div
               id="step7"
               className="w-full   rounded-lg  h-full scroll-tar get"
@@ -125,7 +142,7 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({ register, watch, setStepComplet
                     />
                   </div>
                   <p className="text-lg font-semibold text-lightGray mt-4">
-                  Attach a LG draft here
+                    Attach a LG draft here
                   </p>
                   Drag your files here or click to select from your device
                 </label>
@@ -143,7 +160,7 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({ register, watch, setStepComplet
                 </div>
               )}
             </div>
-          }
+          )}
         </div>
       </div>
     </div>
@@ -151,4 +168,3 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({ register, watch, setStepComplet
 };
 
 export default LgStep5Part2;
-

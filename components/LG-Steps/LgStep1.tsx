@@ -1,16 +1,24 @@
-import React, { useEffect } from 'react'
-import { BgRadioInput } from '../LCSteps/helpers'
-import  { LgStepsProps1 } from '@/types/lg'
-import useBreadCrumbsTypeStore from '@/store/breadCrumbsType.store';
+import React, { useEffect } from "react";
+import { BgRadioInput } from "../LCSteps/helpers";
+import { LgStepsProps1 } from "@/types/lg";
+import useBreadCrumbsTypeStore from "@/store/breadCrumbsType.store";
+import useStepStore from "@/store/lcsteps.store";
+import { CHOOSE_TYPE } from "@/utils/constant/lg";
 
-const LgStep1: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted }) => {
+const LgStep1: React.FC<LgStepsProps1> = ({
+  register,
+  watch,
+  setStepCompleted,
+}) => {
+  const lgIssuance = watch("lgIssuance");
+  const { setValue } = useBreadCrumbsTypeStore();
+  const { addStep,removeStep } = useStepStore();
 
-    const lgIssuance = watch("lgIssuance");
-    const {setValue} = useBreadCrumbsTypeStore()
-    useEffect(() => {
-      setStepCompleted(0, lgIssuance);
-      setValue(lgIssuance)
-    }, [lgIssuance]);
+  useEffect(() => {
+    // setValue(lgIssuance);
+    if(lgIssuance) addStep(CHOOSE_TYPE);
+    else removeStep(CHOOSE_TYPE)
+  }, [lgIssuance]);
 
   return (
     <div
@@ -22,37 +30,37 @@ const LgStep1: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted })
           1
         </p>
         <p className="font-semibold text-[16px] text-lightGray">
-        Please choose one of the following
+          Please choose one of the following
         </p>
       </div>
-      <div className='flex gap-3 items-center border border-[#E2E2EA] bg-[#F5F7F9] pt-2 px-2 rounded-lg '>
-      <BgRadioInput
-        id="lgIssuance1"
-        label="LG 100% Cash Margin"
-        name="lgIssuance"
-        value="LG 100% Cash Margin"
-        register={register}
-        checked={lgIssuance === "LG 100% Cash Margin"}
-      />
-      <BgRadioInput
-        id="lgIssuance2"
-        label="LG Re-issuance in another country"
-        name="lgIssuance"
-        value="LG Re-issuance in another country"
-        register={register}
-        checked={lgIssuance === "LG Re-issuance in another country"}
-      />
-       <BgRadioInput
-        id="lgIssuance3"
-        label="LG Advising"
-        name="lgIssuance"
-        value="LG Advising"
-        register={register}
-        checked={lgIssuance === "LG Advising"}
-      />
+      <div className="flex gap-3 items-center border border-[#E2E2EA] bg-[#F5F7F9] pt-2 px-2 rounded-lg ">
+        <BgRadioInput
+          id="lgIssuance1"
+          label="LG 100% Cash Margin"
+          name="lgIssuance"
+          value="LG 100% Cash Margin"
+          register={register}
+          checked={lgIssuance === "LG 100% Cash Margin"}
+        />
+        <BgRadioInput
+          id="lgIssuance2"
+          label="LG Re-issuance in another country"
+          name="lgIssuance"
+          value="LG Re-issuance in another country"
+          register={register}
+          checked={lgIssuance === "LG Re-issuance in another country"}
+        />
+        <BgRadioInput
+          id="lgIssuance3"
+          label="LG Advising"
+          name="lgIssuance"
+          value="LG Advising"
+          register={register}
+          checked={lgIssuance === "LG Advising"}
+        />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LgStep1
+export default LgStep1;

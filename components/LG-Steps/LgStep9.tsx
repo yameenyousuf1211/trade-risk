@@ -1,16 +1,21 @@
-import React, { useEffect } from 'react'
-import { BgRadioInput } from '../LCSteps/helpers'
-import  { LgStepsProps1 } from '@/types/lg'
+import React, { useEffect } from "react";
+import { BgRadioInput } from "../LCSteps/helpers";
+import { LgStepsProps1 } from "@/types/lg";
+import useStepStore from "@/store/lcsteps.store";
+import { PRICE_QUOTE } from "@/utils/constant/lg";
 
-const LgStep9: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted,step }) => {
+const LgStep9: React.FC<LgStepsProps1> = ({
+  register,
+  watch,
+  setStepCompleted,
+  step,
+}) => {
+  const priceQuotes = watch("priceQuotes");
+  const { addStep, removeStep } = useStepStore();
 
-    const priceQuotes = watch("priceQuotes");
-    
-    useEffect(() => {
-        if (priceQuotes) {
-            setStepCompleted(step! || 7, true);
-        }
-    }, [priceQuotes]);
+  useEffect(() => {
+    if (priceQuotes) addStep(PRICE_QUOTE);
+  }, [priceQuotes]);
 
   return (
     <div
@@ -22,30 +27,29 @@ const LgStep9: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted,st
           {step}
         </p>
         <p className="font-semibold text-[16px] text-lightGray">
-        Would you require to receive the lowest Price or all Price quotes?
+          Would you require to receive the lowest Price or all Price quotes?
         </p>
       </div>
-      <div className='flex gap-3 items-center rounded-lg '>
-      <BgRadioInput
-        id="receivePrice1"
-        label="Lowest Price Quoted"
-        name="priceQuotes"
-        value="Lowest Price Quoted"
-        register={register}
-        checked={priceQuotes === "Lowest Price Quoted"}
-      />
-      <BgRadioInput
-        id="receivePrice2"
-        label="All Prices Quoted"
-        name="priceQuotes"
-        value="All Prices Quoted"
-        register={register}
-        checked={priceQuotes === "All Prices Quoted"}
-      />
-      
+      <div className="flex gap-3 items-center rounded-lg ">
+        <BgRadioInput
+          id="receivePrice1"
+          label="Lowest Price Quoted"
+          name="priceQuotes"
+          value="Lowest Price Quoted"
+          register={register}
+          checked={priceQuotes === "Lowest Price Quoted"}
+        />
+        <BgRadioInput
+          id="receivePrice2"
+          label="All Prices Quoted"
+          name="priceQuotes"
+          value="All Prices Quoted"
+          register={register}
+          checked={priceQuotes === "All Prices Quoted"}
+        />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LgStep9
+export default LgStep9;

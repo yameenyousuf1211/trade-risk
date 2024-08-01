@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { DDInput } from "../LCSteps/helpers";
 import { LgStepsProps2 } from "@/types/lg";
 import { Input } from "../ui/input";
+import useStepStore from "@/store/lcsteps.store";
+import { APPLICANT_DETAILS } from "@/utils/constant/lg";
 
 const LgStep2: React.FC<LgStepsProps2> = ({
   register,
@@ -14,12 +16,13 @@ const LgStep2: React.FC<LgStepsProps2> = ({
   const country = watch("applicantDetails.country");
   const company = watch("applicantDetails.company");
   const crNumber = watch("applicantDetails.crNumber");
+  const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
     if (country && company && crNumber) {
-      setStepCompleted(1, true);
+      addStep(APPLICANT_DETAILS);
     } else {
-      setStepCompleted(1, false);
+      removeStep(APPLICANT_DETAILS);
     }
   }, [country, company, crNumber]);
 

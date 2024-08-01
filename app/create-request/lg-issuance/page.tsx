@@ -334,6 +334,7 @@ export default function LgIssuance() {
             setStepCompleted={handleStepCompletion}
           />
         )}
+        {/* //here */}
         {lgIssuance === LG.cashMargin ? (
           <LgStep6Part2
             register={register}
@@ -363,6 +364,7 @@ export default function LgIssuance() {
         {lgIssuance === LG.reIssuanceInAnotherCountry && (
           <LgStep8
             register={register}
+            setValue={setValue}
             watch={watch}
             setStepCompleted={handleStepCompletion}
             step={8}

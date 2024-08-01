@@ -21,7 +21,7 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
 }) => {
 
     const bondTypes = useMemo(() => [
-        { name: 'bidBond', listValue: 'Big Bond' },
+        { name: 'bidBond', listValue: 'Bid Bond' },
         { name: 'advancePaymentBond', listValue: 'Advance Payment Bond' },
         { name: 'performanceBond', listValue: 'Retention Bond' },
         { name: 'retentionMoneyBond', listValue: 'Performance Bond' },

@@ -12,6 +12,8 @@ import { getCurrency } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import { DatePicker } from "../helpers";
 import { toast } from "sonner";
+import useStepStore from "@/store/lcsteps.store";
+import { LG_DETAILS } from "@/utils/constant/lg";
 
 const LgStep6Part2: React.FC<LgStepsProps2> = ({
   register,
@@ -44,41 +46,24 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
   const expectedDate = watch(`${name}.expectedDate`);
   const lgExpiryDate = watch(`${name}.lgExpiryDate`);
-
-  // console.log("🚀 ~ useEffect ~ lgExpiryDate:", lgExpiryDate)
-  // console.log("🚀 ~ useEffect ~ expectedDate:", expectedDate)
-  // console.log("🚀 ~ useEffect ~ lgTenorValue:", lgTenorValue)
-  // console.log("🚀 ~ useEffect ~ lgTenorType:", lgTenorType)
-  // console.log("🚀 ~ useEffect ~ cashMargin:", cashMargin)
-  // console.log("🚀 ~ useEffect ~ lgDetailAmount:", lgDetailAmount)
-  // console.log("🚀 ~ useEffect ~ lgDetailCurrency:", lgDetailCurrency)
+  const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
-    setValue(`${name}.lgDetailCurrency`, "USD");
-    setValue(`${name}.lgTenor.lgTenorType`, "Months");
+    if (!lgDetailCurrency) setValue(`${name}.lgDetailCurrency`, "USD");
+    if (!lgTenorType) setValue(`${name}.lgTenor.lgTenorType`, "Months");
   }, []);
 
   useEffect(() => {
-    setValue(`${name}.Contract`, true);
     if (
       lgDetailAmount &&
       cashMargin &&
       lgTenorValue &&
       expectedDate &&
-      lgExpiryDate &&
-      stepStatus &&
-      !stepStatus[5]
+      lgExpiryDate
     ) {
-      setStepCompleted(5, true);
-    }
-  }, [
-    lgDetailAmount,
-    cashMargin,
-    lgTenorValue,
-    expectedDate,
-    lgExpiryDate,
-    setStepCompleted,
-  ]);
+      addStep(LG_DETAILS);
+    } else removeStep(LG_DETAILS);
+  }, [lgDetailAmount, cashMargin, lgTenorValue, expectedDate, lgExpiryDate]);
 
   const handleOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,

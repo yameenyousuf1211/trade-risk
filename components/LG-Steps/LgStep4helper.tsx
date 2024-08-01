@@ -1,14 +1,17 @@
 import React, { useEffect } from 'react'
 import { BgRadioInput } from '../LCSteps/helpers'
 import { LgStepsProps1 } from '@/types/lg'
+import useStepStore from '@/store/lcsteps.store';
+import { TYPE_OF_LG } from '@/utils/constant/lg';
 
 const LgStep4Helper: React.FC<LgStepsProps1> = ({ register, watch, setStepCompleted }) => {
 
     const typeOfLg = watch("typeOfLg");
+    const { addStep, removeStep } = useStepStore();
 
     useEffect(() => {
         if (typeOfLg) {
-            setStepCompleted(3, true);
+            addStep(TYPE_OF_LG);
         }
     }, [typeOfLg]);
 

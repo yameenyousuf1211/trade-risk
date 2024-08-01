@@ -6,6 +6,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getBanks } from "@/services/apis/helpers.api";
 import { PlusCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import useStepStore from "@/store/lcsteps.store";
+import { LG_ISSUING_BANK } from "@/utils/constant/lg";
 
 const LgStep3: React.FC<LgStepsProps3> = ({
   register,
@@ -18,6 +20,7 @@ const LgStep3: React.FC<LgStepsProps3> = ({
   const issuingCountry = watch("issuingBank.country");
   const bank = watch("issuingBank.bank");
   const swiftCode = watch("issuingBank.swiftCode");
+  const { addStep, removeStep } = useStepStore();
 
   const [isStepCompleted, setIsStepCompleted] = useState(false);
   const [additionalBanks, setAdditionalBanks] = useState<number[]>([]);
@@ -30,9 +33,9 @@ const LgStep3: React.FC<LgStepsProps3> = ({
 
   useEffect(() => {
     if (issuingCountry && bank && swiftCode) {
-      setStepCompleted(2, true);
+      addStep(LG_ISSUING_BANK);
     } else {
-      setStepCompleted(2, false);
+      removeStep(LG_ISSUING_BANK);
     }
   }, [issuingCountry, swiftCode, bank]);
 

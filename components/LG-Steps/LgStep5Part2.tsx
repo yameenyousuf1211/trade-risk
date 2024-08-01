@@ -10,6 +10,8 @@ import {
 } from "../ui/select";
 import Image from "next/image";
 import { FileCard } from "../LCSteps/Step7";
+import useStepStore from "@/store/lcsteps.store";
+import { STANDARD_TEXT } from "@/utils/constant/lg";
 
 const LgStep5Part2: React.FC<LgStepsProps3> = ({
   register,
@@ -21,14 +23,16 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({
   const lgStandardText = watch("lgStandardText");
 
   const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
+  const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
-    if (issueLgWithStandardText === "true" && lgStandardText) {
-      setStepCompleted(4, true);
+    if (issueLgWithStandardText === "true") {
+      if (lgStandardText) addStep(STANDARD_TEXT);
+      else removeStep(STANDARD_TEXT);
     }
     if (issueLgWithStandardText === "false") {
-      if (selectedFiles && selectedFiles.length > 0) setStepCompleted(4, true);
-      else setStepCompleted(4, false);
+      if (selectedFiles && selectedFiles.length > 0) addStep(STANDARD_TEXT);
+      else removeStep(STANDARD_TEXT);
     }
   }, [issueLgWithStandardText, lgStandardText, selectedFiles]);
 

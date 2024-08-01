@@ -25,6 +25,7 @@ import { LG } from "@/utils";
 import { bankCountries } from "@/utils/data";
 import { lgValidator } from "@/validation/lg.validation";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -34,6 +35,7 @@ export default function LgIssuance() {
   const { setStepStatus, submit, stepStatus } = useStepStore();
   const [isLoading, setIsLoading] = useState(false);
   const [loader, setLoader] = useState(false);
+  const router = useRouter();
 
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
@@ -135,6 +137,7 @@ export default function LgIssuance() {
         if (success) {
           toast.success("LG Issuance request updated successfully");
           console.log(response);
+          router.push("/my-bids")
         }
       } else {
         const { response, success } = await createLg(responseData);
@@ -144,6 +147,7 @@ export default function LgIssuance() {
         if (success) {
           toast.success("LG Issuance request updated successfully");
           console.log(response);
+          router.push("/my-bids")
         }
       }
       setLoader(false);
@@ -183,6 +187,7 @@ export default function LgIssuance() {
         if (success) {
           toast.success("LG Issuance request submitted successfully");
           console.log(response);
+          router.push("/my-bids")
         }
         setIsLoading(false);
       } else {

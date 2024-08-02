@@ -38,6 +38,7 @@ const Input = <T extends FieldValues>({
 
   return (
     <input
+      value={value}
       {...rest}
       type={type}
       inputMode={inputMode}

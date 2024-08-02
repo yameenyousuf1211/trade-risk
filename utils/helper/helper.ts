@@ -235,3 +235,16 @@ export const formatPhoneNumber = (phoneNumber:string) => {
   return phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
 };
 
+
+/**
+ * Converts a comma-separated string of numbers into a single concatenated number.
+ * 
+ * @param {string} str - The comma-separated string of numbers.
+ * @returns {number} - The concatenated number.
+ */
+export function convertStringToNumber(str: string): number {
+  if(!str) return 0;
+  const cleanedStr = str.replace(/,/g, ''); // Remove the commas
+  const number = parseFloat(cleanedStr); // Convert to a floating-point number
+  return number;
+}

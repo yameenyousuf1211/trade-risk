@@ -21,7 +21,7 @@ import { createLg, updateLg } from "@/services/apis/lg.apis";
 import useLcIssuance from "@/store/issueance.store";
 import useStepStore from "@/store/lcsteps.store";
 import { LgDetails } from "@/types/lg";
-import { LG } from "@/utils";
+import { convertStringToNumber, LG } from "@/utils";
 import { bankCountries } from "@/utils/data";
 import { lgValidator } from "@/validation/lg.validation";
 import { Loader2 } from "lucide-react";
@@ -240,6 +240,7 @@ export default function LgIssuance() {
       delete responseData.performanceBond;
       delete responseData.retentionMoneyBond;
       responseData["lgDetailsType"] = "Choose any other type of LGs"
+      responseData.otherBond["lgDetailAmount"] = convertStringToNumber(responseData.otherBond["lgDetailAmount"])
     }
     console.log("🚀 ~ responseData:", responseData);
   };

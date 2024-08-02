@@ -25,14 +25,17 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
 
-
 type TableDataCellProps = {
   data?: string | number | Date | undefined;
   children?: React.ReactNode;
   className?: string;
 };
 
-export const TableDataCell: React.FC<TableDataCellProps> = ({ data, children, className }) => {
+export const TableDataCell: React.FC<TableDataCellProps> = ({
+  data,
+  children,
+  className,
+}) => {
   return (
     <TableCell className={`px-1 py-1 max-w-[180px] ${className}`}>
       <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-lightGray text-sm text-center">
@@ -54,6 +57,7 @@ export const RequestTable = ({
 }) => {
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [tableData, setTableData] = useState<ILcs[]>([]);
+  console.log("🚀 ~ tableData:", tableData);
 
   const { data: countriesData } = useQuery({
     queryKey: ["countries"],
@@ -144,9 +148,8 @@ export const RequestTable = ({
     setTableData(sortedData);
   };
 
-
   console.log(data);
-  
+
   return (
     <div>
       <div className="rounded-md border px-4 py-4 bg-white">
@@ -273,8 +276,7 @@ export const RequestTable = ({
                       data={
                         (item.exporterInfo &&
                           item.exporterInfo?.beneficiaryName) ||
-                          item?.beneficiaryDetails?.name || 
-
+                        item?.beneficiaryDetails?.name ||
                         ""
                       }
                     />
@@ -282,31 +284,31 @@ export const RequestTable = ({
                       data={
                         (item.importerInfo &&
                           item.importerInfo?.applicantName) ||
-                          item?.applicantDetails?.name || 
+                        item?.applicantDetails?.name ||
                         ""
                       }
                     />
                     <TableDataCell
                       data={
                         item.type == "LG Issuance"
-                        ? item.otherBond?.cashMargin
-                        : item?.amount
-                        ? `${
-                            item?.currency
-                              ? item.currency.toUpperCase()
-                              : "USD"
-                          } ` +
-                          item?.amount?.price?.toLocaleString() +
-                          ".00"
-                        : `${
-                            item?.currency
-                              ? item.currency.toUpperCase()
-                              : "USD"
-                          } ` +
-                          (
-                            item as IRisk
-                          )?.riskParticipationTransaction?.amount?.toLocaleString() +
-                          ".00"
+                          ? item.otherBond?.cashMargin
+                          : item?.amount
+                          ? `${
+                              item?.currency
+                                ? item.currency.toUpperCase()
+                                : "USD"
+                            } ` +
+                            item?.amount?.price?.toLocaleString() +
+                            ".00"
+                          : `${
+                              item?.currency
+                                ? item.currency.toUpperCase()
+                                : "USD"
+                            } ` +
+                            (
+                              item as IRisk
+                            )?.riskParticipationTransaction?.amount?.toLocaleString() +
+                            ".00"
                       }
                     />
                     <TableCell className="px-1 py-1 max-w-[200px]">
@@ -340,14 +342,16 @@ export const RequestTable = ({
                       data={
                         (item as ILcs)?.period
                           ? convertDateToString(item?.period?.startDate)
-                          : (item as IRisk)?.startDate &&
-                            convertDateToString((item as IRisk)?.startDate)
+                          : (item as IRisk)?.createdAt &&
+                            convertDateToString(new Date((item as IRisk)?.createdAt))
                       }
                     />
                     <TableDataCell
                       data={
                         (item as ILcs)?.period
                           ? convertDateToString(item?.period?.endDate)
+                          : (item as ILcs)?.otherBond?.lgExpiryDate
+                          ? convertDateToString(item?.otherBond?.lgExpiryDate)
                           : (item as IRisk)?.expiryDate &&
                             convertDateToString((item as IRisk)?.expiryDate)
                       }
@@ -374,8 +378,7 @@ export const RequestTable = ({
                       data={
                         (item.exporterInfo &&
                           item.exporterInfo?.beneficiaryName) ||
-                          item?.beneficiaryDetails?.name || 
-
+                        item?.beneficiaryDetails?.name ||
                         ""
                       }
                     />
@@ -383,32 +386,31 @@ export const RequestTable = ({
                       data={
                         (item.importerInfo &&
                           item.importerInfo?.applicantName) ||
-                          item?.applicantDetails?.crNumber || 
+                        item?.applicantDetails?.crNumber ||
                         ""
                       }
                     />
                     <TableDataCell
                       data={
-                        
                         item.type == "LG Issuance"
-                        ? "USD " + item.otherBond?.cashMargin
-                        : item?.amount
-                        ? `${
-                            item?.currency
-                              ? item.currency.toUpperCase()
-                              : "USD"
-                          } ` +
-                          item?.amount?.price?.toLocaleString() +
-                          ".00"
-                        : `${
-                            item?.currency
-                              ? item.currency.toUpperCase()
-                              : "USD"
-                          } ` +
-                          (
-                            item as IRisk
-                          )?.riskParticipationTransaction?.amount?.toLocaleString() +
-                          ".00"
+                          ? "USD " + item.otherBond?.cashMargin
+                          : item?.amount
+                          ? `${
+                              item?.currency
+                                ? item.currency.toUpperCase()
+                                : "USD"
+                            } ` +
+                            item?.amount?.price?.toLocaleString() +
+                            ".00"
+                          : `${
+                              item?.currency
+                                ? item.currency.toUpperCase()
+                                : "USD"
+                            } ` +
+                            (
+                              item as IRisk
+                            )?.riskParticipationTransaction?.amount?.toLocaleString() +
+                            ".00"
                       }
                     />
 

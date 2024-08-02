@@ -103,181 +103,132 @@ export default function LgIssuance() {
   }, [storeData.data]);
 
   const onSubmit = async (data: LgDetails) => {
-    data.data.type = "LG Issuance";
-    data.data.draft = data.draft!;
-    delete data.data.test;
+    // Prepare data for submission
+    const responseData = {
+      ...data.data,
+      type: "LG Issuance",
+      draft: Boolean(data.draft),
+      issueLgWithStandardText: Boolean(data.data.issueLgWithStandardText),
+      physicalLg: Boolean(data.data.physicalLg),
+    };
+    delete responseData.test;
 
-    const responseData = data.data;
-
-    if (responseData.lgDetailsType == undefined) {
+    // Set default value for lgDetailsType if not defined
+    if (responseData.lgDetailsType === undefined) {
       responseData.lgDetailsType = "Choose any other type of LGs";
     }
-    responseData.issueLgWithStandardText = Boolean(
-      responseData.issueLgWithStandardText
-    );
-    responseData.draft = Boolean(responseData.draft);
-    responseData.physicalLg = Boolean(responseData.physicalLg);
 
+    // Handle draft submissions
     if (responseData.draft) {
-      setLoader(true);
-
-      if (storeData.data._id) {
-        delete responseData._id;
-        delete responseData.createdAt;
-        delete responseData.updatedAt;
-        delete responseData.__v;
-
-        const { response, success } = await updateLg(
-          responseData,
-          storeData.data._id
-        );
-        if (!success) {
-          toast.error(response);
-        }
-        if (success) {
-          toast.success("LG Issuance request updated successfully");
-          console.log(response);
-          router.push("/my-bids")
-        }
-      } else {
-        const { response, success } = await createLg(responseData);
-        if (!success) {
-          toast.error(response);
-        }
-        if (success) {
-          toast.success("LG Issuance request updated successfully");
-          console.log(response);
-          router.push("/my-bids")
-        }
-      }
-      setLoader(false);
+      await handleDraftSubmission(responseData);
     } else {
-      if (responseData.lgIssuance !== LG.cashMargin) {
-        delete responseData.typeOfLg;
-        delete responseData.physicalLgSwiftCode;
+      await handleFinalSubmission(responseData);
+    }
+  };
 
-        if (
-          responseData.lgDetailsType ===
-          "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)"
-        ) {
-          delete responseData.otherBond;
-        } else {
-          delete responseData.bidBond;
-          delete responseData.advancePaymentBond;
-          delete responseData.performanceBond;
-          delete responseData.retentionMoneyBond;
-        }
-      }
+  // Function to handle draft submissions
+  const handleDraftSubmission = async (responseData: any) => {
+    setLoader(true);
 
-      const validation = lgValidator.safeParse(responseData);
+    if (storeData.data._id) {
+      // Update existing draft
+      removeUnnecessaryFields(responseData);
 
-      console.log(validation.error?.message);
+      const { response, success } = await updateLg(
+        responseData,
+        storeData.data._id
+      );
+      handleResponse(
+        success,
+        response,
+        "LG Issuance request updated successfully"
+      );
+    } else {
+      // Create new draft
+      const { response, success } = await createLg(responseData);
+      handleResponse(
+        success,
+        response,
+        "LG Issuance request created successfully"
+      );
+    }
 
-      if (validation.success) {
-        if (responseData.lgIssuance === LG.cashMargin) {
-          delete responseData.bidBond;
-          delete responseData.advancePaymentBond;
-          delete responseData.performanceBond;
-          delete responseData.retentionMoneyBond;
-        }
-        const { response, success } = await createLg(responseData);
-        if (!success) {
-          toast.error(response);
-        }
-        if (success) {
-          toast.success("LG Issuance request submitted successfully");
-          console.log(response);
-          router.push("/my-bids")
-        }
-        setIsLoading(false);
+    setLoader(false);
+  };
+
+  // Function to handle final submissions
+  const handleFinalSubmission = async (responseData: any) => {
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData:", responseData)
+    // setIsLoading(false);
+    // Remove unnecessary fields based on lgIssuance type
+    if (responseData.lgIssuance !== LG.cashMargin) {
+      delete responseData.typeOfLg;
+      delete responseData.physicalLgSwiftCode;
+
+      if (
+        responseData.lgDetailsType ===
+        "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)"
+      ) {
+        delete responseData.otherBond;
       } else {
-        if (validation.error) {
-          validation.error.errors.forEach((error) => {
-            return toast.error(`Validation Error: ${error.message}`);
-          });
-        }
+        delete responseData.bidBond;
+        delete responseData.advancePaymentBond;
+        delete responseData.performanceBond;
+        delete responseData.retentionMoneyBond;
       }
     }
-    // console.log(data.data);
 
-    //         if (lgIssuance == LG.cashMargin) {
-    //             data.data.lgDetailsType = "Choose any other type of LGs"
-    //             delete data.data.bidBond;
-    //             delete data.data.advancePaymentBond
-    //             delete data.data.performanceBond;
-    //             delete data.data.retentionMoneyBond;
-    //             delete data.data.beneficiaryBanksDetails
-    //             data.data.issueLgWithStandardText = Boolean(data.data.issueLgWithStandardText);
-    //             data.data.physicalLg = Boolean(data.data.physicalLg);
-    //             if(data.data.physicalLg === true){
-    //                 delete data.data.physicalLgSwiftCode;
-    //             }
-    //         }
+    const validation = lgValidator.safeParse(responseData);
+    if (validation.success) {
+      if (responseData.lgIssuance === LG.cashMargin) {
+        delete responseData.bidBond;
+        delete responseData.advancePaymentBond;
+        delete responseData.performanceBond;
+        delete responseData.retentionMoneyBond;
+      }
 
-    //         if(lgIssuance === LG.reIssuanceInAnotherCountry){
-    //             delete data.data.otherBond;
-    //             delete data.data.typeOfLg;
-    //             delete data.data.issueLgWithStandardText;
-    //             delete data.data.physicalLg
-    //             delete data.data.physicalLgBank
-    //             delete data.data.physicalLgCountry
-    //             delete data.data.physicalLgSwiftCode
-    //         }
-    // d
+      const { response, success } = await createLg(responseData);
+      handleResponse(
+        success,
+        response,
+        "LG Issuance request submitted successfully"
+      );
+      setIsLoading(false);
+    } else {
+      handleValidationErrors(validation.error);
+    }
+  };
 
-    //         if (
-    //             data.data.advancePaymentBond ||
-    //             data.data.bidBond ||
-    //             data.data.performanceBond ||
-    //             data.data.retentionMoneyBond
-    //           ) {
-    //             if (data.data.advancePaymentBond) {
-    //               data.data.advancePaymentBond.cashMargin =
-    //               data.data.advancePaymentBond.cashMargin !== undefined && data.data.advancePaymentBond.cashMargin.toString() !== ""
-    //                   ? Number(data.data.advancePaymentBond.cashMargin)
-    //                   : 0;
-    //             }
+  // Function to remove unnecessary fields for draft updates
+  const removeUnnecessaryFields = (responseData: any) => {
+    delete responseData._id;
+    delete responseData.createdAt;
+    delete responseData.updatedAt;
+    delete responseData.__v;
+  };
 
-    //             if (data.data.bidBond) {
-    //               data.data.bidBond.cashMargin =
-    //               data.data.bidBond.cashMargin !== undefined && data.data.bidBond.cashMargin.toString() !== ""
-    //                   ? Number(data.data.bidBond.cashMargin)
-    //                   : 0;
-    //             }
+  // Function to handle API responses
+  const handleResponse = (
+    success: boolean,
+    response: any,
+    successMessage: string
+  ) => {
+    if (success) {
+      toast.success(successMessage);
+      console.log(response);
+      router.push("/my-bids");
+    } else {
+      toast.error(response);
+    }
+  };
 
-    //             if (data.data.performanceBond) {
-    //               data.data.performanceBond.cashMargin =
-    //               data.data.performanceBond.cashMargin !== undefined && data.data.performanceBond.cashMargin.toString() !== ""
-    //               ? Number(data.data.performanceBond.cashMargin)
-    //                   : 0;
-    //             }
-
-    //             if (data.data.retentionMoneyBond) {
-    //               data.data.retentionMoneyBond.cashMargin =
-    //                 data.data.retentionMoneyBond.cashMargin !== undefined && data.data.retentionMoneyBond.cashMargin.toString() !== ""
-    //                   ? Number(data.data.retentionMoneyBond.cashMargin)
-    //                   : 0;
-    //             }
-    //           }
-
-    //           if(data.draft != true){
-    //             const validationResult = lgValidator.safeParse(data);
-    //             if (validationResult.error && validationResult.error.errors.length > 0) {
-    //                 validationResult.error.errors.forEach((error) => {
-    //                     console.log(error.message);
-    //                   toast.error(`Validation Error: ${error.message}`);
-    //                 });
-    //               }
-    //           }
-
-    //         if (!success) {
-    //             toast.error(response)
-    //         }
-    //         if(success){
-    //             toast.success("LG Issuance request submitted successfully")
-    //             console.log(response);
-    //         }
-    //         setIsLoading(false);
+  // Function to handle validation errors
+  const handleValidationErrors = (error: any) => {
+    if (error) {
+      error.errors.forEach((errorItem: any) => {
+        toast.error(`Validation Error: ${errorItem.message}`);
+      });
+    }
   };
 
   const handleStepCompletion = (index: number, status: boolean) => {
@@ -424,9 +375,9 @@ export default function LgIssuance() {
           <Button
             // onClick={handleSubmit(saveAsDraft)}
             onClick={handleSubmit((data) => {
-              console.log("🚀 ~ LgIssuance ~ data:", data)
+              console.log("🚀 ~ LgIssuance ~ data:", data);
 
-              onSubmit({ data: data, draft: true, type: "LG Issuance" });
+              // onSubmit({ data: data, draft: true, type: "LG Issuance" });
             })}
             type="button"
             variant="ghost"
@@ -441,9 +392,10 @@ export default function LgIssuance() {
             // disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
             // onClick={handleSubmit(onSubmit)}
-            onClick={handleSubmit((data) =>
-              onSubmit({ data: data, draft: false, type: "LG Issuance" })
-            )}
+            onClick={handleSubmit((data) => {
+              console.log("🚀 ~ LgIssuance ~ data:", data);
+              onSubmit({ data: data, draft: false, type: "LG Issuance" });
+            })}
           >
             {isLoading ? (
               <Loader2 className="animate-spin" />

@@ -88,7 +88,6 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
     PRICE_QUOTE,
   ];
   const { stepStatus, isSubmitted } = useStepStore();
-  console.log("🚀 ~ BreadcrumbDetails ~ stepStatus:", stepStatus);
 
   const stepCompleted = (step: string) => stepStatus?.find((e) => e === step) ? true: false;
 

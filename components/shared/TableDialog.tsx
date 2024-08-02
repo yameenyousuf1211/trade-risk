@@ -59,88 +59,87 @@ export const BidCard = ({
     }
   };
 
-  
   return (
     <div className="border border-borderCol py-5 px-3 rounded-lg">
-    <div className="grid grid-cols-2 gap-y-4">
-  <div className={data.status === "Expired" ? "opacity-50" : ""}>
-    <p className="text-sm text-para mb-1">Bid Number</p>
-    <p className="font-semibold text-lg">
-      {data._id?.slice(1, 6) || "12365"}
-    </p>
-  </div>
+      <div className="grid grid-cols-2 gap-y-4">
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          <p className="text-sm text-para mb-1">Bid Number</p>
+          <p className="font-semibold text-lg">
+            {data._id?.slice(1, 6) || "12365"}
+          </p>
+        </div>
 
-  <div className={data.status === "Expired" ? "opacity-50" : ""}>
-    <p className="capitalize text-lg font-semibold mb-1">
-      {data.userInfo?.name || ""}
-    </p>
-    <p className="capitalize text-sm text-para">
-      {data.userInfo?.country || ""}
-    </p>
-  </div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          <p className="capitalize text-lg font-semibold mb-1">
+            {data.userInfo?.name || ""}
+          </p>
+          <p className="capitalize text-sm text-para">
+            {data.userInfo?.country || ""}
+          </p>
+        </div>
 
-  <div className={data.status === "Expired" ? "opacity-50" : ""}>
-    <p className="text-sm text-para mb-1">Confirmation Rate</p>
-    <p className="text-lg font-semibold text-text">
-      {data.amount}% {data?.perAnnum ? "per annum" : "flat"}
-    </p>
-  </div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          <p className="text-sm text-para mb-1">Confirmation Rate</p>
+          <p className="text-lg font-semibold text-text">
+            {data.amount}% {data?.perAnnum ? "per annum" : "flat"}
+          </p>
+        </div>
 
-  {data?.discountMargin && (
-    <div className={data.status === "Expired" ? "opacity-50" : ""}>
-      <p className="text-sm text-para mb-1">Discount Spread</p>
-      <p className="text-lg font-semibold ">
-        {data.discountMargin
-          ? data.discountMargin + "%"
-          : "Not Applicable"}
-      </p>
-    </div>
-  )}
+        {data?.discountMargin && (
+          <div className={data.status === "Expired" ? "opacity-50" : ""}>
+            <p className="text-sm text-para mb-1">Discount Spread</p>
+            <p className="text-lg font-semibold ">
+              {data.discountMargin
+                ? data.discountMargin + "%"
+                : "Not Applicable"}
+            </p>
+          </div>
+        )}
 
-  <div className={data.status === "Expired" ? "opacity-50" : ""}>
-    <p className="text-sm text-para mb-1">Bid Recieved</p>
-    <p className="font-semibold text-lg">
-      {convertDateToYYYYMMDD(data.createdAt)}
-    </p>
-  </div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          <p className="text-sm text-para mb-1">Bid Recieved</p>
+          <p className="font-semibold text-lg">
+            {convertDateToYYYYMMDD(data.createdAt)}
+          </p>
+        </div>
 
-  <div className={data.status === "Expired" ? "opacity-50" : ""}>
-    <p className="text-sm text-para mb-1">Bid Expiry</p>
-    <p className="font-semibold text-lg">
-      {convertDateToYYYYMMDD(data.validity)}
-    </p>
-  </div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          <p className="text-sm text-para mb-1">Bid Expiry</p>
+          <p className="font-semibold text-lg">
+            {convertDateToYYYYMMDD(data.validity)}
+          </p>
+        </div>
 
-  <div className={data.status === "Expired" ? "opacity-50" : ""}>
-    {/* <p className="text-sm text-para mb-1">Minimum Charges</p>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          {/* <p className="text-sm text-para mb-1">Minimum Charges</p>
     <p className="text-lg font-semibold text-text">AED 30,000.00</p> */}
-  </div>
+        </div>
 
-  {data.status === "Pending" && !isBank && (
-    <>
-      <DialogClose id="close-button" className="hidden"></DialogClose>
-      <div className="col-span-2 flex gap-4 mt-2">
-        <Button
-          size="lg"
-          className="bg-[#29C084] hover:bg-[#29C084]/90 flex-1"
-          onClick={() => handleSubmit("Accepted", data._id)}
-          disabled={isPending}
-        >
-          Accept
-        </Button>
-        <Button
-          size="lg"
-          className="text-para flex-1"
-          variant="ghost"
-          onClick={() => handleSubmit("Rejected", data._id)}
-          disabled={isPending}
-        >
-          Reject
-        </Button>
+        {data.status === "Pending" && !isBank && (
+          <>
+            <DialogClose id="close-button" className="hidden"></DialogClose>
+            <div className="col-span-2 flex gap-4 mt-2">
+              <Button
+                size="lg"
+                className="bg-[#29C084] hover:bg-[#29C084]/90 flex-1"
+                onClick={() => handleSubmit("Accepted", data._id)}
+                disabled={isPending}
+              >
+                Accept
+              </Button>
+              <Button
+                size="lg"
+                className="text-para flex-1"
+                variant="ghost"
+                onClick={() => handleSubmit("Rejected", data._id)}
+                disabled={isPending}
+              >
+                Reject
+              </Button>
+            </div>
+          </>
+        )}
       </div>
-    </>
-  )}
-</div>
 
       {data.status !== "Pending" && (
         <Button
@@ -215,6 +214,7 @@ export const TableDialog = ({
     queryFn: () => fetchSingleLc(lcId),
   });
 
+  if (lcId === "66ac17756ccd3b3276478981") console.log("🚀 ~ lcData:", lcData);
   const { data: riskData } = useQuery({
     queryKey: [`single-risk`, lcId],
     queryFn: () => fetchSingleRisk(lcId),
@@ -231,13 +231,17 @@ export const TableDialog = ({
         className={`${
           isViewAll
             ? "font-roboto text-sm text-primaryCol font-light underline"
-            : `center border  rounded-md w-full px-1 py-2 ${buttonTitle === 'Accept' || buttonTitle === 'Reject' ? "bg-[#2F3031] text-white px-7" : null} `
+            : `center border  rounded-md w-full px-1 py-2 ${
+                buttonTitle === "Accept" || buttonTitle === "Reject"
+                  ? "bg-[#2F3031] text-white px-7"
+                  : null
+              } `
         }`}
       >
         {isViewAll ? (
           <p>View all</p>
         ) : buttonTitle ? (
-          <p > {buttonTitle}</p>
+          <p> {buttonTitle}</p>
         ) : (
           <Eye className="size-5" />
         )}
@@ -410,16 +414,22 @@ export const TableDialog = ({
                   <h2 className="text-2xl font-semibold mb-1">
                     <span className="text-para font-normal">LC Amount:</span>{" "}
                     USD{" "}
-                    {(lcData && lcData.amount?.price?.toLocaleString()) +
-                      ".00" || ""}
+                    {Number(
+                      lcData && lcData.amount
+                        ? lcData?.amount?.price
+                        : lcData?.otherBond
+                        ? lcData?.otherBond?.cashMargin
+                        : lcData?.bidBond?.cashMargin +
+                          lcData?.advancePaymentBond?.cashMargin +
+                          lcData?.performanceBond?.cashMargin +
+                          lcData?.retentionMoneyBond?.cashMargin
+                    ).toFixed(2)}
                   </h2>
                   <p className="font-roboto text-sm text-para">
                     Created at,{" "}
-                    {lcData &&
-                      convertDateAndTimeToString(lcData.createdAt)}
-                    , by{" "}
+                    {lcData && convertDateAndTimeToString(lcData.createdAt)}, by{" "}
                     <span className="text-text capitalize">
-                      {(lcData && lcData.exporterInfo?.beneficiaryName) || ""}
+                      {(lcData && lcData.exporterInfo?.beneficiaryName) || lcData?.createdBy?.name}
                     </span>
                   </p>
 
@@ -433,7 +443,7 @@ export const TableDialog = ({
                   />
                   <LCInfo
                     label="LC Applicant"
-                    value={(lcData && lcData.importerInfo?.applicantName) || ""}
+                    value={(lcData && lcData.importerInfo?lcData.importerInfo?.applicantName:lcData.applicantDetails?.company) || ""}
                   />
                   <LCInfo
                     label="Advising Bank"

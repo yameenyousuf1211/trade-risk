@@ -73,7 +73,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
     name: string
   ) => {
     const value = event.target.value;
-    const filteredValue = value.replace(/[^0-9]/g, "");
+    const filteredValue = value;
     setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
   };
 

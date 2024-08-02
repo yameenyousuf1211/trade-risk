@@ -40,6 +40,7 @@ export default function LgIssuance() {
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
   const storeData = useLcIssuance();
+  console.log("🚀 ~ LgIssuance ~ storeData:", storeData);
   const { countries, flags } = useCountries();
   const lgIssuance = watch("lgIssuance");
 
@@ -130,6 +131,8 @@ export default function LgIssuance() {
   const handleDraftSubmission = async (responseData: any) => {
     setLoader(true);
 
+    removeUnnecessaryFieldsForLgCreate(responseData);
+
     if (storeData.data._id) {
       // Update existing draft
       removeUnnecessaryFields(responseData);
@@ -158,34 +161,11 @@ export default function LgIssuance() {
 
   // Function to handle final submissions
   const handleFinalSubmission = async (responseData: any) => {
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData:", responseData)
-    // setIsLoading(false);
-    // Remove unnecessary fields based on lgIssuance type
-    if (responseData.lgIssuance !== LG.cashMargin) {
-      delete responseData.typeOfLg;
-      delete responseData.physicalLgSwiftCode;
-
-      if (
-        responseData.lgDetailsType ===
-        "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)"
-      ) {
-        delete responseData.otherBond;
-      } else {
-        delete responseData.bidBond;
-        delete responseData.advancePaymentBond;
-        delete responseData.performanceBond;
-        delete responseData.retentionMoneyBond;
-      }
-    }
+    removeUnnecessaryFieldsForLgCreate(responseData);
 
     const validation = lgValidator.safeParse(responseData);
+    console.log("🚀 ~ handleFinalSubmission ~ validation:", validation)
     if (validation.success) {
-      if (responseData.lgIssuance === LG.cashMargin) {
-        delete responseData.bidBond;
-        delete responseData.advancePaymentBond;
-        delete responseData.performanceBond;
-        delete responseData.retentionMoneyBond;
-      }
 
       const { response, success } = await createLg(responseData);
       handleResponse(
@@ -207,6 +187,63 @@ export default function LgIssuance() {
     delete responseData.__v;
   };
 
+  // Function to remove unnecessary fields for draft updates
+  const removeUnnecessaryFieldsForLgCreate = (responseData: any) => {
+    // Remove unnecessary fields based on lgIssuance type
+    if (responseData.lgIssuance !== LG.cashMargin) {
+      delete responseData.typeOfLg;
+      delete responseData.physicalLgSwiftCode;
+      delete responseData?.lgStandardText;
+
+      if (
+        responseData.lgDetailsType ===
+        "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)"
+      ) {
+        delete responseData.otherBond;
+        delete responseData?.status;
+        [
+          "bidBond",
+          "advancePaymentBond",
+          "performanceBond",
+          "retentionMoneyBond",
+        ].forEach((element) => {
+          delete responseData[element]?._id;
+
+          if (responseData[element]?.valueInPercentage)
+            responseData[element].valueInPercentage =
+              responseData[element].valueInPercentage?.toString();
+
+          if (responseData[element]?.lgTenor?.lgTenorValue)
+            responseData[element].lgTenor.lgTenorValue =
+              responseData[element].lgTenor.lgTenorValue?.toString();
+        });
+      } else {
+        delete responseData.bidBond;
+        delete responseData.advancePaymentBond;
+        delete responseData.performanceBond;
+        delete responseData.retentionMoneyBond;
+        delete responseData?.status;
+        delete responseData.otherBond?._id;
+        delete responseData?.otherBond?.lgDetailAmount;
+
+        if (responseData.otherBond?.valueInPercentage)
+          responseData.otherBond.valueInPercentage =
+            responseData.otherBond.valueInPercentage?.toString();
+
+        if (responseData.otherBond?.lgTenor?.lgTenorValue)
+          responseData.otherBond.lgTenor.lgTenorValue =
+            responseData.otherBond.lgTenor.lgTenorValue?.toString();
+      }
+    } else {
+      delete responseData.bidBond;
+      delete responseData.advancePaymentBond;
+      delete responseData.performanceBond;
+      delete responseData.retentionMoneyBond;
+      responseData["lgDetailsType"] = "Choose any other type of LGs"
+    }
+    console.log("🚀 ~ responseData:", responseData);
+  };
+
   // Function to handle API responses
   const handleResponse = (
     success: boolean,
@@ -214,6 +251,7 @@ export default function LgIssuance() {
     successMessage: string
   ) => {
     if (success) {
+      storeData?.removeValues();
       toast.success(successMessage);
       console.log(response);
       router.push("/my-bids");
@@ -375,9 +413,7 @@ export default function LgIssuance() {
           <Button
             // onClick={handleSubmit(saveAsDraft)}
             onClick={handleSubmit((data) => {
-              console.log("🚀 ~ LgIssuance ~ data:", data);
-
-              // onSubmit({ data: data, draft: true, type: "LG Issuance" });
+              onSubmit({ data: data, draft: true, type: "LG Issuance" });
             })}
             type="button"
             variant="ghost"
@@ -393,7 +429,6 @@ export default function LgIssuance() {
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
             // onClick={handleSubmit(onSubmit)}
             onClick={handleSubmit((data) => {
-              console.log("🚀 ~ LgIssuance ~ data:", data);
               onSubmit({ data: data, draft: false, type: "LG Issuance" });
             })}
           >

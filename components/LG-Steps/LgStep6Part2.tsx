@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { LgStepsProps2 } from "@/types/lg";
 import { Input } from "../ui/input";
 import {
@@ -22,6 +22,9 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   setValue,
   name,
 }) => {
+  const [number, setNumber] = useState('');
+
+
   const { data: currency } = useQuery({
     queryKey: ["currency"],
     queryFn: getCurrency,
@@ -46,6 +49,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   const expectedDate = watch(`${name}.expectedDate`);
   const lgExpiryDate = watch(`${name}.lgExpiryDate`);
   const { addStep, removeStep } = useStepStore();
+  
 
   useEffect(() => {
     if (!lgDetailCurrency) setValue(`${name}.lgDetailCurrency`, "USD");
@@ -72,6 +76,22 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
     const filteredValue = value.replace(/[^0-9]/g, "");
     setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
   };
+
+      // Function to format number with commas
+      const formatNumberWithCommas = (value: string) => {
+        const numberString = value.replace(/,/g, ''); // Remove existing commas
+        return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      };
+    
+      // Handler for input change
+      const handleChange = (event: any) => {
+        const { value } = event.target;
+        handleOnChange(event, `${name}.lgDetailAmount`)
+        if (!isNaN(value.replace(/,/g, ''))) { // Ensure the value is a valid number
+          const formattedNumber = formatNumberWithCommas(value);
+          setNumber(formattedNumber);
+        }
+      };
 
   return (
     <div
@@ -108,7 +128,8 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               register={register}
               name={`${name}.lgDetailAmount`}
               type="text"
-              onChange={(e) => handleOnChange(e, `${name}.lgDetailAmount`)}
+              value={number}
+              onChange={handleChange}
               className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               placeholder=""
             />

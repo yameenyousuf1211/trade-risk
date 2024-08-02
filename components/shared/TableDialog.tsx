@@ -443,7 +443,7 @@ export const TableDialog = ({
                   />
                   <LCInfo
                     label="LC Applicant"
-                    value={(lcData && lcData.importerInfo?lcData.importerInfo?.applicantName:lcData.applicantDetails?.company) || ""}
+                    value={(lcData && lcData.importerInfo?lcData.importerInfo?.applicantName:lcData?.applicantDetails?.company) || ""}
                   />
                   <LCInfo
                     label="Advising Bank"

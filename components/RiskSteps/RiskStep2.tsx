@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { BankRadioInput } from "./RiskHelpers";
 import { useQuery } from "@tanstack/react-query";
-import { getCurrenncy } from "@/services/apis/helpers.api";
+import { getCurrency } from "@/services/apis/helpers.api";
 import {
   Select,
   SelectContent,
@@ -21,7 +21,7 @@ interface Props {
 export const RiskStep2 = ({ register, watch, setValue }: Props) => {
   const { data: currency } = useQuery({
     queryKey: ["currency"],
-    queryFn: () => getCurrenncy(),
+    queryFn: () => getCurrency(),
   });
   const [currencyValue, setCurrencyValue] = useState<string | number>();
   const [rawValue, setRawValue] = useState("");

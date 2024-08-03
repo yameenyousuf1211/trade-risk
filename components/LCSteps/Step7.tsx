@@ -1,9 +1,11 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { X } from "lucide-react";
+import { FileCode, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatFileSize } from "@/utils";
 import { UseFormRegister } from "react-hook-form";
+import useStepStore from "@/store/lcsteps.store";
+import { ATTACHMENTS } from "@/utils/constant/lg";
 
 const FileCard = ({
   file,
@@ -50,11 +52,12 @@ export const Step7 = ({
   setStepCompleted: any;
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
+  const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
     if (selectedFiles && selectedFiles?.length > 0) {
-      setStepCompleted(6, true);
-    }
+      addStep(ATTACHMENTS);
+    } else removeStep(ATTACHMENTS);
   }, [selectedFiles]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,7 +100,9 @@ export const Step7 = ({
       </div>
 
       <p className="font-semibold ml-3 text-sm">
-        Add Documents: <span className="font-medium"> e.g Drafts / Invoice </span> (PDF,JPG,PNG,TIFF)
+        Add Documents:{" "}
+        <span className="font-medium"> e.g Drafts / Invoice </span>{" "}
+        (PDF,JPG,PNG,TIFF)
       </p>
       <div className="bg-[#F5F7F9] p-1 mt-2 rounded-md">
         <label
@@ -141,3 +146,5 @@ export const Step7 = ({
     </div>
   );
 };
+
+export { FileCard };

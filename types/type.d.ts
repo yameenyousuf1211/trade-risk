@@ -120,7 +120,7 @@ export interface IUser {
   accountCity?: string;
   businessType?: string;
   productInfo?: {
-    product: string;
+    products: [string];
     annualSalary: number;
     annualValueExports: number;
     annualValueImports: number;
@@ -392,3 +392,5 @@ interface IRole  {
 }
 
 type PermissionValues = Record<string, boolean>;
+
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}

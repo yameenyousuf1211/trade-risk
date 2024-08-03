@@ -1,5 +1,5 @@
 "use client";
-import { getCurrenncy } from "@/services/apis/helpers.api";
+import { getCurrency } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
@@ -92,7 +92,7 @@ export const IssuanceStep3 = ({ register, watch, setValue }: Props) => {
   const { amount } = watch();
   const { data: currency } = useQuery({
     queryKey: ["currency"],
-    queryFn: () => getCurrenncy(),
+    queryFn: () => getCurrency(),
   });
 
   const [pricePerAnnum, setPricePerAnnum] = useState("0");

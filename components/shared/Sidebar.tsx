@@ -99,12 +99,25 @@ const RequestCard = ({
   riskType?: string;
   data: ILcs | IRisk;
 }) => {
+  console.log("🚀 ~ data:", data);
   const { user } = useAuth();
   const pendingBids =
     data?.status !== "Expired"
       ? data.bids.filter((bid) => bid.status === "Pending")
       : [];
   const showData = !data.bids.some((bid) => bid.bidBy === user?._id);
+
+  const otherBond = data?.otherBond?.cashMargin ?? 0;
+  const bidBond = data?.bidBond?.cashMargin ?? 0;
+  const advancePaymentBond = data?.advancePaymentBond?.cashMargin ?? 0;
+  const performanceBond = data?.performanceBond?.cashMargin ?? 0;
+  const retentionMoneyBond = data?.retentionMoneyBond?.cashMargin ?? 0;
+  const total =
+    otherBond +
+    bidBond +
+    advancePaymentBond +
+    performanceBond +
+    retentionMoneyBond;
 
   return (
     <>
@@ -134,16 +147,22 @@ const RequestCard = ({
                 <p className="text-red-500 font-medium text-sm mb-2">
                   {(data as ILcs)?.period?.endDate
                     ? formatLeftDays((data as ILcs)?.period?.endDate)
-                    : formatLeftDays((data as IRisk)?.expiryDate)}{" "}
+                    : data?.expiryDate
+                    ? formatLeftDays((data as IRisk)?.expiryDate)
+                    : data?.otherBond?.lgExpiryDate
+                    ? formatLeftDays(new Date(data?.otherBond?.lgExpiryDate))
+                    : null}
                 </p>
                 <h3 className="font-poppins text-xl font-semibold uppercase">
                   {data.currency ?? "USD"}{" "}
                   {(data as ILcs)?.amount
                     ? (data as ILcs).amount?.price?.toLocaleString() + ".00"
-                    : (
+                    : (data as IRisk).riskParticipationTransaction?.amount
+                    ? (
                         data as IRisk
                       ).riskParticipationTransaction?.amount?.toLocaleString() +
-                      ".00"}
+                      ".00"
+                    : total?.toLocaleString() + ".00"}
                 </h3>
               </div>
 
@@ -179,7 +198,11 @@ const RequestCard = ({
                 <Dot />
                 {(data as ILcs)?.period?.endDate
                   ? formatLeftDays((data as ILcs)?.period?.endDate)
-                  : formatLeftDays((data as IRisk)?.expiryDate)}
+                  : data?.expiryDate
+                  ? formatLeftDays((data as IRisk)?.expiryDate)
+                  : data?.otherBond?.lgExpiryDate
+                  ? formatLeftDays(new Date(data?.otherBond?.lgExpiryDate))
+                  : null}
               </span>
             </p>
             <h3 className="text-xl font-semibold uppercase">
@@ -276,10 +299,11 @@ export const Sidebar = ({
     const headers = new Set();
     const extractHeaders = (obj: any, prefix = "") => {
       Object.entries(obj).forEach(([key, value]) => {
+        const headerKey = `${prefix}${key}`.replace(/\./g, " ");
         if (value && typeof value === "object") {
           extractHeaders(value, `${prefix}${key}.`);
         } else {
-          headers.add(`${prefix}${key}`);
+          headers.add(headerKey);
         }
       });
     };

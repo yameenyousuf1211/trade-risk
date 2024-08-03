@@ -25,3 +25,11 @@ export const permissionMapping: Record<string, string> = {
     manageUsers: "Manage Users",
     manageCompany: "Manage Company"
   };
+
+export  const values = ["Payment Guarantee", "Financial Guarantee to secure Credit Facilities", "Stand by letter of credit (SBLC)", "Stand by Letter of credit (SBLC) to secure credit facilities","Other Type of LG (Need to type)"];
+
+export const LG  = Object.freeze({
+  cashMargin: "LG 100% Cash Margin",
+  reIssuanceInAnotherCountry: "LG Re-issuance in another country",
+  advising: "LG Advising"
+})

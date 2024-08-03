@@ -1,3 +1,5 @@
+import { LgDetails } from "./lg";
+
 interface Bank {
   bank: string;
   country: string;
@@ -123,6 +125,6 @@ interface LCIssueance {
   instrument: string;
 }
 
-export type UseIssueanceStore = LCIssueance & {
-  setValues: (values: Partial<LCIssueance>) => void;
+export type UseIssueanceStore = LgDetails & {
+  setValues: (values: Partial<LgDetails>) => void;
 };

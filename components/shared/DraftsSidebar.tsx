@@ -62,9 +62,23 @@ const DraftCard = ({
       isConfirmation && setConfirmationValues(response);
       isDiscounting && setDiscountingValues(response);
       isConfirmationDiscounting && setConfirmationDiscountingValues(response);
+      console.log(response);
       isLCIssuance && setLCIssuance(response);
     } catch (error) {}
   };
+
+
+  const otherBond = draft?.otherBond?.cashMargin ?? 0;
+  const bidBond = draft?.bidBond?.cashMargin ?? 0;
+  const advancePaymentBond = draft?.advancePaymentBond?.cashMargin ?? 0;
+  const performanceBond = draft?.performanceBond?.cashMargin ?? 0;
+  const retentionMoneyBond = draft?.retentionMoneyBond?.cashMargin ?? 0;
+  const total =
+    otherBond +
+    bidBond +
+    advancePaymentBond +
+    performanceBond +
+    retentionMoneyBond;
 
   return (
     <div className={`${noBorder ? "" : "border-b border-borderCol"} pb-2 py-2`}>
@@ -87,7 +101,7 @@ const DraftCard = ({
       <div className="flex items-center w-full justify-between gap-x-1 mt-2">
         <p className="text-[16px] font-semibold uppercase">
           {draft.currency || "USD"}{" "}
-          {((draft?.amount && draft.amount?.price?.toLocaleString()) || "00") +
+          {((draft?.amount ? draft.amount?.price?.toLocaleString(): total?.toLocaleString()) || "00") +
             ".00"}
         </p>
         <Button
@@ -109,7 +123,7 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
   const isConfirmation = pathname === "/create-request";
   const isDiscounting = pathname === "/create-request/discount";
   const isConfirmationDiscounting = pathname === "/create-request/confirmation";
-  const isLCIssuance = pathname === "/create-request/issuance";
+  const isLCIssuance = pathname === "/create-request/lg-issuance";
 
   const {
     isLoading,
@@ -131,7 +145,8 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
         return draft.type === "LC Discounting";
       } else if (isConfirmationDiscounting) {
         return draft.type === "LC Confirmation & Discounting";
-      } else {
+      } 
+      else {
         return true;
       }
     });

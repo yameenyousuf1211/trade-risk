@@ -100,6 +100,7 @@ const CurrentBankingPage = () => {
     enabled: !!countryVal,
   });
 
+  
   const { data: citiesData } = useQuery({
     queryKey: ["cities", isoCode],
     queryFn: () => getCities(isoCode),

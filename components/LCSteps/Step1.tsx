@@ -2,6 +2,8 @@
 import { useEffect } from "react";
 import { BgRadioInput } from "./helpers";
 import { UseFormRegister, UseFormWatch } from "react-hook-form";
+import useStepStore from "@/store/lcsteps.store";
+import { TRANSACTION_AS } from "@/utils/constant/lg";
 
 export const Step1 = ({
   register,
@@ -13,8 +15,10 @@ export const Step1 = ({
   setStepCompleted: (index: number, status: boolean) => void;
 }) => {
   const participantRole = watch("participantRole");
+  const { addStep, removeStep } = useStepStore();
+
   useEffect(() => {
-    setStepCompleted(0, participantRole);
+    if (participantRole) addStep(TRANSACTION_AS);
   }, [participantRole]);
 
   return (

@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getCurrenncy } from "@/services/apis/helpers.api";
+import { getCurrency } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 const numberToText = require("number-to-text");
 require("number-to-text/converters/en-us");
@@ -17,6 +17,8 @@ import {
   UseFormWatch,
   UseFormSetValue,
 } from "react-hook-form";
+import useStepStore from "@/store/lcsteps.store";
+import { AMOUNT } from "@/utils/constant/lg";
 
 export const Step2 = ({
   register,
@@ -35,7 +37,7 @@ export const Step2 = ({
 }) => {
   const { data: currency } = useQuery({
     queryKey: ["currency"],
-    queryFn: () => getCurrenncy(),
+    queryFn: () => getCurrency(),
   });
 
   let amount = watch("amount");
@@ -48,6 +50,7 @@ export const Step2 = ({
   );
   const [rawValue, setRawValue] = useState("");
   const [otherValue, setOtherValue] = useState("");
+  const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
     if (paymentTerms === "Sight LC") {
@@ -80,7 +83,6 @@ export const Step2 = ({
       ).toLocaleString()}.00`;
       setCurrencyValue(formattedValueWithCents);
     }
-    
   };
 
   // useEffect(() => {
@@ -104,8 +106,8 @@ export const Step2 = ({
 
   useEffect(() => {
     if (amount && paymentTerms) {
-      setStepCompleted(1, true);
-    }
+      addStep(AMOUNT);
+    } else removeStep(AMOUNT);
     // if (paymentTerms !== "Sight LC") setValue("extraInfo", undefined);
   }, [amount, paymentTerms]);
 
@@ -160,7 +162,7 @@ export const Step2 = ({
         <p className="font-semibold text-sm">
           {rawValue && numberToText.convertToText(rawValue.toString())}
           {/* {amount} */}{" "}
-          <span className="text-primaryCol uppe rcase">
+          <span className="text-primaryCol uppercase">
             {currencyVal
               ? currencyVal === "USD"
                 ? "US Dollars"

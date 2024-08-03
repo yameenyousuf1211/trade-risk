@@ -240,7 +240,6 @@ const CompanyInfoPage = () => {
               )}
             </div>
           </div>
-
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
             <div className="w-full relative">
               <div className="relative w-full">

@@ -8,6 +8,8 @@ import {
   UseFormWatch,
   UseFormSetValue,
 } from "react-hook-form";
+import useStepStore from "@/store/lcsteps.store";
+import { CONFIRMATION_CHARGES } from "@/utils/constant/lg";
 
 export const Step6 = ({
   title,
@@ -24,6 +26,7 @@ export const Step6 = ({
   watch: UseFormWatch<any>;
   setStepCompleted?: any;
 }) => {
+  const { addStep, removeStep } = useStepStore();
   const behalfOf = watch(
     isDiscount ? "discountingInfo.behalfOf" : "confirmationInfo.behalfOf"
   );
@@ -52,8 +55,8 @@ export const Step6 = ({
 
   useEffect(() => {
     if (behalfOf && pricePerAnnum) {
-      setStepCompleted(5, true);
-    }
+      addStep(CONFIRMATION_CHARGES);
+    }else removeStep(CONFIRMATION_CHARGES);
   }, [behalfOf, pricePerAnnum, baseRate]);
 
   const handleIncrement = () => {

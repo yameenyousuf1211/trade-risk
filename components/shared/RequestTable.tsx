@@ -25,20 +25,25 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
 
-interface TableDataCellProps {
+type TableDataCellProps = {
   data?: string | number | Date | undefined;
-}
+  children?: React.ReactNode;
+  className?: string;
+};
 
-const TableDataCell = ({ data }: TableDataCellProps) => {
+export const TableDataCell: React.FC<TableDataCellProps> = ({
+  data,
+  children,
+  className,
+}) => {
   return (
-    <TableCell className="px-1 py-1 max-w-[180px]">
+    <TableCell className={`px-1 py-1 max-w-[180px] ${className}`}>
       <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-lightGray text-sm text-center">
-        {data !== undefined ? String(data) : "-"}
+        {children ? children : data !== undefined ? String(data) : "-"}
       </div>
     </TableCell>
   );
 };
-
 export const RequestTable = ({
   isBank,
   data,
@@ -52,6 +57,7 @@ export const RequestTable = ({
 }) => {
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [tableData, setTableData] = useState<ILcs[]>([]);
+  console.log("🚀 ~ tableData:", tableData);
 
   const { data: countriesData } = useQuery({
     queryKey: ["countries"],
@@ -141,6 +147,8 @@ export const RequestTable = ({
 
     setTableData(sortedData);
   };
+
+  console.log(data);
 
   return (
     <div>
@@ -236,14 +244,21 @@ export const RequestTable = ({
                       data={
                         item?.period?.startDate
                           ? convertDateToString(item?.period?.startDate)
-                          : convertDateToString((item as IRisk)?.startDate)
+                          : item?.startDate
+                          ? convertDateToString((item as IRisk)?.startDate)
+                          : (item as IRisk)?.createdAt &&
+                            convertDateToString(
+                              new Date((item as IRisk)?.createdAt)
+                            )
                       }
                     />
                     <TableDataCell
                       data={
                         item?.period?.endDate
                           ? convertDateToString(item?.period?.endDate)
-                          : convertDateToString((item as IRisk)?.expiryDate)
+                          : item?.expiryDate
+                          ? convertDateToString((item as IRisk)?.expiryDate)
+                          : convertDateToString(item?.otherBond?.lgExpiryDate)
                       }
                     />
                     <TableDataCell
@@ -268,22 +283,24 @@ export const RequestTable = ({
                       data={
                         (item.exporterInfo &&
                           item.exporterInfo?.beneficiaryName) ||
-                          item?.lgDetails?.lgIssueFavorOf || 
-
+                        item?.beneficiaryDetails?.name ||
                         ""
                       }
                     />
                     <TableDataCell
                       data={
-                        (item.importerInfo &&
+                        ((item.importerInfo &&
                           item.importerInfo?.applicantName) ||
-                          item?.lgDetails?.lgIssueBehalfOf || 
+                          item?.applicantDetails?.name ||
+                          item?.applicantDetails?.company) ??
                         ""
                       }
                     />
                     <TableDataCell
                       data={
-                        item?.amount
+                        item.type == "LG Issuance"
+                          ? item.otherBond?.cashMargin
+                          : item?.amount
                           ? `${
                               item?.currency
                                 ? item.currency.toUpperCase()
@@ -333,14 +350,18 @@ export const RequestTable = ({
                       data={
                         (item as ILcs)?.period
                           ? convertDateToString(item?.period?.startDate)
-                          : (item as IRisk)?.startDate &&
-                            convertDateToString((item as IRisk)?.startDate)
+                          : (item as IRisk)?.createdAt &&
+                            convertDateToString(
+                              new Date((item as IRisk)?.createdAt)
+                            )
                       }
                     />
                     <TableDataCell
                       data={
                         (item as ILcs)?.period
                           ? convertDateToString(item?.period?.endDate)
+                          : (item as ILcs)?.otherBond?.lgExpiryDate
+                          ? convertDateToString(item?.otherBond?.lgExpiryDate)
                           : (item as IRisk)?.expiryDate &&
                             convertDateToString((item as IRisk)?.expiryDate)
                       }
@@ -367,8 +388,7 @@ export const RequestTable = ({
                       data={
                         (item.exporterInfo &&
                           item.exporterInfo?.beneficiaryName) ||
-                          item?.lgDetails?.lgIssueFavorOf || 
-
+                        item?.beneficiaryDetails?.name ||
                         ""
                       }
                     />
@@ -376,13 +396,15 @@ export const RequestTable = ({
                       data={
                         (item.importerInfo &&
                           item.importerInfo?.applicantName) ||
-                          item?.lgDetails?.lgIssueBehalfOf || 
+                        item?.applicantDetails?.crNumber ||
                         ""
                       }
                     />
                     <TableDataCell
                       data={
-                        item?.amount
+                        item.type == "LG Issuance"
+                          ? "USD " + item.otherBond?.cashMargin
+                          : item?.amount
                           ? `${
                               item?.currency
                                 ? item.currency.toUpperCase()

@@ -8,9 +8,11 @@ import Link from "next/link";
 export default function AuthLayout({
   children,
   isRisk,
+  isLg = false,
 }: Readonly<{
   children: React.ReactNode;
   isRisk: boolean;
+  isLg?: boolean;
 }>) {
   return (
     <>
@@ -40,7 +42,7 @@ export default function AuthLayout({
             {!isRisk && (
               <>
                 <CreateTabs />
-                <BreadcrumbDetails />
+                <BreadcrumbDetails isLg={isLg} />
               </>
             )}
             {children}

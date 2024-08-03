@@ -1,5 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
-import { differenceInDays, endOfYear, format } from "date-fns";
+import { differenceInDays, differenceInHours, differenceInMinutes, differenceInMonths, endOfYear, format } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -117,34 +117,86 @@ export const convertDateToCommaString = (date: any) => {
   return `${month} ${day}, ${year}`;
 };
 
+// export const convertDateAndTimeToString = (date: any) => {
+//   const jsDate = new Date(date);
+
+//   const year = jsDate.getFullYear();
+
+//   const monthNames = [
+//     "Jan",
+//     "Feb",
+//     "Mar",
+//     "Apr",
+//     "May",
+//     "Jun",
+//     "Jul",
+//     "Aug",
+//     "Sep",
+//     "Oct",
+//     "Nov",
+//     "Dec",
+//   ];
+
+//   const month = monthNames[jsDate.getMonth()];
+//   const day = String(jsDate.getDate()).padStart(2, "0");
+//   const hours = String(jsDate.getHours()).padStart(2, "0");
+//   const minutes = String(jsDate.getMinutes()).padStart(2, "0");
+//   const seconds = String(jsDate.getSeconds()).padStart(2, "0");
+
+//   console.log(`${month} ${day} ${year} ${hours}:${minutes}:${seconds}`);
+//   return `${month} ${day} ${year} ${hours}:${minutes}:${seconds}`;
+// };
 export const convertDateAndTimeToString = (date: any) => {
+  // Convert the date to a JavaScript Date object
   const jsDate = new Date(date);
+
+  // Ensure the date is valid
+  if (isNaN(jsDate.getTime())) {
+    console.error("Invalid date:", date);
+    return null;
+  }
 
   const year = jsDate.getFullYear();
 
   const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
 
   const month = monthNames[jsDate.getMonth()];
   const day = String(jsDate.getDate()).padStart(2, "0");
   const hours = String(jsDate.getHours()).padStart(2, "0");
   const minutes = String(jsDate.getMinutes()).padStart(2, "0");
+  const seconds = String(jsDate.getSeconds()).padStart(2, "0");
 
-  return `${month} ${day} ${year} ${hours}:${minutes}`;
+  const formattedDate = `${month} ${day} ${year} ${hours}:${minutes}:${seconds}`;
+  console.log(formattedDate);
+  return formattedDate;
 };
+export const findTime = (date:Date) =>{
+  
+  const now = new Date();
+  console.log(date);
+  
+  const messageDate = new Date(date);
 
+  const minutesDifference = differenceInMinutes(now, messageDate);
+  const hoursDifference = differenceInHours(now, messageDate);
+  const daysDifference = differenceInDays(now, messageDate);
+  const monthsDifference = differenceInMonths(now, messageDate);
+
+  if (minutesDifference < 1) {
+    return 'now';
+  } else if (minutesDifference < 60) {
+    return `${minutesDifference}m ago`;
+  } else if (hoursDifference < 24) {
+    return `${hoursDifference}h ago`;
+  } else if (daysDifference < 30) {
+    return `${daysDifference}d ago`;
+  } else {
+    return `${monthsDifference}mo ago`;
+  }
+}
 export const compareValues = (
   a: any,
   b: any,
@@ -183,3 +235,17 @@ export const formatPhoneNumber = (phoneNumber:string) => {
   return phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
 };
 
+
+/**
+ * Converts a comma-separated string of numbers into a single concatenated number.
+ * 
+ * @param {string} str - The comma-separated string of numbers.
+ * @returns {number} - The concatenated number.
+ */
+export function convertStringToNumber(str: string): number {
+  if(!str) return 0;
+  str = str?.toString()
+  const cleanedStr = str.replace(/,/g, ''); // Remove the commas
+  const number = parseFloat(cleanedStr); // Convert to a floating-point number
+  return number;
+}

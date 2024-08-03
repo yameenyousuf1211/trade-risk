@@ -165,7 +165,7 @@ const LgStep3: React.FC<LgStepsProps3> = ({
           </div>
         </div>
       ))}
-
+{/* 
       {additionalBanks.length < 2 && (
         <div className="border border-dashed border-spacing-7 rounded-lg border-[#E2E2EA] flex items-center justify-center mt-4 p-12">
           <div
@@ -176,7 +176,7 @@ const LgStep3: React.FC<LgStepsProps3> = ({
             <p className="font-semibold font-poppins">Add other Bank</p>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

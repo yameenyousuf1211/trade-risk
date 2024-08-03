@@ -224,7 +224,7 @@ export default function LgIssuance() {
         delete responseData.retentionMoneyBond;
         delete responseData?.status;
         delete responseData.otherBond?._id;
-        delete responseData?.otherBond?.lgDetailAmount;
+        delete responseData?.otherBond?.checked;
 
         if (responseData.otherBond?.valueInPercentage)
           responseData.otherBond.valueInPercentage =
@@ -242,6 +242,7 @@ export default function LgIssuance() {
       responseData["lgDetailsType"] = "Choose any other type of LGs"
       responseData.otherBond["lgDetailAmount"] = convertStringToNumber(responseData.otherBond["lgDetailAmount"])
     }
+    if(!responseData?.expectedPrice?.expectedPrice || responseData?.expectedPrice?.expectedPrice === "false") delete responseData?.expectedPrice?.pricePerAnnum;
     console.log("🚀 ~ responseData:", responseData);
   };
 

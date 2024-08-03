@@ -13,9 +13,10 @@ const LgStep1: React.FC<LgStepsProps1> = ({
   const lgIssuance = watch("lgIssuance");
   const { setValue } = useBreadCrumbsTypeStore();
   const { addStep,removeStep } = useStepStore();
+  
 
   useEffect(() => {
-    // setValue(lgIssuance);
+    if(lgIssuance)setValue(lgIssuance);
     if(lgIssuance) addStep(CHOOSE_TYPE);
     else removeStep(CHOOSE_TYPE)
   }, [lgIssuance]);
@@ -56,6 +57,7 @@ const LgStep1: React.FC<LgStepsProps1> = ({
           name="lgIssuance"
           value="LG Advising"
           register={register}
+          disabled
           checked={lgIssuance === "LG Advising"}
         />
       </div>

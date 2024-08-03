@@ -14,6 +14,7 @@ import { DatePicker } from "../helpers";
 import { toast } from "sonner";
 import useStepStore from "@/store/lcsteps.store";
 import { LG_DETAILS } from "@/utils/constant/lg";
+import useLcIssuance from "@/store/issueance.store";
 
 const LgStep6Part2: React.FC<LgStepsProps2> = ({
   register,
@@ -22,8 +23,8 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   setValue,
   name,
 }) => {
-  const [number, setNumber] = useState('');
-
+  const [number, setNumber] = useState("");
+  const { data } = useLcIssuance();
 
   const { data: currency } = useQuery({
     queryKey: ["currency"],
@@ -49,12 +50,18 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   const expectedDate = watch(`${name}.expectedDate`);
   const lgExpiryDate = watch(`${name}.lgExpiryDate`);
   const { addStep, removeStep } = useStepStore();
-  
 
   useEffect(() => {
     if (!lgDetailCurrency) setValue(`${name}.lgDetailCurrency`, "USD");
     if (!lgTenorType) setValue(`${name}.lgTenor.lgTenorType`, "Months");
   }, []);
+
+  useEffect(() => {
+    if (data[name]?.lgDetailAmount) {
+      setValue(`${name}.lgDetailAmount`, data[name]?.lgDetailAmount);
+      setNumber(formatNumberWithCommas(data[name]?.lgDetailAmount));
+    }
+  }, [data]);
 
   useEffect(() => {
     if (
@@ -77,21 +84,23 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
     setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
   };
 
-      // Function to format number with commas
-      const formatNumberWithCommas = (value: string) => {
-        const numberString = value.replace(/,/g, ''); // Remove existing commas
-        return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-      };
-    
-      // Handler for input change
-      const handleChange = (event: any) => {
-        const { value } = event.target;
-        handleOnChange(event, `${name}.lgDetailAmount`)
-        if (!isNaN(value.replace(/,/g, ''))) { // Ensure the value is a valid number
-          const formattedNumber = formatNumberWithCommas(value);
-          setNumber(formattedNumber);
-        }
-      };
+  // Function to format number with commas
+  const formatNumberWithCommas = (value: string) => {
+    value = value?.toString()
+    const numberString = value.replace(/,/g, ""); // Remove existing commas
+    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  // Handler for input change
+  const handleChange = (event: any) => {
+    const { value } = event.target;
+    handleOnChange(event, `${name}.lgDetailAmount`);
+    if (!isNaN(value.replace(/,/g, ""))) {
+      // Ensure the value is a valid number
+      const formattedNumber = formatNumberWithCommas(value);
+      setNumber(formattedNumber);
+    }
+  };
 
   return (
     <div

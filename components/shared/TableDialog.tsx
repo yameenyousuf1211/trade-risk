@@ -214,7 +214,6 @@ export const TableDialog = ({
     queryFn: () => fetchSingleLc(lcId),
   });
 
-  if (lcId === "66ac17756ccd3b3276478981") console.log("🚀 ~ lcData:", lcData);
   const { data: riskData } = useQuery({
     queryKey: [`single-risk`, lcId],
     queryFn: () => fetchSingleRisk(lcId),
@@ -224,6 +223,18 @@ export const TableDialog = ({
   const { user } = useAuth();
   const userBids =
     isBank && user && bids?.filter((bid) => bid.bidBy === user._id);
+
+  const otherBond = lcData?.otherBond?.cashMargin ?? 0;
+  const bidBond = lcData?.bidBond?.cashMargin ?? 0;
+  const advancePaymentBond = lcData?.advancePaymentBond?.cashMargin ?? 0;
+  const performanceBond = lcData?.performanceBond?.cashMargin ?? 0;
+  const retentionMoneyBond = lcData?.retentionMoneyBond?.cashMargin ?? 0;
+  const total =
+    otherBond +
+    bidBond +
+    advancePaymentBond +
+    performanceBond +
+    retentionMoneyBond;
 
   return (
     <Dialog>
@@ -415,21 +426,15 @@ export const TableDialog = ({
                     <span className="text-para font-normal">LC Amount:</span>{" "}
                     USD{" "}
                     {Number(
-                      lcData && lcData.amount
-                        ? lcData?.amount?.price
-                        : lcData?.otherBond
-                        ? lcData?.otherBond?.cashMargin
-                        : lcData?.bidBond?.cashMargin +
-                          lcData?.advancePaymentBond?.cashMargin +
-                          lcData?.performanceBond?.cashMargin +
-                          lcData?.retentionMoneyBond?.cashMargin
-                    ).toFixed(2)}
+                      lcData && lcData.amount ? lcData?.amount?.price : total
+                    ).toLocaleString() + ".00"}
                   </h2>
                   <p className="font-roboto text-sm text-para">
                     Created at,{" "}
                     {lcData && convertDateAndTimeToString(lcData.createdAt)}, by{" "}
                     <span className="text-text capitalize">
-                      {(lcData && lcData.exporterInfo?.beneficiaryName) || lcData?.createdBy?.name}
+                      {(lcData && lcData.exporterInfo?.beneficiaryName) ||
+                        lcData?.createdBy?.name}
                     </span>
                   </p>
 
@@ -443,7 +448,11 @@ export const TableDialog = ({
                   />
                   <LCInfo
                     label="LC Applicant"
-                    value={(lcData && lcData.importerInfo?lcData.importerInfo?.applicantName:lcData?.applicantDetails?.company) || ""}
+                    value={
+                      (lcData && lcData.importerInfo
+                        ? lcData.importerInfo?.applicantName
+                        : lcData?.applicantDetails?.company) || ""
+                    }
                   />
                   <LCInfo
                     label="Advising Bank"

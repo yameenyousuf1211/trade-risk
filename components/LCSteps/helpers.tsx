@@ -133,12 +133,14 @@ export const BgRadioInput = ({
   value,
   register,
   onChange,
+  disabled = false
 }: {
   id: string;
   label: string;
   name: string;
   value: string | boolean;
   checked: boolean;
+  disabled?: boolean;
   register?: any;
 }) => {
   return (
@@ -153,6 +155,7 @@ export const BgRadioInput = ({
         id={id}
         value={value}
         {...register(name)}
+        disabled={disabled}
         className="accent-primaryCol size-4"
       />
       {label}

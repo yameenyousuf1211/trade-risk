@@ -244,14 +244,21 @@ export const RequestTable = ({
                       data={
                         item?.period?.startDate
                           ? convertDateToString(item?.period?.startDate)
-                          : convertDateToString((item as IRisk)?.startDate)
+                          : item?.startDate
+                          ? convertDateToString((item as IRisk)?.startDate)
+                          : (item as IRisk)?.createdAt &&
+                            convertDateToString(
+                              new Date((item as IRisk)?.createdAt)
+                            )
                       }
                     />
                     <TableDataCell
                       data={
                         item?.period?.endDate
                           ? convertDateToString(item?.period?.endDate)
-                          : convertDateToString((item as IRisk)?.expiryDate)
+                          : item?.expiryDate
+                          ? convertDateToString((item as IRisk)?.expiryDate)
+                          : convertDateToString(item?.otherBond?.lgExpiryDate)
                       }
                     />
                     <TableDataCell
@@ -282,9 +289,10 @@ export const RequestTable = ({
                     />
                     <TableDataCell
                       data={
-                        (item.importerInfo &&
+                        ((item.importerInfo &&
                           item.importerInfo?.applicantName) ||
-                        item?.applicantDetails?.name ||
+                          item?.applicantDetails?.name ||
+                          item?.applicantDetails?.company) ??
                         ""
                       }
                     />
@@ -343,7 +351,9 @@ export const RequestTable = ({
                         (item as ILcs)?.period
                           ? convertDateToString(item?.period?.startDate)
                           : (item as IRisk)?.createdAt &&
-                            convertDateToString(new Date((item as IRisk)?.createdAt))
+                            convertDateToString(
+                              new Date((item as IRisk)?.createdAt)
+                            )
                       }
                     />
                     <TableDataCell

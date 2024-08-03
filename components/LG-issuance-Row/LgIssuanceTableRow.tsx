@@ -48,7 +48,8 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       )),
     [currency]
   );
-  const lgDetails = watch("lgDetail");
+  const lgDetails = watch("lgDetailsType");
+  // const lgDetailsType = watch("lgDetailsType");
 
   const handleOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -67,7 +68,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     >
       {lgDetails !== "Choose any other type of LGs" ? (
         <TableDataCell>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center flex-wrap">
             <input
               type="checkbox"
               className="bg-none"
@@ -79,7 +80,8 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       ) : (
         <Select
           onValueChange={(value) => {
-            setValue(`${name}.checked`, value);
+            setValue(`${name}.Contract`, true);
+            // setValue(`${name}.checked`, value);
           }}
         >
           <SelectTrigger className="ml-2">

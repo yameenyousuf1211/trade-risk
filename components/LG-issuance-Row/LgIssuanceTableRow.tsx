@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useEffect, useMemo } from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import {
   Select,
@@ -15,6 +15,7 @@ import { DatePicker } from "../helpers";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrency } from "@/services/apis/helpers.api";
 import { values } from "@/utils";
+import useLcIssuance from "@/store/issueance.store";
 
 const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   register,
@@ -32,6 +33,14 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   const currencyType = watch(`${name}.currencyType`);
   const lgTenorType = watch(`${name}.lgTenor.lgTenorType`);
   const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
+  const otherBondName = watch(`${name}.name`);
+
+  const { data } = useLcIssuance();
+  useEffect(() => {
+     if (data[name]?.name) {
+       setValue(`${name}.name`, data[name]?.name);
+     }
+   }, [data]);
 
   const { data: currency } = useQuery({
     queryKey: ["currency"],
@@ -81,8 +90,9 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
         <Select
           onValueChange={(value) => {
             setValue(`${name}.Contract`, true);
-            // setValue(`${name}.checked`, value);
+            setValue(`${name}.name`, value);
           }}
+          value={otherBondName}
         >
           <SelectTrigger className="ml-2">
             <SelectValue placeholder="Select LG Type" />

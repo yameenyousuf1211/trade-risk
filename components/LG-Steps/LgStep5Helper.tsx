@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { LgStepsProps5 } from '@/types/lg';
 import LgIssuanceTableRow from '../LG-issuance-Row/LgIssuanceTableRow';
+import { convertStringToNumber } from '@/utils';
 
 const LgStep5Helper: FC<LgStepsProps5> = ({
     register,
@@ -27,10 +28,10 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
         { name: 'retentionMoneyBond', listValue: 'Performance Bond' },
     ], []);
 
-    const bidBondAmount = parseInt(watch('bidBond.cashMargin') || 0);
-    const advancePaymentBondAmount = parseInt(watch('advancePaymentBond.cashMargin') || 0);
-    const performanceBondAmount = parseInt(watch('performanceBond.cashMargin') || 0);
-    const retentionMoneyBondAmount = parseInt(watch('retentionMoneyBond.cashMargin') || 0);
+    const bidBondAmount = convertStringToNumber(watch('bidBond.cashMargin') || '0');
+    const advancePaymentBondAmount = convertStringToNumber(watch('advancePaymentBond.cashMargin') || '0');
+    const performanceBondAmount = convertStringToNumber(watch('performanceBond.cashMargin') || '0');
+    const retentionMoneyBondAmount = convertStringToNumber(watch('retentionMoneyBond.cashMargin') || '0');
 
     return (
         <Table className='my-2' id={`TableData`}>

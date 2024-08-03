@@ -17,6 +17,7 @@ interface Props<T extends FieldValues>
     | "search"
     | undefined;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement, Element>) => void;
 }
 
 const Input = <T extends FieldValues>({
@@ -28,6 +29,7 @@ const Input = <T extends FieldValues>({
   max,
   register,
   onChange,
+  onBlur,
   ...rest
 }: Props<T>) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,6 +51,7 @@ const Input = <T extends FieldValues>({
       max={max}
       {...register(name as Path<T>)}
       onChange={handleChange}
+      onBlur={onBlur}
     />
   );
 };

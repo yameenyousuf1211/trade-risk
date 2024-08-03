@@ -67,6 +67,19 @@ const DraftCard = ({
     } catch (error) {}
   };
 
+
+  const otherBond = draft?.otherBond?.cashMargin ?? 0;
+  const bidBond = draft?.bidBond?.cashMargin ?? 0;
+  const advancePaymentBond = draft?.advancePaymentBond?.cashMargin ?? 0;
+  const performanceBond = draft?.performanceBond?.cashMargin ?? 0;
+  const retentionMoneyBond = draft?.retentionMoneyBond?.cashMargin ?? 0;
+  const total =
+    otherBond +
+    bidBond +
+    advancePaymentBond +
+    performanceBond +
+    retentionMoneyBond;
+
   return (
     <div className={`${noBorder ? "" : "border-b border-borderCol"} pb-2 py-2`}>
       <div className="flex items-center w-full justify-between gap-x-1">
@@ -88,7 +101,7 @@ const DraftCard = ({
       <div className="flex items-center w-full justify-between gap-x-1 mt-2">
         <p className="text-[16px] font-semibold uppercase">
           {draft.currency || "USD"}{" "}
-          {((draft?.amount && draft.amount?.price?.toLocaleString()) || "00") +
+          {((draft?.amount ? draft.amount?.price?.toLocaleString(): total?.toLocaleString()) || "00") +
             ".00"}
         </p>
         <Button

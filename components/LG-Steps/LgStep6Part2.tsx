@@ -46,9 +46,12 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   const lgDetailAmount = watch(`${name}.lgDetailAmount`);
   const cashMargin = watch(`${name}.cashMargin`);
   const lgTenorType = watch(`${name}.lgTenor.lgTenorType`);
+  console.log("🚀 ~ cashMargin:", cashMargin);
   const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
   const expectedDate = watch(`${name}.expectedDate`);
   const lgExpiryDate = watch(`${name}.lgExpiryDate`);
+  console.log("🚀 ~ expectedDate:", expectedDate);
+  console.log("🚀 ~ lgExpiryDate:", lgExpiryDate);
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
@@ -57,9 +60,16 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   }, []);
 
   useEffect(() => {
+    //@ts-ignore
     if (data[name]?.lgDetailAmount) {
+      //@ts-ignore
       setValue(`${name}.lgDetailAmount`, data[name]?.lgDetailAmount);
+      //@ts-ignore
       setNumber(formatNumberWithCommas(data[name]?.lgDetailAmount));
+      //@ts-ignore
+      setValue(`${name}.expectedDate`, data[name]?.expectedDate);
+      //@ts-ignore
+      setValue(`${name}.lgExpiryDate`, data[name]?.lgExpiryDate);
     }
   }, [data]);
 
@@ -75,6 +85,13 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
     } else removeStep(LG_DETAILS);
   }, [lgDetailAmount, cashMargin, lgTenorValue, expectedDate, lgExpiryDate]);
 
+  // Function to format number with commas
+  const formatNumberWithCommas = (value: string) => {
+    value = value?.toString();
+    const numberString = value.replace(/,/g, ""); // Remove existing commas
+    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   const handleOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     name: string
@@ -84,11 +101,14 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
     setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
   };
 
-  // Function to format number with commas
-  const formatNumberWithCommas = (value: string) => {
-    value = value?.toString()
-    const numberString = value.replace(/,/g, ""); // Remove existing commas
-    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const handleOnChangeForCommmas = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    name: string
+  ) => {
+    const value = event.target.value;
+    if (!isNaN(value.replace(/,/g, ""))) {
+      setValue(name, !value ? "0" : formatNumberWithCommas(value));
+    }
   };
 
   // Handler for input change
@@ -141,6 +161,11 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               onChange={handleChange}
               className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               placeholder=""
+              onBlur={() =>
+                setNumber((prev) =>
+                  !prev ||prev?.includes(".00") ? prev : prev + ".00"
+                )
+              }
             />
           </label>
           <label
@@ -167,7 +192,18 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               <Input
                 register={register}
                 name={`${name}.cashMargin`}
-                onChange={(e) => handleOnChange(e, `${name}.cashMargin`)}
+                onChange={(e) =>
+                  handleOnChangeForCommmas(e, `${name}.cashMargin`)
+                }
+                value={cashMargin}
+                onBlur={() =>
+                  setValue(
+                    `${name}.cashMargin`,
+                    cashMargin?.includes(".00") || !cashMargin
+                      ? cashMargin
+                      : cashMargin + ".00"
+                  )
+                }
                 type="text"
                 className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 placeholder=""
@@ -223,6 +259,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               Expected Date to Issue LG
             </p>
             <DatePicker
+              value={!expectedDate ? undefined : new Date(expectedDate)}
               maxDate={
                 new Date(new Date().setFullYear(new Date().getFullYear() + 1))
               }
@@ -237,6 +274,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
           >
             <p className="w-full text-sm text-lightGray">LG Expiry Date</p>
             <DatePicker
+              value={!lgExpiryDate ? undefined : new Date(lgExpiryDate)}
               disabled={!expectedDate}
               maxDate={
                 new Date(

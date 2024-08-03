@@ -37,7 +37,9 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
 
   const { data } = useLcIssuance();
   useEffect(() => {
-     if (data[name]?.name) {
+    //@ts-ignore
+    if (data[name]?.name) {
+       //@ts-ignore
        setValue(`${name}.name`, data[name]?.name);
      }
    }, [data]);
@@ -67,6 +69,22 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     const value = event.target.value;
     const filteredValue = value.replace(/[^0-9]/g, "");
     setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
+  };
+
+  const formatNumberWithCommas = (value: string) => {
+    value = value?.toString();
+    const numberString = value.replace(/,/g, ""); // Remove existing commas
+    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const handleOnChangeForCommmas = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    name: string
+  ) => {
+    const value = event.target.value;
+    if (!isNaN(value.replace(/,/g, ""))) {
+      setValue(name, !value ? "0" : formatNumberWithCommas(value));
+    }
   };
 
   return (
@@ -123,11 +141,19 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
         <Input
           disabled={!checkedValue}
           value={cashMargin}
-          inputMode="numeric"
+          // inputMode="numeric"
           register={register}
-          onChange={(e) => handleOnChange(e, `${name}.cashMargin`)}
+          onChange={(e) => handleOnChangeForCommmas(e, `${name}.cashMargin`)}
+          onBlur={() =>
+            setValue(
+              `${name}.cashMargin`,
+              cashMargin?.includes(".00") || !cashMargin
+                ? cashMargin
+                : cashMargin + ".00"
+            )
+          }
           name={`${name}.cashMargin`}
-          type="number"
+          type="text"
           placeholder="Amount"
         />
       </TableCell>
@@ -143,7 +169,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <DatePicker
-          value={new Date(expectedDate)}
+          value={!expectedDate?undefined:new Date(expectedDate)}
           setValue={setValue}
           disabled={!checkedValue}
           name={`${name}.expectedDate`}
@@ -154,7 +180,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <DatePicker
-          value={new Date(lgExpiryDate)}
+          value={!lgExpiryDate?undefined:new Date(lgExpiryDate)}
           disabled={!checkedValue}
           setValue={setValue}
           name={`${name}.lgExpiryDate`}

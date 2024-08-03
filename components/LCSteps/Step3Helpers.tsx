@@ -42,6 +42,9 @@ export const ValidatingCalendar = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
+  const date = new Date();
+  date.setDate(5);
+
   const handleDateSelect = (date: Date) => {
     const today = new Date();
     if (isPast && date > today)

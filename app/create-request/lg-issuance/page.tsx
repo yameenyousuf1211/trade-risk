@@ -130,12 +130,11 @@ export default function LgIssuance() {
   // Function to handle draft submissions
   const handleDraftSubmission = async (responseData: any) => {
     setLoader(true);
-
     removeUnnecessaryFieldsForLgCreate(responseData);
 
+    // Update existing data
+    removeUnnecessaryFields(responseData);
     if (storeData.data._id) {
-      // Update existing draft
-      removeUnnecessaryFields(responseData);
 
       const { response, success } = await updateLg(
         responseData,
@@ -164,9 +163,8 @@ export default function LgIssuance() {
     removeUnnecessaryFieldsForLgCreate(responseData);
 
     const validation = lgValidator.safeParse(responseData);
-    console.log("🚀 ~ handleFinalSubmission ~ validation:", validation)
+    console.log("🚀 ~ handleFinalSubmission ~ validation:", validation);
     if (validation.success) {
-
       const { response, success } = await createLg(responseData);
       handleResponse(
         success,
@@ -190,6 +188,11 @@ export default function LgIssuance() {
   // Function to remove unnecessary fields for draft updates
   const removeUnnecessaryFieldsForLgCreate = (responseData: any) => {
     // Remove unnecessary fields based on lgIssuance type
+    delete responseData?._id;
+    delete responseData.createdAt;
+    delete responseData.updatedAt;
+    delete responseData.__v;
+    delete responseData.status;
     if (responseData.lgIssuance !== LG.cashMargin) {
       delete responseData.typeOfLg;
       delete responseData.physicalLgSwiftCode;
@@ -216,6 +219,14 @@ export default function LgIssuance() {
           if (responseData[element]?.lgTenor?.lgTenorValue)
             responseData[element].lgTenor.lgTenorValue =
               responseData[element].lgTenor.lgTenorValue?.toString();
+
+          if (!responseData[element]?.cashMargin) {
+            delete responseData[element];
+          } else {
+            responseData[element]["cashMargin"] = convertStringToNumber(
+              responseData[element]["cashMargin"]
+            )?.toString();
+          }
         });
       } else {
         delete responseData.bidBond;
@@ -239,10 +250,24 @@ export default function LgIssuance() {
       delete responseData.advancePaymentBond;
       delete responseData.performanceBond;
       delete responseData.retentionMoneyBond;
-      responseData["lgDetailsType"] = "Choose any other type of LGs"
-      responseData.otherBond["lgDetailAmount"] = convertStringToNumber(responseData.otherBond["lgDetailAmount"])
+      delete responseData?.otherBond?._id;
+      responseData["lgDetailsType"] = "Choose any other type of LGs";
+      responseData.otherBond["lgDetailAmount"] = convertStringToNumber(
+        responseData.otherBond["lgDetailAmount"]
+      );
+      responseData.otherBond["cashMargin"] = convertStringToNumber(
+        responseData.otherBond["cashMargin"]
+      )?.toString();
+
+      if (responseData.otherBond?.lgTenor?.lgTenorValue) {
+        responseData.otherBond.lgTenor.lgTenorValue = responseData.otherBond?.lgTenor?.lgTenorValue?.toString();
+      }
     }
-    if(!responseData?.expectedPrice?.expectedPrice || responseData?.expectedPrice?.expectedPrice === "false") delete responseData?.expectedPrice?.pricePerAnnum;
+    if (
+      !responseData?.expectedPrice?.expectedPrice ||
+      responseData?.expectedPrice?.expectedPrice === "false"
+    )
+      delete responseData?.expectedPrice?.pricePerAnnum;
     console.log("🚀 ~ responseData:", responseData);
   };
 

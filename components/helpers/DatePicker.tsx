@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
 
 export const DatePicker = ({
@@ -18,30 +18,46 @@ export const DatePicker = ({
   name,
   isLg,
   disabled,
+  value ,
 }: {
   setValue: any;
   maxDate: Date | string | any;
-  name?:string
-  isLg?:boolean
-  disabled?:boolean
+  name?: string;
+  isLg?: boolean;
+  disabled?: boolean;
+  value?: Date;
 }) => {
   const [date, setDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
+  useEffect(() => {
+    if (value && !date) setDate(value);
+  }, [value]);
+
   return (
-    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={true}> 
+    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button
           disabled={disabled}
           variant={"outline"}
           className={cn(
-            `w-full ${isLg ? 'gap-2 justify-end border-none' : 'justify-between text-left'}  font-normal`,
+            `w-full ${
+              isLg
+                ? "gap-2 justify-end border-none"
+                : "justify-between text-left"
+            }  font-normal`,
             !date &&
-              `text-muted-foreground flex items-center ${isLg ? 'gap-2 justify-end border-none' : 'justify-between'} w-full`
+              `text-muted-foreground flex items-center ${
+                isLg ? "gap-2 justify-end border-none" : "justify-between"
+              } w-full`
           )}
-          id={`${name || 'validity'}`}
+          id={`${name || "validity"}`}
         >
-          {date ? format(date, "PPP") : <span>DD/MM/YYYY</span>}
+          {date && date instanceof Date ? (
+            format(date, "PPP")
+          ) : (
+            <span>DD/MM/YYYY</span>
+          )}
           <CalendarIcon className=" h-4 w-4" />
         </Button>
       </PopoverTrigger>

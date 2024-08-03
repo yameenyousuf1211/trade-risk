@@ -244,6 +244,7 @@ export const formatPhoneNumber = (phoneNumber:string) => {
  */
 export function convertStringToNumber(str: string): number {
   if(!str) return 0;
+  str = str?.toString()
   const cleanedStr = str.replace(/,/g, ''); // Remove the commas
   const number = parseFloat(cleanedStr); // Convert to a floating-point number
   return number;

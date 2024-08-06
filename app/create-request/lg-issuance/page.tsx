@@ -135,7 +135,6 @@ export default function LgIssuance() {
     // Update existing data
     removeUnnecessaryFields(responseData);
     if (storeData.data._id) {
-
       const { response, success } = await updateLg(
         responseData,
         storeData.data._id
@@ -260,7 +259,8 @@ export default function LgIssuance() {
       )?.toString();
 
       if (responseData.otherBond?.lgTenor?.lgTenorValue) {
-        responseData.otherBond.lgTenor.lgTenorValue = responseData.otherBond?.lgTenor?.lgTenorValue?.toString();
+        responseData.otherBond.lgTenor.lgTenorValue =
+          responseData.otherBond?.lgTenor?.lgTenorValue?.toString();
       }
     }
     if (
@@ -268,6 +268,9 @@ export default function LgIssuance() {
       responseData?.expectedPrice?.expectedPrice === "false"
     )
       delete responseData?.expectedPrice?.pricePerAnnum;
+    if (responseData?.applicantDetails?.crNumber)
+      responseData.applicantDetails.crNumber =
+        responseData.applicantDetails.crNumber?.toString();
     console.log("🚀 ~ responseData:", responseData);
   };
 

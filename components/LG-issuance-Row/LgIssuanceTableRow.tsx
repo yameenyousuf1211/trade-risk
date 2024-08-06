@@ -101,7 +101,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
               className="bg-none"
               {...register(`${name}.Contract`)}
             />
-            <p>{listValue}</p>
+            <p style={{ textWrap:"wrap",textAlign: "left"}}>{listValue}</p>
           </div>
         </TableDataCell>
       ) : (

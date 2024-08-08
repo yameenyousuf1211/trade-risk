@@ -33,6 +33,12 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
     const performanceBondAmount = convertStringToNumber(watch('performanceBond.cashMargin') || '0');
     const retentionMoneyBondAmount = convertStringToNumber(watch('retentionMoneyBond.cashMargin') || '0');
 
+    const formatNumberWithCommas = (value: string| number) => {
+        value = value?.toString();
+        const numberString = value.replace(/,/g, ""); // Remove existing commas
+        return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      };
+
     return (
         <Table className='my-2' id={`TableData`}>
             <TableHeader className='bg-[#F5F7F9]'>
@@ -98,7 +104,7 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
                             Total LGs Amount
                         </TableCell>
                         <TableCell className="text-start" colSpan={5}>
-                            {bidBondAmount + advancePaymentBondAmount + performanceBondAmount + retentionMoneyBondAmount}
+                            {formatNumberWithCommas(bidBondAmount + advancePaymentBondAmount + performanceBondAmount + retentionMoneyBondAmount) + ".00"}
                         </TableCell>
                     </TableRow>
                 </TableFooter>

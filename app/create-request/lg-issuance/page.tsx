@@ -160,6 +160,7 @@ export default function LgIssuance() {
   // Function to handle final submissions
   const handleFinalSubmission = async (responseData: any) => {
     removeUnnecessaryFieldsForLgCreate(responseData);
+    console.log("🚀 ~ handleFinalSubmission ~ responseData:", responseData);
 
     const validation = lgValidator.safeParse(responseData);
     console.log("🚀 ~ handleFinalSubmission ~ validation:", validation);
@@ -192,6 +193,7 @@ export default function LgIssuance() {
     delete responseData.updatedAt;
     delete responseData.__v;
     delete responseData.status;
+
     if (responseData.lgIssuance !== LG.cashMargin) {
       delete responseData.typeOfLg;
       delete responseData.physicalLgSwiftCode;
@@ -243,6 +245,15 @@ export default function LgIssuance() {
         if (responseData.otherBond?.lgTenor?.lgTenorValue)
           responseData.otherBond.lgTenor.lgTenorValue =
             responseData.otherBond.lgTenor.lgTenorValue?.toString();
+
+        if (responseData?.otherBond?.cashMargin) {
+          responseData.otherBond.cashMargin = convertStringToNumber(
+            responseData?.otherBond?.cashMargin
+          )?.toString();
+          responseData.otherBond.lgDetailAmount = convertStringToNumber(
+            responseData.otherBond.cashMargin
+          );
+        }
       }
     } else {
       delete responseData.bidBond;

@@ -304,9 +304,6 @@ export const BankTable = ({
                     )}
                   </TableCell>
 
-                  {/* <TableCell className="px-1 py-1 max-w-[200px]">
-                    <TableDialog lcId={item._id} bids={item.bids} />
-                  </TableCell> */}
                 </TableRow>
               ))
             )}

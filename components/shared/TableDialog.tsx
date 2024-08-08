@@ -208,12 +208,14 @@ export const TableDialog = ({
   isViewAll?: boolean;
   isRisk?: boolean;
 }) => {
+  console.log("🚀 ~ isRisk:", isRisk)
   // Get LC
   const { data: lcData } = useQuery({
     queryKey: [`single-lc`, lcId],
     queryFn: () => fetchSingleLc(lcId),
   });
 
+  console.log("🚀 ~ lcData:", lcData)
   const { data: riskData } = useQuery({
     queryKey: [`single-risk`, lcId],
     queryFn: () => fetchSingleRisk(lcId),

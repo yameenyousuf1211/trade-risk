@@ -90,6 +90,21 @@ export const RequestTable = ({
 
   const [sortedKey, setSortedKey] = useState<string>("");
 
+  const getTotal = (item: any) => {
+    const otherBond = item?.otherBond?.cashMargin ?? 0;
+    const bidBond = item?.bidBond?.cashMargin ?? 0;
+    const advancePaymentBond = item?.advancePaymentBond?.cashMargin ?? 0;
+    const performanceBond = item?.performanceBond?.cashMargin ?? 0;
+    const retentionMoneyBond = item?.retentionMoneyBond?.cashMargin ?? 0;
+    const total =
+      otherBond +
+      bidBond +
+      advancePaymentBond +
+      performanceBond +
+      retentionMoneyBond;
+    return total;
+  };
+
   const handleSort = (key: string) => {
     setSortedKey(key);
     let isDescending = sortedKey.includes(key);
@@ -299,7 +314,7 @@ export const RequestTable = ({
                     <TableDataCell
                       data={
                         item.type == "LG Issuance"
-                          ? item.otherBond?.cashMargin
+                          ? getTotal(item)
                           : item?.amount
                           ? `${
                               item?.currency
@@ -403,7 +418,7 @@ export const RequestTable = ({
                     <TableDataCell
                       data={
                         item.type == "LG Issuance"
-                          ? "USD " + item.otherBond?.cashMargin
+                          ? "USD " + getTotal(item)
                           : item?.amount
                           ? `${
                               item?.currency

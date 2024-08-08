@@ -111,7 +111,7 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
 
   const filteredData =
     data &&
-    data.data.length > 0 &&
+    data?.data?.length &&
     data?.data.filter((draft) => {
       if (isConfirmation) {
         return draft.type === "LC Confirmation";

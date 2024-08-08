@@ -18,6 +18,7 @@ export const RiskStep4 = ({
   watch,
 }: Props) => {
   const {importerInfo} = watch()
+  console.log("🚀 ~ importerInfo:", importerInfo)
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">
@@ -36,9 +37,9 @@ export const RiskStep4 = ({
           <p className="w-full text-lightGray text-sm">Name of Applicant</p>
           <Input
             type="text"
-            name="importerInfo.applicantName"
             value={importerInfo?.applicantName}
             register={register}
+            name="importerInfo.applicantName"
             className="text-sm block bg-none text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
             placeholder="Enter name"
           />

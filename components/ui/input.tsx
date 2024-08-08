@@ -39,7 +39,7 @@ const Input = <T extends FieldValues>({
   };
 
   //cheap fix:
-  const otherProps = handleChange ? { onChange: handleChange } : {};
+  const otherProps = onChange ? { onChange: onChange } : {};
   const otherPropsBlur = onBlur ? { onBlur: onBlur } : {};
 
   return (

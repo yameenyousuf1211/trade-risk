@@ -139,6 +139,7 @@ const CreateRequestPage = () => {
       },
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
+    console.log("🚀 ~ CreateRequestPage ~ baseData:", baseData)
 
     if (isDraft) {
       const {
@@ -166,6 +167,7 @@ const CreateRequestPage = () => {
             id: confirmationData?._id,
           })
         : await onCreateLC(reqData);
+        console.log("🚀 ~ CreateRequestPage ~ response:", response)
       setLoader(false);
       if (!success) return toast.error(response);
       else {
@@ -199,6 +201,8 @@ const CreateRequestPage = () => {
         expectedConfirmationDate,
       };
       const validationResult = confirmationSchema.safeParse(preparedData);
+      console.log("🚀 ~ CreateRequestPage ~ preparedData:", preparedData)
+      console.log("🚀 ~ CreateRequestPage ~ validationResult:", validationResult)
       if (validationResult.success) {
         const validatedData = validationResult.data;
         if (isProceed) {
@@ -324,10 +328,8 @@ const CreateRequestPage = () => {
             setStepCompleted={handleStepCompletion}
           />
         </div>
-        {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
           <Button
-            // onClick={handleSubmit(saveAsDraft)}
             onClick={handleSubmit((data) => onSubmit({ data, isDraft: true }))}
             type="button"
             variant="ghost"
@@ -341,7 +343,6 @@ const CreateRequestPage = () => {
             size="lg"
             disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
-            // onClick={handleSubmit(onSubmit)}
             onClick={handleSubmit((data) => onSubmit({ data, isDraft: false }))}
           >
             {isLoading ? <Loader /> : "Submit request"}

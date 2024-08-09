@@ -64,6 +64,7 @@ export const RiskStep1 = ({ register, watch, setValue }: Props) => {
         >
           <div className="flex items-center gap-x-3 w-full">
             <input
+            disabled
               type="radio"
               id="outright-sales"
               name="transaction"
@@ -77,7 +78,7 @@ export const RiskStep1 = ({ register, watch, setValue }: Props) => {
           <div className="bg-[#F2F2F2] py-1.5 w-fit h-full">
             <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
               <PopoverTrigger asChild>
-                <Button
+                <Button disabled
                   variant={"outline"}
                   className="w-fit justify-start text-left font-normal border-none text-[#B5B5BE] hover:bg-transparent text-sm bg-transparent"
                   id="period-expiry-date"

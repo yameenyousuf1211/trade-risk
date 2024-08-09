@@ -208,14 +208,14 @@ export const TableDialog = ({
   isViewAll?: boolean;
   isRisk?: boolean;
 }) => {
-  console.log("🚀 ~ isRisk:", isRisk)
+  console.log("🚀 ~ isRisk:", isRisk);
   // Get LC
   const { data: lcData } = useQuery({
     queryKey: [`single-lc`, lcId],
     queryFn: () => fetchSingleLc(lcId),
   });
 
-  console.log("🚀 ~ lcData:", lcData)
+  console.log("🚀 ~ lcData:", lcData);
   const { data: riskData } = useQuery({
     queryKey: [`single-risk`, lcId],
     queryFn: () => fetchSingleRisk(lcId),
@@ -237,6 +237,12 @@ export const TableDialog = ({
     advancePaymentBond +
     performanceBond +
     retentionMoneyBond;
+
+  const formatNumberWithCommas = (value: string) => {
+    value = value?.toString();
+    const numberString = value.replace(/,/g, ""); // Remove existing commas
+    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
 
   return (
     <Dialog>
@@ -313,7 +319,7 @@ export const TableDialog = ({
                 />
                 <LCInfo
                   label="Value of Transaction"
-                  value={riskData?.riskParticipationTransaction?.amount || ""}
+                  value={formatNumberWithCommas(riskData?.riskParticipationTransaction?.amount) || ""}
                 />
                 <LCInfo
                   label="Return"
@@ -344,12 +350,12 @@ export const TableDialog = ({
                   label="Confirming Bank"
                   value={riskData?.confirmingBank?.bank || ""}
                 />
-                <LCInfo
+                {/* <LCInfo
                   label="LC Discounted"
                   value={
                     riskData?.transhipment === true ? "Allowed" : "Not allowed"
                   }
-                />
+                /> */}
                 <LCInfo
                   label="Expected Discounting Date"
                   value={convertDateToCommaString(
@@ -385,13 +391,13 @@ export const TableDialog = ({
                   }
                   noBorder
                 />
-                <LCInfo
+                {/* <LCInfo
                   label="Expected Confirmation Date"
                   value={convertDateToCommaString(
                     riskData?.expectedDateConfimation || ""
                   )}
                   noBorder
-                />
+                /> */}
 
                 <h2 className="text-xl font-semibold mt-3">Importer Info</h2>
                 <LCInfo
@@ -460,10 +466,10 @@ export const TableDialog = ({
                     label="Advising Bank"
                     value={(lcData && lcData.advisingBank?.bank) || "-"}
                   />
-                  <LCInfo
+                  {/* <LCInfo
                     label="Confirming Bank"
                     value={(lcData && lcData.confirmingBank?.bank) || "-"}
-                  />
+                  /> */}
                   <LCInfo
                     label="Payments Terms"
                     value={(lcData && lcData.paymentTerms) || ""}

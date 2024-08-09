@@ -34,7 +34,7 @@ export default function AuthLayout({
               {isRisk && (
                 <Link href="#draft">
                   <Button className="bg-transparent text-para hover:bg-para hover:text-white rounded-lg py-1 border border-para font-roboto">
-                    Draft
+                    Save as draft
                   </Button>
                 </Link>
               )}

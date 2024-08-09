@@ -255,6 +255,20 @@ export const RequestTable = ({
                 // @ts-ignore
                 tableData.map((item: ILcs, index: number) => (
                   <TableRow key={index} className="border-none font-roboto">
+                    <TableCell className="px-1 py-1 min-w-[90px]">
+                      <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
+                        <div className="tex-sm truncate text-lightGray">
+                          {item?.refId ? item?.refId : item?.refId}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-1 py-1 min-w-[90px]">
+                      <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
+                        <div className="tex-sm truncate text-lightGray">
+                          {item?.createdBy?.swiftCode ? item?.createdBy?.swiftCode : '-'}
+                        </div>
+                      </div>
+                    </TableCell>
                     <TableDataCell
                       data={
                         item?.period?.startDate

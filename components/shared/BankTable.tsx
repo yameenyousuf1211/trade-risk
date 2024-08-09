@@ -277,23 +277,23 @@ export const BankTable = ({
                   />
 
                   <TableCell className="px-1 py-1 max-w-[200px]">
-                    {(item as IBids).status !== "Pending" ? (
-                      <AddBid
-                        triggerTitle={item.status}
-                        status={item.status}
-                        isInfo={item.status !== "Add bid" && !isAddNewBid}
-                        setIsAddNewBid={setIsAddNewBid}
-                        isDiscount={
-                          ((item as IBids).bidType &&
-                            (item as IBids).bidType.includes("Discount")) ||
-                          false
-                        }
-                        border
-                        bidData={item}
-                        id={isCorporate ? item?.lc[0] : item?._id}
-                        isRisk={isRisk}
-                        isCorporate={isCorporate}
-                      />
+                    <AddBid
+                      triggerTitle={item.status}
+                      status={item.status}
+                      isInfo={item.status !== "Add bid" && !isAddNewBid}
+                      setIsAddNewBid={setIsAddNewBid}
+                      isDiscount={
+                        ((item as IBids).bidType &&
+                          (item as IBids).bidType.includes("Discount")) ||
+                        false
+                      }
+                      border
+                      bidData={item}
+                      id={isCorporate ? item?.lc[0] : item?._id}
+                      isRisk={isRisk}
+                      isCorporate={isCorporate}
+                    />
+                    {/* {(item as IBids).status !== "Pending" ? (
                     ) : (
                       <Button
                         variant="ghost"
@@ -301,7 +301,7 @@ export const BankTable = ({
                       >
                         {item?.status}
                       </Button>
-                    )}
+                    )} */}
                   </TableCell>
 
                 </TableRow>

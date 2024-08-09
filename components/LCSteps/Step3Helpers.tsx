@@ -307,10 +307,12 @@ export const Transhipment = ({
       ? setValue("expectedDiscountingDate", date)
       : setValue("expectedConfirmationDate", date);
   };
+  let lcStartDate = watch("period.startDate");
+  let lcEndDate = watch("period.endDate");
 
-  // useEffect(() => {
-  //   setDate(expectedDate);
-  // }, [expectedDate]);
+  useEffect(() => {
+    if(lcEndDate|| lcStartDate)setDate(undefined);
+  }, [lcStartDate,lcEndDate]);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const currentDate = new Date();

@@ -71,10 +71,10 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
     }
     setValue("riskParticipationTransaction.perAnnum", `${newValue}%`);
   };
-  console.log(watch("riskParticipationTransaction.perAnnum"))
+  console.log(watch("riskParticipationTransaction.perAnnum"));
 
   const handleDecrement = () => {
-    console.log("newValue")
+    console.log("newValue");
     const currentValue = watch("riskParticipationTransaction.perAnnum") || "0";
     let newValue = parseFloat(currentValue) - 0.5;
 
@@ -120,60 +120,103 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
             </p>
 
             <div className="flex items-center  justify-between gap-x-2 w-full">
-              <BankRadioInput
-                id="transaction-confirmation"
-                label="LC Confirmation"
-                name="riskParticipationTransaction.type"
-                value="LC Confirmation"
-                checked={
-                  watch("riskParticipationTransaction.type") ===
-                  "LC Confirmation"
-                }
-                register={register}
-              />
+              {watch("riskParticipation") === "Non-Funded" ? (
+                <>
+                  <BankRadioInput
+                    id="transaction-confirmation"
+                    label="LC Confirmation"
+                    name="riskParticipationTransaction.type"
+                    value="LC Confirmation"
+                    checked={
+                      watch("riskParticipationTransaction.type") ===
+                      "LC Confirmation"
+                    }
+                    register={register}
+                  />
+                  <BankRadioInput
+                    id="LG (letter Of Guarantee)"
+                    label="LG (letter Of Guarantee)"
+                    name="riskParticipationTransaction.type"
+                    value="LG (letter Of Guarantee)"
+                    checked={
+                      watch("riskParticipationTransaction.type") ===
+                      "LG (letter Of Guarantee)"
+                    }
+                    register={register}
+                  />
+                  <BankRadioInput
+                    id="SBLC"
+                    label="SBLC"
+                    name="riskParticipationTransaction.type"
+                    value="SBLC"
+                    checked={
+                      watch("riskParticipationTransaction.type") === "SBLC"
+                    }
+                    register={register}
+                  />
+                  <BankRadioInput
+                    id="transaction-avalization"
+                    label="Avalization"
+                    name="riskParticipationTransaction.type"
+                    value="Avalization"
+                    checked={
+                      watch("riskParticipationTransaction.type") ===
+                      "Avalization"
+                    }
+                    register={register}
+                  />
 
-              <BankRadioInput
-                id="transaction-avalization"
-                label="Avalization"
-                name="riskParticipationTransaction.type"
-                value="Avalization"
-                checked={
-                  watch("riskParticipationTransaction.type") === "Avalization"
-                }
-                register={register}
-              />
-              <BankRadioInput
-                id="transaction-supply"
-                label="Supply Chain Finance (Payable Finance)"
-                name="riskParticipationTransaction.type"
-                value="Supply Chain Finance"
-                checked={
-                  watch("riskParticipationTransaction.type") ===
-                  "Supply Chain Finance"
-                }
-                register={register}
-              />
-              <BankRadioInput
-                id="transaction-discounting"
-                label="LC Discounting"
-                name="riskParticipationTransaction.type"
-                value="LC Discounting"
-                checked={
-                  watch("riskParticipationTransaction.type") ===
-                  "LC Discounting"
-                }
-                register={register}
-              />
-              <BankRadioInput
-                id="transaction-trade"
-                label="Trade Loan"
-                name="riskParticipationTransaction.type"
-                value="Trade Loan"
-                checked={
-                  watch("riskParticipationTransaction.type") === "Trade Loan"
-                }
-                register={register}
-              />
+                  <BankRadioInput
+                    id="transaction-supply"
+                    label="Supply Chain Finance"
+                    name="riskParticipationTransaction.type"
+                    value="Supply Chain Finance"
+                    checked={
+                      watch("riskParticipationTransaction.type") ===
+                      "Supply Chain Finance"
+                    }
+                    register={register}
+                  />
+                </>
+              ) : (
+                <>
+                  <BankRadioInput
+                    id="transaction-discounting"
+                    label="LC Discounting"
+                    name="riskParticipationTransaction.type"
+                    value="LC Discounting"
+                    checked={
+                      watch("riskParticipationTransaction.type") ===
+                      "LC Discounting"
+                    }
+                    register={register}
+                  />
+
+                  <BankRadioInput
+                    id="transaction-trade"
+                    label="Trade Load"
+                    name="riskParticipationTransaction.type"
+                    value="Trade Loan"
+                    checked={
+                      watch("riskParticipationTransaction.type") ===
+                      "Trade Loan"
+                    }
+                    register={register}
+                  />
+
+                  <BankRadioInput
+                    id="transaction-supply"
+                    label="Supply Chain Finance"
+                    name="riskParticipationTransaction.type"
+                    value="Supply Chain Finance"
+                    checked={
+                      watch("riskParticipationTransaction.type") ===
+                      "Supply Chain Finance"
+                    }
+                    register={register}
+                  />
+                </>
+              )}
             </div>
             <div
               className={`flex ${
@@ -217,7 +260,7 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
               </div>
               <div className="w-full">
                 <p className="font-semibold text-sm text-lightGray mb-2 ml-2">
-                  Return offered on non funded participation
+                  Participation offered for value "" ( MAX 90 % )
                 </p>
                 <div className="flex items-start gap-x-2 justify-between w-full">
                   <BankRadioInput
@@ -357,7 +400,7 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
                 <p>%</p>
               </div>
               <p className="text-sm font-normal">
-                (Maximum 90% can be offered as per MRPA signed)
+                (Maximum 90% can be offered)
               </p>
             </div>
           </div>

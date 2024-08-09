@@ -41,7 +41,11 @@ const RiskFundedPage = () => {
   const { countries, flags } = useCountries();
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
-  const riskParticipationTransaction = watch("riskParticipationTransaction.type");
+  const riskParticipationTransaction = watch(
+    "riskParticipationTransaction.type"
+  );
+
+  const hideStep6 = riskParticipationTransaction === "LC Confirmation" ;
 
   const formData = useRiskStore((state) => state);
   const setFormData = useRiskStore((state) => state.setValues);
@@ -87,12 +91,18 @@ const RiskFundedPage = () => {
     data,
     isDraft
   ) => {
-    const startDateString = data?.startDate;
+    console.log("🚀 ~ RiskFundedPage ~ data:", data);
+    // return;
+    const startDateString = data?.period?.startDate;
     const expiryDateString = data?.expiryDate;
     const expectedDateDiscountingString = data?.expectedDateDiscounting;
     const expectedDateConfirmationString = data?.expectedDateConfirmation;
 
     const startDate = startDateString ? new Date(startDateString) : null;
+    const period = {
+      startDate,
+      expectedDate: data?.period?.expectedDate === "no" ? false : true,
+    };
     const expiryDate = expiryDateString ? new Date(expiryDateString) : null;
     const expectedDateDiscounting = expectedDateDiscountingString
       ? new Date(expectedDateDiscountingString)
@@ -102,7 +112,8 @@ const RiskFundedPage = () => {
       : null;
     const preparedData = {
       ...data,
-      startDate: startDate as Date,
+      period,
+      // startDate: startDate as Date,
       expiryDate: expiryDate,
       expectedDateDiscounting: expectedDateDiscounting,
       expectedDateConfirmation: expectedDateConfirmation,
@@ -114,6 +125,7 @@ const RiskFundedPage = () => {
       const validatedData = validationResult.data;
       const reqData = {
         ...data,
+        period,
         riskParticipationTransaction: {
           ...data?.riskParticipationTransaction,
           perAnnum: "22",
@@ -225,7 +237,7 @@ const RiskFundedPage = () => {
   return (
     <CreateLCLayout isRisk={true}>
       <form className="mt-2 flex flex-col gap-y-5">
-        <RiskBanks watch={watch} setValue={setValue} />
+        <RiskBanks countries={countries} flags={flags} register={register} watch={watch} setValue={setValue} />
         <RiskAgreement />
         <RiskStep1 register={register} watch={watch} setValue={setValue} />
         <RiskStep2 register={register} watch={watch} setValue={setValue} />
@@ -254,12 +266,14 @@ const RiskFundedPage = () => {
           flags={flags}
         />
         {/* {riskParticipationTransaction !== "LC Confirmation" && ( */}
+        {hideStep6? null : (
           <RiskStep6 register={register} watch={watch} />
+        )}
         {/* )} */}
 
         <div className="relative flex items-center justify-between w-full h-full gap-x-2">
-          <RiskStep7 watch={watch} />
-          <RiskStep8 watch={watch} register={register} />
+          <RiskStep7 step={hideStep6?6:undefined} watch={watch} />
+          <RiskStep8 step={hideStep6?7:undefined} watch={watch} register={register} />
         </div>
 
         <div className="py-4 px-4 border border-borderCol rounded-lg w-full bg-white flex items-center justify-between gap-x-4">

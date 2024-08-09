@@ -122,12 +122,12 @@ export const BankDraftsSidebar = () => {
             </h4>
 
             <div className="flex flex-col gap-y-2">
-              {data.data.length > 0 &&
+              {data?.data?.length > 0 &&
                 data?.data &&
                 data?.data.map((draft, idx) => (
                   <DraftCard
                     key={draft._id}
-                    noBorder={idx === data.data.length - 1}
+                    noBorder={idx === data?.data?.length - 1}
                     draft={draft}
                   />
                 ))}

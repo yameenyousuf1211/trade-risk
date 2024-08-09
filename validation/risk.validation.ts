@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export const generalRiskSchema = z
   .object({
+    country: z.string({ message: "Issuing bank country is required" }),
+    swiftCode: z.string({ message: "swiftCode is required" }),
     banks: z.array(
       z.string().nonempty({ message: "Bank name cannot be empty" }),
       { message: "Please select a bank" }
@@ -28,6 +30,8 @@ export const generalRiskSchema = z
       type: z.enum(
         [
           "LC Confirmation",
+          "LG (letter Of Guarantee)",
+          "SBLC",
           "Avalization",
           "Supply Chain Finance",
           "LC Discounting",
@@ -67,6 +71,15 @@ export const generalRiskSchema = z
         message: "Enter participation rate",
       }),
     }),
+    period: z.object(
+      {
+        expectedDate: z.enum(["yes", "no"], {
+          message: "Select LC Period Type",
+        }),
+        startDate: z.date({ message: "Select issuance date" }),
+      },
+      { message: "Risk Participation Period is required" }
+    ),
     issuingBank: z.object(
       {
         bank: z.string({ message: "Issuing bank name is required" }),
@@ -96,7 +109,7 @@ export const generalRiskSchema = z
       message: "Expected date for discounting cannot be empty",
     }),
     expiryDate: z.date({ message: "Expiry date cannot be empty" }),
-    startDate: z.date({ message: "Start date cannot be empty" }),
+    // startDate: z.date({ message: "Start date cannot be empty" }),
     paymentTerms: z
       .string()
       .nonempty({ message: "Payment terms cannot be empty" }),

@@ -4,6 +4,7 @@ import { BankRadioInput, DateInput, DiscountBanks } from "./RiskHelpers";
 import { DDInput } from "../LCSteps/helpers";
 import { getAllPortData, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
+import Period from "../RiskParticipation/Period";
 
 interface Props {
   countries: string[];
@@ -62,14 +63,15 @@ export const RiskStep3 = ({
     }
   }, [portsData]);
   const [dayss, setDays] = useState<number | string>();
+  console.log("🚀 ~ dayss:", dayss);
 
   useEffect(() => {
-    if (watch("paymentTerms") !== "Tenor Lc") {
+    if (watch("paymentTerms") !== "Tenor LC") {
       setValue("days", undefined);
     } else {
-      setValue("days", watch("days"));
+      setValue("days", dayss);
     }
-  }, [watch("paymentTerms"), watch("days")]);
+  }, [watch("paymentTerms"), dayss]);
 
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
@@ -144,12 +146,8 @@ export const RiskStep3 = ({
       )}
 
       <div className="flex items-center justify-between gap-x-3 w-full my-4">
-        <DateInput
-          name="startDate"
-          value={startDate}
-          setValue={setValue}
-          title="Date LC Issued / Expected Date of LC Issuance"
-        />
+        <Period setValue={setValue} watch={watch} />
+
         <DateInput
           name="expiryDate"
           value={expiryDate}
@@ -178,71 +176,73 @@ export const RiskStep3 = ({
               checked={watch("paymentTerms") === "usance"}
               register={register}
             />
-            <div className="w-full">
-              <label
-                htmlFor="payment-tenor"
-                className={`px-3 py-2.5 w-full transition-colors duration-100 ${
-                  watch("paymentTerms") === "Tenor LC"
-                    ? "bg-[#DCE5FD]"
-                    : "border border-borderCol bg-white"
-                } rounded-md flex items-center justify-between gap-x-3 mb-2 text-lightGray text-sm`}
-              >
-                <div className="flex gap-x-2 items-center">
-                  <input
-                    type="radio"
-                    id="payment-tenor"
-                    value="LC Tenor"
-                    {...register("paymentTerms")}
-                    checked={watch("paymentTerms") === "Tenor LC"}
-                    className="accent-[#255EF2] size-4"
-                  />
-                  Tenor LC
-                </div>
-                <div className="border-b border-black flex items-center">
-                  <input
-                    placeholder="enter days"
-                    inputMode="numeric"
-                    disabled={watch("paymentTerms") !== "Tenor LC"}
-                    type="text"
-                    value={dayss}
-                    max={100}
-                    // {...register("days")}
-                    onChange={(e) => setDays(Number(e.target.value))}
-                    className="text-sm text-lightGray border-none max-w-[150px] bg-transparent outline-none"
-                  />
-                  <div className="flex items-center gap-x-1">
-                    <button
-                      disabled={watch("paymentTerms") !== "Tenor LC"}
-                      type="button"
-                      className="rounded-sm border border-para size-6 center mb-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDays((prev: any) =>
-                          prev >= 1 ? Number(prev) + 1 : 1
-                        );
-                      }}
-                    >
-                      +
-                    </button>
-                    <button
-                      disabled={watch("paymentTerms") !== "Tenor LC"}
-                      type="button"
-                      className="rounded-sm border border-para size-6 center mb-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log("onclicked");
-                        console.log(days);
-                        setDays((prev: any) =>
-                          prev > 1 ? Number(prev) - 1 : 1
-                        );
-                      }}
-                    >
-                      -
-                    </button>
+            {watch("paymentTerms") === "usance" || watch("paymentTerms") === "Tenor LC" ? (
+              <div className="w-full">
+                <label
+                  htmlFor="payment-tenor"
+                  className={`px-3 py-2.5 w-full transition-colors duration-100 ${
+                    watch("paymentTerms") === "Tenor LC"
+                      ? "bg-[#DCE5FD]"
+                      : "border border-borderCol bg-white"
+                  } rounded-md flex items-center justify-between gap-x-3 mb-2 text-lightGray text-sm`}
+                >
+                  <div className="flex gap-x-2 items-center">
+                    <input
+                      type="radio"
+                      id="payment-tenor"
+                      value="Tenor LC"
+                      checked={watch("paymentTerms") === "Tenor LC"}
+                      {...register("paymentTerms")}
+                      className="accent-[#255EF2] size-4"
+                    />
+                    Tenor LC
                   </div>
-                </div>
-              </label>
-            </div>
+                  <div className="border-b border-black flex items-center">
+                    <input
+                      placeholder="enter days"
+                      inputMode="numeric"
+                      disabled={watch("paymentTerms") !== "Tenor LC"}
+                      type="text"
+                      value={dayss}
+                      max={100}
+                      // {...register("days")}
+                      onChange={(e) => setDays(Number(e.target.value))}
+                      className="text-sm text-lightGray border-none max-w-[150px] bg-transparent outline-none"
+                    />
+                    <div className="flex items-center gap-x-1">
+                      <button
+                        disabled={watch("paymentTerms") !== "Tenor LC"}
+                        type="button"
+                        className="rounded-sm border border-para size-6 center mb-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDays((prev: any) =>
+                            prev >= 1 ? Number(prev) + 1 : 1
+                          );
+                        }}
+                      >
+                        +
+                      </button>
+                      <button
+                        disabled={watch("paymentTerms") !== "Tenor LC"}
+                        type="button"
+                        className="rounded-sm border border-para size-6 center mb-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log("onclicked");
+                          console.log(days);
+                          setDays((prev: any) =>
+                            prev > 1 ? Number(prev) - 1 : 1
+                          );
+                        }}
+                      >
+                        -
+                      </button>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

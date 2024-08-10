@@ -101,13 +101,13 @@ export const generalRiskSchema = z
       },
       { message: "Confirming bank details are required" }
     ),
-    isLcDiscounting: z.string({ message: "Choose if LC is dicounted" }),
+    isLcDiscounting: z.string({ message: "Choose if LC is dicounted" }).optional(),
     expectedDiscounting: z.string({
       message: "Choose if LC is expected to be  dicounted",
-    }),
+    }).optional(),
     expectedDateDiscounting: z.date({
       message: "Expected date for discounting cannot be empty",
-    }),
+    })?.optional(),
     expiryDate: z.date({ message: "Expiry date cannot be empty" }),
     // startDate: z.date({ message: "Start date cannot be empty" }),
     paymentTerms: z

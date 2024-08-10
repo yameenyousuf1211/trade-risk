@@ -164,6 +164,9 @@ const RiskFundedPage = () => {
       };
       // @ts-ignore
       delete reqData?.swiftCode;
+      // @ts-ignore
+      delete reqData?.period;
+      // @ts-ignore
       delete reqData?.country;
 
       // @ts-ignore

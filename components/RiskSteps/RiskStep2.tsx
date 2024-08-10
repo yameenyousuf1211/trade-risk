@@ -26,6 +26,14 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
   const [currencyValue, setCurrencyValue] = useState<string | number>();
   const [rawValue, setRawValue] = useState("");
   const amount = watch("riskParticipationTransaction.amount");
+  const baseRate = watch("riskParticipationTransaction.baseRate");
+  //
+
+  useEffect(() => {
+    if (baseRate)
+      setValue("riskParticipationTransaction.participationRate", baseRate);
+  }, [baseRate]);
+
   const handleChange = (e: any) => {
     const { value } = e.target;
     const digitsOnly = value.replace(/\D/g, "");
@@ -260,9 +268,27 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
               </div>
               <div className="w-full">
                 <p className="font-semibold text-sm text-lightGray mb-2 ml-2">
-                  Participation offered for value "" ( MAX 90 % )
+                  Pricing offered on non funded participation
                 </p>
                 <div className="flex items-start gap-x-2 justify-between w-full">
+                  {watch("riskParticipation") === "Non-Funded" && (
+                    <div className="bg-white border rounded-sm py-3 px-3 h-[53.5px] w-[80%] flex items-center justify-between gap-x-2">
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        className="bg-transparent outline-none w-[80%] text-sm"
+                        placeholder="Enter Value"
+                        {...register("riskParticipationTransaction.baseRate")}
+                        max={100}
+                        onKeyUp={(event: any) => {
+                          if (event.target?.value > 90) {
+                            event.target.value = "90.0";
+                          }
+                        }}
+                      />
+                      <p>%</p>
+                    </div>
+                  )}
                   <BankRadioInput
                     id="return-per-annum"
                     label="% per annum"
@@ -285,24 +311,7 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
                     }
                     register={register}
                   />
-                  {watch("riskParticipation") === "Non-Funded" && (
-                    <div className="bg-white border rounded-sm py-3 px-3 h-[53.5px] w-[80%] flex items-center justify-between gap-x-2">
-                      <input
-                        type="number"
-                        inputMode="numeric"
-                        className="bg-transparent outline-none w-[80%] text-sm"
-                        placeholder="Enter Value"
-                        {...register("riskParticipationTransaction.baseRate")}
-                        max={100}
-                        onKeyUp={(event: any) => {
-                          if (event.target?.value > 100) {
-                            event.target.value = "100.0";
-                          }
-                        }}
-                      />
-                      <p>%</p>
-                    </div>
-                  )}
+
                   {watch("riskParticipation") === "Funded" && (
                     <>
                       <label
@@ -379,7 +388,7 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
           <div className="mt-4 py-2 px-2 border border-borderCol rounded-lg w-full bg-[#F5F7F9]">
             <div className="flex items-center justify-start gap-x-3 w-full">
               <p className="font-semibold text-sm text-lightGray ml-2">
-                Participation is offered for
+                % participation offered
               </p>
               <div className="bg-[#E9E9F0] border rounded-sm py-3 px-3 max-w-[130px] flex items-center justify-between gap-x-2">
                 <input
@@ -387,6 +396,7 @@ export const RiskStep2 = ({ register, watch, setValue }: Props) => {
                   inputMode="numeric"
                   className="bg-transparent outline-none w-[80%] text-sm"
                   placeholder="Value"
+                  disabled
                   {...register(
                     "riskParticipationTransaction.participationRate"
                   )}

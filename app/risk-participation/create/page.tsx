@@ -128,11 +128,14 @@ const RiskFundedPage = () => {
     }
     if (!data?.expectedDateDiscounting) {
       delete preparedData?.expectedDateDiscounting;
-      data["expectedDiscounting"] = (new Date()).toString();
+      data["expectedDateDiscounting"] = new Date();
     }
     if (!data?.paymentReceviedType) {
       delete preparedData?.paymentReceviedType;
       data["paymentReceviedType"] = "all-prices";
+    }
+    if (!data?.startDate) {
+      data["startDate"] = period?.startDate;
     }
     const validationResult = generalRiskSchema.safeParse(preparedData);
     console.log(validationResult);

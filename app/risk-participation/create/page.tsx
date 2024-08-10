@@ -162,12 +162,6 @@ const RiskFundedPage = () => {
         currency: data?.currency ? data?.currency : "usd",
         days: data?.paymentTerms == "Tenor LC" ? 22 : undefined,
       };
-      // @ts-ignore
-      delete reqData?.swiftCode;
-      // @ts-ignore
-      delete reqData?.period;
-      // @ts-ignore
-      delete reqData?.country;
 
       // @ts-ignore
       delete reqData?.draft;

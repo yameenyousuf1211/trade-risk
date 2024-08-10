@@ -3,7 +3,7 @@ import { z } from "zod";
 export const generalRiskSchema = z
   .object({
     country: z.string({ message: "Issuing bank country is required" }),
-    swiftCode: z.string({ message: "swiftCode is required" }),
+    swiftCode: z.string()?.optional(),
     banks: z.array(
       z.string().nonempty({ message: "Bank name cannot be empty" }),
       { message: "Please select a bank" }

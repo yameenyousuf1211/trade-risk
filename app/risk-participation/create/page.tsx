@@ -134,9 +134,6 @@ const RiskFundedPage = () => {
       delete preparedData?.paymentReceviedType;
       data["paymentReceviedType"] = "all-prices";
     }
-    if (!data?.startDate) {
-      data["startDate"] = period?.startDate;
-    }
     const validationResult = generalRiskSchema.safeParse(preparedData);
     console.log(validationResult);
 

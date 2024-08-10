@@ -163,6 +163,10 @@ const RiskFundedPage = () => {
         days: data?.paymentTerms == "Tenor LC" ? 22 : undefined,
       };
       // @ts-ignore
+      delete reqData?.swiftCode;
+      delete reqData?.country;
+
+      // @ts-ignore
       delete reqData?.draft;
       // @ts-ignore
       delete reqData?.updatedAt;

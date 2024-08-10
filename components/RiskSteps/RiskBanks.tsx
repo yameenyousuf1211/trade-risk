@@ -9,7 +9,7 @@ export const RiskBanks = ({
   watch,
   countries,
   flags,
-  register
+  register,
 }: {
   setValue: any;
   watch: any;
@@ -37,31 +37,34 @@ export const RiskBanks = ({
       </p>
       <div className="mt-3">
         <div className="flex gap-x-2">
-          <TagsInput
-            value={banksData}
-            onChange={(val: any) => {
-              setBanksData(val);
-              // setValue("banks", banksData);
-              setBankInput("");
-            }}
-            onKeyUp={(e) => {
-              if (e.key.length === 1) {
-                setBankInput((prev) => prev + e.key);
+          <div className="flex-1">
+            <TagsInput
+              value={banksData}
+              onChange={(val: any) => {
+                setBanksData(val);
                 // setValue("banks", banksData);
-              }
-            }}
-            onBlur={(e: any) => {
-              if (BankInput.length > 1) {
-                setBanksData((prev) => [...prev, BankInput]);
-                // setValue("banks", banksData);
-                e.target.value = "";
-              }
-              setBankInput("");
-            }}
-            name="banks"
-            placeHolder="Select Bank(s)"
-          />
+                setBankInput("");
+              }}
+              onKeyUp={(e) => {
+                if (e.key.length === 1) {
+                  setBankInput((prev) => prev + e.key);
+                  // setValue("banks", banksData);
+                }
+              }}
+              onBlur={(e: any) => {
+                if (BankInput.length > 1) {
+                  setBanksData((prev) => [...prev, BankInput]);
+                  // setValue("banks", banksData);
+                  e.target.value = "";
+                }
+                setBankInput("");
+              }}
+              name="banks"
+              placeHolder="Select Bank(s)"
+            />
+          </div>
           <DDInput
+            extStyle="flex-1"
             placeholder="Select a country"
             label="Country"
             id="country"
@@ -73,7 +76,7 @@ export const RiskBanks = ({
 
           <label
             id="name"
-            className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
+            className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between flex-1"
           >
             <p className="w-full text-lightGray text-sm">Swift Code</p>
             <Input

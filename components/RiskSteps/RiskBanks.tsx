@@ -37,7 +37,6 @@ export const RiskBanks = ({
       </p>
       <div className="mt-3">
         <div className="flex gap-x-2">
-          <div className="flex-1">
             <TagsInput
               value={banksData}
               onChange={(val: any) => {
@@ -62,7 +61,6 @@ export const RiskBanks = ({
               name="banks"
               placeHolder="Select Bank(s)"
             />
-          </div>
           <DDInput
             extStyle="flex-1"
             placeholder="Select a country"

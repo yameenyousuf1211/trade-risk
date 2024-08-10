@@ -101,13 +101,19 @@ export const generalRiskSchema = z
       },
       { message: "Confirming bank details are required" }
     ),
-    isLcDiscounting: z.string({ message: "Choose if LC is dicounted" }).optional(),
-    expectedDiscounting: z.string({
-      message: "Choose if LC is expected to be  dicounted",
-    }).optional(),
-    expectedDateDiscounting: z.date({
-      message: "Expected date for discounting cannot be empty",
-    })?.optional(),
+    isLcDiscounting: z
+      .string({ message: "Choose if LC is dicounted" })
+      .optional(),
+    expectedDiscounting: z
+      .string({
+        message: "Choose if LC is expected to be  dicounted",
+      })
+      .optional(),
+    expectedDateDiscounting: z
+      .date({
+        message: "Expected date for discounting cannot be empty",
+      })
+      ?.optional(),
     expiryDate: z.date({ message: "Expiry date cannot be empty" }),
     // startDate: z.date({ message: "Start date cannot be empty" }),
     paymentTerms: z
@@ -145,9 +151,8 @@ export const generalRiskSchema = z
         .string()
         .nonempty({ message: "Beneficiary country cannot be empty" }),
     }),
-    paymentReceviedType: z
-      .string()
-      .nonempty({ message: "Payment Recevied type cannot be empty" }),
+    paymentReceviedType: z.string().optional(),
+    // .nonempty({ message: "Payment Recevied type cannot be empty" }),
     attachment: z.any().optional(),
     note: z.string().nonempty({ message: "Note cannot be empty" }),
     // draft: z.boolean(),
@@ -177,8 +182,7 @@ export const generalRiskSchema = z
       return true;
     },
     {
-      message:
-        "Base rate cannot be empty when risk participation is 'Funded'",
+      message: "Base rate cannot be empty when risk participation is 'Funded'",
       path: ["baseRate"],
     }
   )

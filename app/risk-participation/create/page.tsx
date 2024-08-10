@@ -135,7 +135,6 @@ const RiskFundedPage = () => {
       delete preparedData?.paymentReceviedType;
       data["paymentReceviedType"] = "all-prices";
     }
-
     const validationResult = generalRiskSchema.safeParse(preparedData);
     console.log(validationResult);
 

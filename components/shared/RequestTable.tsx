@@ -308,6 +308,15 @@ export const RequestTable = ({
                         </div>
                       </div>
                     </TableCell>
+                    <TableCell className="px-1 py-1 max-w-[180px]">
+                      <div className="flex items-center justify-start gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
+                        <p className="text-[16px] truncate capitalize text-lightGray">
+                          {item.issuingBank &&
+                            allCountries &&
+                            item.issuingBank.country}
+                        </p>
+                      </div>
+                    </TableCell>
                     <TableDataCell
                       data={
                         (item.exporterInfo &&

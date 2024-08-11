@@ -388,7 +388,7 @@ export const AddBid = ({
                       <LCInfo
                         label="Issuance/Expected Issuance Date"
                         value={convertDateToCommaString(
-                          riskData?.startDate || ""
+                          (riskData?.startDate?riskData?.startDate:riskData?.period?.startDate) || ""
                         )}
                         noBorder
                       />
@@ -539,9 +539,9 @@ export const AddBid = ({
                       <LCInfo
                         label="LC Issuance (Expected)"
                         value={
-                          lcData?.period?.startDate
+                          (riskData?.startDate || riskData?.period?.startDate)
                             ? convertDateToCommaString(
-                                lcData?.period?.startDate
+                              (riskData?.startDate?riskData?.startDate:riskData?.period?.startDate)
                               )
                             : lcData?.createdAt
                             ? convertDateToCommaString(lcData?.createdAt)

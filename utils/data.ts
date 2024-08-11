@@ -3,10 +3,10 @@ export const columnHeaders = [
   "Request",
   "Expires",
   "Product Type",
-  "LC Issuing Bank",
+  "Issuing Bank",
   "Beneficiary",
-  "LC applicant",
-  "LC Amount",
+  "applicant",
+  "Amount",
   "Bids",
 ];
 
@@ -27,10 +27,11 @@ export const bankColumnHeaders = [
   { name: "Deal Received", key: "lcPeriod.startDate" },
   { name: "Expires", key: "lcPeriod.endDate" },
   { name: "Product Type", key: "lcType" },
-  { name: "LC Issuing Bank", key: "issuingBank.bank" },
+  { name: "Issuing Bank", key: "issuingBank.bank" },
+  { name: "Country", key: "issuingBank.country" },
   { name: "Beneficiary", key: "exporterInfo.beneficiaryName" },
-  { name: "LC applicant", key: "importerInfo.applicantName" },
-  { name: "LC Amount", key: "amount" },
+  { name: "applicant", key: "importerInfo.applicantName" },
+  { name: "Amount", key: "amount" },
   { name: "Bids", key: "bids" },
 ];
 
@@ -69,9 +70,13 @@ export const bankCountriesPlain = [
 ];
 
 export const sidebarItems = [
-  { name: "User Profile",  link: "/setting",id:1 },
-  { name: "Roles & Permission",  link: "/setting/roles-permission",id:2 },
-  { name: "User Management",  link: "/setting/user-management",id:3 },
-  { name: "Company Info",  link: "/setting/company-infomation",id:4 },
-  { name: "Notification preferences",  link: "/setting/notification-preferences",id:5 },
+  { name: "User Profile", link: "/setting", id: 1 },
+  { name: "Roles & Permission", link: "/setting/roles-permission", id: 2 },
+  { name: "User Management", link: "/setting/user-management", id: 3 },
+  { name: "Company Info", link: "/setting/company-infomation", id: 4 },
+  {
+    name: "Notification preferences",
+    link: "/setting/notification-preferences",
+    id: 5,
+  },
 ];

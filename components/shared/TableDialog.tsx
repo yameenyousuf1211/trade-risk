@@ -239,6 +239,7 @@ export const TableDialog = ({
     retentionMoneyBond;
 
   const formatNumberWithCommas = (value: string) => {
+    if(!value) return ""
     value = value?.toString();
     const numberString = value.replace(/,/g, ""); // Remove existing commas
     return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -364,7 +365,7 @@ export const TableDialog = ({
                 />
                 <LCInfo
                   label="Issuance/Expected Issuance Date"
-                  value={convertDateToCommaString(riskData?.startDate || "")}
+                  value={convertDateToCommaString((riskData?.startDate?riskData?.startDate:riskData?.period?.startDate) || "")}
                   noBorder
                 />
                 <LCInfo
@@ -486,7 +487,7 @@ export const TableDialog = ({
                     value={
                       lcData &&
                       lcData.period &&
-                      convertDateToCommaString(lcData.period?.startDate)
+                      convertDateToCommaString((lcData?.startDate?lcData?.startDate:lcData?.period?.startDate))
                     }
                   />
                   <LCInfo

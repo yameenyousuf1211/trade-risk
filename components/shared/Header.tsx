@@ -92,7 +92,7 @@ export const Header = () => {
                     : "hover:text-primaryCol transition-colors duration-150"
                 }  font-semibold`}
               >
-                Risk Participation Requests
+                Risk Participation
               </Link>
               {pathname === "/risk-participation" && (
                 <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />

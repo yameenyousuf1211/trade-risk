@@ -201,7 +201,7 @@ export const RiskStep3 = ({
                     <input
                       placeholder="enter days"
                       inputMode="numeric"
-                      disabled={watch("paymentTerms") !== "Tenor LC"}
+                      // disabled={watch("paymentTerms") !== "Tenor LC"}
                       type="text"
                       value={dayss}
                       max={100}
@@ -211,7 +211,7 @@ export const RiskStep3 = ({
                     />
                     <div className="flex items-center gap-x-1">
                       <button
-                        disabled={watch("paymentTerms") !== "Tenor LC"}
+                        // disabled={watch("paymentTerms") !== "Tenor LC"}
                         type="button"
                         className="rounded-sm border border-para size-6 center mb-2"
                         onClick={(e) => {
@@ -224,7 +224,7 @@ export const RiskStep3 = ({
                         +
                       </button>
                       <button
-                        disabled={watch("paymentTerms") !== "Tenor LC"}
+                        // disabled={watch("paymentTerms") !== "Tenor LC"}
                         type="button"
                         className="rounded-sm border border-para size-6 center mb-2"
                         onClick={(e) => {

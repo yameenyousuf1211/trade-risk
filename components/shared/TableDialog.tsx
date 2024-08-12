@@ -354,25 +354,37 @@ export const TableDialog = ({
                   label="LC Advising Bank"
                   value={riskData?.advisingBank?.bank || ""}
                 />
-                <LCInfo
-                  label="Confirming Bank"
-                  value={riskData?.confirmingBank?.bank || ""}
-                />
-                {/* <LCInfo
-                  label="LC Discounted"
-                  value={
-                    riskData?.transhipment === true ? "Allowed" : "Not allowed"
-                  }
-                /> */}
-                <LCInfo
-                  label="Expected Discounting Date"
-                  value={convertDateToCommaString(
-                    riskData?.expectedDateDiscounting || ""
-                  )}
-                />
+                {lcData?.type ? (
+                  <LCInfo
+                    label="Confirming Bank"
+                    value={riskData?.confirmingBank?.bank || ""}
+                  />
+                ) : null}
+                {lcData?.type ? (
+                  <LCInfo
+                    label="LC Discounted"
+                    value={
+                      riskData?.transhipment === true
+                        ? "Allowed"
+                        : "Not allowed"
+                    }
+                  />
+                ) : null}
+                {lcData?.type ? (
+                  <LCInfo
+                    label="Expected Discounting Date"
+                    value={convertDateToCommaString(
+                      riskData?.expectedDateDiscounting || ""
+                    )}
+                  />
+                ) : null}
                 <LCInfo
                   label="Issuance/Expected Issuance Date"
-                  value={convertDateToCommaString((riskData?.startDate?riskData?.startDate:riskData?.period?.startDate) || "")}
+                  value={convertDateToCommaString(
+                    (riskData?.startDate
+                      ? riskData?.startDate
+                      : riskData?.period?.startDate) || ""
+                  )}
                   noBorder
                 />
                 <LCInfo
@@ -474,10 +486,10 @@ export const TableDialog = ({
                     label="Advising Bank"
                     value={(lcData && lcData.advisingBank?.bank) || "-"}
                   />
-                  {/* <LCInfo
+                  <LCInfo
                     label="Confirming Bank"
                     value={(lcData && lcData.confirmingBank?.bank) || "-"}
-                  /> */}
+                  />
                   <LCInfo
                     label="Payments Terms"
                     value={(lcData && lcData.paymentTerms) || ""}
@@ -494,7 +506,11 @@ export const TableDialog = ({
                     value={
                       lcData &&
                       lcData.period &&
-                      convertDateToCommaString((lcData?.startDate?lcData?.startDate:lcData?.period?.startDate))
+                      convertDateToCommaString(
+                        lcData?.startDate
+                          ? lcData?.startDate
+                          : lcData?.period?.startDate
+                      )
                     }
                   />
                   <LCInfo

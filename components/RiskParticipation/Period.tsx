@@ -33,7 +33,7 @@ export default function Period({
   let lcStartDate = watch("period.startDate");
 
   return (
-    <div className="flex flex-col gap-y-4 justify-between border border-borderCol rounded-md py-2 px-3 mb-3 bg-[#F5F7F9]">
+    <div className="flex gap-y-4 items-center justify-between border border-borderCol rounded-md py-2 px-3 mb-3 bg-[white]">
       <div className="flex  items-center">
         <div className="w-full rounded-md flex items-center gap-x-2">
           <input

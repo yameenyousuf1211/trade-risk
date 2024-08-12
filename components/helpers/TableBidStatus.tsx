@@ -31,7 +31,7 @@ export const TableBidStatus = ({
     <>
       {isLoading ? (
         <SkeletonButton />
-      ) : data && data.response.data !== "Pending" ? (
+      ) : data ? (
         <AddBid
         isNotification={isNotification}
           triggerTitle={data.response.data || ""}

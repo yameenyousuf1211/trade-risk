@@ -139,7 +139,7 @@ const CreateRequestPage = () => {
       },
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
-    console.log("🚀 ~ CreateRequestPage ~ baseData:", baseData)
+    console.log("🚀 ~ CreateRequestPage ~ baseData:", baseData);
 
     if (isDraft) {
       const {
@@ -167,7 +167,7 @@ const CreateRequestPage = () => {
             id: confirmationData?._id,
           })
         : await onCreateLC(reqData);
-        console.log("🚀 ~ CreateRequestPage ~ response:", response)
+      console.log("🚀 ~ CreateRequestPage ~ response:", response);
       setLoader(false);
       if (!success) return toast.error(response);
       else {
@@ -201,8 +201,11 @@ const CreateRequestPage = () => {
         expectedConfirmationDate,
       };
       const validationResult = confirmationSchema.safeParse(preparedData);
-      console.log("🚀 ~ CreateRequestPage ~ preparedData:", preparedData)
-      console.log("🚀 ~ CreateRequestPage ~ validationResult:", validationResult)
+      console.log("🚀 ~ CreateRequestPage ~ preparedData:", preparedData);
+      console.log(
+        "🚀 ~ CreateRequestPage ~ validationResult:",
+        validationResult
+      );
       if (validationResult.success) {
         const validatedData = validationResult.data;
         if (isProceed) {
@@ -221,11 +224,10 @@ const CreateRequestPage = () => {
           stopLoading();
           if (!success) return toast.error(response);
           else {
-            console.log(response?.data?._id, "hi response");
             const notificationResp = await sendNotification({
               role: "bank",
               title: `New LC Confirmation Request ${response?.data?._id}`,
-              body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
+              body: `Ref no ${response?.data?.refId} from ${response?.data?.issuingBank?.bank} by ${user?.name}`,
             });
             console.log(notificationResp);
             setValues(getStateValues(useConfirmationStore.getInitialState()));

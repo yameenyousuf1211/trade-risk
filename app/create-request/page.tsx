@@ -224,6 +224,7 @@ const CreateRequestPage = () => {
           stopLoading();
           if (!success) return toast.error(response);
           else {
+            console.log(response?.data?._id, "hi response");
             const notificationResp = await sendNotification({
               role: "bank",
               title: `New LC Confirmation Request ${response?.data?._id}`,

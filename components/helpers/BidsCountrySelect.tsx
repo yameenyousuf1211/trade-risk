@@ -1,9 +1,6 @@
 "use client";
-import { getCountries } from "@/services/apis/helpers.api";
-import { Country } from "@/types/type";
-import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -26,19 +23,25 @@ export const BidsCountrySelect = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const handleFilter = (lcType: string) => {
-    const queryParams = new URLSearchParams(searchParams);
-    queryParams.set("filter", lcType.toString());
-    queryParams.set("page", "1");
-
-    const queryString = queryParams.toString();
-    router.push(`${pathname}?${queryString}`, { scroll: false });
-  };
-
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryVal, setCountryVal] = useState("");
 
   const { countries, flags } = useCountries();
+
+  const handleCountryChange = (currentValue: string) => {
+    setCountryVal(
+      currentValue.toLowerCase() === countryVal.toLowerCase()
+        ? ""
+        : currentValue
+    );
+    setCountryOpen(false);
+
+    const queryParams = new URLSearchParams(searchParams);
+    queryParams.set("country", currentValue);
+    queryParams.set("page", "1");
+
+    router.push(`${pathname}?${queryParams.toString()}`, { scroll: false });
+  };
 
   return (
     <div className="w-[180px]">
@@ -70,15 +73,7 @@ export const BidsCountrySelect = () => {
                   <CommandItem
                     key={country}
                     value={country}
-                    onSelect={(currentValue) => {
-                      setCountryVal(
-                        currentValue.toLowerCase() === countryVal.toLowerCase()
-                          ? ""
-                          : currentValue
-                      );
-                      setCountryOpen(false);
-                      // handleFilter(currentValue);
-                    }}
+                    onSelect={() => handleCountryChange(country)}
                   >
                     <Check
                       className={cn(

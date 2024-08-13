@@ -238,10 +238,13 @@ export const TableDialog = ({
     performanceBond +
     retentionMoneyBond;
 
-  const formatNumberWithCommas = (value: string) => {
-    if (!value) return "";
-    value = value?.toString();
-    const numberString = value.replace(/,/g, ""); // Remove existing commas
+  const formatNumberWithCommas = (value: string | number) => {
+    if (value === undefined || value === null) {
+      return "";
+    }
+
+    value = value.toString();
+    const numberString = value.replace(/,/g, "");
     return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 

@@ -92,7 +92,7 @@ const RiskFundedPage = () => {
     isDraft
   ) => {
     console.log("🚀 ~ RiskFundedPage ~ data:", data);
-    // return;
+
     const startDateString = data?.period?.startDate;
     const expiryDateString = data?.expiryDate;
     const expectedDateDiscountingString = data?.expectedDateDiscounting;
@@ -110,14 +110,15 @@ const RiskFundedPage = () => {
     const expectedDateConfirmation = expectedDateConfirmationString
       ? new Date(expectedDateConfirmationString)
       : null;
+
     const preparedData = {
       ...data,
       period,
-      // startDate: startDate as Date,
       expiryDate: expiryDate,
       expectedDateDiscounting: expectedDateDiscounting,
       expectedDateConfirmation: expectedDateConfirmation,
     };
+
     if (!data?.isLcDiscounting) {
       delete preparedData?.isLcDiscounting;
       data["isLcDiscounting"] = "no";

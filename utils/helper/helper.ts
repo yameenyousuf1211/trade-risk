@@ -1,5 +1,12 @@
 import { type ClassValue, clsx } from "clsx";
-import { differenceInDays, differenceInHours, differenceInMinutes, differenceInMonths, endOfYear, format } from "date-fns";
+import {
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+  differenceInMonths,
+  endOfYear,
+  format,
+} from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -94,7 +101,15 @@ export const convertDateToString = (date: any) => {
 };
 
 export const convertDateToCommaString = (date: any) => {
+  if (!date) {
+    return "Date not available";
+  }
+
   const jsDate = new Date(date);
+
+  if (isNaN(jsDate.getTime())) {
+    return "Date not available";
+  }
 
   const year = jsDate.getFullYear();
   const monthNames = [
@@ -111,7 +126,7 @@ export const convertDateToCommaString = (date: any) => {
     "Nov",
     "Dec",
   ];
-  const month = monthNames[jsDate.getMonth()]; // Get the month name from the array
+  const month = monthNames[jsDate.getMonth()];
   const day = String(jsDate.getDate()).padStart(2, "0");
 
   return `${month} ${day}, ${year}`;
@@ -159,8 +174,18 @@ export const convertDateAndTimeToString = (date: any) => {
   const year = jsDate.getFullYear();
 
   const monthNames = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
   const month = monthNames[jsDate.getMonth()];
@@ -173,11 +198,10 @@ export const convertDateAndTimeToString = (date: any) => {
   console.log(formattedDate);
   return formattedDate;
 };
-export const findTime = (date:Date) =>{
-  
+export const findTime = (date: Date) => {
   const now = new Date();
   console.log(date);
-  
+
   const messageDate = new Date(date);
 
   const minutesDifference = differenceInMinutes(now, messageDate);
@@ -186,7 +210,7 @@ export const findTime = (date:Date) =>{
   const monthsDifference = differenceInMonths(now, messageDate);
 
   if (minutesDifference < 1) {
-    return 'now';
+    return "now";
   } else if (minutesDifference < 60) {
     return `${minutesDifference}m ago`;
   } else if (hoursDifference < 24) {
@@ -196,7 +220,7 @@ export const findTime = (date:Date) =>{
   } else {
     return `${monthsDifference}mo ago`;
   }
-}
+};
 export const compareValues = (
   a: any,
   b: any,
@@ -224,28 +248,28 @@ export const calculateDaysLeft = (futureDate: any) => {
 
 export const removeId = (title: string) => {
   const idPattern = /\b[0-9a-fA-F]{24}\b/; // pattern to match a 24-character hexadecimal string
-  const removedIdTitle = title.split(" ").filter(word => !idPattern.test(word));
+  const removedIdTitle = title
+    .split(" ")
+    .filter((word) => !idPattern.test(word));
   const plainText = removedIdTitle.join(" ");
   console.log(plainText, "hi");
   return plainText;
 };
 
-
-export const formatPhoneNumber = (phoneNumber:string) => {
-  return phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+export const formatPhoneNumber = (phoneNumber: string) => {
+  return phoneNumber.startsWith("+") ? phoneNumber : `+${phoneNumber}`;
 };
-
 
 /**
  * Converts a comma-separated string of numbers into a single concatenated number.
- * 
+ *
  * @param {string} str - The comma-separated string of numbers.
  * @returns {number} - The concatenated number.
  */
 export function convertStringToNumber(str: string): number {
-  if(!str) return 0;
-  str = str?.toString()
-  const cleanedStr = str.replace(/,/g, ''); // Remove the commas
+  if (!str) return 0;
+  str = str?.toString();
+  const cleanedStr = str.replace(/,/g, ""); // Remove the commas
   const number = parseFloat(cleanedStr); // Convert to a floating-point number
   return number;
 }

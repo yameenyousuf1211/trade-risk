@@ -64,9 +64,7 @@ export const Step2 = ({
     const digitsOnly = value.replace(/\D/g, "");
     if (digitsOnly) {
       const formattedValue = parseInt(digitsOnly).toLocaleString();
-      console.log(formattedValue, "FORMATTED");
       setCurrencyValue(formattedValue);
-      console.log(currencyValue);
       setRawValue(digitsOnly);
       setValue("amount", digitsOnly);
     } else {
@@ -76,22 +74,28 @@ export const Step2 = ({
     }
   };
 
-  const handleBlur = () => {
+  const handleFocus = () => {
     if (rawValue) {
-      const formattedValueWithCents = `${parseInt(
-        rawValue
-      ).toLocaleString()}.00`;
-      setCurrencyValue(formattedValueWithCents);
+      const numericValue = parseFloat(rawValue);
+      if (numericValue % 1 === 0) {
+        setCurrencyValue(numericValue.toString().replace(/,/g, ""));
+      } else {
+        setCurrencyValue(numericValue.toString().replace(/,/g, ""));
+      }
     }
   };
 
-  // useEffect(() => {
-  //   if (amount) {
-  //     setValue("amount", amount.toString());
-  //     setCurrencyValue(amount);
-  //     setRawValue(amount);
-  //   }
-  // }, [amount]);
+  const handleBlur = () => {
+    if (rawValue) {
+      const numericValue = parseFloat(rawValue);
+      const formattedValue = numericValue.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      setCurrencyValue(formattedValue);
+    }
+  };
+
   useEffect(() => {
     if (amount) {
       const digitsOnly = amount?.toString().replace(/\D/g, "");
@@ -108,7 +112,6 @@ export const Step2 = ({
     if (amount && paymentTerms) {
       addStep(AMOUNT);
     } else removeStep(AMOUNT);
-    // if (paymentTerms !== "Sight LC") setValue("extraInfo", undefined);
   }, [amount, paymentTerms]);
 
   return (
@@ -154,14 +157,14 @@ export const Step2 = ({
             {...register("amount")}
             value={currencyValue}
             onChange={handleChange}
+            onFocus={handleFocus}
             onBlur={handleBlur}
             className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0  flex h-10 w-full rounded-md  bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           />
         </div>
 
         <p className="font-semibold text-sm">
-          {rawValue && numberToText.convertToText(rawValue.toString())}
-          {/* {amount} */}{" "}
+          {rawValue && numberToText.convertToText(rawValue.toString())}{" "}
           <span className="text-primaryCol uppercase">
             {currencyVal
               ? currencyVal === "USD"

@@ -1,5 +1,5 @@
-"use client"
-import React, { useState } from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import { addDays, format } from "date-fns";
 import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 import { DateRange } from "react-day-picker";
@@ -11,12 +11,26 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export const DateRangePicker = () => {
   const [date, setDate] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
   });
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (date?.from && date?.to) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("fromDate", format(date.from, "yyyy-MM-dd"));
+      params.set("toDate", format(date.to, "yyyy-MM-dd"));
+      router.push(`?${params.toString()}`);
+    }
+  }, [date, router, searchParams]);
+
   return (
     <div className={cn("grid gap-2", "")}>
       <Popover>
@@ -42,7 +56,7 @@ export const DateRangePicker = () => {
             ) : (
               <div className="flex items-center justify-between gap-x-2 w-full">
                 <span>Select a date range</span>
-                <ChevronDown className="size-4"/>
+                <ChevronDown className="size-4" />
               </div>
             )}
           </Button>

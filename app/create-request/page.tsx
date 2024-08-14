@@ -139,6 +139,7 @@ const CreateRequestPage = () => {
       },
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
+    console.log("🚀 ~ CreateRequestPage ~ baseData:", baseData);
 
     if (isDraft) {
       const {
@@ -166,6 +167,7 @@ const CreateRequestPage = () => {
             id: confirmationData?._id,
           })
         : await onCreateLC(reqData);
+      console.log("🚀 ~ CreateRequestPage ~ response:", response);
       setLoader(false);
       if (!success) return toast.error(response);
       else {
@@ -199,6 +201,11 @@ const CreateRequestPage = () => {
         expectedConfirmationDate,
       };
       const validationResult = confirmationSchema.safeParse(preparedData);
+      console.log("🚀 ~ CreateRequestPage ~ preparedData:", preparedData);
+      console.log(
+        "🚀 ~ CreateRequestPage ~ validationResult:",
+        validationResult
+      );
       if (validationResult.success) {
         const validatedData = validationResult.data;
         if (isProceed) {
@@ -217,11 +224,11 @@ const CreateRequestPage = () => {
           stopLoading();
           if (!success) return toast.error(response);
           else {
-            console.log(response?.data?._id,"hi response")
+            console.log(response?.data?._id, "hi response");
             const notificationResp = await sendNotification({
               role: "bank",
               title: `New LC Confirmation Request ${response?.data?._id}`,
-              body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
+              body: `Ref no ${response.data.refId} from ${response?.data?.issuingBank?.bank} by ${user?.name}`,
             });
             console.log(notificationResp);
             setValues(getStateValues(useConfirmationStore.getInitialState()));
@@ -324,10 +331,8 @@ const CreateRequestPage = () => {
             setStepCompleted={handleStepCompletion}
           />
         </div>
-        {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
           <Button
-            // onClick={handleSubmit(saveAsDraft)}
             onClick={handleSubmit((data) => onSubmit({ data, isDraft: true }))}
             type="button"
             variant="ghost"
@@ -341,7 +346,6 @@ const CreateRequestPage = () => {
             size="lg"
             disabled={isLoading}
             className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
-            // onClick={handleSubmit(onSubmit)}
             onClick={handleSubmit((data) => onSubmit({ data, isDraft: false }))}
           >
             {isLoading ? <Loader /> : "Submit request"}

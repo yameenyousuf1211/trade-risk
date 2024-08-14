@@ -137,7 +137,7 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
 
   const filteredData =
     data &&
-    data.data.length > 0 &&
+    data?.data?.length&&
     data?.data.filter((draft) => {
       if (isConfirmation) {
         return draft.type === "LC Confirmation";
@@ -165,12 +165,12 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
             </h4>
 
             <div className="flex flex-col gap-y-2">
-              {data.data.length > 0 &&
+              {data?.data?.length > 0 &&
                 filteredData &&
                 filteredData.map((draft, idx) => (
                   <DraftCard
                     key={draft._id}
-                    noBorder={idx === data.data.length - 1}
+                    noBorder={idx === data?.data?.length - 1}
                     draft={draft}
                     isConfirmation={isConfirmation}
                     isDiscounting={isDiscounting}

@@ -38,6 +38,10 @@ const Input = <T extends FieldValues>({
     }
   };
 
+  //cheap fix:
+  const otherProps = onChange ? { onChange: onChange } : {};
+  const otherPropsBlur = onBlur ? { onBlur: onBlur } : {};
+
   return (
     <input
       value={value}
@@ -50,8 +54,9 @@ const Input = <T extends FieldValues>({
       )}
       max={max}
       {...register(name as Path<T>)}
-      onChange={handleChange}
-      onBlur={onBlur}
+      // onChange={handleChange}
+      {...otherProps}
+      {...otherPropsBlur}
     />
   );
 };

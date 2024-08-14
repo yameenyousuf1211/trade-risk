@@ -17,6 +17,7 @@ const LgStep4: React.FC<LgStepsProps2> = ({
 }) => {
   const beneficiaryCountry = watch("beneficiaryDetails.country");
   const beneficiaryName = watch("beneficiaryDetails.name");
+  console.log("🚀 ~ beneficiaryName:", beneficiaryName)
   const beneficiaryAddress = watch("beneficiaryDetails.address");
   const beneficiaryPhoneNumber = watch("beneficiaryDetails.phoneNumber");
   const { addStep, removeStep } = useStepStore();
@@ -67,6 +68,7 @@ const LgStep4: React.FC<LgStepsProps2> = ({
           >
             <p className="w-full text-sm text-lightGray">Beneficiary Name</p>
             <Input
+            onChange={(e) => setValue("beneficiaryDetails.name", e?.target?.value)}
               register={register}
               name="beneficiaryDetails.name"
               type="text"
@@ -85,6 +87,7 @@ const LgStep4: React.FC<LgStepsProps2> = ({
               register={register}
               name="beneficiaryDetails.address"
               type="text"
+              onChange={(e) => setValue("beneficiaryDetails.address", e?.target?.value)}
               className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
               placeholder="Enter Text"
             />

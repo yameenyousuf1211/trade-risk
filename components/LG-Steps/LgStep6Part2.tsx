@@ -163,7 +163,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               placeholder=""
               onBlur={() =>
                 setNumber((prev) =>
-                  !prev ||prev?.includes(".00") ? prev : prev + ".00"
+                  !prev || prev?.includes(".00") ? prev : prev + ".00"
                 )
               }
             />

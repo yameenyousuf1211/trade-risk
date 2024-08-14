@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export const generalRiskSchema = z
   .object({
+    country: z.string({ message: "Issuing bank country is required" }),
+    swiftCode: z.string()?.optional(),
     banks: z.array(
       z.string().nonempty({ message: "Bank name cannot be empty" }),
       { message: "Please select a bank" }
@@ -28,6 +30,8 @@ export const generalRiskSchema = z
       type: z.enum(
         [
           "LC Confirmation",
+          "LG (letter Of Guarantee)",
+          "SBLC",
           "Avalization",
           "Supply Chain Finance",
           "LC Discounting",
@@ -67,6 +71,15 @@ export const generalRiskSchema = z
         message: "Enter participation rate",
       }),
     }),
+    period: z.object(
+      {
+        expectedDate: z.enum(["yes", "no"], {
+          message: "Select LC Period Type",
+        }),
+        startDate: z.date({ message: "Select issuance date" }),
+      },
+      { message: "Risk Participation Period is required" }
+    ),
     issuingBank: z.object(
       {
         bank: z.string({ message: "Issuing bank name is required" }),
@@ -88,15 +101,21 @@ export const generalRiskSchema = z
       },
       { message: "Confirming bank details are required" }
     ),
-    isLcDiscounting: z.string({ message: "Choose if LC is dicounted" }),
-    expectedDiscounting: z.string({
-      message: "Choose if LC is expected to be  dicounted",
-    }),
-    expectedDateDiscounting: z.date({
-      message: "Expected date for discounting cannot be empty",
-    }),
+    isLcDiscounting: z
+      .string({ message: "Choose if LC is dicounted" })
+      .optional(),
+    expectedDiscounting: z
+      .string({
+        message: "Choose if LC is expected to be  dicounted",
+      })
+      .optional(),
+    expectedDateDiscounting: z
+      .date({
+        message: "Expected date for discounting cannot be empty",
+      })
+      ?.optional(),
     expiryDate: z.date({ message: "Expiry date cannot be empty" }),
-    startDate: z.date({ message: "Start date cannot be empty" }),
+    // startDate: z.date({ message: "Start date cannot be empty" }),
     paymentTerms: z
       .string()
       .nonempty({ message: "Payment terms cannot be empty" }),
@@ -132,9 +151,8 @@ export const generalRiskSchema = z
         .string()
         .nonempty({ message: "Beneficiary country cannot be empty" }),
     }),
-    paymentReceviedType: z
-      .string()
-      .nonempty({ message: "Payment Recevied type cannot be empty" }),
+    paymentReceviedType: z.string().optional(),
+    // .nonempty({ message: "Payment Recevied type cannot be empty" }),
     attachment: z.any().optional(),
     note: z.string().nonempty({ message: "Note cannot be empty" }),
     // draft: z.boolean(),
@@ -164,8 +182,7 @@ export const generalRiskSchema = z
       return true;
     },
     {
-      message:
-        "Base rate cannot be empty when risk participation is 'Funded'",
+      message: "Base rate cannot be empty when risk participation is 'Funded'",
       path: ["baseRate"],
     }
   )

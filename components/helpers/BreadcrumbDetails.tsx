@@ -111,7 +111,7 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
 
   const filteredData =
     data &&
-    data.data.length > 0 &&
+    data?.data?.length &&
     data?.data.filter((draft) => {
       if (isConfirmation) {
         return draft.type === "LC Confirmation";
@@ -167,7 +167,7 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
       </Breadcrumb>
       <Link href="#step7">
         <Button className="bg-transparent text-para hover:bg-para hover:text-white rounded-lg py-1 border border-para">
-          Draft
+          Save as draft
           {/* ({(filteredData && filteredData.length) || 0}) */}
         </Button>
       </Link>

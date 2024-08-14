@@ -208,12 +208,14 @@ export const TableDialog = ({
   isViewAll?: boolean;
   isRisk?: boolean;
 }) => {
+  console.log("🚀 ~ isRisk:", isRisk);
   // Get LC
   const { data: lcData } = useQuery({
     queryKey: [`single-lc`, lcId],
     queryFn: () => fetchSingleLc(lcId),
   });
 
+  console.log("🚀 ~ lcData:", lcData);
   const { data: riskData } = useQuery({
     queryKey: [`single-risk`, lcId],
     queryFn: () => fetchSingleRisk(lcId),
@@ -235,6 +237,16 @@ export const TableDialog = ({
     advancePaymentBond +
     performanceBond +
     retentionMoneyBond;
+
+  const formatNumberWithCommas = (value: string | number) => {
+    if (value === undefined || value === null) {
+      return "";
+    }
+
+    value = value.toString();
+    const numberString = value.replace(/,/g, "");
+    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
 
   return (
     <Dialog>
@@ -311,7 +323,11 @@ export const TableDialog = ({
                 />
                 <LCInfo
                   label="Value of Transaction"
-                  value={riskData?.riskParticipationTransaction?.amount || ""}
+                  value={
+                    formatNumberWithCommas(
+                      riskData?.riskParticipationTransaction?.amount
+                    ) || ""
+                  }
                 />
                 <LCInfo
                   label="Return"
@@ -338,25 +354,37 @@ export const TableDialog = ({
                   label="LC Advising Bank"
                   value={riskData?.advisingBank?.bank || ""}
                 />
-                <LCInfo
-                  label="Confirming Bank"
-                  value={riskData?.confirmingBank?.bank || ""}
-                />
-                <LCInfo
-                  label="LC Discounted"
-                  value={
-                    riskData?.transhipment === true ? "Allowed" : "Not allowed"
-                  }
-                />
-                <LCInfo
-                  label="Expected Discounting Date"
-                  value={convertDateToCommaString(
-                    riskData?.expectedDateDiscounting || ""
-                  )}
-                />
+                {lcData?.type ? (
+                  <LCInfo
+                    label="Confirming Bank"
+                    value={riskData?.confirmingBank?.bank || ""}
+                  />
+                ) : null}
+                {lcData?.type ? (
+                  <LCInfo
+                    label="LC Discounted"
+                    value={
+                      riskData?.transhipment === true
+                        ? "Allowed"
+                        : "Not allowed"
+                    }
+                  />
+                ) : null}
+                {lcData?.type ? (
+                  <LCInfo
+                    label="Expected Discounting Date"
+                    value={convertDateToCommaString(
+                      riskData?.expectedDateDiscounting || ""
+                    )}
+                  />
+                ) : null}
                 <LCInfo
                   label="Issuance/Expected Issuance Date"
-                  value={convertDateToCommaString(riskData?.startDate || "")}
+                  value={convertDateToCommaString(
+                    (riskData?.startDate
+                      ? riskData?.startDate
+                      : riskData?.period?.startDate) || ""
+                  )}
                   noBorder
                 />
                 <LCInfo
@@ -383,13 +411,13 @@ export const TableDialog = ({
                   }
                   noBorder
                 />
-                <LCInfo
+                {/* <LCInfo
                   label="Expected Confirmation Date"
                   value={convertDateToCommaString(
                     riskData?.expectedDateConfimation || ""
                   )}
                   noBorder
-                />
+                /> */}
 
                 <h2 className="text-xl font-semibold mt-3">Importer Info</h2>
                 <LCInfo
@@ -478,7 +506,11 @@ export const TableDialog = ({
                     value={
                       lcData &&
                       lcData.period &&
-                      convertDateToCommaString(lcData.period?.startDate)
+                      convertDateToCommaString(
+                        lcData?.startDate
+                          ? lcData?.startDate
+                          : lcData?.period?.startDate
+                      )
                     }
                   />
                   <LCInfo

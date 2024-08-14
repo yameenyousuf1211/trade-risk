@@ -16,8 +16,10 @@ import LgStep8 from "@/components/LG-Steps/LgStep8";
 import LgStep9 from "@/components/LG-Steps/LgStep9";
 import LgStep9Part2 from "@/components/LG-Steps/LgStep9Part2";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthProvider";
 import useCountries from "@/hooks/useCountries";
 import { createLg, updateLg } from "@/services/apis/lg.apis";
+import { sendNotification } from "@/services/apis/notifications.api";
 import useLcIssuance from "@/store/issueance.store";
 import useStepStore from "@/store/lcsteps.store";
 import { LgDetails } from "@/types/lg";
@@ -36,6 +38,7 @@ export default function LgIssuance() {
   const [isLoading, setIsLoading] = useState(false);
   const [loader, setLoader] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
 
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
@@ -135,7 +138,6 @@ export default function LgIssuance() {
     // Update existing data
     removeUnnecessaryFields(responseData);
     if (storeData.data._id) {
-
       const { response, success } = await updateLg(
         responseData,
         storeData.data._id
@@ -161,6 +163,7 @@ export default function LgIssuance() {
   // Function to handle final submissions
   const handleFinalSubmission = async (responseData: any) => {
     removeUnnecessaryFieldsForLgCreate(responseData);
+    console.log("🚀 ~ handleFinalSubmission ~ responseData:", responseData);
 
     const validation = lgValidator.safeParse(responseData);
     console.log("🚀 ~ handleFinalSubmission ~ validation:", validation);
@@ -193,6 +196,7 @@ export default function LgIssuance() {
     delete responseData.updatedAt;
     delete responseData.__v;
     delete responseData.status;
+
     if (responseData.lgIssuance !== LG.cashMargin) {
       delete responseData.typeOfLg;
       delete responseData.physicalLgSwiftCode;
@@ -244,6 +248,16 @@ export default function LgIssuance() {
         if (responseData.otherBond?.lgTenor?.lgTenorValue)
           responseData.otherBond.lgTenor.lgTenorValue =
             responseData.otherBond.lgTenor.lgTenorValue?.toString();
+
+        if (responseData?.otherBond?.cashMargin) {
+          console.log(responseData.otherBond?.cashMargin, "cashMargin");
+          responseData.otherBond.cashMargin = convertStringToNumber(
+            responseData?.otherBond?.cashMargin
+          )?.toString();
+          responseData.otherBond.lgDetailAmount = convertStringToNumber(
+            responseData.otherBond.cashMargin
+          );
+        }
       }
     } else {
       delete responseData.bidBond;
@@ -260,7 +274,8 @@ export default function LgIssuance() {
       )?.toString();
 
       if (responseData.otherBond?.lgTenor?.lgTenorValue) {
-        responseData.otherBond.lgTenor.lgTenorValue = responseData.otherBond?.lgTenor?.lgTenorValue?.toString();
+        responseData.otherBond.lgTenor.lgTenorValue =
+          responseData.otherBond?.lgTenor?.lgTenorValue?.toString();
       }
     }
     if (
@@ -268,19 +283,27 @@ export default function LgIssuance() {
       responseData?.expectedPrice?.expectedPrice === "false"
     )
       delete responseData?.expectedPrice?.pricePerAnnum;
+    if (responseData?.applicantDetails?.crNumber)
+      responseData.applicantDetails.crNumber =
+        responseData.applicantDetails.crNumber?.toString();
     console.log("🚀 ~ responseData:", responseData);
   };
 
   // Function to handle API responses
-  const handleResponse = (
+  const handleResponse = async (
     success: boolean,
     response: any,
     successMessage: string
   ) => {
     if (success) {
+      const notificationResp = await sendNotification({
+        role: "bank",
+        title: `New LC Discounting Request ${response.data._id}`,
+        body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
+      });
       storeData?.removeValues();
       toast.success(successMessage);
-      console.log(response);
+      console.log(response, "response");
       router.push("/my-bids");
     } else {
       toast.error(response);

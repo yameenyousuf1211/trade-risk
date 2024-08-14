@@ -37,7 +37,7 @@ export const BidCard = ({
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bid-status"] });
+      // queryClient.invalidateQueries({ queryKey: ["bid-status"] });
       // queryClient.invalidateQueries({
       //   queryKey: ["bid-status"],
       // });

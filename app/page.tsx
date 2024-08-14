@@ -18,6 +18,8 @@ interface SearchParams {
   };
 }
 
+
+
 const HomePage = ({ searchParams }: SearchParams) => {
   const { page, limit, search, filter } = searchParams;
   const { user } = useAuth();

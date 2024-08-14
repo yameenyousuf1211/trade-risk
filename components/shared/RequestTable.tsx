@@ -24,6 +24,7 @@ import { compareValues, convertDateToString } from "@/utils";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
+import LGTableDialog from "./lgTableDialog";
 
 type TableDataCellProps = {
   data?: string | number | Date | undefined;
@@ -375,12 +376,15 @@ export const RequestTable = ({
                       />
                     </TableCell>
                     <TableCell className="px-1 py-1 max-w-[200px]">
-                      <TableDialog
-                        lcId={item._id}
-                        bids={item.bids}
-                        isBank
-                        isRisk={isRisk}
-                      />
+                      {item.type === "LC Confirmation" ? (
+                        <TableDialog
+                          lcId={item._id}
+                          bids={item.bids}
+                          isRisk={isRisk}
+                        />
+                      ) : (
+                        <LGTableDialog lcId={item._id} />
+                      )}
                     </TableCell>
                   </TableRow>
                 ))

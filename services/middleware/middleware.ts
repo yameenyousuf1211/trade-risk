@@ -6,8 +6,8 @@ const getAccessToken = () => {
 
 const api = axios.create({
 
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  // baseURL: "https://trade-prod.yameenyousuf.com/api",
+  // baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: "https://trade-prod.yameenyousuf.com/api",
 
   // baseURL: "http://localhost:8080/api",
   // baseURL: "https://trade.yameenyousuf.com/api",

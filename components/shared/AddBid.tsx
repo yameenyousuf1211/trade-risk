@@ -25,6 +25,7 @@ import { IRisk } from "@/types/type";
 import { BgRadioInput, DDInput } from "../LCSteps/helpers";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const LCInfo = ({
   label,
@@ -112,12 +113,10 @@ export const AddBid = ({
     register,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<z.infer<typeof addBidTypes>>({
-    resolver: zodResolver(addBidTypes),
+  } = useForm({
+    resolver: yupResolver(addBidTypes),
   });
-  const onSubmit: SubmitHandler<z.infer<typeof addBidTypes>> = async (
-    data: z.infer<typeof addBidTypes>
-  ) => {
+  const onSubmit: SubmitHandler<typeof addBidTypes> = async (data) => {
     if (isDiscount && !discountBaseRate)
       return toast.error("Please provide discount base rate");
     if (isDiscount && !discountMargin)
@@ -388,7 +387,9 @@ export const AddBid = ({
                       <LCInfo
                         label="Issuance/Expected Issuance Date"
                         value={convertDateToCommaString(
-                          (riskData?.startDate?riskData?.startDate:riskData?.period?.startDate) || ""
+                          (riskData?.startDate
+                            ? riskData?.startDate
+                            : riskData?.period?.startDate) || ""
                         )}
                         noBorder
                       />
@@ -539,9 +540,11 @@ export const AddBid = ({
                       <LCInfo
                         label="LC Issuance (Expected)"
                         value={
-                          (riskData?.startDate || riskData?.period?.startDate)
+                          riskData?.startDate || riskData?.period?.startDate
                             ? convertDateToCommaString(
-                              (riskData?.startDate?riskData?.startDate:riskData?.period?.startDate)
+                                riskData?.startDate
+                                  ? riskData?.startDate
+                                  : riskData?.period?.startDate
                               )
                             : lcData?.createdAt
                             ? convertDateToCommaString(lcData?.createdAt)
@@ -611,7 +614,9 @@ export const AddBid = ({
 
           {/* Right Section */}
           <div className="w-full h-full flex flex-col justify-start px-5 overflow-y-auto max-h-[75vh]">
-            <p className="text-xl font-semibold pt-5">Deal ( kindly provide your best price below )</p>
+            <p className="text-xl font-semibold pt-5">
+              Deal ( kindly provide your best price below )
+            </p>
             {isInfo ? (
               <>
                 {/* Bid info and status */}

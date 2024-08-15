@@ -12,6 +12,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { pointOfContractSchema } from "@/validation";
 import { z } from "zod";
 import { TelephoneInput } from "@/components/helpers";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const PointContactPage = () => {
   const router = useRouter();
@@ -24,8 +25,8 @@ const PointContactPage = () => {
     getValues,
     trigger,
     formState: { errors, isDirty, isValid },
-  } = useForm<z.infer<typeof pointOfContractSchema>>({
-    resolver: zodResolver(pointOfContractSchema),
+  } = useForm({
+    resolver: yupResolver(pointOfContractSchema),
     mode: "all",
   });
 
@@ -58,7 +59,7 @@ const PointContactPage = () => {
     if (!pdfFile) setAllowSubmit(false);
   }, [errors, isValid, isDirty, contactData, pdfFile]);
 
-  const onSubmit: SubmitHandler<z.infer<typeof pointOfContractSchema>> = async (
+  const onSubmit: SubmitHandler<typeof pointOfContractSchema> = async (
     data: any
   ) => {
     if (!pdfFile) return setPdfError(true);

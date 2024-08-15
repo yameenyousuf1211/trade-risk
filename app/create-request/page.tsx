@@ -28,12 +28,11 @@ import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
+import * as Yup from "yup";
 
 const CreateRequestPage = () => {
   const { user } = useAuth();
-  const { register, setValue, reset, watch, handleSubmit } = useForm<
-    z.infer<typeof confirmationSchema>
-  >({});
+  const { register, setValue, reset, watch, handleSubmit } = useForm({});
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
@@ -91,7 +90,7 @@ const CreateRequestPage = () => {
 
   const [loader, setLoader] = useState(false);
 
-  const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async ({
+  const onSubmit: SubmitHandler<typeof confirmationSchema> = async ({
     data,
     isDraft,
     isProceed = false,
@@ -200,14 +199,19 @@ const CreateRequestPage = () => {
         },
         expectedConfirmationDate,
       };
-      const validationResult = confirmationSchema.safeParse(preparedData);
+
       console.log("🚀 ~ CreateRequestPage ~ preparedData:", preparedData);
-      console.log(
-        "🚀 ~ CreateRequestPage ~ validationResult:",
-        validationResult
-      );
-      if (validationResult.success) {
-        const validatedData = validationResult.data;
+
+      try {
+        const validatedData = await confirmationSchema.validate(preparedData, {
+          abortEarly: false,
+        });
+
+        console.log(
+          "🚀 ~ CreateRequestPage ~ validationResult:",
+          validatedData
+        );
+
         if (isProceed) {
           const { confirmingBank2, extraInfo, ...rest } = validatedData;
           reqData = {
@@ -243,14 +247,13 @@ const CreateRequestPage = () => {
           console.log("hellooooojeee asssalamualaikum");
           // setProceed(true);
         }
-      } else {
-        if (
-          validationResult.error &&
-          validationResult.error.errors.length > 0
-        ) {
-          validationResult.error.errors.forEach((error) => {
-            toast.error(`${error.message}`);
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          error.errors.forEach((errMessage) => {
+            toast.error(errMessage);
           });
+        } else {
+          console.error("Unexpected error during validation:", error);
         }
       }
     }

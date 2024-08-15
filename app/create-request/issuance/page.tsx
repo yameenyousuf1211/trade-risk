@@ -35,9 +35,7 @@ const IssuancePage = () => {
   const { countries, flags } = useCountries();
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
-  const { register, setValue, reset, watch, handleSubmit } = useForm<
-    z.infer<typeof lcIssuanceSchema>
-  >({});
+  const { register, setValue, reset, watch, handleSubmit } = useForm({});
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const [isDraftLoading, setIsDraftLoading] = useState<boolean>(false);
@@ -87,9 +85,7 @@ const IssuancePage = () => {
     handleRouteChange();
   }, [pathname, router]);
 
-  const onSubmit: SubmitHandler<z.infer<typeof lcIssuanceSchema>> = async (
-    data
-  ) => {
+  const onSubmit: SubmitHandler<typeof lcIssuanceSchema> = async (data) => {
     // Ensure default values for optional fields
     const lcStartDateString = data.period?.startDate;
     const lcEndDateString = data.period?.endDate;
@@ -105,12 +101,11 @@ const IssuancePage = () => {
       },
     };
 
-    const validationResult = lcIssuanceSchema.safeParse(preparedData);
-    console.log(validationResult);
-    console.log(data);
+    try {
+      await lcIssuanceSchema.validate(preparedData, {
+        abortEarly: false,
+      });
 
-    if (validationResult.success) {
-      const validatedData = validationResult.data;
       const reqData = {
         ...data,
         type: "LG Issuance",
@@ -175,11 +170,13 @@ const IssuancePage = () => {
       } finally {
         stopLoading();
       }
-    } else {
-      if (validationResult.error && validationResult.error.errors.length > 0) {
-        validationResult.error.errors.forEach((error) => {
-          toast.error(`Validation Error: ${error.message}`);
+    } catch (validationError) {
+      if (validationError instanceof Yup.ValidationError) {
+        validationError.errors.forEach((errorMessage) => {
+          toast.error(`Validation Error: ${errorMessage}`);
         });
+      } else {
+        console.error("Unexpected error during validation:", validationError);
       }
     }
   };
@@ -241,7 +238,7 @@ const IssuancePage = () => {
   //   }
   // };
 
-  const onSaveAsDraft: SubmitHandler<z.infer<typeof lcIssuanceSchema>> = async (
+  const onSaveAsDraft: SubmitHandler<typeof lcIssuanceSchema> = async (
     data
   ) => {
     setIsDraftLoading(true);

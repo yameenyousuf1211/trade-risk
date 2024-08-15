@@ -29,11 +29,12 @@ import useRiskStore from "@/store/risk.store";
 import { IRisk } from "@/types/type";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
+import * as Yup from "yup";
 
 const RiskFundedPage = () => {
   const { user } = useAuth();
   const { register, setValue, reset, watch, getValues, control, handleSubmit } =
-    useForm<z.infer<typeof generalRiskSchema>>({});
+    useForm({});
   const { startLoading, stopLoading, isLoading } = useLoading();
   const [isDraftLoading, setIsDraftLoading] = useState<boolean>(false);
   const router = useRouter();
@@ -87,7 +88,7 @@ const RiskFundedPage = () => {
     handleRouteChange();
   }, [router, pathname]);
 
-  const onSubmit: SubmitHandler<z.infer<typeof generalRiskSchema>> = async (
+  const onSubmit: SubmitHandler<typeof generalRiskSchema> = async (
     data,
     isDraft
   ) => {
@@ -135,14 +136,17 @@ const RiskFundedPage = () => {
       delete preparedData?.paymentReceviedType;
       data["paymentReceviedType"] = "all-prices";
     }
-    const validationResult = generalRiskSchema.safeParse(preparedData);
-    console.log(validationResult);
 
-    if (validationResult.success) {
-      const validatedData = validationResult.data;
+    try {
+      const validationResult = await generalRiskSchema.validate(preparedData, {
+        abortEarly: false, // Return all validation errors, not just the first one
+      });
+      console.log(validationResult);
+
       //@ts-ignore
       period["expectedDate"] =
         data?.period?.expectedDate === "no" ? false : true;
+
       const reqData = {
         ...data,
         period,
@@ -161,24 +165,20 @@ const RiskFundedPage = () => {
         days: data?.paymentTerms == "Tenor LC" ? 22 : undefined,
       };
 
-      // @ts-ignore
-      delete reqData?.draft;
-      // @ts-ignore
-      delete reqData?.updatedAt;
-      // @ts-ignore
-      delete reqData?.createdAt;
-      // @ts-ignore
-      delete reqData?.createdBy;
-      // @ts-ignore
-      delete reqData?.isDeleted;
-      // @ts-ignore
-      delete reqData?.__v;
-      // @ts-ignore
-      delete reqData?._id;
-      // @ts-ignore
-      delete reqData?.status;
-      // @ts-ignore
-      delete reqData?.refId;
+      // Clean up the reqData object
+      const cleanedReqData = { ...reqData };
+      const fieldsToRemove = [
+        "draft",
+        "updatedAt",
+        "createdAt",
+        "createdBy",
+        "isDeleted",
+        "__v",
+        "_id",
+        "status",
+        "refId",
+      ];
+      fieldsToRemove.forEach((field) => delete cleanedReqData[field]);
 
       try {
         startLoading();
@@ -186,10 +186,10 @@ const RiskFundedPage = () => {
         if (formData?._id) {
           result = await onUpdateRisk({
             id: formData?._id,
-            payload: reqData,
+            payload: cleanedReqData,
           });
         } else {
-          result = await onCreateRisk(reqData);
+          result = await onCreateRisk(cleanedReqData);
         }
 
         const { response, success } = result;
@@ -198,11 +198,6 @@ const RiskFundedPage = () => {
           toast.error(response);
         } else {
           console.log(response, "response");
-          // const notificationResp = await sendNotification({
-          //   role: "bank",
-          //   title: "New Risk Participation Request",
-          //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
-          // });
           toast.success("Risk created successfully");
           reset();
           router.push("/risk-participation");
@@ -212,17 +207,19 @@ const RiskFundedPage = () => {
         toast.error("An unexpected error occurred");
       }
       stopLoading();
-    } else {
-      if (validationResult.error && validationResult.error.errors.length > 0) {
-        validationResult.error.errors.forEach((error) => {
-          toast.error(`Validation Error: ${error.message}`);
+    } catch (validationError) {
+      if (validationError instanceof Yup.ValidationError) {
+        validationError.errors.forEach((errorMessage) => {
+          toast.error(`Validation Error: ${errorMessage}`);
         });
+      } else {
+        console.error("Unexpected error during validation:", validationError);
       }
     }
   };
-  const onSaveAsDraft: SubmitHandler<
-    z.infer<typeof generalRiskSchema>
-  > = async (data) => {
+  const onSaveAsDraft: SubmitHandler<typeof generalRiskSchema> = async (
+    data
+  ) => {
     setIsDraftLoading(true);
     const reqData = {
       ...data,

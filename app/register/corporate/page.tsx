@@ -38,6 +38,7 @@ import { getCities } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
@@ -58,8 +59,8 @@ const CompanyInfoPage = () => {
     handleSubmit,
     trigger,
     formState: { errors, isValid, isDirty },
-  } = useForm<z.infer<typeof companyInfoSchema>>({
-    resolver: zodResolver(companyInfoSchema),
+  } = useForm({
+    resolver: yupResolver(companyInfoSchema),
     mode: "all",
   });
 
@@ -85,7 +86,7 @@ const CompanyInfoPage = () => {
     }
   }, [errors, isValid, isDirty, corporateData]);
 
-  const onSubmit: SubmitHandler<z.infer<typeof companyInfoSchema>> = async (
+  const onSubmit: SubmitHandler<typeof companyInfoSchema> = async (
     data: any
   ) => {
     setValues(data);

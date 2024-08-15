@@ -9,7 +9,7 @@ import AuthLayout from "@/components/layouts/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { onRegister } from "@/services/apis";
 import { bankSchema } from "@/validation";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
 
 const CheckBoxInput = ({ label, id }: { label: string; id: string }) => {
   return (
@@ -40,14 +39,12 @@ const BankRegisterPage = () => {
     handleSubmit,
     formState: { errors, isDirty, isValid },
     trigger,
-  } = useForm<z.infer<typeof bankSchema>>({
-    resolver: zodResolver(bankSchema),
+  } = useForm({
+    resolver: yupResolver(bankSchema),
     mode: "all",
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof bankSchema>> = async (
-    data: z.infer<typeof bankSchema>
-  ) => {
+  const onSubmit: SubmitHandler<typeof bankSchema> = async (data) => {
     if (!procceed)
       return toast.error("Please view and sign the agreement first");
     const { response, success } = await onRegister(data);

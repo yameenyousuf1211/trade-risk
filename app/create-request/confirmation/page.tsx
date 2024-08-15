@@ -31,12 +31,13 @@ import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
+import * as Yup from 'yup'
 
 const ConfirmationPage = () => {
-  const {user} = useAuth()
-  const { register, setValue, getValues, reset, watch, handleSubmit } = useForm<
-    z.infer<typeof confirmationDiscountSchema>
-  >({});
+  const { user } = useAuth();
+  const { register, setValue, getValues, reset, watch, handleSubmit } = useForm(
+    {}
+  );
 
   const queryClient = useQueryClient();
   const { startLoading, stopLoading, isLoading } = useLoading();
@@ -93,9 +94,7 @@ const ConfirmationPage = () => {
   const [proceed, setProceed] = useState(false);
   const [loader, setLoader] = useState(false);
 
-  const onSubmit: SubmitHandler<
-    z.infer<typeof confirmationDiscountSchema>
-  > = async ({
+  const onSubmit: SubmitHandler<typeof confirmationDiscountSchema> = async ({
     data,
     isDraft,
     isProceed = false,
@@ -189,6 +188,7 @@ const ConfirmationPage = () => {
       const expectedConfirmationDate = expectedDateString
         ? new Date(expectedDateString)
         : null;
+    
       const preparedData = {
         ...data,
         period: {
@@ -198,11 +198,12 @@ const ConfirmationPage = () => {
         },
         expectedConfirmationDate,
       };
-      const validationResult =
-        confirmationDiscountSchema.safeParse(preparedData);
-      console.log(validationResult, "result");
-      if (validationResult.success) {
-        const validatedData = validationResult.data;
+    
+      try {
+        const validatedData = await confirmationDiscountSchema.validate(preparedData, {
+          abortEarly: false,
+        });
+    
         if (isProceed) {
           const { confirmingBank2, extraInfo, ...rest } = validatedData;
           reqData = {
@@ -224,7 +225,7 @@ const ConfirmationPage = () => {
               title: `LC Confirmation & Discounting Request ${response.data._id}`,
               body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
             });
-            console.log(notificationResp,"notif")
+            console.log(notificationResp, "notif");
             setValues(
               getStateValues(useConfirmationDiscountingStore.getInitialState())
             );
@@ -237,19 +238,17 @@ const ConfirmationPage = () => {
           // @ts-ignore
           openDisclaimerBtn.click();
         }
-      } else {
-        if (
-          validationResult.error &&
-          validationResult.error.errors.length > 0
-        ) {
-          validationResult.error.errors.forEach((error) => {
-            toast.error(`${error.message}`);
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          error.errors.forEach((errMessage) => {
+            toast.error(errMessage);
           });
+        } else {
+          console.error("Unexpected error during validation:", error);
         }
       }
     }
-  };
-
+    
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
 

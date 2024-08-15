@@ -1,7 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { loginSchema } from "@/validation";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { FloatingInput } from "@/components/helpers/FloatingInput";
 import Link from "next/link";
@@ -10,7 +9,6 @@ import { onLogin } from "@/services/apis";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/context/AuthProvider";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
@@ -19,6 +17,7 @@ import {
   arrayBufferToBase64,
   urlBase64ToUint8Array,
 } from "@/utils/helper/service-worker";
+import { yupResolver } from "@hookform/resolvers/yup";
 export default function LoginPage() {
   const router = useRouter();
   const { setUser } = useAuth();
@@ -32,8 +31,8 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
+  } = useForm({
+    resolver: yupResolver(loginSchema),
   });
 
   const [notificationPermission, setNotificationPermission] = useState(
@@ -69,14 +68,14 @@ export default function LoginPage() {
         authToken,
         hashKey,
       });
-      console.log(gcmToken,"gcmtoken")
+      console.log(gcmToken, "gcmtoken");
     }
   };
 
-  const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (data) => {
+  const onSubmit: SubmitHandler<typeof loginSchema> = async (data) => {
     const { response, success } = await mutateAsync(data);
     console.log(response);
-    
+
     if (success) {
       const permission = await Notification.requestPermission();
       setNotificationPermission(permission);

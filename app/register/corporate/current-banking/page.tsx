@@ -94,13 +94,24 @@ const CurrentBankingPage = () => {
     setIsoCode(country[0].isoCode);
   };
 
+  const handleCountrySelect = (currentValue: string) => {
+    setBankVal("");
+    setCityVal("");
+    setCountryVal(
+      currentValue.toLowerCase() === countryVal.toLowerCase()
+        ? ""
+        : currentValue
+    );
+    setCountryCode(currentValue);
+    setCountryOpen(false);
+  };
+
   const { data: banks, isLoading: banksLoading } = useQuery({
     queryKey: ["banks", countryVal],
     queryFn: () => getBanks(countryVal),
     enabled: !!countryVal,
   });
 
-  
   const { data: citiesData } = useQuery({
     queryKey: ["cities", isoCode],
     queryFn: () => getCities(isoCode),
@@ -221,12 +232,14 @@ const CurrentBankingPage = () => {
                   aria-expanded={countryOpen}
                   className="font-roboto capitalize w-[230px] justify-between font-normal py-6"
                 >
-                  {countryVal
-                    ? countries?.find(
-                        (country: string) =>
-                          country.toLowerCase() === countryVal.toLowerCase()
-                      )
-                    : "Select country*"}
+                  <span className="truncate w-full text-left">
+                    {countryVal
+                      ? countries?.find(
+                          (country: string) =>
+                            country.toLowerCase() === countryVal.toLowerCase()
+                        )
+                      : "Select country*"}
+                  </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -241,16 +254,9 @@ const CurrentBankingPage = () => {
                         <CommandItem
                           key={country}
                           value={country}
-                          onSelect={(currentValue) => {
-                            setCountryVal(
-                              currentValue.toLowerCase() ===
-                                countryVal.toLowerCase()
-                                ? ""
-                                : currentValue
-                            );
-                            setCountryCode(currentValue);
-                            setCountryOpen(false);
-                          }}
+                          onSelect={(currentValue) =>
+                            handleCountrySelect(currentValue)
+                          }
                         >
                           <Check
                             className={cn(
@@ -279,12 +285,14 @@ const CurrentBankingPage = () => {
                   className="capitalize font-roboto w-[230px] justify-between truncate font-normal py-6"
                   disabled={countryVal === ""}
                 >
-                  {bankVal
-                    ? banks?.response.find(
-                        (bank: string) =>
-                          bank.toLowerCase() === bankVal.toLowerCase()
-                      )
-                    : "Select bank*"}
+                  <span className="truncate w-full text-left">
+                    {bankVal
+                      ? banks?.response.find(
+                          (bank: string) =>
+                            bank.toLowerCase() === bankVal.toLowerCase()
+                        )
+                      : "Select bank*"}
+                  </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -336,11 +344,13 @@ const CurrentBankingPage = () => {
                   className="capitalize font-roboto w-[230px] justify-between font-normal py-6"
                   disabled={countryVal === ""}
                 >
-                  {cityVal
-                    ? cityVal
-                    : countryVal
-                    ? "Select city*"
-                    : "Select city*"}
+                  <span className="truncate w-full text-left">
+                    {cityVal
+                      ? cityVal
+                      : countryVal
+                      ? "Select city*"
+                      : "Select city*"}
+                  </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>

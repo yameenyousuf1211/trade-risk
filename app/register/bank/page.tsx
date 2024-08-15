@@ -154,7 +154,7 @@ const BankRegisterPage = () => {
               <FloatingInput
                 register={register}
                 name="pocEmail"
-                placeholder="POC Email"
+                placeholder="Point of Contact Email"
                 type="email"
               />
               {errors.pocEmail && (

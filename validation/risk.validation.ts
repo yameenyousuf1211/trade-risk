@@ -45,7 +45,7 @@ export const generalRiskSchema = Yup.object()
     }),
     period: Yup.object().shape({
       expectedDate: Yup.mixed()
-        .oneOf(["yes", "no"])
+        .oneOf([false, true])
         .required("Select LC Period Type"),
       startDate: Yup.date().required("Select issuance date"),
     }),

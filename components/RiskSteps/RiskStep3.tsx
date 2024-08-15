@@ -71,7 +71,7 @@ export const RiskStep3 = ({
     } else {
       setValue("days", dayss);
     }
-  }, [watch("paymentTerms"), dayss]);
+  }, [watch("paymentTerms"), dayss, setValue]);
 
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
@@ -176,7 +176,8 @@ export const RiskStep3 = ({
               checked={watch("paymentTerms") === "usance"}
               register={register}
             />
-            {watch("paymentTerms") === "usance" || watch("paymentTerms") === "Tenor LC" ? (
+            {watch("paymentTerms") === "usance" ||
+            watch("paymentTerms") === "Tenor LC" ? (
               <div className="w-full">
                 <label
                   htmlFor="payment-tenor"
@@ -281,7 +282,7 @@ export const RiskStep3 = ({
             label="Yes"
             name="transhipment"
             value="yes"
-            checked={watch("transhipment") == "yes"}
+            checked={watch("transhipment") === "yes"}
             register={register}
           />
           <BankRadioInput
@@ -289,7 +290,7 @@ export const RiskStep3 = ({
             label="No"
             name="transhipment"
             value="no"
-            checked={watch("transhipment") == "no"}
+            checked={watch("transhipment") === "no"}
             register={register}
           />
         </div>

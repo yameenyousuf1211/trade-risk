@@ -311,8 +311,8 @@ export const Transhipment = ({
   let lcEndDate = watch("period.endDate");
 
   useEffect(() => {
-    if(lcEndDate|| lcStartDate)setDate(undefined);
-  }, [lcStartDate,lcEndDate]);
+    if (lcEndDate || lcStartDate) setDate(undefined);
+  }, [lcStartDate, lcEndDate]);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const currentDate = new Date();

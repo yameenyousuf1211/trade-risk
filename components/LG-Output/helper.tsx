@@ -17,16 +17,16 @@ export const BgRadioInputLG = ({
   sublabel?: string;
   sidesublabel?: string;
   name: string;
-  value: string | boolean;
+  value: string | number;
   checked: boolean;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
   bgchecked?: boolean;
 }) => {
   return (
     <label
       htmlFor={id}
-      className={`px-2 py-3 w-full transition-colors duration-100 ${
+      className={`px-2 py-3 w-full transition-colors duration-100 hover:cursor-pointer ${
         checked && bgchecked
           ? "bg-[#EEE9FE]"
           : "border border-borderCol bg-white"

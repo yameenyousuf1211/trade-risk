@@ -1,28 +1,51 @@
-import { AlertTriangle } from "lucide-react";
-import { Button } from "../ui/button";
+import { FC } from "react";
+import { AlertTriangle, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
-  DialogTrigger,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 
-const ConfirmationModal = () => {
+interface ConfirmationModalProps {
+  isOpen: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+export const ConfirmationModal: FC<ConfirmationModalProps> = ({
+  isOpen,
+  onConfirm,
+  onCancel,
+}) => {
   return (
-    <Dialog>
-      <DialogTrigger>
-        <Button variant="ghost">Cancel</Button>
-        <Button>Yes</Button>
-      </DialogTrigger>
-      <DialogHeader>
-        <AlertTriangle className="text-red-500" fill="text-red-500" />
-        <h3>Confirmation</h3>
-      </DialogHeader>
-      <DialogContent>
-        <h5>
+    <Dialog open={isOpen} onOpenChange={onCancel}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader className="flex flex-row justify-between items-center">
+          <div className="flex flex-row gap-2 items-center">
+            <AlertTriangle className="size-6 text-white fill-[#D44848]" />
+            <h2 className="text-xl font-semibold">Confirmation</h2>
+          </div>
+          <DialogClose>
+            <X className="size-6 text-[#CCCCCC]" />
+          </DialogClose>
+        </DialogHeader>
+        <p className="">
           Are you sure you want to submit?{" "}
-          <span className="font-bold">This action cannot be undone.</span>
-        </h5>
+          <span className="font-semibold">This action cannot be undone.</span>
+        </p>
+        <div className="flex justify-end space-x-4">
+          <Button variant="ghost" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button
+            onClick={onConfirm}
+            className="bg-[#5625F2] hover:bg-[#5625F2]"
+          >
+            Yes
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

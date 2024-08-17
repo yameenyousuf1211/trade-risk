@@ -41,6 +41,10 @@ const RiskFundedPage = () => {
     "riskParticipationTransaction.type"
   );
 
+  useEffect(() => {
+    router.prefetch("/");
+  }, []);
+
   const hideStep6 = riskParticipationTransaction === "LC Confirmation";
 
   const formData = useRiskStore((state) => state);
@@ -144,7 +148,7 @@ const RiskFundedPage = () => {
 
     try {
       const validationResult = await generalRiskSchema.validate(preparedData, {
-        abortEarly: false, // Return all validation errors, not just the first one
+        abortEarly: false,
       });
       console.log(validationResult);
 
@@ -182,7 +186,7 @@ const RiskFundedPage = () => {
       fieldsToRemove.forEach((field) => delete cleanedReqData[field]);
 
       try {
-        startLoading();
+        startLoading(); // Start the general loading state
         let result;
         if (formData?._id) {
           result = await onUpdateRisk({
@@ -207,7 +211,7 @@ const RiskFundedPage = () => {
         console.error(error);
         toast.error("An unexpected error occurred");
       } finally {
-        stopLoading();
+        stopLoading(); // Stop the general loading state
       }
     } catch (validationError) {
       if (validationError instanceof Yup.ValidationError) {
@@ -219,10 +223,11 @@ const RiskFundedPage = () => {
       }
     }
   };
+
   const onSaveAsDraft: SubmitHandler<typeof generalRiskSchema> = async (
     data
   ) => {
-    setIsDraftLoading(true);
+    setIsDraftLoading(true); // Start the draft loading state
     const reqData = {
       ...data,
       isLcDiscounting: data?.isLcDiscounting === "no" ? false : true,
@@ -250,8 +255,9 @@ const RiskFundedPage = () => {
     } catch (error) {
       console.error(error);
       toast.error("An unexpected error occurred");
+    } finally {
+      setIsDraftLoading(false); // Stop the draft loading state
     }
-    setIsDraftLoading(false);
   };
 
   return (

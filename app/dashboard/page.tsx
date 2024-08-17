@@ -32,18 +32,16 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
       queryKey: ["fetch-lcs", page, limit, search, filter],
       queryFn: () => fetchAllLcs({ page, limit, search, filter }),
     });
-console.log(data,"lctable")
+  console.log(data, "lctable");
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">
         <div className="w-4/5 p-2 xl:p-4">
-          <h2 className="text-4xl font-semibold mb-5 capitalize">
-            Welcome, {user && user.name}
-          </h2>
+          <h2 className="text-4xl font-semibold mb-5 capitalize">Welcome</h2>
           {/* Charts */}
           <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 h-fit">
             <ProgressCharts title="Transactions Overview" isBank />
-            <LineCharts isBank/>
+            <LineCharts isBank />
           </div>
           {/* Data Table */}
           <RequestTable

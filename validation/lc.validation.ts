@@ -31,19 +31,22 @@ export const generalLcSchema = Yup.object().shape({
       bank: Yup.string().required("Advising bank name is required"),
       country: Yup.string().required("Advising bank country is required"),
     })
-    .nullable(),
+    .nullable()
+    .default(undefined),
   confirmingBank: Yup.object()
     .shape({
       bank: Yup.string().required("Confirming bank name is required"),
       country: Yup.string().required("Confirming bank country is required"),
     })
-    .nullable(),
+    .nullable()
+    .default(undefined),
   confirmingBank2: Yup.object()
     .shape({
       bank: Yup.string().required("Confirming bank name is required"),
       country: Yup.string().required("Confirming bank country is required"),
     })
-    .nullable(),
+    .nullable()
+    .default(undefined),
   period: Yup.object()
     .shape({
       expectedDate: Yup.mixed()
@@ -115,12 +118,16 @@ export const confirmationSchema = generalLcSchema.concat(
           .required(),
         pricePerAnnum: Yup.string()
           .required("Enter expected price")
-          .matches(/^\d+(\.\d+)?$/, "Enter a valid number")
+          .matches(
+            /^\d+(\.\d+)?%$/,
+            "Enter a valid number with a '%' at the end"
+          )
           .test(
             "is-valid-price",
-            "Price per annum must be less than 100",
+            "Price per annum must be less than or equal to 100",
             (value) => {
-              return parseFloat(value) <= 100;
+              const numericValue = parseFloat(value.replace("%", ""));
+              return numericValue <= 100;
             }
           ),
       })

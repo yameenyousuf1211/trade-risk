@@ -44,12 +44,25 @@ export const Step5 = ({
   });
 
   useEffect(() => {
+    if (isExporter) {
+      setValue("exporterInfo.beneficiaryName", user ? user.name : "");
+      setValue("importerInfo.applicantName", "");
+      setValue("importerInfo.countryOfImport", "");
+    } else {
+      setValue("exporterInfo.beneficiaryName", "");
+      setValue("exporterInfo.countryOfExport", "");
+      setValue("exporterInfo.beneficiaryCountry", "");
+      setValue("exporterInfo.bank", "");
+    }
+  }, [isExporter, user, setValue]);
+
+  useEffect(() => {
     if (countryOfExport && beneficiaryCountry && beneficiaryName) {
       addStep(EXPORTER_INFO);
-    } else removeStep(EXPORTER_INFO);
-    isExporter &&
-      setValue("exporterInfo.beneficiaryName", user ? user.name : "");
-  }, [isExporter, countryOfExport, beneficiaryBank, beneficiaryCountry]);
+    } else {
+      removeStep(EXPORTER_INFO);
+    }
+  }, [countryOfExport, beneficiaryCountry, beneficiaryName]);
 
   return (
     <div

@@ -28,7 +28,7 @@ import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
-import * as Yup from 'yup'
+import * as Yup from "yup";
 
 const CreateDiscountPage = () => {
   const { user } = useAuth();
@@ -177,12 +177,13 @@ const CreateDiscountPage = () => {
       const lcStartDateString = data.period?.startDate;
       const lcEndDateString = data.period?.endDate;
       const expectedDateString = data?.expectedDiscountingDate;
-      const lcStartDate = lcStartDateString ? new Date(lcStartDateString) : null;
+      const lcStartDate = lcStartDateString
+        ? new Date(lcStartDateString)
+        : null;
       const lcEndDate = lcEndDateString ? new Date(lcEndDateString) : null;
       const expectedDiscountingDate = expectedDateString
         ? new Date(expectedDateString)
         : null;
-    
       const preparedData = {
         ...data,
         period: {
@@ -193,12 +194,12 @@ const CreateDiscountPage = () => {
         expectedDiscountingDate: expectedDiscountingDate,
       };
       console.log(data, preparedData);
-    
+
       try {
         const validatedData = await discountingSchema.validate(preparedData, {
           abortEarly: false,
         });
-    
+
         if (isProceed) {
           const { confirmingBank2, extraInfo, ...rest } = validatedData;
           reqData = {
@@ -240,7 +241,7 @@ const CreateDiscountPage = () => {
         }
       }
     }
-    
+  };
 
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);

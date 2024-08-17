@@ -22,6 +22,8 @@ const companyInfoSchema = Yup.object().shape({
     .required("*Email is required")
     .email("*Must be a valid email.")
     .trim(),
+  country: Yup.string().required("*Select a country"),
+  crNumber: Yup.string().required("*CR Number is required"),
   address: Yup.string()
     .required("*Address is required")
     .min(1, "*Address is required"),

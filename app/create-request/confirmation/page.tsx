@@ -31,7 +31,7 @@ import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
-import * as Yup from 'yup'
+import * as Yup from "yup";
 
 const ConfirmationPage = () => {
   const { user } = useAuth();
@@ -94,6 +94,10 @@ const ConfirmationPage = () => {
   const [proceed, setProceed] = useState(false);
   const [loader, setLoader] = useState(false);
 
+  useEffect(() => {
+    router.prefetch("/");
+  }, []);
+
   const onSubmit: SubmitHandler<typeof confirmationDiscountSchema> = async ({
     data,
     isDraft,
@@ -113,6 +117,7 @@ const ConfirmationPage = () => {
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
+
     const currentDate = new Date();
     const futureDate = new Date(
       currentDate.setDate(currentDate.getDate() + days)
@@ -140,92 +145,96 @@ const ConfirmationPage = () => {
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
 
-    if (isDraft) {
-      const {
-        confirmingBank2,
-        _id,
-        refId,
-        createdBy,
-        status,
-        createdAt,
-        updatedAt,
-        extraInfo,
-        ...rest
-      } = data;
-      reqData = {
-        ...rest,
-        ...baseData,
-        draft: "true",
-      };
-      setLoader(true);
-      const { response, success } = confirmationData?._id
-        ? await onUpdateLC({
-            payload: reqData,
-            id: confirmationData?._id,
-          })
-        : await onCreateLC(reqData);
-      setLoader(false);
-      if (!success) return toast.error(response);
-      else {
-        toast.success("LC saved as draft");
-        reset();
-        router.push("/");
-        setValues(
-          getStateValues(useConfirmationDiscountingStore.getInitialState())
+    try {
+      setLoader(true); // Start the loader
+      startLoading(); // Start the general loading state
+
+      if (isDraft) {
+        const {
+          confirmingBank2,
+          _id,
+          refId,
+          createdBy,
+          status,
+          createdAt,
+          updatedAt,
+          extraInfo,
+          ...rest
+        } = data;
+        reqData = {
+          ...rest,
+          ...baseData,
+          draft: "true",
+        };
+        const { response, success } = confirmationData?._id
+          ? await onUpdateLC({
+              payload: reqData,
+              id: confirmationData?._id,
+            })
+          : await onCreateLC(reqData);
+
+        if (!success) return toast.error(response);
+        else {
+          toast.success("LC saved as draft");
+          reset();
+          router.push("/");
+          setValues(
+            getStateValues(useConfirmationDiscountingStore.getInitialState())
+          );
+          queryClient.invalidateQueries({
+            queryKey: ["fetch-lcs-drafts"],
+          });
+        }
+      } else {
+        const lcStartDateString = data.period?.startDate;
+        const lcEndDateString = data.period?.endDate;
+        const expectedDateString = data?.expectedConfirmationDate;
+        const lcStartDate = lcStartDateString
+          ? new Date(lcStartDateString)
+          : null;
+        const lcEndDate = lcEndDateString ? new Date(lcEndDateString) : null;
+        const expectedConfirmationDate = expectedDateString
+          ? new Date(expectedDateString)
+          : null;
+
+        const preparedData = {
+          ...data,
+          period: {
+            ...data.period,
+            startDate: lcStartDate,
+            endDate: lcEndDate,
+          },
+          expectedConfirmationDate,
+        };
+
+        const validatedData = await confirmationDiscountSchema.validate(
+          preparedData,
+          {
+            abortEarly: false,
+          }
         );
-        queryClient.invalidateQueries({
-          queryKey: ["fetch-lcs-drafts"],
-        });
-      }
-    } else {
-      const lcStartDateString = data.period?.startDate;
-      const lcEndDateString = data.period?.endDate;
-      const expectedDateString = data?.expectedConfirmationDate;
-      const lcStartDate = lcStartDateString
-        ? new Date(lcStartDateString)
-        : null;
-      const lcEndDate = lcEndDateString ? new Date(lcEndDateString) : null;
-      const expectedConfirmationDate = expectedDateString
-        ? new Date(expectedDateString)
-        : null;
-    
-      const preparedData = {
-        ...data,
-        period: {
-          ...data.period,
-          startDate: lcStartDate,
-          endDate: lcEndDate,
-        },
-        expectedConfirmationDate,
-      };
-    
-      try {
-        const validatedData = await confirmationDiscountSchema.validate(preparedData, {
-          abortEarly: false,
-        });
-    
+
         if (isProceed) {
           const { confirmingBank2, extraInfo, ...rest } = validatedData;
           reqData = {
             ...rest,
             ...baseData,
           };
-          startLoading();
+
           const { response, success } = confirmationData?._id
             ? await onUpdateLC({
                 payload: reqData,
                 id: confirmationData?._id,
               })
             : await onCreateLC(reqData);
-          stopLoading();
+
           if (!success) return toast.error(response);
           else {
-            const notificationResp = await sendNotification({
+            await sendNotification({
               role: "bank",
               title: `LC Confirmation & Discounting Request ${response.data._id}`,
               body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
             });
-            console.log(notificationResp, "notif");
             setValues(
               getStateValues(useConfirmationDiscountingStore.getInitialState())
             );
@@ -235,20 +244,23 @@ const ConfirmationPage = () => {
           }
         } else {
           let openDisclaimerBtn = document.getElementById("open-disclaimer");
-          // @ts-ignore
-          openDisclaimerBtn.click();
-        }
-      } catch (error) {
-        if (error instanceof Yup.ValidationError) {
-          error.errors.forEach((errMessage) => {
-            toast.error(errMessage);
-          });
-        } else {
-          console.error("Unexpected error during validation:", error);
+          openDisclaimerBtn?.click();
         }
       }
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        error.errors.forEach((errMessage) => {
+          toast.error(errMessage);
+        });
+      } else {
+        console.error("Unexpected error during validation:", error);
+      }
+    } finally {
+      setLoader(false); // Stop the loader
+      stopLoading(); // Stop the general loading state
     }
-    
+  };
+
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
 
@@ -371,5 +383,4 @@ const ConfirmationPage = () => {
     </CreateLCLayout>
   );
 };
-
 export default ConfirmationPage;

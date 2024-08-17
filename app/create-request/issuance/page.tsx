@@ -28,6 +28,7 @@ import Loader from "@/components/ui/loader";
 import useLcIssuance, { getStateValues } from "@/store/issueance.store";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
+import * as Yup from "yup";
 
 const IssuancePage = () => {
   const { user } = useAuth();
@@ -74,6 +75,10 @@ const IssuancePage = () => {
       });
     }
   }, [issuanceData]);
+
+  useEffect(() => {
+    router.prefetch("/");
+  }, []);
 
   // reset the form on page navigation
   useEffect(() => {
@@ -139,7 +144,7 @@ const IssuancePage = () => {
       unwantedProps.forEach((prop) => delete reqData[prop]);
 
       try {
-        startLoading();
+        startLoading(); // Start the general loading state
         let result;
         if (issuanceData?._id) {
           result = await onUpdateLC({
@@ -168,7 +173,7 @@ const IssuancePage = () => {
         console.error(error, "error");
         toast.error("An unexpected error occurred");
       } finally {
-        stopLoading();
+        stopLoading(); // Stop the general loading state
       }
     } catch (validationError) {
       if (validationError instanceof Yup.ValidationError) {

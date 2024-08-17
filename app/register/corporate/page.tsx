@@ -142,6 +142,7 @@ const CompanyInfoPage = () => {
           className="max-w-2xl mx-auto w-full shadow-md bg-white rounded-3xl xs:p-8 max-xs:py-8 max-xs:px-4 z-10 mt-8 flex flex-col sm:gap-y-6 gap-y-3"
           onSubmit={handleSubmit(onSubmit)}
         >
+          <h3 className="text-[#585858]">Your Company information</h3>
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
             <div className="w-full relative">
               <FloatingInput
@@ -152,6 +153,33 @@ const CompanyInfoPage = () => {
               {errors.name && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.name.message}
+                </span>
+              )}
+            </div>
+            <div className="w-full relative">
+              <FloatingInput
+                name="crNumber"
+                placeholder="Commercial Registration Number"
+                register={register}
+              />
+              {errors.crNumber && (
+                <span className="mt-1 absolute text-[11px] text-red-500">
+                  {errors.crNumber.message}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
+            <div className="w-full relative">
+              <CountrySelect
+                setIsoCode={setIsoCode}
+                setValue={setValue}
+                name="accountCountry"
+                placeholder="Bank Country"
+              />
+              {errors.accountCountry && (
+                <span className="mt-1 absolute text-[11px] text-red-500">
+                  {errors.accountCountry.message}
                 </span>
               )}
             </div>
@@ -180,15 +208,19 @@ const CompanyInfoPage = () => {
                 </SelectTrigger>
                 <SelectContent className="font-roboto">
                   <SelectItem value="individual_proprietorship_co">
-                    Individual/Proprietorship Co.
+                    Proprietorship Company
                   </SelectItem>
                   <SelectItem value="limited_liability_co">
-                    Limited Liability Co
+                    Individual
                   </SelectItem>
                   <SelectItem value="public_limited_co">
-                    Public Limited Co.
+                    Limited Liability Company
+                  </SelectItem>
+                  <SelectItem value="partnership">
+                    Public Limited Company
                   </SelectItem>
                   <SelectItem value="partnership">Partnership</SelectItem>
+                  <SelectItem value="partnership">Establishment</SelectItem>
                 </SelectContent>
               </Select>
               {errors.constitution && (
@@ -198,7 +230,6 @@ const CompanyInfoPage = () => {
               )}
             </div>
           </div>
-
           <div className="w-full relative">
             <FloatingInput
               name="address"
@@ -305,6 +336,7 @@ const CompanyInfoPage = () => {
           </div>
 
           <div className="h-[2px] w-full bg-borderCol" />
+          <h3 className="text-[#585858]">Your main bank information</h3>
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
             <div className="w-full relative">

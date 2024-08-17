@@ -49,6 +49,10 @@ export default function LgIssuance() {
   const lgIssuance = watch("lgIssuance");
 
   useEffect(() => {
+    router.prefetch("/");
+  }, []);
+
+  useEffect(() => {
     if (storeData.data && storeData?.data?._id) {
       Object.entries(storeData.data).forEach(([key, value]: [string, any]) => {
         console.log(key, value);

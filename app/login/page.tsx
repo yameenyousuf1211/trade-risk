@@ -74,7 +74,7 @@ export default function LoginPage() {
 
   const onSubmit: SubmitHandler<typeof loginSchema> = async (data) => {
     const { response, success } = await mutateAsync(data);
-    console.log(response);
+    console.log(response, "pipipi");
 
     if (success) {
       const permission = await Notification.requestPermission();

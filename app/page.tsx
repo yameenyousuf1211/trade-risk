@@ -18,8 +18,6 @@ interface SearchParams {
   };
 }
 
-
-
 const HomePage = ({ searchParams }: SearchParams) => {
   const { page, limit, search, filter } = searchParams;
   const { user } = useAuth();
@@ -30,14 +28,14 @@ const HomePage = ({ searchParams }: SearchParams) => {
     useQuery({
       queryKey: ["bid-status", page, limit, search, filter],
       queryFn: () =>
-        fetchLcs({ page, limit, search, filter, userId: user._id }),
+        fetchLcs({ page, limit, search, filter, userId: user?.business?._id }),
       enabled: !!user?._id,
     });
   console.log("fetching LCSSS", data);
-
-  if (user && user.role !== "corporate") {
-    redirect("/dashboard");
-  }
+  console.log(user?.business, "user");
+  // if (user && user.role !== "corporate") {
+  //   redirect("/dashboard");
+  // }
 
   return (
     <DashboardLayout>

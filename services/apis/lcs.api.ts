@@ -26,7 +26,7 @@ export const fetchLcs = async ({
       }&createdBy=${userId}`
     );
 
-    return data.data.updatedData;
+    return data.data;
   } catch (error: any) {
     console.log(error);
     return error.response?.data?.message || "Something went wrong";

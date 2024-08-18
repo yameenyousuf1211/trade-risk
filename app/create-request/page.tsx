@@ -227,15 +227,10 @@ const CreateRequestPage = () => {
             if (!success) {
               toast.error(response);
             } else {
-              await sendNotification({
-                role: "bank",
-                title: `New LC Confirmation Request ${response?.data?._id}`,
-                body: `Ref no ${response.data.refId} from ${response?.data?.issuingBank?.bank} by ${user?.name}`,
-              });
               setValues(getStateValues(useConfirmationStore.getInitialState()));
               toast.success("LC created successfully");
-              reset();
               router.push("/");
+              reset();
             }
           } else {
             const openDisclaimerBtn =

@@ -117,7 +117,7 @@ const ConfirmationPage = () => {
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
-
+    const issueBankChange = [data.issuingBank];
     const currentDate = new Date();
     const futureDate = new Date(
       currentDate.setDate(currentDate.getDate() + days)
@@ -133,6 +133,7 @@ const ConfirmationPage = () => {
 
     let reqData;
     const baseData = {
+      issuingBanks: issueBankChange,
       type: "LC Confirmation & Discounting",
       transhipment: data.transhipment === "yes" ? true : false,
       amount: {
@@ -144,7 +145,6 @@ const ConfirmationPage = () => {
       },
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
-
     try {
       setLoader(true); // Start the loader
       startLoading(); // Start the general loading state
@@ -230,17 +230,12 @@ const ConfirmationPage = () => {
 
           if (!success) return toast.error(response);
           else {
-            await sendNotification({
-              role: "bank",
-              title: `LC Confirmation & Discounting Request ${response.data._id}`,
-              body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
-            });
             setValues(
               getStateValues(useConfirmationDiscountingStore.getInitialState())
             );
             toast.success("LC created successfully");
-            reset();
             router.push("/");
+            reset();
           }
         } else {
           let openDisclaimerBtn = document.getElementById("open-disclaimer");

@@ -61,3 +61,26 @@ export const BgRadioInputLG = ({
     </label>
   );
 };
+
+export const LGInfo = ({
+  label,
+  value,
+  noBorder,
+}: {
+  label: string;
+  value: string;
+  noBorder?: boolean;
+}) => {
+  return (
+    <div
+      className={`flex items-start justify-between py-2 ${
+        !noBorder && "border-b border-b-borderCol"
+      }`}
+    >
+      <p className="font-roboto text-para font-normal text-sm">{label}</p>
+      <p className="capitalize font-semibold text-right text-sm max-w-[60%]">
+        {value}
+      </p>
+    </div>
+  );
+};

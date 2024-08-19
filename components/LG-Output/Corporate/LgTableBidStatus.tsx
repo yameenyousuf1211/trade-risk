@@ -5,7 +5,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Eye, ListFilter, X } from "lucide-react";
-import useLGStore from "./useBidStore";
+import useLGStore from "../../../store/LGCorporateBidStore";
 import { Key, useState } from "react";
 import { BgRadioInputLG } from "../helper";
 import { BidsSort } from "@/components/helpers";

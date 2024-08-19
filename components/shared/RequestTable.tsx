@@ -25,6 +25,10 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
 import LGTableDialog from "./lgTableDialog";
+import {
+  LGTableBidStatus,
+  LgTableBidStatus,
+} from "../LG-Output/Corporate/LgTableBidStatus";
 
 type TableDataCellProps = {
   data?: string | number | Date | undefined;
@@ -350,7 +354,8 @@ export const RequestTable = ({
                           isRisk={isRisk}
                         />
                       ) : (
-                        <LGTableDialog lcId={item._id} />
+                        // <LGTableDialog lcId={item._id} />
+                        <LGTableBidStatus />
                       )}
                     </TableCell>
                   </TableRow>

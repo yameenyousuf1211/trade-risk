@@ -18,14 +18,22 @@ export const DatePicker = ({
   name,
   isLg,
   disabled,
-  value ,
+  value,
+  placeholder,
+  returnDate,
+  currentSetDate,
+  onDateChange,
 }: {
-  setValue: any;
-  maxDate: Date | string | any;
+  setValue?: any;
+  maxDate?: Date | string | any;
   name?: string;
   isLg?: boolean;
   disabled?: boolean;
   value?: Date;
+  placeholder?: string;
+  returnDate?: boolean;
+  currentSetDate?: string;
+  onDateChange?: any;
 }) => {
   const [date, setDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -33,6 +41,12 @@ export const DatePicker = ({
   useEffect(() => {
     if (value && !date) setDate(value);
   }, [value]);
+
+  useEffect(() => {
+    if (returnDate && onDateChange && date) {
+      onDateChange(format(date, "PPP"));
+    }
+  }, [date, returnDate, onDateChange]);
 
   return (
     <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={true}>
@@ -43,22 +57,27 @@ export const DatePicker = ({
           className={cn(
             `w-full ${
               isLg
-                ? "gap-2 justify-end border-none"
+                ? "justify-end gap-2 border-none"
                 : "justify-between text-left"
-            }  font-normal`,
+            } font-normal`,
             !date &&
-              `text-muted-foreground flex items-center ${
-                isLg ? "gap-2 justify-end border-none" : "justify-between"
-              } w-full`
+              `flex items-center text-muted-foreground ${
+                isLg ? "justify-end gap-2 border-none" : "justify-between"
+              } w-full`,
           )}
           id={`${name || "validity"}`}
         >
           {date && date instanceof Date ? (
             format(date, "PPP")
+          ) : currentSetDate ? (
+            currentSetDate
           ) : (
-            <span>DD/MM/YYYY</span>
+            <>
+              <span>{placeholder ? placeholder : ""}</span>
+              <span>DD/MM/YYYY</span>
+            </>
           )}
-          <CalendarIcon className=" h-4 w-4" />
+          <CalendarIcon className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
@@ -67,7 +86,7 @@ export const DatePicker = ({
           maxDate={maxDate}
           onChange={(date) => {
             setDate(date);
-            setValue(`${name || "validity"}`, date);
+            setValue?.(`${name || "validity"}`, date);
           }}
           onClose={() => setIsPopoverOpen(false)}
         />

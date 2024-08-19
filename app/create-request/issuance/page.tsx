@@ -159,15 +159,9 @@ const IssuancePage = () => {
         if (!success) {
           toast.error(response);
         } else {
-          const notificationResp = await sendNotification({
-            role: "bank",
-            title: "New LC Issuance Request",
-            body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
-          });
-          console.log(notificationResp, "res");
           toast.success("LC created successfully");
-          reset();
           router.push("/");
+          reset();
         }
       } catch (error) {
         console.error(error, "error");
@@ -250,7 +244,7 @@ const IssuancePage = () => {
     const reqData = {
       ...data,
       type: "LG Issuance",
-      draft: "true",
+      draft: true,
     };
     console.log(reqData, "REQDATA");
     try {
@@ -266,8 +260,8 @@ const IssuancePage = () => {
         toast.error(response);
       } else {
         toast.success("Issuance draft created successfully");
-        reset();
         router.push("/");
+        reset();
       }
     } catch (error) {
       console.error(error);

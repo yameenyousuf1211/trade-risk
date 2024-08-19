@@ -513,7 +513,7 @@ export const TableDialog = ({
                     label="LC Issuance (Expected)"
                     value={
                       lcData &&
-                      convertDateToCommaString(lcData?.expectedConfirmationDate)
+                      convertDateToCommaString(lcData?.period?.startDate)
                     }
                   />
                   <LCInfo

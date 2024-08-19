@@ -87,6 +87,13 @@ const ConfirmationPage = () => {
           setDays(daysLeft);
           setValue("extraInfo", value?.other);
         }
+        // Handle array of issuing banks
+        if (key === "issuingBanks" && Array.isArray(value)) {
+          value.forEach((bank, index) => {
+            setValue(`issuingBanks[${index}].country`, bank.country);
+            setValue(`issuingBanks[${index}].bank`, bank.bank);
+          });
+        }
       });
     }
   }, [confirmationData]);
@@ -110,14 +117,16 @@ const ConfirmationPage = () => {
     submit();
     if (
       data.confirmingBank &&
-      data.issuingBank?.country === data.confirmingBank?.country
+      data.issuingBanks.some(
+        (bank: any) => bank.country === data.confirmingBank?.country
+      )
     )
       return toast.error(
         "Confirming bank country cannot be the same as issuing bank country"
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
-    const issueBankChange = [data.issuingBank];
+    const issueBankChange = data.issuingBanks;
     const currentDate = new Date();
     const futureDate = new Date(
       currentDate.setDate(currentDate.getDate() + days)
@@ -164,7 +173,7 @@ const ConfirmationPage = () => {
         reqData = {
           ...rest,
           ...baseData,
-          draft: "true",
+          draft: true,
         };
         const { response, success } = confirmationData?._id
           ? await onUpdateLC({
@@ -176,8 +185,8 @@ const ConfirmationPage = () => {
         if (!success) return toast.error(response);
         else {
           toast.success("LC saved as draft");
-          reset();
           router.push("/");
+          reset();
           setValues(
             getStateValues(useConfirmationDiscountingStore.getInitialState())
           );

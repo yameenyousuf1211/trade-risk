@@ -12,10 +12,12 @@ const useConfirmationStore = create<UseDiscountingStore>((set, get) => ({
     bank: "",
     country: "",
   },
-  issuingBank: {
-    bank: "",
-    country: "",
-  },
+  issuingBanks: [
+    {
+      bank: "",
+      country: "",
+    },
+  ],
   lcPeriod: {
     startDate: undefined,
     endDate: undefined,

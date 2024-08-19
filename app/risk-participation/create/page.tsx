@@ -204,8 +204,8 @@ const RiskFundedPage = () => {
         } else {
           console.log(response, "response");
           toast.success("Risk created successfully");
-          reset();
           router.push("/risk-participation");
+          reset();
         }
       } catch (error) {
         console.error(error);
@@ -233,7 +233,7 @@ const RiskFundedPage = () => {
       isLcDiscounting: data?.isLcDiscounting === "no" ? false : true,
       expectedDiscounting: data?.expectedDiscounting === "no" ? false : true,
       transhipment: data?.transhipment === "no" ? false : true,
-      draft: "true",
+      draft: true,
     };
     console.log(reqData, "REQDATA");
     try {
@@ -249,8 +249,8 @@ const RiskFundedPage = () => {
         toast.error(response);
       } else {
         toast.success("Risk draft created successfully");
-        reset();
         router.push("/risk-participation");
+        reset();
       }
     } catch (error) {
       console.error(error);

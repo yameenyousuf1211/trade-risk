@@ -20,6 +20,7 @@ import {
   UseFormWatch,
   UseFormSetValue,
 } from "react-hook-form";
+import useLcIssuance from "@/store/issueance.store";
 
 export const ValidatingCalendar = ({
   initialDate,
@@ -298,21 +299,33 @@ export const Transhipment = ({
   const transhipment = watch("transhipment");
   const { period } = watch();
 
-  let expectedDate = isDiscount
-    ? watch("expectedDiscountingDate")
-    : watch("expectedConfirmationDate");
+  const expectedDateName = isDiscount
+    ? "expectedDiscountingDate"
+    : "expectedConfirmationDate";
+
+  let expectedDate = watch(expectedDateName);
 
   const setDate = (date: Date | string) => {
-    isDiscount
-      ? setValue("expectedDiscountingDate", date)
-      : setValue("expectedConfirmationDate", date);
+    setValue(expectedDateName, date);
   };
+  
+
+  const { data } = useLcIssuance();
+  const initialExpectedDate: string = data[expectedDate as keyof typeof data];
+
+  useEffect(() => {
+    if (initialExpectedDate && !expectedDate) {
+      setDate(new Date(initialExpectedDate));
+    }
+  }, [data,initialExpectedDate]);
+
+
   let lcStartDate = watch("period.startDate");
   let lcEndDate = watch("period.endDate");
 
   useEffect(() => {
-    if(lcEndDate|| lcStartDate)setDate(undefined);
-  }, [lcStartDate,lcEndDate]);
+    if (lcEndDate || lcStartDate) setDate(undefined);
+  }, [lcStartDate, lcEndDate]);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const currentDate = new Date();

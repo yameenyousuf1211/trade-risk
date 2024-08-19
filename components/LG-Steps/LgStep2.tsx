@@ -4,6 +4,7 @@ import { LgStepsProps2 } from "@/types/lg";
 import { Input } from "../ui/input";
 import useStepStore from "@/store/lcsteps.store";
 import { APPLICANT_DETAILS } from "@/utils/constant/lg";
+import { LG } from "@/utils";
 
 const LgStep2: React.FC<LgStepsProps2> = ({
   register,
@@ -16,6 +17,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({
   const country = watch("applicantDetails.country");
   const company = watch("applicantDetails.company");
   const crNumber = watch("applicantDetails.crNumber");
+  const lgIssuance = watch("lgIssuance");
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
@@ -46,7 +48,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({
         </p>
       </div>
 
-      <div className="flex items-center gap-3 border border-[#E2E2EA] bg-[#F5F7F9] pt-2 px-2 rounded-lg pb-2">
+      <div className="flex items-center gap-3 border border-[#E2E2EA] bg-[#F5F7F9] pt-2 px-2 rounded-lg pb-2 flex-wrap">
         <DDInput
           value={country}
           placeholder="Select Country"
@@ -55,6 +57,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({
           data={data}
           setValue={setValue}
           flags={flags}
+          extStyle="flex-1"
         />
         <DDInput
           value={company}
@@ -63,10 +66,23 @@ const LgStep2: React.FC<LgStepsProps2> = ({
           id="applicantDetails.company"
           data={["Company 1", "Company 2", "Company 3"]}
           setValue={setValue}
+          extStyle="flex-1"
         />
+
+        {lgIssuance === LG.cashMargin && (
+          <DDInput
+            value={company}
+            placeholder="Select"
+            label="Bank Account"
+            id=""
+            data={["Company 1", "Company 2", "Company 3"]}
+            setValue={() => null}
+            extStyle="flex-1"
+          />
+        )}
         <label
           id="applicantDetails.crNumber"
-          className="border p-1 px-3 rounded-md w-full flex items-center justify-between  bg-white"
+          className="border p-1 px-3 rounded-md w-full flex items-center justify-between  bg-white flex-1"
         >
           <p className="w-full text-sm text-lightGray">CR Number</p>
           <Input

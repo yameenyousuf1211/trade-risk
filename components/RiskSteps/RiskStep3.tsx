@@ -5,6 +5,7 @@ import { DDInput } from "../LCSteps/helpers";
 import { getAllPortData, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import Period from "../RiskParticipation/Period";
+import useLcIssuance from "@/store/issueance.store";
 
 interface Props {
   countries: string[];
@@ -34,6 +35,16 @@ export const RiskStep3 = ({
     expectedDateConfirmation,
     days,
   } = watch();
+
+  const { data } = useLcIssuance();
+  const initialExpectedDate: string =
+    data["expectedDateConfirmation" as keyof typeof data];
+
+  useEffect(() => {
+    if (initialExpectedDate && !expectedDateConfirmation) {
+      setValue("expectedDateConfirmation", new Date(initialExpectedDate));
+    }
+  }, [data, initialExpectedDate]);
 
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],
@@ -176,7 +187,8 @@ export const RiskStep3 = ({
               checked={watch("paymentTerms") === "usance"}
               register={register}
             />
-            {watch("paymentTerms") === "usance" || watch("paymentTerms") === "Tenor LC" ? (
+            {watch("paymentTerms") === "usance" ||
+            watch("paymentTerms") === "Tenor LC" ? (
               <div className="w-full">
                 <label
                   htmlFor="payment-tenor"

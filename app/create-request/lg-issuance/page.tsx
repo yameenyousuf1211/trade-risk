@@ -3,8 +3,10 @@
 import CreateLCLayout from "@/components/layouts/CreateLCLayout";
 import LgStep1 from "@/components/LG-Steps/LgStep1";
 import LgStep10 from "@/components/LG-Steps/LgStep10";
+import LgStep12 from "@/components/LG-Steps/LgStep12";
 import LgStep2 from "@/components/LG-Steps/LgStep2";
 import LgStep3 from "@/components/LG-Steps/LgStep3";
+import LgStep3CashMargin from "@/components/LG-Steps/LgStep3CashMargin";
 import LgStep4 from "@/components/LG-Steps/LgStep4";
 import LgStep4Helper from "@/components/LG-Steps/LgStep4helper";
 import LgStep5 from "@/components/LG-Steps/LgStep5";
@@ -299,7 +301,7 @@ export default function LgIssuance() {
       const notificationResp = await sendNotification({
         role: "bank",
         title: `New LC Discounting Request ${response.data._id}`,
-        body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
+        body: `Ref no ${response.data.refId} from ${response.data?.issuingBank?.bank} by ${user?.name}`,
       });
       storeData?.removeValues();
       toast.success(successMessage);
@@ -339,14 +341,26 @@ export default function LgIssuance() {
           flags={flags}
           setValue={setValue}
         />
-        <LgStep3
-          data={countryNames}
-          flags={countryFlags}
-          register={register}
-          setStepCompleted={handleStepCompletion}
-          setValue={setValue}
-          watch={watch}
-        />
+        {lgIssuance === LG.cashMargin ? (
+          <LgStep3CashMargin
+            data={countryNames}
+            flags={countryFlags}
+            register={register}
+            setStepCompleted={handleStepCompletion}
+            setValue={setValue}
+            watch={watch}
+          />
+        ) : (
+          <LgStep3
+            data={countryNames}
+            flags={countryFlags}
+            register={register}
+            setStepCompleted={handleStepCompletion}
+            setValue={setValue}
+            watch={watch}
+          />
+        )}
+
         {lgIssuance === LG.cashMargin ? (
           <LgStep4Helper
             register={register}
@@ -425,15 +439,7 @@ export default function LgIssuance() {
             step={8}
           />
         )}
-        {lgIssuance === LG.cashMargin && (
-          <LgStep8
-            step={9}
-            setValue={setValue}
-            register={register}
-            watch={watch}
-            setStepCompleted={handleStepCompletion}
-          />
-        )}
+
         {lgIssuance === LG.cashMargin && (
           <LgStep9Part2
             register={register}
@@ -444,6 +450,16 @@ export default function LgIssuance() {
             setValue={setValue}
           />
         )}
+
+        {/* {lgIssuance === LG.cashMargin && ( */}
+          <LgStep8
+            step={9}
+            setValue={setValue}
+            register={register}
+            watch={watch}
+            setStepCompleted={handleStepCompletion}
+          />
+        {/* // /ss)} */}
 
         <LgStep9
           register={register}
@@ -458,6 +474,14 @@ export default function LgIssuance() {
           setStepCompleted={handleStepCompletion}
           setValue={setValue}
           step={lgIssuance === LG.cashMargin ? 12 : 10}
+        />
+
+        <LgStep12
+          register={register}
+          watch={watch}
+          setStepCompleted={handleStepCompletion}
+          setValue={setValue}
+          step={11}
         />
         <div className="flex items-center gap-x-4 w-full">
           <Button

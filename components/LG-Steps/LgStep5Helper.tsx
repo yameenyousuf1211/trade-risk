@@ -103,7 +103,7 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
                         <TableCell colSpan={3} className='text-[#5625F2] font-bold text-lg font-roboto'>
                             Total LGs Amount
                         </TableCell>
-                        <TableCell className="text-start" colSpan={5}>
+                        <TableCell className="text-start text-[#5625F2]" colSpan={5}>
                             {formatNumberWithCommas(bidBondAmount + advancePaymentBondAmount + performanceBondAmount + retentionMoneyBondAmount) + ".00"}
                         </TableCell>
                     </TableRow>

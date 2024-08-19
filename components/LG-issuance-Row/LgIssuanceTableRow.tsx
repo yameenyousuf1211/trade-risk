@@ -9,7 +9,7 @@ import {
 } from "../ui/select";
 import { TableDataCell } from "../shared/RequestTable";
 import { LgStepsProps5 } from "@/types/lg";
-import { Link } from "lucide-react";
+import { Check, Link, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { DatePicker } from "../helpers";
 import { useQuery } from "@tanstack/react-query";
@@ -35,14 +35,22 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
   const otherBondName = watch(`${name}.name`);
 
+  console.log("🚀 ~ cashMargin:", cashMargin);
+
+  useEffect(() => {
+    if (cashMargin && !cashMargin?.toString()?.includes(".00")) {
+      setValue(`${name}.cashMargin`, cashMargin + ".00");
+    }
+  }, [cashMargin]);
+
   const { data } = useLcIssuance();
   useEffect(() => {
     //@ts-ignore
     if (data[name]?.name) {
-       //@ts-ignore
-       setValue(`${name}.name`, data[name]?.name);
-     }
-   }, [data]);
+      //@ts-ignore
+      setValue(`${name}.name`, data[name]?.name);
+    }
+  }, [data]);
 
   const { data: currency } = useQuery({
     queryKey: ["currency"],
@@ -96,12 +104,23 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       {lgDetails !== "Choose any other type of LGs" ? (
         <TableDataCell>
           <div className="flex gap-2 items-center flex-wrap">
-            <input
+            {/* <input
               type="checkbox"
               className="bg-none"
+              style={{
+                background:"white",
+                borderColor:"#5625F2"
+              }}
               {...register(`${name}.Contract`)}
-            />
-            <p style={{ textWrap:"wrap",textAlign: "left"}}>{listValue}</p>
+            /> */}
+            <div onClick={() => {
+              setValue(`${name}.Contract`,checkedValue?false:true)
+            }} className="bg-white border-[#5625F2] border-2 rounded-[5px] flex items-center justify-center h-[22px] w-[22px] cursor-pointer">
+              {checkedValue ? (
+                <Check size={18} style={{ color: "#5625F2" }} />
+              ) : null}
+            </div>
+            <p style={{ textWrap: "wrap", textAlign: "left" }}>{listValue}</p>
           </div>
         </TableDataCell>
       ) : (
@@ -169,7 +188,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <DatePicker
-          value={!expectedDate?undefined:new Date(expectedDate)}
+          value={!expectedDate ? undefined : new Date(expectedDate)}
           setValue={setValue}
           disabled={!checkedValue}
           name={`${name}.expectedDate`}
@@ -180,7 +199,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <DatePicker
-          value={!lgExpiryDate?undefined:new Date(lgExpiryDate)}
+          value={!lgExpiryDate ? undefined : new Date(lgExpiryDate)}
           disabled={!checkedValue}
           setValue={setValue}
           name={`${name}.lgExpiryDate`}

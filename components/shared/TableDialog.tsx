@@ -324,7 +324,7 @@ export const TableDialog = ({
                   value={
                     formatNumberWithCommas(
                       riskData?.riskParticipationTransaction?.amount
-                    ) || ""
+                    ) + ".00" || ""
                   }
                 />
                 <LCInfo
@@ -352,30 +352,22 @@ export const TableDialog = ({
                   label="LC Advising Bank"
                   value={riskData?.advisingBank?.bank || ""}
                 />
-                {lcData?.type ? (
-                  <LCInfo
-                    label="Confirming Bank"
-                    value={riskData?.confirmingBank?.bank || ""}
-                  />
-                ) : null}
-                {lcData?.type ? (
-                  <LCInfo
-                    label="LC Discounted"
-                    value={
-                      riskData?.transhipment === true
-                        ? "Allowed"
-                        : "Not allowed"
-                    }
-                  />
-                ) : null}
-                {lcData?.type ? (
-                  <LCInfo
-                    label="Expected Discounting Date"
-                    value={convertDateToCommaString(
-                      riskData?.expectedDateDiscounting || ""
-                    )}
-                  />
-                ) : null}
+                <LCInfo
+                  label="Confirming Bank"
+                  value={riskData?.confirmingBank?.bank || ""}
+                />
+                <LCInfo
+                  label="LC Discounted"
+                  value={
+                    riskData?.transhipment === true ? "Allowed" : "Not allowed"
+                  }
+                />
+                <LCInfo
+                  label="Expected Discounting Date"
+                  value={convertDateToCommaString(
+                    riskData?.expectedDateDiscounting || ""
+                  )}
+                />
                 <LCInfo
                   label="Issuance/Expected Issuance Date"
                   value={convertDateToCommaString(

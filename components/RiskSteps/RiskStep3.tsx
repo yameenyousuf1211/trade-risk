@@ -5,6 +5,7 @@ import { DDInput } from "../LCSteps/helpers";
 import { getAllPortData, getPorts } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import Period from "../RiskParticipation/Period";
+import useLcIssuance from "@/store/issueance.store";
 
 interface Props {
   countries: string[];
@@ -34,6 +35,16 @@ export const RiskStep3 = ({
     expectedDateConfirmation,
     days,
   } = watch();
+
+  const { data } = useLcIssuance();
+  const initialExpectedDate: string =
+    data["expectedDateConfirmation" as keyof typeof data];
+
+  useEffect(() => {
+    if (initialExpectedDate && !expectedDateConfirmation) {
+      setValue("expectedDateConfirmation", new Date(initialExpectedDate));
+    }
+  }, [data, initialExpectedDate]);
 
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],

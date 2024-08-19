@@ -175,7 +175,7 @@ const CompanyInfoPage = () => {
                 setIsoCode={setIsoCode}
                 setValue={setValue}
                 name="accountCountry"
-                placeholder="Bank Country"
+                placeholder="Company Country"
               />
               {errors.accountCountry && (
                 <span className="mt-1 absolute text-[11px] text-red-500">

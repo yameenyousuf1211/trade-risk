@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Check, X } from "lucide-react";
 import { BgRadioInputLG } from "../helper";
 import { Button } from "@/components/ui/button";
-import useLGStore from "./useBidStore";
-import { BondStatus, IssuingBank } from "./type";
+import useLGStore from "../../../store/LGCorporateBidStore";
+import { BondStatus, IssuingBank } from "../../../types/LGCorporateTypes";
 import { ConfirmationModal } from "../ConfirmationModal";
 
 export const BidCard = ({ bidDetail }: { bidDetail: any }) => {

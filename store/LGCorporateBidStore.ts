@@ -1,5 +1,10 @@
-import create from "zustand";
-import { BondStatus, BidSatatus, LGState, IssuingBank } from "./type";
+import { create } from "zustand";
+import {
+  BondStatus,
+  BidSatatus,
+  LGState,
+  IssuingBank,
+} from "../types/LGCorporateTypes";
 
 const useLGStore = create<LGState>((set, get) => ({
   beneficiaryDetails: [

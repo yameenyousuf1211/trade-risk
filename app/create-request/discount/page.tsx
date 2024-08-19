@@ -28,13 +28,12 @@ import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
+import * as Yup from "yup";
 
 const CreateDiscountPage = () => {
   const { user } = useAuth();
 
-  const { register, setValue, reset, handleSubmit, watch } = useForm<
-    z.infer<typeof discountingSchema>
-  >({});
+  const { register, setValue, reset, handleSubmit, watch } = useForm({});
 
   const queryClient = useQueryClient();
 
@@ -93,7 +92,7 @@ const CreateDiscountPage = () => {
 
   const [loader, setLoader] = useState(false);
 
-  const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async ({
+  const onSubmit: SubmitHandler<typeof discountingSchema> = async ({
     data,
     isDraft,
     isProceed = false,
@@ -196,10 +195,11 @@ const CreateDiscountPage = () => {
       };
       console.log(data, preparedData);
 
-      const validationResult = discountingSchema.safeParse(preparedData);
-      console.log(validationResult);
-      if (validationResult.success) {
-        const validatedData = validationResult.data;
+      try {
+        const validatedData = await discountingSchema.validate(preparedData, {
+          abortEarly: false,
+        });
+
         if (isProceed) {
           const { confirmingBank2, extraInfo, ...rest } = validatedData;
           reqData = {
@@ -231,14 +231,13 @@ const CreateDiscountPage = () => {
           // @ts-ignore
           openDisclaimerBtn.click();
         }
-      } else {
-        if (
-          validationResult.error &&
-          validationResult.error.errors.length > 0
-        ) {
-          validationResult.error.errors.forEach((error) => {
-            toast.error(`${error.message}`);
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          error.errors.forEach((errMessage) => {
+            toast.error(errMessage);
           });
+        } else {
+          console.error("Unexpected error during validation:", error);
         }
       }
     }

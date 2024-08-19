@@ -25,6 +25,7 @@ import { IRisk } from "@/types/type";
 import { BgRadioInput, DDInput } from "../LCSteps/helpers";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const LCInfo = ({
   label,
@@ -112,12 +113,10 @@ export const AddBid = ({
     register,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<z.infer<typeof addBidTypes>>({
-    resolver: zodResolver(addBidTypes),
+  } = useForm({
+    resolver: yupResolver(addBidTypes),
   });
-  const onSubmit: SubmitHandler<z.infer<typeof addBidTypes>> = async (
-    data: z.infer<typeof addBidTypes>
-  ) => {
+  const onSubmit: SubmitHandler<typeof addBidTypes> = async (data) => {
     if (isDiscount && !discountBaseRate)
       return toast.error("Please provide discount base rate");
     if (isDiscount && !discountMargin)
@@ -274,8 +273,7 @@ export const AddBid = ({
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">
             {(lcData?.type && lcData?.type + " Request") ||
-              "Risk Participation Request" +
-                ` (${isRisk ? riskData?.refId : lcData?.refId})`}
+              "Risk Participation Request"}
           </h2>
           <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>
             <X className="size-7" />
@@ -388,7 +386,9 @@ export const AddBid = ({
                       <LCInfo
                         label="Issuance/Expected Issuance Date"
                         value={convertDateToCommaString(
-                          (riskData?.startDate?riskData?.startDate:riskData?.period?.startDate) || ""
+                          (riskData?.startDate
+                            ? riskData?.startDate
+                            : riskData?.period?.startDate) || ""
                         )}
                         noBorder
                       />
@@ -539,9 +539,11 @@ export const AddBid = ({
                       <LCInfo
                         label="LC Issuance (Expected)"
                         value={
-                          (riskData?.startDate || riskData?.period?.startDate)
+                          riskData?.startDate || riskData?.period?.startDate
                             ? convertDateToCommaString(
-                              (riskData?.startDate?riskData?.startDate:riskData?.period?.startDate)
+                                riskData?.startDate
+                                  ? riskData?.startDate
+                                  : riskData?.period?.startDate
                               )
                             : lcData?.createdAt
                             ? convertDateToCommaString(lcData?.createdAt)
@@ -574,11 +576,7 @@ export const AddBid = ({
                       />
                       <LCInfo
                         label="Transhipment"
-                        value={
-                          lcData?.transhipment === true
-                            ? "Allowed"
-                            : "Not allowed"
-                        }
+                        value={lcData?.transhipment === true ? "Yes" : "No"}
                       />
                       <LCInfo
                         label="Port of Shipment"
@@ -590,6 +588,18 @@ export const AddBid = ({
                         noBorder
                       />
 
+                      <h2 className="text-xl font-semibold mt-3">
+                        Importer Info
+                      </h2>
+                      <LCInfo
+                        label="Applicant"
+                        value={lcData?.importerInfo?.applicantName || ""}
+                        noBorder
+                      />
+                      <LCInfo
+                        label="Country of Import"
+                        value={lcData?.importerInfo?.countryOfImport || ""}
+                      />
                       <h2 className="text-xl font-semibold mt-3">
                         Exporter Info
                       </h2>
@@ -611,7 +621,7 @@ export const AddBid = ({
 
           {/* Right Section */}
           <div className="w-full h-full flex flex-col justify-start px-5 overflow-y-auto max-h-[75vh]">
-            <p className="text-xl font-semibold pt-5">Deal ( kindly provide your best price below )</p>
+            <p className="text-xl font-semibold pt-5">Submit Your Bid</p>
             {isInfo ? (
               <>
                 {/* Bid info and status */}
@@ -730,12 +740,13 @@ export const AddBid = ({
                       htmlFor="validity"
                       className="block font-semibold mb-2"
                     >
-                      Deals available until
+                      Bid Validity
                     </label>
                     <DatePicker
                       setValue={setValue}
                       key={lcData?._id}
                       maxDate={lcData?.period?.endDate}
+                      isPast={true}
                     />
                   </div>
                   {errors.validity && (
@@ -753,7 +764,7 @@ export const AddBid = ({
                     {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
                   </label>
                   <input
-                    placeholder="Enter your pricing (%)"
+                    placeholder="Enter your pricing per annum (%)"
                     type="text"
                     inputMode="numeric"
                     className={cn(

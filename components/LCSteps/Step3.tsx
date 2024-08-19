@@ -1,4 +1,3 @@
-"use client";
 import { DDInput } from "./helpers";
 import { Plus, X } from "lucide-react";
 import { Period, Transhipment } from "./Step3Helpers";
@@ -151,7 +150,10 @@ export const Step3 = ({
               <p className="font-semibold mb-2 ml-3">Advising Bank</p>
               <p
                 className="bg-red-500 center text-white rounded-full size-6 shadow-md z-10 cursor-pointer mb-1"
-                onClick={() => setShowAdvisingBank(false)}
+                onClick={() => {
+                  setShowAdvisingBank(false);
+                  setValue("advisingBank", undefined); // Set advisingBank to undefined
+                }}
               >
                 <X className="size-5 text-white" />
               </p>
@@ -235,7 +237,10 @@ export const Step3 = ({
             />
             <div
               className="absolute top-3 -right-2 bg-red-500 center text-white rounded-full size-6 shadow-md z-10 cursor-pointer"
-              onClick={() => setShowConfirmingBank(false)}
+              onClick={() => {
+                setShowConfirmingBank(false);
+                setValue("confirmingBank", undefined); // Set confirmingBank to undefined
+              }}
             >
               <X className="size-5 text-white" />
             </div>

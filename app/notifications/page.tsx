@@ -2,7 +2,6 @@
 import { Pagination } from "@/components/helpers";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import Notification from "@/components/notifications/Notification";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthProvider";
 import {
   fetchNotifications,
@@ -10,7 +9,6 @@ import {
 } from "@/services/apis/notifications.api";
 import { ApiResponse, INotifications } from "@/types/type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
 
 interface Props {
   searchParams: {
@@ -38,21 +36,38 @@ const NotificationsPage = ({ searchParams }: Props) => {
         limit: 7,
       }),
   });
-
+  console.log(data, "notifications");
   const { mutateAsync } = useMutation({
     mutationFn: updateNotification,
     onSuccess: () => {
-      console.log("onsuccess.... invalidating queries");
+      console.log("onSuccess: invalidating queries");
       queryClient.invalidateQueries({
         queryKey: ["fetch-notifications"],
       });
     },
   });
 
-  const handleReadNotification = async (id: string | undefined) => {
-    const { success, response } = await mutateAsync(id!);
-    console.log(response, "hii");
+  const handleReadNotification = async (id?: string) => {
+    if (id) {
+      // Mark a single notification as read
+      const { success, response } = await mutateAsync(id);
+      console.log(response, "Single notification read");
+    } else {
+      // Mark all notifications as read
+      const promises = data?.data?.map((notification) =>
+        mutateAsync(notification._id!)
+      );
+
+      if (promises) {
+        const results = await Promise.all(promises);
+        console.log(results, "All notifications read");
+      }
+    }
   };
+
+  const unreadCount = data?.data?.filter(
+    (notification) => !notification.isRead
+  ).length;
 
   return (
     <DashboardLayout>
@@ -63,10 +78,14 @@ const NotificationsPage = ({ searchParams }: Props) => {
               <h1 className="text-[28px] font-poppins font-medium">
                 Notifications
               </h1>
-              <span className="font-regular text-[#5625F2]">3 New</span>
+              {unreadCount > 0 && (
+                <span className="font-regular text-[#5625F2]">
+                  {unreadCount} New
+                </span>
+              )}
             </div>
             <div
-              className="font-medium  text-[#5625F2] cursor-pointer"
+              className="font-medium text-[#5625F2] cursor-pointer"
               onClick={() => handleReadNotification(undefined)}
             >
               Mark all as read
@@ -78,14 +97,9 @@ const NotificationsPage = ({ searchParams }: Props) => {
           </span>
         ) : null}
         <div className="mt-5 flex flex-col gap-3">
-          {data?.data?.map((notification: INotifications) => {
-            return (
-              <Notification
-                key={notification?._id}
-                notification={notification}
-              />
-            );
-          })}
+          {data?.data?.map((notification: INotifications) => (
+            <Notification key={notification?._id} notification={notification} />
+          ))}
         </div>
         {data && data.pagination && (
           <div className="mt-5">
@@ -96,4 +110,5 @@ const NotificationsPage = ({ searchParams }: Props) => {
     </DashboardLayout>
   );
 };
+
 export default NotificationsPage;

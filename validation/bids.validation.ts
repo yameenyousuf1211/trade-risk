@@ -1,11 +1,8 @@
-import { z } from "zod";
+import * as Yup from "yup";
 
-export const addBidTypes = z.object({
-  validity: z.date({ message: "Validity date is required" }),
-  confirmationPrice: z
-    .string()
-    .nonempty("Confirmation price is required")
-    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-      message: "Enter a valid number",
-    }),
+export const addBidTypes = Yup.object().shape({
+  validity: Yup.date().required("Validity date is required"),
+  confirmationPrice: Yup.string()
+    .required("Confirmation price is required")
+    .matches(/^\d+(\.\d+)?$/, "Enter a valid number"),
 });

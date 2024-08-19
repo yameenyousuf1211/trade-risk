@@ -170,7 +170,7 @@ export const RequestTable = ({
       <div className="rounded-md border px-4 py-4 bg-white">
         <div className="flex items-center justify-between w-full gap-x-2 mb-4">
           <h2 className="text-[16px] font-semibold text-[#1A1A26]">
-            {isBank ? "Deals Received" : "Transaction Requests"}
+            {isBank ? "Deals Received by Corporates" : "Transaction Requests"}
           </h2>
 
           <div className="flex items-center gap-x-2">
@@ -265,7 +265,9 @@ export const RequestTable = ({
                     <TableCell className="px-1 py-1 min-w-[90px]">
                       <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <div className="tex-sm truncate text-lightGray">
-                          {item?.createdBy?.swiftCode ? item?.createdBy?.swiftCode : '-'}
+                          {item?.createdBy?.swiftCode
+                            ? item?.createdBy?.swiftCode
+                            : "-"}
                         </div>
                       </div>
                     </TableCell>

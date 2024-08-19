@@ -31,6 +31,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import * as Yup from "yup";
 
 export default function LgIssuance() {
   const { register, setValue, reset, watch, handleSubmit } = useForm();
@@ -46,6 +47,10 @@ export default function LgIssuance() {
   console.log("🚀 ~ LgIssuance ~ storeData:", storeData);
   const { countries, flags } = useCountries();
   const lgIssuance = watch("lgIssuance");
+
+  useEffect(() => {
+    router.prefetch("/");
+  }, []);
 
   useEffect(() => {
     if (storeData.data && storeData?.data?._id) {
@@ -165,9 +170,11 @@ export default function LgIssuance() {
     removeUnnecessaryFieldsForLgCreate(responseData);
     console.log("🚀 ~ handleFinalSubmission ~ responseData:", responseData);
 
-    const validation = lgValidator.safeParse(responseData);
-    console.log("🚀 ~ handleFinalSubmission ~ validation:", validation);
-    if (validation.success) {
+    try {
+      await lgValidator.validate(responseData, {
+        abortEarly: false,
+      });
+
       const { response, success } = await createLg(responseData);
       handleResponse(
         success,
@@ -175,8 +182,12 @@ export default function LgIssuance() {
         "LG Issuance request submitted successfully"
       );
       setIsLoading(false);
-    } else {
-      handleValidationErrors(validation.error);
+    } catch (validationError) {
+      if (validationError instanceof Yup.ValidationError) {
+        handleValidationErrors(validationError);
+      } else {
+        console.error("Unexpected error during validation:", validationError);
+      }
     }
   };
 

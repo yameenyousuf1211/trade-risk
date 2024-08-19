@@ -81,7 +81,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Confirmation Rate</p>
           <p className="text-lg font-semibold text-text">
-            {data.amount}% {data?.perAnnum ? "per annum" : "flat"}
+            {data.amount}% {data?.perAnnum && "per annum"}
           </p>
         </div>
 
@@ -272,16 +272,14 @@ export const TableDialog = ({
       <DialogContent className="w-full max-w-4xl !p-0 !max-h-[95vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">
-            {(lcData && lcData?.type) ||
-              "Risk Participation Request" +
-                ` (${isRisk ? riskData?.refId : lcData?.refId})`}
+            {(lcData && lcData?.type) || "Risk Participation Request"}
           </h2>
           <DialogClose>
             <X className="size-7" />
           </DialogClose>
         </div>
 
-        <div className="overflow-y-hidden  relative flex items-start justify-between h-full">
+        <div className="overflow-y-hidden relative flex items-start justify-between h-full mt-0">
           {/* Left Section */}
           {isRisk ? (
             <div className="w-full flex flex-col overflow-y-scroll max-h-[90vh]">
@@ -404,11 +402,7 @@ export const TableDialog = ({
                 />
                 <LCInfo
                   label="Transhipment"
-                  value={
-                    riskData?.transhipment === true
-                      ? "Allowed"
-                      : "Not-Allowed" || ""
-                  }
+                  value={riskData?.transhipment === true ? "Yes" : "No"}
                   noBorder
                 />
                 {/* <LCInfo
@@ -442,6 +436,20 @@ export const TableDialog = ({
                 <LCInfo
                   label="Beneficiary Country"
                   value={riskData?.exporterInfo?.beneficiaryCountry || ""}
+                  noBorder
+                />
+                <h2 className="text-xl font-semibold mt-3">Importer Info</h2>
+                <LCInfo
+                  label="Beneficiary"
+                  value={riskData?.importerInfo?.applicantName || ""}
+                />
+                <LCInfo
+                  label="Country of Export"
+                  value={riskData?.importerInfo?.countryOfImport || ""}
+                />
+                <LCInfo
+                  label="Beneficiary Country"
+                  value={riskData?.importerInfo?.beneficiaryCountry || ""}
                   noBorder
                 />
               </div>
@@ -524,9 +532,7 @@ export const TableDialog = ({
                   <LCInfo
                     label="Transhipment"
                     value={
-                      lcData && lcData.transhipment === true
-                        ? "Allowed"
-                        : "Not allowed"
+                      lcData && lcData.transhipment === true ? "Yes" : "No"
                     }
                   />
                   <LCInfo
@@ -553,6 +559,22 @@ export const TableDialog = ({
                     value="Beneficiary"
                     noBorder
                   />
+                  <h2 className="text-xl font-semibold">Importer Info</h2>
+                  <LCInfo
+                    label="Beneficiary"
+                    value={(lcData && lcData.importerInfo?.applicantName) || ""}
+                  />
+                  <LCInfo
+                    label="Country"
+                    value={
+                      (lcData && lcData.importerInfo?.countryOfImport) || ""
+                    }
+                  />
+                  <LCInfo
+                    label="Charges on account of"
+                    value="Beneficiary"
+                    noBorder
+                  />
                 </div>
               </div>
             </>
@@ -565,7 +587,7 @@ export const TableDialog = ({
                 <p className="bg-primaryCol text-white font-semibold text-lg rounded-xl py-1 px-3">
                   {isBank ? userBids?.length : bids?.length}
                 </p>
-                <p className="text-xl font-semibold">Bids recieved</p>
+                <p className="text-xl font-semibold">Your Bids</p>
               </div>
 
               <div className="flex items-center gap-x-4">
@@ -591,9 +613,11 @@ export const TableDialog = ({
                   ))
                 : bids &&
                   bids.length > 0 &&
-                  bids.map((data: any) => (
-                    <BidCard data={data} key={data._id} isRisk={isRisk} />
-                  ))}
+                  bids
+                    .reverse()
+                    .map((data: any) => (
+                      <BidCard data={data} key={data._id} isRisk={isRisk} />
+                    ))}
             </div>
           </div>
         </div>

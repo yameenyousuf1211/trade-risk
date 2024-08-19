@@ -1,85 +1,86 @@
-import { z } from "zod";
+import * as Yup from "yup";
 
-const fileSchema = z.object({
-  name: z.string(),
-  type: z.string(),
-  size: z.number(),
+const fileSchema = Yup.object().shape({
+  name: Yup.string().required(),
+  type: Yup.string().required(),
+  size: Yup.number().required(),
 });
 
-export const generalLcSchema = z.object({
-  participantRole: z.enum(["exporter", "importer"], {
-    message: "Select transaction role",
-  }),
-  amount: z
-    .string({ message: "Enter amount" })
-    .nonempty("Enter amount")
-    .refine((value) => /^\d+$/.test(value), {
-      message: "Enter a valid number",
-    }),
-  paymentTerms: z.enum(["Sight LC", "Usance LC", "Deferred LC", "UPAS LC"], {
-    message: "Select a payment term",
-  }),
-  currency: z.string({ message: "Currency is required" }).default("USD"),
-  issuingBank: z.object(
-    {
-      bank: z.string({ message: "Issuing bank name is required" }),
-      country: z.string({ message: "Issuing bank country is required" }),
-    },
-    { message: "Issuing bank details is required" }
-  ),
-  advisingBank: z.optional(
-    z.object({
-      bank: z.string({ message: "Advising bank name is required" }),
-      country: z.string({ message: "Advising bank country is required" }),
+export const generalLcSchema = Yup.object().shape({
+  participantRole: Yup.mixed()
+    .oneOf(["exporter", "importer"], "Select transaction role")
+    .required(),
+  amount: Yup.string()
+    .required("Enter amount")
+    .matches(/^\d+$/, "Enter a valid number"),
+  paymentTerms: Yup.mixed()
+    .oneOf(
+      ["Sight LC", "Usance LC", "Deferred LC", "UPAS LC"],
+      "Select a payment term"
+    )
+    .required(),
+  currency: Yup.string().default("USD").required("Currency is required"),
+  issuingBank: Yup.object()
+    .shape({
+      bank: Yup.string().required("Issuing bank name is required"),
+      country: Yup.string().required("Issuing bank country is required"),
     })
-  ),
-  confirmingBank: z.optional(
-    z.object({
-      bank: z.string({ message: "Confirming bank name is required" }),
-      country: z.string({ message: "Confirming bank country is required" }),
+    .required("Issuing bank details are required"),
+  advisingBank: Yup.object()
+    .shape({
+      bank: Yup.string().required("Advising bank name is required"),
+      country: Yup.string().required("Advising bank country is required"),
     })
-  ),
-  confirmingBank2: z.optional(
-    z.object({
-      bank: z.string({ message: "Confirming bank name is required" }),
-      country: z.string({ message: "Confirming bank country is required" }),
+    .nullable()
+    .default(undefined),
+  confirmingBank: Yup.object()
+    .shape({
+      bank: Yup.string().required("Confirming bank name is required"),
+      country: Yup.string().required("Confirming bank country is required"),
     })
-  ),
-  period: z.object(
-    {
-      expectedDate: z.enum(["yes", "no"], {
-        message: "Select LC Period Type",
-      }),
-      startDate: z.date({ message: "Select issuance date" }),
-      endDate: z.date({ message: "Select expiry date" }),
-    },
-    { message: "LC Period is required" }
-  ),
-  shipmentPort: z.object(
-    {
-      country: z.string({ message: "Select shipment country" }),
-      port: z.string({ message: "Select shipment port" }),
-    },
-    { message: "Shipment details is required" }
-  ),
-  transhipment: z.enum(["yes", "no"], { message: "Specify transhipment" }),
-  importerInfo: z.object(
-    {
-      applicantName: z
-        .string({ message: "Enter importer applicant name" })
-        .nonempty("Enter applicant name"),
-      countryOfImport: z
-        .string({ message: "Select country of import" })
-        .nonempty("Select country of import"),
-    },
-    { message: "Importer Info is required" }
-  ),
-  productDescription: z
-    .string({ message: "Add product description" })
-    .min(1, { message: "Product Description is required" })
-    .max(300, { message: "Description cannot be more than 300 characters" }),
-  extraInfo: z
-    .enum(
+    .nullable()
+    .default(undefined),
+  confirmingBank2: Yup.object()
+    .shape({
+      bank: Yup.string().required("Confirming bank name is required"),
+      country: Yup.string().required("Confirming bank country is required"),
+    })
+    .nullable()
+    .default(undefined),
+  period: Yup.object()
+    .shape({
+      expectedDate: Yup.mixed()
+        .oneOf(["yes", "no"], "Select LC Period Type")
+        .required(),
+      startDate: Yup.date().required("Select issuance date"),
+      endDate: Yup.date().required("Select expiry date"),
+    })
+    .required("LC Period is required"),
+  shipmentPort: Yup.object()
+    .shape({
+      country: Yup.string().required("Select shipment country"),
+      port: Yup.string().required("Select shipment port"),
+    })
+    .required("Shipment details are required"),
+  transhipment: Yup.mixed()
+    .oneOf(["yes", "no"], "Specify transhipment")
+    .required(),
+  importerInfo: Yup.object()
+    .shape({
+      applicantName: Yup.string()
+        .required("Enter applicant name")
+        .min(1, "Enter importer applicant name"),
+      countryOfImport: Yup.string()
+        .required("Select country of import")
+        .min(1, "Select country of import"),
+    })
+    .required("Importer Info is required"),
+  productDescription: Yup.string()
+    .min(1, "Product Description is required")
+    .max(300, "Description cannot be more than 300 characters")
+    .required("Add product description"),
+  extraInfo: Yup.mixed()
+    .oneOf(
       [
         "shipment",
         "upas",
@@ -89,192 +90,191 @@ export const generalLcSchema = z.object({
         "sight",
         "others",
       ],
-      { message: "Extra info is required" }
+      "Extra info is required"
     )
-    .optional(),
+    .nullable(),
 });
 
-export const confirmationSchema = z.lazy(() =>
-  generalLcSchema.merge(
-    z.object({
-      expectedConfirmationDate: z.date({
-        message: "select expected confirmation date",
-      }),
-      exporterInfo: z.object({
-        beneficiaryName: z
-          .string({ message: "Enter exporter beneficiary name" })
-          .nonempty("Enter beneficiary name"),
-        countryOfExport: z.string({ message: "Select country of export" }),
-        beneficiaryCountry: z.string({
-          message: "Select exporter beneficiary country",
-        }),
-      }),
-      confirmationInfo: z.object({
-        behalfOf: z.enum(["Exporter", "Importer"], {
-          message: "Select confirmation info",
-        }),
-        pricePerAnnum: z
-          .string({ message: "Enter expected price per annum" })
-          .nonempty("Enter expected price")
-          .refine((value) => parseFloat(value) <= 100, {
-            message: "Price per annum must be less than 100",
-          }),
-      }),
-    })
-  )
+export const confirmationSchema = generalLcSchema.concat(
+  Yup.object().shape({
+    expectedConfirmationDate: Yup.date().required(
+      "select expected confirmation date"
+    ),
+    exporterInfo: Yup.object()
+      .shape({
+        beneficiaryName: Yup.string()
+          .required("Enter beneficiary name")
+          .min(1, "Enter exporter beneficiary name"),
+        countryOfExport: Yup.string().required("Select country of export"),
+        beneficiaryCountry: Yup.string().required(
+          "Select exporter beneficiary country"
+        ),
+      })
+      .required(),
+    confirmationInfo: Yup.object()
+      .shape({
+        behalfOf: Yup.mixed()
+          .oneOf(["Exporter", "Importer"], "Select confirmation info")
+          .required(),
+        pricePerAnnum: Yup.string()
+          .required("Enter expected price")
+          .matches(
+            /^\d+(\.\d+)?%$/,
+            "Enter a valid number with a '%' at the end"
+          )
+          .test(
+            "is-valid-price",
+            "Price per annum must be less than or equal to 100",
+            (value) => {
+              const numericValue = parseFloat(value.replace("%", ""));
+              return numericValue <= 100;
+            }
+          ),
+      })
+      .required(),
+  })
 );
 
-export const discountingSchema = z.lazy(() =>
-  generalLcSchema.merge(
-    z.object({
-      expectedDiscountingDate: z.date({ message: "select date" }),
-      exporterInfo: z.object({
-        beneficiaryName: z
-          .string({ message: "Enter beneficiary name" })
-          .nonempty("Enter beneficiary name"),
-        countryOfExport: z.string({ message: "Select country of export" }),
-        beneficiaryCountry: z.string({
-          message: "Select beneficiary country",
-        }),
-      }),
-      baseRate: z.string({ message: "Base Rate is required" }),
-
-      discountingInfo: z.object({
-        discountAtSight: z.enum(["yes", "no"], {
-          message: "Specify discount at sight",
-        }),
-        behalfOf: z.enum(["Exporter", "Importer"], {
-          message: "Select charges on account of",
-        }),
-        pricePerAnnum: z
-          .string({ message: "Enter expected price" })
-          .nonempty("Enter expected price")
-          // .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-          //   message: "Enter a valid number",
-          // })
-          .refine((value) => parseFloat(value) <= 100, {
-            message: "Price per annum must be less than 100",
-          }),
-      }),
-    })
-  )
+export const discountingSchema = generalLcSchema.concat(
+  Yup.object().shape({
+    expectedDiscountingDate: Yup.date().required("select date"),
+    exporterInfo: Yup.object()
+      .shape({
+        beneficiaryName: Yup.string()
+          .required("Enter beneficiary name")
+          .min(1, "Enter beneficiary name"),
+        countryOfExport: Yup.string().required("Select country of export"),
+        beneficiaryCountry: Yup.string().required("Select beneficiary country"),
+      })
+      .required(),
+    baseRate: Yup.string().required("Base Rate is required"),
+    discountingInfo: Yup.object()
+      .shape({
+        discountAtSight: Yup.mixed()
+          .oneOf(["yes", "no"], "Specify discount at sight")
+          .required(),
+        behalfOf: Yup.mixed()
+          .oneOf(["Exporter", "Importer"], "Select charges on account of")
+          .required(),
+        pricePerAnnum: Yup.string()
+          .required("Enter expected price")
+          .matches(/^\d+(\.\d+)?$/, "Enter a valid number")
+          .test(
+            "is-valid-price",
+            "Price per annum must be less than 100",
+            (value) => {
+              return parseFloat(value) <= 100;
+            }
+          ),
+      })
+      .required(),
+  })
 );
 
-export const confirmationDiscountSchema = z.lazy(() =>
-  generalLcSchema.merge(
-    z.object({
-      expectedConfirmationDate: z.date({ message: "select date" }),
-      // expectedDiscountingDate: z.date({ message: "select date" }),
-      exporterInfo: z.object({
-        beneficiaryName: z
-          .string({ message: "Enter beneficiary name" })
-          .nonempty("Enter beneficiary name"),
-        countryOfExport: z.string({ message: "Select country of export" }),
-        beneficiaryCountry: z.string({
-          message: "Select beneficiary country",
-        }),
-        bank: z.string({ message: "Select export bank" }),
-      }),
-      confirmationInfo: z.object({
-        behalfOf: z.enum(["Exporter", "Importer"], {
-          message: "Select one of above",
-        }),
-        pricePerAnnum: z
-          .string({ message: "Enter expected price" })
-          .nonempty("Enter expected price"),
-        // .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-        //   message: "Enter a valid number",
-        // }),
-      }),
-      discountingInfo: z.object({
-        discountAtSight: z.enum(["yes", "no"], {
-          message: "Specify discount at sight",
-        }),
-        behalfOf: z.enum(["Exporter", "Importer"], {
-          message: "Select one of above",
-        }),
-        pricePerAnnum: z
-          .string({ message: "Enter expected price" })
-          .nonempty("Enter expected price")
-          // .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-          //   message: "Enter a valid number",
-          // })
-          .refine((value) => parseFloat(value) <= 100, {
-            message: "Price per annum must be less than 100",
-          }),
-        basePerRate: z.string({ message: "Base Rate is required" }),
-      }),
-    })
-  )
+export const confirmationDiscountSchema = generalLcSchema.concat(
+  Yup.object().shape({
+    expectedConfirmationDate: Yup.date().required("select date"),
+    exporterInfo: Yup.object()
+      .shape({
+        beneficiaryName: Yup.string()
+          .required("Enter beneficiary name")
+          .min(1, "Enter beneficiary name"),
+        countryOfExport: Yup.string().required("Select country of export"),
+        beneficiaryCountry: Yup.string().required("Select beneficiary country"),
+        bank: Yup.string().required("Select export bank"),
+      })
+      .required(),
+    confirmationInfo: Yup.object()
+      .shape({
+        behalfOf: Yup.mixed()
+          .oneOf(["Exporter", "Importer"], "Select one of above")
+          .required(),
+        pricePerAnnum: Yup.string()
+          .required("Enter expected price")
+          .matches(/^\d+(\.\d+)?$/, "Enter a valid number"),
+      })
+      .required(),
+    discountingInfo: Yup.object()
+      .shape({
+        discountAtSight: Yup.mixed()
+          .oneOf(["yes", "no"], "Specify discount at sight")
+          .required(),
+        behalfOf: Yup.mixed()
+          .oneOf(["Exporter", "Importer"], "Select one of above")
+          .required(),
+        pricePerAnnum: Yup.string()
+          .required("Enter expected price")
+          .matches(/^\d+(\.\d+)?$/, "Enter a valid number")
+          .test(
+            "is-valid-price",
+            "Price per annum must be less than 100",
+            (value) => {
+              return parseFloat(value) <= 100;
+            }
+          ),
+        basePerRate: Yup.string().required("Base Rate is required"),
+      })
+      .required(),
+  })
 );
 
-export const lcIssuanceSchema = z.object({
-  lgIssueAgainst: z.string({ message: "LG Issue against is required" }),
-  issuingBank: z.object({
-    bank: z.string({ message: "Issuing bank name is required" }),
-    country: z.string({ message: "Issuing bank country is required" }),
-  }),
-  standardSAMA: z.string({ message: "Select standardSAMA" }),
-  priceCurrency: z.string({ message: "Currency is required" }).default("USD"),
-  marginCurrency: z.string({ message: "Currency is required" }).default("USD"),
-  amount: z.object({
-    amountPercentage: z.string({ message: "Amount percentage is required" }),
-    margin: z.string({ message: "Margin is required" }),
-    price: z.string({ message: "Enter amount" }),
-  }),
-  period: z.object(
-    {
-      startDate: z.date({ message: "Select issuance date" }),
-      endDate: z.date({ message: "Select expiry date" }),
-    },
-    { message: "LC Period is required" }
-  ),
-  lgType: z.enum(["bid", "advance", "payment", "cg", "performance"], {
-    message: "Select LG Type",
-  }),
-  productDescription: z
-    .string({ message: "Add product description" })
-    .min(1, { message: "Product Description is required" })
-    .max(300, { message: "Description cannot be more than 300 characters" }),
-  lgDetail: z.object(
-    {
-      lgIssueBehalfOf: z
-        .string({ message: "Applicant name is required" })
-        .min(1, {
-          message: "Applicant name required",
-        }),
-      applicantCountry: z
-        .string({ message: "Applicant country is required" })
-        .min(1, {
-          message: "Applicant country is required",
-        }),
-      lgIssueFavorOf: z.string({ message: "Beneficiary is required" }).min(1, {
-        message: "Beneficiary is required",
-      }),
-      address: z.string({ message: "Address is required" }).min(1, {
-        message: "Address is required",
-      }),
-      benficiaryCountry: z
-        .string({
-          message: "Beneficiary country is required",
-        })
-        .min(1, {
-          message: "Beneficiary country is required",
-        }),
-    },
-    { message: "LG Detail is required" }
-  ),
-  chargesBehalfOf: z.enum(["applicant", "beneficiary"], {
-    message: "Select Charges BehalfOf",
-  }),
-  instrument: z.enum(["yes", "no"], {
-    message: "Select Instrument",
-  }),
-  benificiaryBankName: z
-    .string({ message: "Beneficiary Bank Name is required" })
-    .optional(),
-  remarks: z.string({ message: "Remarks is required" }).min(1, {
-    message: "Remarks is required",
-  }),
-  priceType: z.string({ message: "Select Price Type" }),
+export const lcIssuanceSchema = Yup.object().shape({
+  lgIssueAgainst: Yup.string().required("LG Issue against is required"),
+  issuingBank: Yup.object()
+    .shape({
+      bank: Yup.string().required("Issuing bank name is required"),
+      country: Yup.string().required("Issuing bank country is required"),
+    })
+    .required(),
+  standardSAMA: Yup.string().required("Select standardSAMA"),
+  priceCurrency: Yup.string().default("USD").required("Currency is required"),
+  marginCurrency: Yup.string().default("USD").required("Currency is required"),
+  amount: Yup.object()
+    .shape({
+      amountPercentage: Yup.string().required("Amount percentage is required"),
+      margin: Yup.string().required("Margin is required"),
+      price: Yup.string().required("Enter amount"),
+    })
+    .required(),
+  period: Yup.object()
+    .shape({
+      startDate: Yup.date().required("Select issuance date"),
+      endDate: Yup.date().required("Select expiry date"),
+    })
+    .required("LC Period is required"),
+  lgType: Yup.mixed()
+    .oneOf(["bid", "advance", "payment", "cg", "performance"], "Select LG Type")
+    .required(),
+  productDescription: Yup.string()
+    .min(1, "Product Description is required")
+    .max(300, "Description cannot be more than 300 characters")
+    .required("Add product description"),
+  lgDetail: Yup.object()
+    .shape({
+      lgIssueBehalfOf: Yup.string()
+        .min(1, "Applicant name required")
+        .required("Applicant name is required"),
+      applicantCountry: Yup.string()
+        .min(1, "Applicant country is required")
+        .required("Applicant country is required"),
+      lgIssueFavorOf: Yup.string()
+        .min(1, "Beneficiary is required")
+        .required("Beneficiary is required"),
+      address: Yup.string()
+        .min(1, "Address is required")
+        .required("Address is required"),
+      benficiaryCountry: Yup.string()
+        .min(1, "Beneficiary country is required")
+        .required("Beneficiary country is required"),
+    })
+    .required("LG Detail is required"),
+  chargesBehalfOf: Yup.mixed()
+    .oneOf(["applicant", "beneficiary"], "Select Charges BehalfOf")
+    .required(),
+  instrument: Yup.mixed().oneOf(["yes", "no"], "Select Instrument").required(),
+  benificiaryBankName: Yup.string().nullable(),
+  remarks: Yup.string()
+    .min(1, "Remarks are required")
+    .required("Remarks are required"),
+  priceType: Yup.string().required("Select Price Type"),
 });

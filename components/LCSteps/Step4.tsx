@@ -32,11 +32,25 @@ export const Step4 = ({
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
+    if (isImporter) {
+      setValue("importerInfo.applicantName", user ? user.name : "");
+      setValue("exporterInfo.countryOfExport", "");
+      setValue("exporterInfo.beneficiaryCountry", "");
+      setValue("exporterInfo.beneficiaryName", "");
+      setValue("exporterInfo.bank", "");
+    } else {
+      setValue("importerInfo.applicantName", "");
+      setValue("importerInfo.countryOfImport", "");
+    }
+  }, [isImporter, user, setValue]);
+
+  useEffect(() => {
     if (importerCountry && applicantName) {
       addStep(IMPORTER_INFO);
-    } else removeStep(IMPORTER_INFO);
-    isImporter && setValue("importerInfo.applicantName", user ? user.name : "");
-  }, [importerCountry, applicantName, isImporter]);
+    } else {
+      removeStep(IMPORTER_INFO);
+    }
+  }, [importerCountry, applicantName]);
 
   return (
     <div

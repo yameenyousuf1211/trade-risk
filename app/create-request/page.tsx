@@ -106,6 +106,7 @@ const CreateRequestPage = () => {
     isProceed?: boolean;
   }) => {
     submit();
+    delete data.createdBy;
     if (
       data.confirmingBank &&
       data.issuingBanks.some(
@@ -158,7 +159,6 @@ const CreateRequestPage = () => {
           confirmingBank2,
           _id,
           refId,
-          createdBy,
           status,
           createdAt,
           updatedAt,
@@ -224,6 +224,7 @@ const CreateRequestPage = () => {
             reqData = {
               ...rest,
               ...baseData,
+              draft: false,
             };
 
             const { response, success } = confirmationData?._id
@@ -237,6 +238,7 @@ const CreateRequestPage = () => {
               toast.error(response);
             } else {
               setValues(getStateValues(useConfirmationStore.getInitialState()));
+              console.log(response, "response submit request");
               toast.success("LC created successfully");
               router.push("/");
               reset();

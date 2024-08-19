@@ -175,7 +175,7 @@ const CompanyInfoPage = () => {
                 setIsoCode={setIsoCode}
                 setValue={setValue}
                 name="accountCountry"
-                placeholder="Bank Country"
+                placeholder="Company Country"
               />
               {errors.accountCountry && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
@@ -210,17 +210,15 @@ const CompanyInfoPage = () => {
                   <SelectItem value="individual_proprietorship_co">
                     Proprietorship Company
                   </SelectItem>
+                  <SelectItem value="individual">Individual</SelectItem>
                   <SelectItem value="limited_liability_co">
-                    Individual
-                  </SelectItem>
-                  <SelectItem value="public_limited_co">
                     Limited Liability Company
                   </SelectItem>
-                  <SelectItem value="partnership">
+                  <SelectItem value="public_limited_co">
                     Public Limited Company
                   </SelectItem>
                   <SelectItem value="partnership">Partnership</SelectItem>
-                  <SelectItem value="partnership">Establishment</SelectItem>
+                  <SelectItem value="establishment">Establishment</SelectItem>
                 </SelectContent>
               </Select>
               {errors.constitution && (

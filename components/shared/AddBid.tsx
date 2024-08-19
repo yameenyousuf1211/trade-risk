@@ -181,6 +181,16 @@ export const AddBid = ({
     performanceBond +
     retentionMoneyBond;
 
+  const formatNumberWithCommas = (value: string | number) => {
+    if (value === undefined || value === null) {
+      return "";
+    }
+
+    value = value.toString();
+    const numberString = value.replace(/,/g, "");
+    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   return (
     <Dialog>
       {isRisk ? (
@@ -332,8 +342,9 @@ export const AddBid = ({
                       <LCInfo
                         label="Value of Transaction"
                         value={
-                          riskData?.riskParticipationTransaction?.amount.toString() ||
-                          "-"
+                          formatNumberWithCommas(
+                            riskData?.riskParticipationTransaction?.amount ?? 0
+                          ) || "-"
                         }
                       />
                       <LCInfo
@@ -365,24 +376,24 @@ export const AddBid = ({
                         label="LC Advising Bank"
                         value={riskData?.advisingBank?.bank || "-"}
                       />
-                      <LCInfo
+                      {/* <LCInfo
                         label="Confirming Bank"
                         value={riskData?.confirmingBank?.bank || "-"}
-                      />
-                      <LCInfo
+                      /> */}
+                      {/* <LCInfo
                         label="LC Discounted"
                         value={
                           riskData?.transhipment === true
                             ? "Allowed"
                             : "Not allowed"
                         }
-                      />
-                      <LCInfo
+                      /> */}
+                      {/* <LCInfo
                         label="Expected Discounting Date"
                         value={convertDateToCommaString(
                           riskData?.expectedDateDiscounting || ""
                         )}
-                      />
+                      /> */}
                       <LCInfo
                         label="Issuance/Expected Issuance Date"
                         value={convertDateToCommaString(

@@ -17,7 +17,7 @@ const LgStep4: React.FC<LgStepsProps2> = ({
 }) => {
   const beneficiaryCountry = watch("beneficiaryDetails.country");
   const beneficiaryName = watch("beneficiaryDetails.name");
-  console.log("🚀 ~ beneficiaryName:", beneficiaryName)
+  console.log("🚀 ~ beneficiaryName:", beneficiaryName);
   const beneficiaryAddress = watch("beneficiaryDetails.address");
   const beneficiaryPhoneNumber = watch("beneficiaryDetails.phoneNumber");
   const { addStep, removeStep } = useStepStore();
@@ -53,6 +53,24 @@ const LgStep4: React.FC<LgStepsProps2> = ({
       </div>
       <div className="border border-[#E2E2EA] bg-[#F5F7F9] p-2 rounded-lg">
         <div className="flex items-center gap-3 mb-2">
+          <label
+            id="beneficiaryDetails.address"
+            className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+          >
+            <p className="w-full text-sm text-lightGray">Beneficiary Name</p>
+            <Input
+              onChange={(e) =>
+                setValue("beneficiaryDetails.name", e?.target?.value)
+              }
+              register={register}
+              name="beneficiaryDetails.name"
+              type="text"
+              className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+              placeholder="Enter Text"
+            />
+          </label>
+        </div>
+        <div className="flex items-center gap-3 mb-2">
           <DDInput
             placeholder="Select Country"
             label="Beneficiary Country"
@@ -62,32 +80,29 @@ const LgStep4: React.FC<LgStepsProps2> = ({
             setValue={setValue}
             flags={flags}
           />
-          <label
-            id="beneficiaryDetails.address"
-            className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
-          >
-            <p className="w-full text-sm text-lightGray">Beneficiary Name</p>
-            <Input
-            onChange={(e) => setValue("beneficiaryDetails.name", e?.target?.value)}
-              register={register}
-              name="beneficiaryDetails.name"
-              type="text"
-              className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
-              placeholder="Enter Text"
-            />
-          </label>
+          <DDInput
+            placeholder="Select"
+            label="Select City"
+            id="beneficiaryDetails.city"
+            value={beneficiaryCountry}
+            data={data}
+            setValue={setValue}
+            flags={flags}
+          />
         </div>
         <div className="flex items-center gap-3">
           <label
             id="beneficiaryDetails.address"
-            className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+            className="border p-1 flex-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
           >
-            <p className="w-full text-sm text-lightGray">Beneficiary Address</p>
+            <p className="w-full text-sm text-lightGray">Street Address</p>
             <Input
               register={register}
               name="beneficiaryDetails.address"
               type="text"
-              onChange={(e) => setValue("beneficiaryDetails.address", e?.target?.value)}
+              onChange={(e) =>
+                setValue("beneficiaryDetails.address", e?.target?.value)
+              }
               className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
               placeholder="Enter Text"
             />

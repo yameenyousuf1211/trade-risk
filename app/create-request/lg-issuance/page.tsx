@@ -307,11 +307,6 @@ export default function LgIssuance() {
     successMessage: string
   ) => {
     if (success) {
-      const notificationResp = await sendNotification({
-        role: "bank",
-        title: `New LC Discounting Request ${response.data._id}`,
-        body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
-      });
       storeData?.removeValues();
       toast.success(successMessage);
       console.log(response, "response");

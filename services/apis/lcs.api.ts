@@ -50,7 +50,7 @@ export const fetchAllLcs = async ({
         search || ""
       }&filter=${(filter && encodeURIComponent(filter)) || ""}`
     );
-    return data.data.updatedData;
+    return data.data;
   } catch (error: any) {
     console.log(error);
     return error.response?.data?.message || "Something went wrong";

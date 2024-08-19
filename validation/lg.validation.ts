@@ -77,19 +77,22 @@ export const lgValidator = Yup.object()
     performanceBond: bondSchema.nullable(),
     retentionMoneyBond: bondSchema.nullable(),
     otherBond: bondSchema.nullable(),
-    issuingBank: Yup.object()
-      .shape({
-        bank: Yup.string()
-          .min(1, "Issuing Bank is required")
-          .required("Issuing Bank is required"),
-        country: Yup.string()
-          .min(1, "Issuing Bank Country is required")
-          .required("Issuing Bank Country is required"),
-        swiftCode: Yup.string()
-          .min(1, "Issuing Bank Swift Code is required")
-          .required("Issuing Bank Swift Code is required"),
-      })
-      .required(),
+    issuingBanks: Yup.array()
+      .of(
+        Yup.object().shape({
+          bank: Yup.string()
+            .min(1, "Issuing Bank is required")
+            .required("Issuing Bank is required"),
+          country: Yup.string()
+            .min(1, "Issuing Bank Country is required")
+            .required("Issuing Bank Country is required"),
+          swiftCode: Yup.string()
+            .min(1, "Issuing Bank Swift Code is required")
+            .required("Issuing Bank Swift Code is required"),
+        })
+      )
+      .min(1, "At least one issuing bank is required")
+      .required("Issuing Banks are required"),
     beneficiaryBanksDetails: Yup.object()
       .shape({
         bank: Yup.string().nullable(),

@@ -82,12 +82,18 @@ const CreateRequestPage = () => {
           setDays(daysLeft);
           setValue("extraInfo", value.other);
         }
+        // Handle array of issuing banks
+        if (key === "issuingBanks" && Array.isArray(value)) {
+          value.forEach((bank, index) => {
+            setValue(`issuingBanks[${index}].country`, bank.country);
+            setValue(`issuingBanks[${index}].bank`, bank.bank);
+          });
+        }
       });
     }
   }, [confirmationData]);
 
   const [proceed, setProceed] = useState(false);
-
   const [loader, setLoader] = useState(false);
 
   const onSubmit: SubmitHandler<typeof confirmationSchema> = async ({
@@ -102,7 +108,9 @@ const CreateRequestPage = () => {
     submit();
     if (
       data.confirmingBank &&
-      data.issuingBank.country === data.confirmingBank.country
+      data.issuingBanks.some(
+        (bank: any) => bank.country === data.confirmingBank.country
+      )
     )
       return toast.error(
         "Confirming bank country cannot be the same as issuing bank country"
@@ -128,6 +136,7 @@ const CreateRequestPage = () => {
 
     let reqData;
     const baseData = {
+      issuingBanks: data.issuingBanks, // Handle the array of issuing banks
       type: "LC Confirmation",
       transhipment: data.transhipment === "yes" ? true : false,
       amount: {
@@ -159,7 +168,7 @@ const CreateRequestPage = () => {
         reqData = {
           ...rest,
           ...baseData,
-          draft: "true",
+          draft: true,
         };
 
         const { response, success } = confirmationData?._id
@@ -173,8 +182,8 @@ const CreateRequestPage = () => {
           toast.error(response);
         } else {
           toast.success("LC saved as draft");
-          reset();
           router.push("/");
+          reset();
           setValues(getStateValues(useConfirmationStore.getInitialState()));
           queryClient.invalidateQueries({
             queryKey: ["fetch-lcs-drafts"],

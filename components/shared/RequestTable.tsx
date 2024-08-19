@@ -65,8 +65,8 @@ export const RequestTable = ({
   });
 
   useEffect(() => {
-    if (data && data?.data) {
-      setTableData(data?.data);
+    if (data) {
+      setTableData(data.data);
     }
   }, [data]);
 
@@ -303,22 +303,28 @@ export const RequestTable = ({
                         <p className="text-[16px] emoji-font">
                           {item.issuingBanks &&
                             allCountries &&
-                            getCountryFlagByName(item.issuingBanks[0].country)}
+                            getCountryFlagByName(
+                              item?.issuingBanks?.[0]?.country
+                            )}
                         </p>
-                        <div className="truncate capitalize text-lightGray">
+                        <div
+                          className={`capitalize truncate text-lightGray ${
+                            item.issuingBanks && item.issuingBanks[0]?.bank
+                              ? ""
+                              : "flex justify-center w-full"
+                          }`}
+                        >
                           {item.issuingBanks ? item.issuingBanks[0].bank : "-"}
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="px-1 py-1 max-w-[180px]">
-                      <div className="flex items-center justify-start gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                        <p className="text-[16px] truncate capitalize text-lightGray">
-                          {item.issuingBanks && allCountries
-                            ? item.issuingBanks[0].country
-                            : "-"}
-                        </p>
-                      </div>
-                    </TableCell>
+                    <TableDataCell
+                      data={
+                        item.issuingBanks && allCountries
+                          ? item?.issuingBanks?.[0]?.country
+                          : "-"
+                      }
+                    />
                     <TableDataCell
                       data={
                         (item.exporterInfo &&

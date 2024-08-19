@@ -84,6 +84,13 @@ const CreateDiscountPage = () => {
           setDays(daysLeft);
           setValue("extraInfo", value.other);
         }
+        // Handle array of issuing banks
+        if (key === "issuingBanks" && Array.isArray(value)) {
+          value.forEach((bank, index) => {
+            setValue(`issuingBanks[${index}].country`, bank.country);
+            setValue(`issuingBanks[${index}].bank`, bank.bank);
+          });
+        }
       });
     }
   }, [discountingData]);
@@ -104,13 +111,16 @@ const CreateDiscountPage = () => {
     submit();
     if (
       data.confirmingBank &&
-      data.issuingBank.country === data.confirmingBank.country
+      data.issuingBanks.some(
+        (bank: any) => bank.country === data.confirmingBank.country
+      )
     )
       return toast.error(
         "Confirming bank country cannot be the same as issuing bank country"
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
+
     const currentDate = new Date();
     const futureDate = new Date(
       currentDate.setDate(currentDate.getDate() + days)
@@ -126,6 +136,7 @@ const CreateDiscountPage = () => {
 
     let reqData;
     const baseData = {
+      issuingBanks: data.issuingBanks, // Handle the array of issuing banks
       type: "LC Discounting",
       transhipment: data.transhipment === "yes" ? true : false,
       amount: {
@@ -153,7 +164,7 @@ const CreateDiscountPage = () => {
       reqData = {
         ...rest,
         ...baseData,
-        draft: "true",
+        draft: true,
       };
       setLoader(true);
       const { response, success } = discountingData?._id
@@ -166,8 +177,8 @@ const CreateDiscountPage = () => {
       if (!success) return toast.error(response);
       else {
         toast.success("LC saved as draft");
-        reset();
         router.push("/");
+        reset();
         setValues(getStateValues(useDiscountingStore.getInitialState()));
         queryClient.invalidateQueries({
           queryKey: ["fetch-lcs-drafts"],
@@ -193,7 +204,6 @@ const CreateDiscountPage = () => {
         },
         expectedDiscountingDate: expectedDiscountingDate,
       };
-      console.log(data, preparedData);
 
       try {
         const validatedData = await discountingSchema.validate(preparedData, {
@@ -216,20 +226,14 @@ const CreateDiscountPage = () => {
           stopLoading();
           if (!success) return toast.error(response);
           else {
-            const notificationResp = await sendNotification({
-              role: "bank",
-              title: `New LC Discounting Request ${response.data._id}`,
-              body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
-            });
             setValues(getStateValues(useDiscountingStore.getInitialState()));
             toast.success("LC created successfully");
-            reset();
             router.push("/");
+            reset();
           }
         } else {
           let openDisclaimerBtn = document.getElementById("open-disclaimer");
-          // @ts-ignore
-          openDisclaimerBtn.click();
+          openDisclaimerBtn?.click();
         }
       } catch (error) {
         if (error instanceof Yup.ValidationError) {

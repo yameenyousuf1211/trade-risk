@@ -20,12 +20,15 @@ export const generalLcSchema = Yup.object().shape({
     )
     .required(),
   currency: Yup.string().default("USD").required("Currency is required"),
-  issuingBank: Yup.object()
-    .shape({
-      bank: Yup.string().required("Issuing bank name is required"),
-      country: Yup.string().required("Issuing bank country is required"),
-    })
-    .required("Issuing bank details are required"),
+  issuingBanks: Yup.array()
+    .of(
+      Yup.object().shape({
+        bank: Yup.string().required("Issuing bank name is required"),
+        country: Yup.string().required("Issuing bank country is required"),
+      })
+    )
+    .min(1, "At least one issuing bank is required")
+    .required("Issuing banks are required"),
   advisingBank: Yup.object()
     .shape({
       bank: Yup.string().required("Advising bank name is required"),
@@ -220,12 +223,15 @@ export const confirmationDiscountSchema = generalLcSchema.concat(
 
 export const lcIssuanceSchema = Yup.object().shape({
   lgIssueAgainst: Yup.string().required("LG Issue against is required"),
-  issuingBank: Yup.object()
-    .shape({
-      bank: Yup.string().required("Issuing bank name is required"),
-      country: Yup.string().required("Issuing bank country is required"),
-    })
-    .required(),
+  issuingBanks: Yup.array()
+    .of(
+      Yup.object().shape({
+        bank: Yup.string().required("Issuing bank name is required"),
+        country: Yup.string().required("Issuing bank country is required"),
+      })
+    )
+    .min(1, "At least one issuing bank is required")
+    .required("Issuing banks are required"),
   standardSAMA: Yup.string().required("Select standardSAMA"),
   priceCurrency: Yup.string().default("USD").required("Currency is required"),
   marginCurrency: Yup.string().default("USD").required("Currency is required"),

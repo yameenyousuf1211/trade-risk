@@ -38,6 +38,7 @@ import { getCities } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
@@ -58,8 +59,8 @@ const CompanyInfoPage = () => {
     handleSubmit,
     trigger,
     formState: { errors, isValid, isDirty },
-  } = useForm<z.infer<typeof companyInfoSchema>>({
-    resolver: zodResolver(companyInfoSchema),
+  } = useForm({
+    resolver: yupResolver(companyInfoSchema),
     mode: "all",
   });
 
@@ -85,7 +86,7 @@ const CompanyInfoPage = () => {
     }
   }, [errors, isValid, isDirty, corporateData]);
 
-  const onSubmit: SubmitHandler<z.infer<typeof companyInfoSchema>> = async (
+  const onSubmit: SubmitHandler<typeof companyInfoSchema> = async (
     data: any
   ) => {
     setValues(data);
@@ -141,6 +142,7 @@ const CompanyInfoPage = () => {
           className="max-w-2xl mx-auto w-full shadow-md bg-white rounded-3xl xs:p-8 max-xs:py-8 max-xs:px-4 z-10 mt-8 flex flex-col sm:gap-y-6 gap-y-3"
           onSubmit={handleSubmit(onSubmit)}
         >
+          <h3 className="text-[#585858]">Your Company information</h3>
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
             <div className="w-full relative">
               <FloatingInput
@@ -151,6 +153,33 @@ const CompanyInfoPage = () => {
               {errors.name && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.name.message}
+                </span>
+              )}
+            </div>
+            <div className="w-full relative">
+              <FloatingInput
+                name="crNumber"
+                placeholder="Commercial Registration Number"
+                register={register}
+              />
+              {errors.crNumber && (
+                <span className="mt-1 absolute text-[11px] text-red-500">
+                  {errors.crNumber.message}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
+            <div className="w-full relative">
+              <CountrySelect
+                setIsoCode={setIsoCode}
+                setValue={setValue}
+                name="accountCountry"
+                placeholder="Company Country"
+              />
+              {errors.accountCountry && (
+                <span className="mt-1 absolute text-[11px] text-red-500">
+                  {errors.accountCountry.message}
                 </span>
               )}
             </div>
@@ -179,15 +208,17 @@ const CompanyInfoPage = () => {
                 </SelectTrigger>
                 <SelectContent className="font-roboto">
                   <SelectItem value="individual_proprietorship_co">
-                    Individual/Proprietorship Co.
+                    Proprietorship Company
                   </SelectItem>
+                  <SelectItem value="individual">Individual</SelectItem>
                   <SelectItem value="limited_liability_co">
-                    Limited Liability Co
+                    Limited Liability Company
                   </SelectItem>
                   <SelectItem value="public_limited_co">
-                    Public Limited Co.
+                    Public Limited Company
                   </SelectItem>
                   <SelectItem value="partnership">Partnership</SelectItem>
+                  <SelectItem value="establishment">Establishment</SelectItem>
                 </SelectContent>
               </Select>
               {errors.constitution && (
@@ -197,7 +228,6 @@ const CompanyInfoPage = () => {
               )}
             </div>
           </div>
-
           <div className="w-full relative">
             <FloatingInput
               name="address"
@@ -304,6 +334,7 @@ const CompanyInfoPage = () => {
           </div>
 
           <div className="h-[2px] w-full bg-borderCol" />
+          <h3 className="text-[#585858]">Your main bank information</h3>
 
           <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
             <div className="w-full relative">

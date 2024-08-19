@@ -28,12 +28,11 @@ import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
+import * as Yup from "yup";
 
 const CreateRequestPage = () => {
   const { user } = useAuth();
-  const { register, setValue, reset, watch, handleSubmit } = useForm<
-    z.infer<typeof confirmationSchema>
-  >({});
+  const { register, setValue, reset, watch, handleSubmit } = useForm({});
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
@@ -83,15 +82,21 @@ const CreateRequestPage = () => {
           setDays(daysLeft);
           setValue("extraInfo", value.other);
         }
+        // Handle array of issuing banks
+        if (key === "issuingBanks" && Array.isArray(value)) {
+          value.forEach((bank, index) => {
+            setValue(`issuingBanks[${index}].country`, bank.country);
+            setValue(`issuingBanks[${index}].bank`, bank.bank);
+          });
+        }
       });
     }
   }, [confirmationData]);
 
   const [proceed, setProceed] = useState(false);
-
   const [loader, setLoader] = useState(false);
 
-  const onSubmit: SubmitHandler<z.infer<typeof confirmationSchema>> = async ({
+  const onSubmit: SubmitHandler<typeof confirmationSchema> = async ({
     data,
     isDraft,
     isProceed = false,
@@ -101,9 +106,12 @@ const CreateRequestPage = () => {
     isProceed?: boolean;
   }) => {
     submit();
+    delete data.createdBy;
     if (
       data.confirmingBank &&
-      data.issuingBank.country === data.confirmingBank.country
+      data.issuingBanks.some(
+        (bank: any) => bank.country === data.confirmingBank.country
+      )
     )
       return toast.error(
         "Confirming bank country cannot be the same as issuing bank country"
@@ -112,6 +120,7 @@ const CreateRequestPage = () => {
       return toast.error("Product description cannot contain only digits");
     if (data.period?.startDate > data.period?.endDate)
       return toast.error("LC Issuance date cannot be greater than expiry date");
+
     const currentDate = new Date();
     const futureDate = new Date(
       currentDate.setDate(currentDate.getDate() + days)
@@ -128,6 +137,7 @@ const CreateRequestPage = () => {
 
     let reqData;
     const baseData = {
+      issuingBanks: data.issuingBanks, // Handle the array of issuing banks
       type: "LC Confirmation",
       transhipment: data.transhipment === "yes" ? true : false,
       amount: {
@@ -139,120 +149,120 @@ const CreateRequestPage = () => {
       },
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
-    console.log("🚀 ~ CreateRequestPage ~ baseData:", baseData);
 
-    if (isDraft) {
-      const {
-        confirmingBank2,
-        _id,
-        refId,
-        createdBy,
-        status,
-        createdAt,
-        updatedAt,
-        extraInfo,
-        ...rest
-      } = data;
-      reqData = {
-        ...rest,
-        ...baseData,
-        draft: "true",
-      };
-      console.log(reqData, "REQDAATA");
+    try {
+      setLoader(true); // Start the loader
+      startLoading(); // Start the general loading state
 
-      setLoader(true);
-      const { response, success } = confirmationData?._id
-        ? await onUpdateLC({
-            payload: reqData,
-            id: confirmationData?._id,
-          })
-        : await onCreateLC(reqData);
-      console.log("🚀 ~ CreateRequestPage ~ response:", response);
-      setLoader(false);
-      if (!success) return toast.error(response);
-      else {
-        toast.success("LC saved as draft");
-        reset();
-        router.push("/");
-        setValues(getStateValues(useConfirmationStore.getInitialState()));
-        queryClient.invalidateQueries({
-          queryKey: ["fetch-lcs-drafts"],
-        });
-      }
-    } else {
-      const lcStartDateString = data.period?.startDate;
-      const lcEndDateString = data.period?.endDate;
-      const expectedConfirmationDateString = data?.expectedConfirmationDate;
-      const lcStartDate = lcStartDateString
-        ? new Date(lcStartDateString)
-        : null;
-      const lcEndDate = lcEndDateString ? new Date(lcEndDateString) : null;
-      const expectedConfirmationDate = expectedConfirmationDateString
-        ? new Date(expectedConfirmationDateString)
-        : null;
+      if (isDraft) {
+        const {
+          confirmingBank2,
+          _id,
+          refId,
+          status,
+          createdAt,
+          updatedAt,
+          extraInfo,
+          ...rest
+        } = data;
+        reqData = {
+          ...rest,
+          ...baseData,
+          draft: true,
+        };
 
-      const preparedData = {
-        ...data,
-        period: {
-          ...data.period,
-          startDate: lcStartDate,
-          endDate: lcEndDate,
-        },
-        expectedConfirmationDate,
-      };
-      const validationResult = confirmationSchema.safeParse(preparedData);
-      console.log("🚀 ~ CreateRequestPage ~ preparedData:", preparedData);
-      console.log(
-        "🚀 ~ CreateRequestPage ~ validationResult:",
-        validationResult
-      );
-      if (validationResult.success) {
-        const validatedData = validationResult.data;
-        if (isProceed) {
-          const { confirmingBank2, extraInfo, ...rest } = validatedData;
-          reqData = {
-            ...rest,
-            ...baseData,
-          };
-          startLoading();
-          const { response, success } = confirmationData?._id
-            ? await onUpdateLC({
-                payload: reqData,
-                id: confirmationData?._id,
-              })
-            : await onCreateLC(reqData);
-          stopLoading();
-          if (!success) return toast.error(response);
-          else {
-            console.log(response?.data?._id, "hi response");
-            const notificationResp = await sendNotification({
-              role: "bank",
-              title: `New LC Confirmation Request ${response?.data?._id}`,
-              body: `Ref no ${response.data.refId} from ${response?.data?.issuingBank?.bank} by ${user?.name}`,
-            });
-            console.log(notificationResp);
-            setValues(getStateValues(useConfirmationStore.getInitialState()));
-            toast.success("LC created successfully");
-            reset();
-            router.push("/");
-          }
+        const { response, success } = confirmationData?._id
+          ? await onUpdateLC({
+              payload: reqData,
+              id: confirmationData?._id,
+            })
+          : await onCreateLC(reqData);
+
+        if (!success) {
+          toast.error(response);
         } else {
-          let openDisclaimerBtn = document.getElementById("open-disclaimer");
-          // @ts-ignore
-          openDisclaimerBtn.click();
-          console.log("hellooooojeee asssalamualaikum");
-          // setProceed(true);
-        }
-      } else {
-        if (
-          validationResult.error &&
-          validationResult.error.errors.length > 0
-        ) {
-          validationResult.error.errors.forEach((error) => {
-            toast.error(`${error.message}`);
+          toast.success("LC saved as draft");
+          router.push("/");
+          reset();
+          setValues(getStateValues(useConfirmationStore.getInitialState()));
+          queryClient.invalidateQueries({
+            queryKey: ["fetch-lcs-drafts"],
           });
         }
+      } else {
+        const lcStartDateString = data.period?.startDate;
+        const lcEndDateString = data.period?.endDate;
+        const expectedConfirmationDateString = data?.expectedConfirmationDate;
+        const lcStartDate = lcStartDateString
+          ? new Date(lcStartDateString)
+          : null;
+        const lcEndDate = lcEndDateString ? new Date(lcEndDateString) : null;
+        const expectedConfirmationDate = expectedConfirmationDateString
+          ? new Date(expectedConfirmationDateString)
+          : null;
+        const preparedData = {
+          ...data,
+          period: {
+            ...data.period,
+            startDate: lcStartDate,
+            endDate: lcEndDate,
+          },
+          expectedConfirmationDate,
+        };
+
+        console.log(preparedData, "pipiipi");
+        try {
+          const validatedData = await confirmationSchema.validate(
+            preparedData,
+            {
+              abortEarly: false,
+              stripUnknown: true,
+            }
+          );
+          if (isProceed) {
+            const { confirmingBank2, extraInfo, ...rest } = validatedData;
+            reqData = {
+              ...rest,
+              ...baseData,
+              draft: false,
+            };
+
+            const { response, success } = confirmationData?._id
+              ? await onUpdateLC({
+                  payload: reqData,
+                  id: confirmationData?._id,
+                })
+              : await onCreateLC(reqData);
+
+            if (!success) {
+              toast.error(response);
+            } else {
+              setValues(getStateValues(useConfirmationStore.getInitialState()));
+              console.log(response, "response submit request");
+              toast.success("LC created successfully");
+              router.push("/");
+              reset();
+            }
+          } else {
+            const openDisclaimerBtn =
+              document.getElementById("open-disclaimer");
+            openDisclaimerBtn?.click();
+          }
+        } catch (error) {
+          if (error instanceof Yup.ValidationError) {
+            error.errors.forEach((errMessage) => {
+              toast.error(errMessage);
+            });
+          } else {
+            console.error("Unexpected error during validation:", error);
+          }
+        }
       }
+    } catch (error) {
+      console.error("Error during LC creation/update:", error);
+    } finally {
+      setLoader(false); // Stop the loader
+      stopLoading(); // Stop the general loading state
     }
   };
 

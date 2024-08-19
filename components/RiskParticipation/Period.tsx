@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -9,7 +9,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
 
-//TODO: add types
+// TODO: add types
 export default function Period({
   watch,
   setValue,
@@ -18,23 +18,29 @@ export default function Period({
   setValue: any;
 }) {
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
-  const [startDate, setStartDate] = useState<any>("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
 
-  let lcPeriodType = watch("period.expectedDate");
-
-  const updateValue = (name: string, value: any) => {
-    setValue(name, value);
-  };
+  const lcPeriodType = watch("period.expectedDate");
+  const lcStartDate = watch("period.startDate");
+  console.log(lcPeriodType, "lcPeriodType");
+  // Populate the initial start date if it's available
+  useEffect(() => {
+    if (lcStartDate) {
+      setStartDate(new Date(lcStartDate));
+    }
+  }, [lcStartDate]);
 
   const handleRadioChange = (e: any) => {
     setValue("period.expectedDate", e.target.value);
   };
 
-  let lcStartDate = watch("period.startDate");
+  const updateValue = (name: string, value: any) => {
+    setValue(name, value);
+  };
 
   return (
-    <div className="flex gap-y-4 items-center justify-between border border-borderCol rounded-md py-2 px-3 mb-3 bg-[white]">
-      <div className="flex  items-center">
+    <div className="flex gap-y-4 items-center justify-between border border-borderCol rounded-md py-2 px-3 mb-3 bg-white">
+      <div className="flex items-center gap-x-4">
         <div className="w-full rounded-md flex items-center gap-x-2">
           <input
             type="radio"
@@ -42,7 +48,7 @@ export default function Period({
             className="accent-primaryCol size-4"
             name="period.expectedDate"
             value="yes"
-            checked={lcPeriodType === "yes"}
+            checked={lcPeriodType === "yes" || lcPeriodType === true}
             onChange={handleRadioChange}
           />
           <label
@@ -59,7 +65,7 @@ export default function Period({
             className="accent-primaryCol !bg-white size-4"
             name="period.expectedDate"
             value="no"
-            checked={lcPeriodType === "no"}
+            checked={lcPeriodType === "no" || lcPeriodType === false}
             onChange={handleRadioChange}
           />
           <label
@@ -80,14 +86,18 @@ export default function Period({
             id="period-lc-date"
             disabled={!lcPeriodType}
           >
-            {lcStartDate ? format(lcStartDate, "PPP") : <span>DD/MM/YYYY</span>}
+            {lcStartDate ? (
+              format(new Date(lcStartDate), "PPP")
+            ) : (
+              <span>DD/MM/YYYY</span>
+            )}
             <CalendarIcon className="ml-2 mr-2 h-4 w-4" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
           {lcPeriodType === "yes" ? (
             <ValidatingCalendar
-              initialDate={lcStartDate}
+              initialDate={startDate}
               onChange={(date) => {
                 updateValue("period.startDate", date);
                 setStartDate(date);

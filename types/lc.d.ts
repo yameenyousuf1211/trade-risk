@@ -26,7 +26,7 @@ type TransactionData = {
   amount: string;
   paymentTerms: "Sight LC" | "Usance LC" | "Deferred LC" | "UPAS LC";
   currency: string;
-  issuingBank: Bank;
+  issuingBanks: Bank[];
   advisingBank: Bank;
   confirmingBank: Bank;
   lcPeriod: LcPeriod;
@@ -110,7 +110,7 @@ interface LCIssueance {
   _id: string;
   lgIssueAgainst: string;
   standardSAMA: string;
-  issuingBank: Bank;
+  issuingBanks: Bank[];
   amount: {
     price: string;
     margin: string;

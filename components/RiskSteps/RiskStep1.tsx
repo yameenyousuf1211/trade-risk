@@ -20,12 +20,16 @@ interface Props {
 export const RiskStep1 = ({ register, watch, setValue }: Props) => {
   const [date, setDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
   useEffect(() => {
-    if (watch("transaction") !== "Outright Sales") {
-      // Clear the value of outrightSales
+    const transaction = watch("transaction");
+    if (transaction !== "Outright Sales") {
       setValue("outrightSales", undefined);
+    } else if (transaction === "Outright Sales" && !watch("outrightSales")) {
+      setValue("outrightSales", "Pre Sales");
     }
-  }, [watch("transaction"), register]);
+  }, [watch("transaction"), setValue]);
+
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">
@@ -64,7 +68,6 @@ export const RiskStep1 = ({ register, watch, setValue }: Props) => {
         >
           <div className="flex items-center gap-x-3 w-full">
             <input
-              disabled
               type="radio"
               id="outright-sales"
               name="transaction"
@@ -102,33 +105,32 @@ export const RiskStep1 = ({ register, watch, setValue }: Props) => {
           </div>
         </label>
       </div>
-      {/* Condition rendering */}
-      {/* {watch("transaction") === "Outright Sales" && ( */}
-      <div className="px-2 pt-2 border border-borderCol rounded-lg w-full bg-[#F5F7F9]">
-        <p className="font-semibold text-sm text-lightGray mb-2 ml-2">
-          Outright Sales
-        </p>
+      {watch("transaction") === "Outright Sales" && (
+        <div className="px-2 pt-2 border border-borderCol rounded-lg w-full bg-[#F5F7F9]">
+          <p className="font-semibold text-sm text-lightGray mb-2 ml-2">
+            Outright Sales
+          </p>
 
-        <div className="flex items-center justify-between gap-x-2 w-full">
-          <BankRadioInput
-            id="pre-sales"
-            label="Pre sales"
-            name="outrightSales"
-            value="Pre Sales"
-            checked={watch("outrightSales") === "Pre Sales"}
-            register={register}
-          />
-          <BankRadioInput
-            id="asset-on-books"
-            label="Asset on books"
-            name="outrightSales"
-            value="Assets On Books"
-            checked={watch("outrightSales") === "Assets On Books"}
-            register={register}
-          />
+          <div className="flex items-center justify-between gap-x-2 w-full">
+            <BankRadioInput
+              id="pre-sales"
+              label="Pre sales"
+              name="outrightSales"
+              value="Pre Sales"
+              checked={watch("outrightSales") === "Pre Sales"}
+              register={register}
+            />
+            <BankRadioInput
+              id="asset-on-books"
+              label="Asset on books"
+              name="outrightSales"
+              value="Assets On Books"
+              checked={watch("outrightSales") === "Assets On Books"}
+              register={register}
+            />
+          </div>
         </div>
-      </div>
-      {/* // )} */}
+      )}
     </div>
   );
 };

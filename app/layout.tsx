@@ -52,7 +52,9 @@ export default function RootLayout({
       </head>
       <ReactQueryProvider>
         <AuthProvider>
-          <body className={`${poppins.className} ${roboto.variable}`}>
+          <body
+            className={`${poppins.className} ${roboto.variable} overscroll-none`}
+          >
             {children}
           </body>
           <Toaster position="top-right" />

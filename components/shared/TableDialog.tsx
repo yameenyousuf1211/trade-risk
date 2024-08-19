@@ -65,7 +65,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Number</p>
           <p className="font-semibold text-lg">
-            {data._id?.slice(1, 6) || "12365"}
+            {data._id?.slice(0, 6) || "12365"}
           </p>
         </div>
 
@@ -106,7 +106,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Expiry</p>
           <p className="font-semibold text-lg">
-            {convertDateToYYYYMMDD(data.validity)}
+            {convertDateToYYYYMMDD(data.bidValidity)}
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export const BidCard = ({
               </Button>
               <Button
                 size="lg"
-                className="text-para flex-1"
+                className="text-para flex-1 bg-[#f4f7fa]"
                 variant="ghost"
                 onClick={() => handleSubmit("Rejected", data._id)}
                 disabled={isPending}
@@ -480,7 +480,7 @@ export const TableDialog = ({
                 <div className="px-4  bg-[#F5F7F9]">
                   <LCInfo
                     label="LC Issuing Bank"
-                    value={(lcData && lcData.issuingBank?.bank) || ""}
+                    value={(lcData && lcData.issuingBanks[0]?.bank) || ""}
                   />
                   <LCInfo
                     label="LC Applicant"
@@ -513,12 +513,7 @@ export const TableDialog = ({
                     label="LC Issuance (Expected)"
                     value={
                       lcData &&
-                      lcData.period &&
-                      convertDateToCommaString(
-                        lcData?.startDate
-                          ? lcData?.startDate
-                          : lcData?.period?.startDate
-                      )
+                      convertDateToCommaString(lcData?.expectedConfirmationDate)
                     }
                   />
                   <LCInfo
@@ -561,7 +556,7 @@ export const TableDialog = ({
                   />
                   <h2 className="text-xl font-semibold">Importer Info</h2>
                   <LCInfo
-                    label="Beneficiary"
+                    label="Applicant"
                     value={(lcData && lcData.importerInfo?.applicantName) || ""}
                   />
                   <LCInfo
@@ -569,11 +564,6 @@ export const TableDialog = ({
                     value={
                       (lcData && lcData.importerInfo?.countryOfImport) || ""
                     }
-                  />
-                  <LCInfo
-                    label="Charges on account of"
-                    value="Beneficiary"
-                    noBorder
                   />
                 </div>
               </div>

@@ -103,6 +103,9 @@ const bankSchema = Yup.object().shape({
   name: Yup.string()
     .required("*Bank name is required")
     .min(1, "*Bank name is required"),
+  pocName: Yup.string()
+    .required("*Authorized Point of Contact Name is required")
+    .min(1, "*Authorized Point of Contact Name is required"),
   email: Yup.string()
     .required("*Email is required")
     .email("*Must be a valid email.")

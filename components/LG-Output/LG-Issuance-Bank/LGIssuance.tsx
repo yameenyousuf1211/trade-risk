@@ -31,7 +31,7 @@ const LGInfo = ({
   );
 };
 
-export const LGIssuanceDialog = (
+const LGIssuanceDialog = (
   {
     // lcId,
   }: {
@@ -45,6 +45,8 @@ export const LGIssuanceDialog = (
     assignedValues,
     showPreview,
     allAssigned,
+    details,
+    lgDetails,
     bankData,
     setSelectedBank,
     setSelectedLgType,
@@ -53,23 +55,6 @@ export const LGIssuanceDialog = (
     handleNext,
     handleSkip,
   } = useBidStore();
-
-  const details = [
-    { label: "Request Expiry Date:", value: "10 Oct,2024" },
-    { label: "Purpose of LG:", value: "Best Electronics in Pakistan" },
-    { label: "Beneficiary Name", value: "Nishat Group" },
-    { label: "Beneficiary Country", value: "Pakistan" },
-    { label: "Beneficiary Address", value: "7- Main Gulberg, Lahore, Punjab" },
-    { label: "Beneficiary Phone", value: "+92 21 8726368" },
-  ];
-
-  const lgDetails = [
-    { label: "Amount", value: "USD 20,000" },
-    { label: "Expected Date of issuance", value: "October 11, 2024" },
-    { label: "Expiry Date", value: "November 20, 2024" },
-    { label: "LG Tenor", value: "12 Months" },
-    { label: "LG Text Draft", value: "Draft.png" },
-  ];
 
   const handlePreview = () => {
     setShowPreview(true);
@@ -80,23 +65,23 @@ export const LGIssuanceDialog = (
   };
 
   return (
-    <>
+    <div className="mt-0 flex !h-full items-start justify-between overflow-y-scroll">
       {/* Left Section */}
-      <div className="border-r-2 border-[#F5F7F9]">
-        {/* <div className="px-4 py-3 bg-[#F5F7F9]">
-            <h2 className="text-2xl font-semibold mb-1">
-              <span className="text-para font-normal">LC Amount:</span> USD{" "}
-              {lcData && lcData.amount ? lcData.amount.price : "N/A"}
-            </h2>
-            <p className="font-roboto text-sm text-para">
-              Created at,{" "}
-              {lcData && convertDateAndTimeToString(lcData.createdAt)}, by{" "}
-              <span className="text-text capitalize">
-                {(lcData && lcData.exporterInfo?.beneficiaryName) ||
-                  lcData?.createdBy?.name}
-              </span>
-            </p>
-          </div> */}
+      <div className="flex-1 border-r-2 border-[#F5F7F9]">
+        {/* <div className="bg-[#F5F7F9] px-4 py-3">
+          <h2 className="mb-1 text-2xl font-semibold">
+            <span className="font-normal text-para">LC Amount:</span> USD{" "}
+            {lcData && lcData.amount ? lcData.amount.price : "N/A"}
+          </h2>
+          <p className="font-roboto text-sm text-para">
+            Created at, {lcData && convertDateAndTimeToString(lcData.createdAt)}
+            , by{" "}
+            <span className="capitalize text-text">
+              {(lcData && lcData.exporterInfo?.beneficiaryName) ||
+                lcData?.createdBy?.name}
+            </span>
+          </p>
+        </div> */}
 
         <div className="ml-7 mr-1 mt-2">
           {details.slice(0, 2).map((detail, index) => (
@@ -117,7 +102,7 @@ export const LGIssuanceDialog = (
 
       {/* Right Section */}
       {!showPreview ? (
-        <div className="overflow-y-auto pb-6 pr-4">
+        <div className="flex-1 p-3 pb-6 pr-4">
           {/* checking state if the state is being changed or not */}
           {/* <pre>{selectedBank}</pre>
             <pre>{JSON.stringify(bankData, null, 2)}</pre> */}
@@ -188,7 +173,7 @@ export const LGIssuanceDialog = (
           onBack={handleBack}
         />
       )}
-    </>
+    </div>
   );
 };
 

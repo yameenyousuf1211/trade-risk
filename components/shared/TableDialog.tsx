@@ -21,7 +21,7 @@ import { useAuth } from "@/context/AuthProvider";
 import { BidsSort } from "../helpers";
 import { fetchSingleRisk } from "@/services/apis/risk.api";
 import Image from "next/image";
-import LGIssuanceDialog from "../LG-Output/Bank/LGIssuance";
+import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
 import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargin";
 
 export const BidCard = ({
@@ -109,7 +109,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Bid Expiry</p>
           <p className="text-lg font-semibold">
-            {convertDateToYYYYMMDD(data.bidValidity)}
+            {convertDateToYYYYMMDD(data.validity)}
           </p>
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
@@ -281,9 +281,7 @@ export const TableDialog = ({
         </div>
 
         {lcData?.type === "LG Issuance" ? (
-          <div className="relative mt-0 flex h-full items-start justify-between overflow-y-hidden">
-            <LGIssuanceDialog />
-          </div>
+          <LGIssuanceDialog />
         ) : lcData?.type === "LG 100% Cash Margin" ? (
           <div className="relative mt-0 flex h-full items-start justify-between overflow-y-hidden">
             <LGCashMarginDialog />
@@ -292,25 +290,27 @@ export const TableDialog = ({
           <div className="relative mt-0 flex h-full items-start justify-between overflow-y-hidden">
             {/* Left Section */}
             {isRisk ? (
-              <div className="flex max-h-[90vh] w-full flex-col overflow-y-scroll">
-                <div className="bg-bg px-4 pb-5">
-                  <div className="flex w-full items-center justify-between gap-x-2 rounded-lg border border-borderCol bg-white p-2">
-                    <div className="flex items-center gap-x-2">
-                      <Button
-                        type="button"
-                        className="block bg-red-200 p-1 hover:bg-red-300"
-                      >
-                        <Image
-                          src="/images/pdf.png"
-                          alt="pdf"
-                          width={500}
-                          height={500}
-                          className="size-8"
-                        />
-                      </Button>
-                      <div>
-                        <p className="text-sm">BAFT Agreement</p>
-                        <p className="text-[12px] text-para">PDF, 1.4 MB</p>
+              <>
+                <div className="flex max-h-[90vh] w-full flex-col overflow-y-scroll">
+                  <div className="bg-bg px-4 pb-5">
+                    <div className="flex w-full items-center justify-between gap-x-2 rounded-lg border border-borderCol bg-white p-2">
+                      <div className="flex items-center gap-x-2">
+                        <Button
+                          type="button"
+                          className="block bg-red-200 p-1 hover:bg-red-300"
+                        >
+                          <Image
+                            src="/images/pdf.png"
+                            alt="pdf"
+                            width={500}
+                            height={500}
+                            className="size-8"
+                          />
+                        </Button>
+                        <div>
+                          <p className="text-sm">BAFT Agreement</p>
+                          <p className="text-[12px] text-para">PDF, 1.4 MB</p>
+                        </div>
                       </div>
                     </div>
                     <p className="cursor-pointer text-sm font-medium underline">
@@ -334,7 +334,7 @@ export const TableDialog = ({
                     value={
                       formatNumberWithCommas(
                         riskData?.riskParticipationTransaction?.amount,
-                      ) || ""
+                      ) + ".00" || ""
                     }
                   />
                   <LCInfo
@@ -351,26 +351,24 @@ export const TableDialog = ({
                     noBorder
                   />
                 </div>
+
                 {/* Separator */}
-                <div className="h-[2px] w-full bg-borderCol" />
-                {/* LC Details */}
-                <div className="mt-4 px-4">
-                  <h2 className="text-xl font-semibold">LC Details</h2>
-                  <LCInfo
-                    label="LC Issuing Bank"
-                    value={riskData?.issuingBank?.bank || ""}
-                  />
-                  <LCInfo
-                    label="LC Advising Bank"
-                    value={riskData?.advisingBank?.bank || ""}
-                  />
-                  {lcData?.type ? (
+                <div className="h-[2px] w-full bg-borderCol">
+                  {/* LC Details */}
+                  <div className="mt-4 px-4">
+                    <h2 className="text-xl font-semibold">LC Details</h2>
+                    <LCInfo
+                      label="LC Issuing Bank"
+                      value={riskData?.issuingBank?.bank || ""}
+                    />
+                    <LCInfo
+                      label="LC Advising Bank"
+                      value={riskData?.advisingBank?.bank || ""}
+                    />
                     <LCInfo
                       label="Confirming Bank"
                       value={riskData?.confirmingBank?.bank || ""}
                     />
-                  ) : null}
-                  {lcData?.type ? (
                     <LCInfo
                       label="LC Discounted"
                       value={
@@ -379,45 +377,44 @@ export const TableDialog = ({
                           : "Not allowed"
                       }
                     />
-                  ) : null}
-                  {lcData?.type ? (
                     <LCInfo
                       label="Expected Discounting Date"
                       value={convertDateToCommaString(
                         riskData?.expectedDateDiscounting || "",
                       )}
                     />
-                  ) : null}
-                  <LCInfo
-                    label="Issuance/Expected Issuance Date"
-                    value={convertDateToCommaString(
-                      (riskData?.startDate
-                        ? riskData?.startDate
-                        : riskData?.period?.startDate) || "",
-                    )}
-                    noBorder
-                  />
-                  <LCInfo
-                    label="Date of Expiry"
-                    value={convertDateToCommaString(riskData?.expiryDate || "")}
-                    noBorder
-                  />
-                  <LCInfo
-                    label="Payment Terms"
-                    value={riskData?.paymentTerms || ""}
-                    noBorder
-                  />
-                  <LCInfo
-                    label="Port of Shipment"
-                    value={riskData?.shipmentPort?.port || ""}
-                    noBorder
-                  />
-                  <LCInfo
-                    label="Transhipment"
-                    value={riskData?.transhipment === true ? "Yes" : "No"}
-                    noBorder
-                  />
-                  {/* <LCInfo
+                    <LCInfo
+                      label="Issuance/Expected Issuance Date"
+                      value={convertDateToCommaString(
+                        (riskData?.startDate
+                          ? riskData?.startDate
+                          : riskData?.period?.startDate) || "",
+                      )}
+                      noBorder
+                    />
+                    <LCInfo
+                      label="Date of Expiry"
+                      value={convertDateToCommaString(
+                        riskData?.expiryDate || "",
+                      )}
+                      noBorder
+                    />
+                    <LCInfo
+                      label="Payment Terms"
+                      value={riskData?.paymentTerms || ""}
+                      noBorder
+                    />
+                    <LCInfo
+                      label="Port of Shipment"
+                      value={riskData?.shipmentPort?.port || ""}
+                      noBorder
+                    />
+                    <LCInfo
+                      label="Transhipment"
+                      value={riskData?.transhipment === true ? "Yes" : "No"}
+                      noBorder
+                    />
+                    {/* <LCInfo
                   label="Expected Confirmation Date"
                   value={convertDateToCommaString(
                     riskData?.expectedDateConfimation || ""
@@ -425,47 +422,54 @@ export const TableDialog = ({
                   noBorder
                 /> */}
 
-                  <h2 className="mt-3 text-xl font-semibold">Importer Info</h2>
-                  <LCInfo
-                    label="Applicant"
-                    value={riskData?.importerInfo?.applicantName || ""}
-                  />
-                  <LCInfo
-                    label="Country of Import"
-                    value={riskData?.importerInfo?.countryOfImport || ""}
-                    noBorder
-                  />
+                    <h2 className="mt-3 text-xl font-semibold">
+                      Importer Info
+                    </h2>
+                    <LCInfo
+                      label="Applicant"
+                      value={riskData?.importerInfo?.applicantName || ""}
+                    />
+                    <LCInfo
+                      label="Country of Import"
+                      value={riskData?.importerInfo?.countryOfImport || ""}
+                      noBorder
+                    />
 
-                  <h2 className="mt-3 text-xl font-semibold">Exporter Info</h2>
-                  <LCInfo
-                    label="Beneficiary"
-                    value={riskData?.exporterInfo?.beneficiaryName || ""}
-                  />
-                  <LCInfo
-                    label="Country of Export"
-                    value={riskData?.exporterInfo?.countryOfExport || ""}
-                  />
-                  <LCInfo
-                    label="Beneficiary Country"
-                    value={riskData?.exporterInfo?.beneficiaryCountry || ""}
-                    noBorder
-                  />
-                  <h2 className="mt-3 text-xl font-semibold">Importer Info</h2>
-                  <LCInfo
-                    label="Beneficiary"
-                    value={riskData?.importerInfo?.applicantName || ""}
-                  />
-                  <LCInfo
-                    label="Country of Export"
-                    value={riskData?.importerInfo?.countryOfImport || ""}
-                  />
-                  <LCInfo
-                    label="Beneficiary Country"
-                    value={riskData?.importerInfo?.beneficiaryCountry || ""}
-                    noBorder
-                  />
+                    <h2 className="mt-3 text-xl font-semibold">
+                      Exporter Info
+                    </h2>
+                    <LCInfo
+                      label="Beneficiary"
+                      value={riskData?.exporterInfo?.beneficiaryName || ""}
+                    />
+                    <LCInfo
+                      label="Country of Export"
+                      value={riskData?.exporterInfo?.countryOfExport || ""}
+                    />
+                    <LCInfo
+                      label="Beneficiary Country"
+                      value={riskData?.exporterInfo?.beneficiaryCountry || ""}
+                      noBorder
+                    />
+                    <h2 className="mt-3 text-xl font-semibold">
+                      Importer Info
+                    </h2>
+                    <LCInfo
+                      label="Beneficiary"
+                      value={riskData?.importerInfo?.applicantName || ""}
+                    />
+                    <LCInfo
+                      label="Country of Export"
+                      value={riskData?.importerInfo?.countryOfImport || ""}
+                    />
+                    <LCInfo
+                      label="Beneficiary Country"
+                      value={riskData?.importerInfo?.beneficiaryCountry || ""}
+                      noBorder
+                    />
+                  </div>
                 </div>
-              </div>
+              </>
             ) : (
               <>
                 <div className="h-full max-h-[90vh] min-h-[85vh] w-full overflow-y-scroll border-r-2 border-r-borderCol pb-5">
@@ -505,11 +509,11 @@ export const TableDialog = ({
                     />
                     <LCInfo
                       label="Advising Bank"
-                      value={(lcData && lcData.advisingBank?.bank) || "-"}
+                      value={(lcData && lcData.advisingBank?.bank) || ""}
                     />
                     <LCInfo
                       label="Confirming Bank"
-                      value={(lcData && lcData.confirmingBank?.bank) || "-"}
+                      value={(lcData && lcData.confirmingBank?.bank) || ""}
                     />
                     <LCInfo
                       label="Payments Terms"

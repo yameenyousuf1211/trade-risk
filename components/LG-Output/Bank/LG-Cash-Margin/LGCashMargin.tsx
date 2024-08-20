@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import useLGCashMarginStore from "@/store/LGCashMarginStore";
 import { LGInfo } from "../../helper";
-import { ApplicantQuery } from "../ApplicantQuery";
+import { ApplicantQuery } from "../../LG-Issuance-Bank/ApplicantQuery";
 import { PreviewLGCash } from "./content/PreviewLGCash";
 import { LGCashBankRightSection } from "./content/LGCashBankRightSection";
 import { LGCashCorporateRightSection } from "./content/LGCashCorporateRightSection";

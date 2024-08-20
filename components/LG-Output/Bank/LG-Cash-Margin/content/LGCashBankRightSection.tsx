@@ -1,7 +1,7 @@
 import { DatePicker } from "@/components/helpers";
 import { Button } from "@/components/ui/button";
 import useLGCashMarginStore from "@/store/LGCashMarginStore";
-import { PricingInput } from "../../PricingInput";
+import { PricingInput } from "../../../LG-Issuance-Bank/PricingInput";
 
 export const LGCashBankRightSection = ({
   handlePreview,

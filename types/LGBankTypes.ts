@@ -1,3 +1,5 @@
+export type GenType = { label: string; value: string };
+
 export type LgType = {
   type: string;
   amount: string;

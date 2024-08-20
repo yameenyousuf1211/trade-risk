@@ -37,7 +37,7 @@ export const LGCashCorporateRightSection = () => {
       <div className="mt-6 rounded-md border border-b-borderCol p-4">
         <div className="grid grid-cols-2 gap-3">
           {corporate.map((bid, index) => (
-            <div>
+            <div key={index}>
               <h4
                 className={
                   bid.name === "Mezan Bank"

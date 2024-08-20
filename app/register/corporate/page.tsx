@@ -63,10 +63,9 @@ const CompanyInfoPage = () => {
     resolver: yupResolver(companyInfoSchema),
     mode: "all",
   });
-    // console.log("🚀 ~ CompanyInfoPage ~ getValues:", getValues())
-  
-  // const isValid = true
+  // console.log("🚀 ~ CompanyInfoPage ~ getValues:", getValues())
 
+  // const isValid = true
 
   useEffect(() => {
     if (corporateData) {
@@ -93,7 +92,7 @@ const CompanyInfoPage = () => {
   const onSubmit: SubmitHandler<typeof companyInfoSchema> = async (
     data: any
   ) => {
-    console.log("🚀 ~ CompanyInfoPage ~ data:", data)
+    console.log("🚀 ~ CompanyInfoPage ~ data:", data);
     setValues(data);
     localStorage.setItem("corporateData", JSON.stringify(data));
     router.push("/register/corporate/product-info");
@@ -212,18 +211,18 @@ const CompanyInfoPage = () => {
                   />
                 </SelectTrigger>
                 <SelectContent className="font-roboto">
-                  <SelectItem value="individual_proprietorship_co">
+                  <SelectItem value="Proprietorship Company">
                     Proprietorship Company
                   </SelectItem>
-                  <SelectItem value="individual">Individual</SelectItem>
-                  <SelectItem value="limited_liability_co">
+                  <SelectItem value="Individual">Individual</SelectItem>
+                  <SelectItem value="Limited Liability Company">
                     Limited Liability Company
                   </SelectItem>
-                  <SelectItem value="public_limited_co">
+                  <SelectItem value="Public Limited Company">
                     Public Limited Company
                   </SelectItem>
-                  <SelectItem value="partnership">Partnership</SelectItem>
-                  <SelectItem value="establishment">Establishment</SelectItem>
+                  <SelectItem value="Partnership">Partnership</SelectItem>
+                  <SelectItem value="Establishment">Establishment</SelectItem>
                 </SelectContent>
               </Select>
               {errors.constitution && (
@@ -406,7 +405,7 @@ const CompanyInfoPage = () => {
                 placeholder={
                   corporateData
                     ? JSON.parse(corporateData).accountCountry
-                    : "Account Country"
+                    : "Bank Country"
                 }
               />
               {errors.accountCountry && (

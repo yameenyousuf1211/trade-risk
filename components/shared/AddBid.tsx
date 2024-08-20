@@ -262,10 +262,7 @@ export const AddBid = ({
           } rounded-md w-full ${
             isNotification ? "w-28" : ""
           } p-2 capitalize hover:opacity-85 font-roboto`}
-          disabled={
-            (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
-            (lcData?.status === "Add bid" || lcData?.status === "Rejected")
-          }
+          disabled={lcData?.status !== "Add bid" || status !== "Add bid"}
         >
           {lcData?.status === "Expired"
             ? "Not Applicable"

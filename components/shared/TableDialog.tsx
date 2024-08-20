@@ -81,7 +81,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Confirmation Rate</p>
           <p className="text-lg font-semibold text-text">
-            {data.amount}% {data?.perAnnum && "per annum"}
+            {data.confirmationPrice}% {data?.perAnnum && "per annum"}
           </p>
         </div>
 

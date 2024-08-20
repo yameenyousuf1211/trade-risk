@@ -40,7 +40,7 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
     enabled: !!user,
   });
 
-  if (user && user.role !== "corporate") {
+  if (user && user.type !== "corporate") {
     redirect("/dashboard");
   }
 
@@ -98,7 +98,7 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
                 )}
               </div>
             </div>
-            <BankTable data={data} isLoading={isLoading} isCorporate/>
+            <BankTable data={data} isLoading={isLoading} isCorporate />
           </div>
         </div>
         <div className="w-[20vw] max-w-[300p x] sticky top-10 h-[80vh]">

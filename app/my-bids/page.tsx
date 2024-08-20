@@ -35,7 +35,7 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
     queryFn: () => fetchMyBids({ page, limit, filter, search }),
   });
 
-  if (user && user.role !== "bank") {
+  if (user && user.type !== "bank") {
     redirect("/");
   }
 

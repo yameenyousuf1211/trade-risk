@@ -49,7 +49,7 @@ export const Header = () => {
         </Link>
       </div>
       <nav className="flex items-center gap-x-4 lg:gap-x-10 xl:gap-x-20">
-        {user && user.role === "bank" ? (
+        {user && user.type === "bank" ? (
           <>
             <div className="relative py-6">
               <Link

@@ -289,7 +289,9 @@ export const RequestTable = ({
                           ? convertDateToString(item?.period?.endDate)
                           : item?.expiryDate
                           ? convertDateToString((item as IRisk)?.expiryDate)
-                          : convertDateToString(item?.otherBond?.lgExpiryDate)
+                          : item?.otherBond?.lgExpiryDate
+                          ? convertDateToString(item?.otherBond?.lgExpiryDate)
+                          : "-"
                       }
                     />
                     <TableDataCell

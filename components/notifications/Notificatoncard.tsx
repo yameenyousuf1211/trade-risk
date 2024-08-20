@@ -13,12 +13,22 @@ const ButtonSkeleton = () => {
   const { user } = useAuth();
   return (
     <div className="animate-pulse">
-      <div className={`bg-gray-300 rounded-lg h-10 ${user.role !== 'bank' ? 'w-full' : 'w-28'} flex justify-center items-center"><Loader2 className="animate-spin`}/>
+      <div
+        className={`bg-gray-300 rounded-lg h-10 ${
+          user.type !== "bank" ? "w-full" : "w-28"
+        } flex justify-center items-center"><Loader2 className="animate-spin`}
+      />
     </div>
   );
 };
 
-const NotificationCard = ({ notification, index }: { notification: INotifications; index: number; }) => {
+const NotificationCard = ({
+  notification,
+  index,
+}: {
+  notification: INotifications;
+  index: number;
+}) => {
   const { user } = useAuth();
   const processedTitle = notification?.title.split(" ");
   const requestId = processedTitle[processedTitle?.length - 1];
@@ -29,11 +39,16 @@ const NotificationCard = ({ notification, index }: { notification: INotification
   });
 
   const renderBankContent = () => (
-    <TableBidStatus id={requestId} lcData={data} isRisk={false} isNotification={true}/>
+    <TableBidStatus
+      id={requestId}
+      lcData={data}
+      isRisk={false}
+      isNotification={true}
+    />
   );
 
   const renderUserContent = () => {
-    if (data?.status === 'Accepted') {
+    if (data?.status === "Accepted") {
       return (
         <div className="border-gray-300 cursor-default bg-[#2F3031] text-white py-2 px-8 rounded-lg flex-1 text-center">
           Accepted
@@ -41,7 +56,7 @@ const NotificationCard = ({ notification, index }: { notification: INotification
       );
     }
 
-    if (data?.status === 'Pending') {
+    if (data?.status === "Pending") {
       return (
         <>
           <TableDialog
@@ -64,7 +79,7 @@ const NotificationCard = ({ notification, index }: { notification: INotification
 
   return (
     <>
-          {index === 0 && (
+      {index === 0 && (
         <div className="bg-white p-3 shadow-2xl rounded-t-[12px]">
           <h1 className="font-medium text-[18px] font-poppins ">
             Notifications

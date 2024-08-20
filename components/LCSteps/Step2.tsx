@@ -109,12 +109,6 @@ export const Step2 = ({
   }, [amount]);
 
   useEffect(() => {
-    if (currencyValue && !currencyValue?.toString()?.includes(".00")) {
-      setCurrencyValue((prev) => prev + ".00");
-    }
-  }, [currencyValue]);
-
-  useEffect(() => {
     if (amount && paymentTerms) {
       addStep(AMOUNT);
     } else removeStep(AMOUNT);

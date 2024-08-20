@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { TagsInput } from "react-tag-input-component";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const AmountInput = ({
   register,
@@ -87,8 +88,8 @@ const ProductInfoPage = () => {
     handleSubmit,
     trigger,
     formState: { errors, isDirty, isValid },
-  } = useForm<z.infer<typeof productsInfoSchema>>({
-    resolver: zodResolver(productsInfoSchema),
+  } = useForm({
+    resolver: yupResolver(productsInfoSchema),
     mode: "all",
   });
 
@@ -121,7 +122,7 @@ const ProductInfoPage = () => {
     }
   }, [errors, isValid, isDirty, productData]);
 
-  const onSubmit: SubmitHandler<z.infer<typeof productsInfoSchema>> = async (
+  const onSubmit: SubmitHandler<typeof productsInfoSchema> = async (
     data: any
   ) => {
     const { product, ...rest } = data;
@@ -132,8 +133,8 @@ const ProductInfoPage = () => {
     setValues({
       productInfo: values,
     });
-    
-    console.log("Checking Product Values Schema",values);
+
+    console.log("Checking Product Values Schema", values);
     localStorage.setItem("productData", JSON.stringify(values));
     router.push("/register/corporate/point-contact");
   };

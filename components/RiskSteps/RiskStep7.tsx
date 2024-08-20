@@ -40,7 +40,7 @@ const FileCard = ({
   );
 };
 
-export const RiskStep7 = ({ watch }: any) => {
+export const RiskStep7 = ({ watch,step = 7 }: any) => {
   const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
   const riskParticipationTransaction = watch(
     "riskParticipationTransaction.type"
@@ -78,7 +78,7 @@ export const RiskStep7 = ({ watch }: any) => {
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="size-6 rounded-full bg-[#255EF2] center text-white font-semibold text-sm">
           {/* {riskParticipationTransaction === "LC Confirmation" ? 6 : 7} */}
-          7
+          {step}
         </p>
         <p className="font-semibold text-[16px] text-lightGray">Attachments</p>
       </div>

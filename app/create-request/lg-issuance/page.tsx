@@ -16,8 +16,10 @@ import LgStep8 from "@/components/LG-Steps/LgStep8";
 import LgStep9 from "@/components/LG-Steps/LgStep9";
 import LgStep9Part2 from "@/components/LG-Steps/LgStep9Part2";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthProvider";
 import useCountries from "@/hooks/useCountries";
 import { createLg, updateLg } from "@/services/apis/lg.apis";
+import { sendNotification } from "@/services/apis/notifications.api";
 import useLcIssuance from "@/store/issueance.store";
 import useStepStore from "@/store/lcsteps.store";
 import { LgDetails } from "@/types/lg";
@@ -29,6 +31,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import * as Yup from "yup";
 
 export default function LgIssuance() {
   const { register, setValue, reset, watch, handleSubmit } = useForm();
@@ -36,6 +39,7 @@ export default function LgIssuance() {
   const [isLoading, setIsLoading] = useState(false);
   const [loader, setLoader] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
 
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
@@ -43,6 +47,10 @@ export default function LgIssuance() {
   console.log("🚀 ~ LgIssuance ~ storeData:", storeData);
   const { countries, flags } = useCountries();
   const lgIssuance = watch("lgIssuance");
+
+  useEffect(() => {
+    router.prefetch("/");
+  }, []);
 
   useEffect(() => {
     if (storeData.data && storeData?.data?._id) {
@@ -162,9 +170,11 @@ export default function LgIssuance() {
     removeUnnecessaryFieldsForLgCreate(responseData);
     console.log("🚀 ~ handleFinalSubmission ~ responseData:", responseData);
 
-    const validation = lgValidator.safeParse(responseData);
-    console.log("🚀 ~ handleFinalSubmission ~ validation:", validation);
-    if (validation.success) {
+    try {
+      await lgValidator.validate(responseData, {
+        abortEarly: false,
+      });
+
       const { response, success } = await createLg(responseData);
       handleResponse(
         success,
@@ -172,8 +182,12 @@ export default function LgIssuance() {
         "LG Issuance request submitted successfully"
       );
       setIsLoading(false);
-    } else {
-      handleValidationErrors(validation.error);
+    } catch (validationError) {
+      if (validationError instanceof Yup.ValidationError) {
+        handleValidationErrors(validationError);
+      } else {
+        console.error("Unexpected error during validation:", validationError);
+      }
     }
   };
 
@@ -247,6 +261,7 @@ export default function LgIssuance() {
             responseData.otherBond.lgTenor.lgTenorValue?.toString();
 
         if (responseData?.otherBond?.cashMargin) {
+          console.log(responseData.otherBond?.cashMargin, "cashMargin");
           responseData.otherBond.cashMargin = convertStringToNumber(
             responseData?.otherBond?.cashMargin
           )?.toString();
@@ -286,7 +301,7 @@ export default function LgIssuance() {
   };
 
   // Function to handle API responses
-  const handleResponse = (
+  const handleResponse = async (
     success: boolean,
     response: any,
     successMessage: string
@@ -294,7 +309,7 @@ export default function LgIssuance() {
     if (success) {
       storeData?.removeValues();
       toast.success(successMessage);
-      console.log(response);
+      console.log(response, "response");
       router.push("/my-bids");
     } else {
       toast.error(response);

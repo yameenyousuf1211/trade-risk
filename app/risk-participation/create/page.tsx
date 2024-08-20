@@ -24,16 +24,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import * as Yup from "yup";
 import useRiskStore from "@/store/risk.store";
-import { IRisk } from "@/types/type";
-import { sendNotification } from "@/services/apis/notifications.api";
-import { useAuth } from "@/context/AuthProvider";
 
 const RiskFundedPage = () => {
-  const { user } = useAuth();
   const { register, setValue, reset, watch, getValues, control, handleSubmit } =
-    useForm<z.infer<typeof generalRiskSchema>>({});
+    useForm({});
   const { startLoading, stopLoading, isLoading } = useLoading();
   const [isDraftLoading, setIsDraftLoading] = useState<boolean>(false);
   const router = useRouter();
@@ -41,58 +37,77 @@ const RiskFundedPage = () => {
   const { countries, flags } = useCountries();
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
-  const riskParticipationTransaction = watch("riskParticipationTransaction.type");
+  const riskParticipationTransaction = watch(
+    "riskParticipationTransaction.type"
+  );
+
+  useEffect(() => {
+    router.prefetch("/");
+  }, []);
+
+  const hideStep6 = riskParticipationTransaction === "LC Confirmation";
 
   const formData = useRiskStore((state) => state);
   const setFormData = useRiskStore((state) => state.setValues);
 
+  const cleanData = (data) => {
+    const cleanedData = { ...data };
+    Object.keys(cleanedData).forEach((key) => {
+      if (
+        cleanedData[key] === "" ||
+        cleanedData[key] === undefined ||
+        cleanedData[key] === null
+      ) {
+        delete cleanedData[key];
+      }
+    });
+    if (!cleanedData.expectedDateConfimation) {
+      delete cleanedData.expectedDateConfimation;
+    }
+    return cleanedData;
+  };
+
   useEffect(() => {
-    console.log(formData, "FORMDATA!");
     if (formData && formData?._id) {
       Object.entries(formData).forEach(([key, value]) => {
-        // @ts-ignore
-        if (typeof value === "number") {
-          // @ts-ignore
+        if (typeof value === "number" || typeof value === "string") {
           setValue(key, value);
-        }
-        if (typeof value === "string" && value.length > 0) {
-          // @ts-ignore
-          setValue(key, value);
-        }
-        if (typeof value === "boolean") {
+        } else if (typeof value === "boolean") {
           setValue(key, value ? "yes" : "no");
-        }
-        if (typeof value === "object" && value !== null) {
-          const keys = Object.keys(value);
-          const hasOnlyEmptyValues = keys.every((k) => value[k] === "");
-          if (!hasOnlyEmptyValues) {
-            // @ts-ignore
+        } else if (typeof value === "object" && value !== null) {
+          if (!Object.values(value).every((v) => v === "")) {
             setValue(key, value);
           }
         }
       });
     }
-  }, [formData]);
+  }, [formData, setValue]);
 
   useEffect(() => {
-    console.log(getStateValues(useRiskStore.getInitialState()), "INITIAL");
     const handleRouteChange = () => {
       setFormData(getStateValues(useRiskStore.getInitialState()));
       reset();
     };
     handleRouteChange();
-  }, [router, pathname]);
+  }, [router, pathname, setFormData, reset]);
 
-  const onSubmit: SubmitHandler<z.infer<typeof generalRiskSchema>> = async (
-    data,
+  const onSubmit: SubmitHandler<typeof generalRiskSchema> = async (
+    dirtyData,
     isDraft
   ) => {
-    const startDateString = data?.startDate;
+    const data = cleanData(dirtyData);
+    console.log("🚀 ~ RiskFundedPage ~ data:", data);
+
+    const startDateString = data?.period?.startDate;
     const expiryDateString = data?.expiryDate;
     const expectedDateDiscountingString = data?.expectedDateDiscounting;
     const expectedDateConfirmationString = data?.expectedDateConfirmation;
 
     const startDate = startDateString ? new Date(startDateString) : null;
+    const period = {
+      startDate,
+      expectedDate: data?.period?.expectedDate,
+    };
     const expiryDate = expiryDateString ? new Date(expiryDateString) : null;
     const expectedDateDiscounting = expectedDateDiscountingString
       ? new Date(expectedDateDiscountingString)
@@ -100,20 +115,46 @@ const RiskFundedPage = () => {
     const expectedDateConfirmation = expectedDateConfirmationString
       ? new Date(expectedDateConfirmationString)
       : null;
+
     const preparedData = {
       ...data,
-      startDate: startDate as Date,
-      expiryDate: expiryDate,
-      expectedDateDiscounting: expectedDateDiscounting,
-      expectedDateConfirmation: expectedDateConfirmation,
+      period,
+      expiryDate,
+      expectedDateConfirmation,
     };
-    const validationResult = generalRiskSchema.safeParse(preparedData);
-    console.log(validationResult);
 
-    if (validationResult.success) {
-      const validatedData = validationResult.data;
+    if (expectedDateDiscounting) {
+      preparedData.expectedDateDiscounting = expectedDateDiscounting;
+    }
+    if (data.transaction !== "Risk Participation") {
+      delete data.expectedDateConfirmation;
+    }
+    if (!data?.isLcDiscounting) {
+      delete preparedData?.isLcDiscounting;
+      data["isLcDiscounting"] = "no";
+    }
+    if (!data?.expectedDiscounting) {
+      delete preparedData?.expectedDiscounting;
+      data["expectedDiscounting"] = "no";
+    }
+    if (!data?.expectedDateDiscounting) {
+      delete preparedData?.expectedDateDiscounting;
+      data["expectedDateDiscounting"] = new Date();
+    }
+    if (!data?.paymentReceviedType) {
+      delete preparedData?.paymentReceviedType;
+      data["paymentReceviedType"] = "all-prices";
+    }
+
+    try {
+      const validationResult = await generalRiskSchema.validate(preparedData, {
+        abortEarly: false,
+      });
+      console.log(validationResult);
+
       const reqData = {
         ...data,
+        period,
         riskParticipationTransaction: {
           ...data?.riskParticipationTransaction,
           perAnnum: "22",
@@ -125,38 +166,35 @@ const RiskFundedPage = () => {
         isLcDiscounting: data?.isLcDiscounting === "no" ? false : true,
         expectedDiscounting: data?.expectedDiscounting === "no" ? false : true,
         transhipment: data?.transhipment === "no" ? false : true,
-        currency: data?.currency ? data?.currency : "usd",
-        days: data?.paymentTerms == "Tenor LC" ? 22 : undefined,
+        currency: data?.currency || "usd",
+        days: data?.paymentTerms === "Tenor LC" ? 22 : undefined,
       };
-      // @ts-ignore
-      delete reqData?.draft;
-      // @ts-ignore
-      delete reqData?.updatedAt;
-      // @ts-ignore
-      delete reqData?.createdAt;
-      // @ts-ignore
-      delete reqData?.createdBy;
-      // @ts-ignore
-      delete reqData?.isDeleted;
-      // @ts-ignore
-      delete reqData?.__v;
-      // @ts-ignore
-      delete reqData?._id;
-      // @ts-ignore
-      delete reqData?.status;
-      // @ts-ignore
-      delete reqData?.refId;
+
+      // Clean up the reqData object
+      const cleanedReqData = { ...reqData };
+      const fieldsToRemove = [
+        "draft",
+        "updatedAt",
+        "createdAt",
+        "createdBy",
+        "isDeleted",
+        "__v",
+        "_id",
+        "status",
+        "refId",
+      ];
+      fieldsToRemove.forEach((field) => delete cleanedReqData[field]);
 
       try {
-        startLoading();
+        startLoading(); // Start the general loading state
         let result;
         if (formData?._id) {
           result = await onUpdateRisk({
             id: formData?._id,
-            payload: reqData,
+            payload: cleanedReqData,
           });
         } else {
-          result = await onCreateRisk(reqData);
+          result = await onCreateRisk(cleanedReqData);
         }
 
         const { response, success } = result;
@@ -165,38 +203,37 @@ const RiskFundedPage = () => {
           toast.error(response);
         } else {
           console.log(response, "response");
-          // const notificationResp = await sendNotification({
-          //   role: "bank",
-          //   title: "New Risk Participation Request",
-          //   body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
-          // });
           toast.success("Risk created successfully");
-          reset();
           router.push("/risk-participation");
+          reset();
         }
       } catch (error) {
         console.error(error);
         toast.error("An unexpected error occurred");
+      } finally {
+        stopLoading(); // Stop the general loading state
       }
-      stopLoading();
-    } else {
-      if (validationResult.error && validationResult.error.errors.length > 0) {
-        validationResult.error.errors.forEach((error) => {
-          toast.error(`Validation Error: ${error.message}`);
+    } catch (validationError) {
+      if (validationError instanceof Yup.ValidationError) {
+        validationError.errors.forEach((errorMessage) => {
+          toast.error(`Validation Error: ${errorMessage}`);
         });
+      } else {
+        console.error("Unexpected error during validation:", validationError);
       }
     }
   };
-  const onSaveAsDraft: SubmitHandler<
-    z.infer<typeof generalRiskSchema>
-  > = async (data) => {
-    setIsDraftLoading(true);
+
+  const onSaveAsDraft: SubmitHandler<typeof generalRiskSchema> = async (
+    data
+  ) => {
+    setIsDraftLoading(true); // Start the draft loading state
     const reqData = {
       ...data,
       isLcDiscounting: data?.isLcDiscounting === "no" ? false : true,
       expectedDiscounting: data?.expectedDiscounting === "no" ? false : true,
       transhipment: data?.transhipment === "no" ? false : true,
-      draft: "true",
+      draft: true,
     };
     console.log(reqData, "REQDATA");
     try {
@@ -212,20 +249,27 @@ const RiskFundedPage = () => {
         toast.error(response);
       } else {
         toast.success("Risk draft created successfully");
-        reset();
         router.push("/risk-participation");
+        reset();
       }
     } catch (error) {
       console.error(error);
       toast.error("An unexpected error occurred");
+    } finally {
+      setIsDraftLoading(false); // Stop the draft loading state
     }
-    setIsDraftLoading(false);
   };
 
   return (
     <CreateLCLayout isRisk={true}>
       <form className="mt-2 flex flex-col gap-y-5">
-        <RiskBanks watch={watch} setValue={setValue} />
+        <RiskBanks
+          countries={countries}
+          flags={flags}
+          register={register}
+          watch={watch}
+          setValue={setValue}
+        />
         <RiskAgreement />
         <RiskStep1 register={register} watch={watch} setValue={setValue} />
         <RiskStep2 register={register} watch={watch} setValue={setValue} />
@@ -253,13 +297,15 @@ const RiskFundedPage = () => {
           countries={countries}
           flags={flags}
         />
-        {/* {riskParticipationTransaction !== "LC Confirmation" && ( */}
-          <RiskStep6 register={register} watch={watch} />
-        {/* )} */}
+        {hideStep6 ? null : <RiskStep6 register={register} watch={watch} />}
 
         <div className="relative flex items-center justify-between w-full h-full gap-x-2">
-          <RiskStep7 watch={watch} />
-          <RiskStep8 watch={watch} register={register} />
+          <RiskStep7 step={hideStep6 ? 6 : undefined} watch={watch} />
+          <RiskStep8
+            step={hideStep6 ? 7 : undefined}
+            watch={watch}
+            register={register}
+          />
         </div>
 
         <div className="py-4 px-4 border border-borderCol rounded-lg w-full bg-white flex items-center justify-between gap-x-4">

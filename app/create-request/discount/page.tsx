@@ -28,13 +28,12 @@ import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
+import * as Yup from "yup";
 
 const CreateDiscountPage = () => {
   const { user } = useAuth();
 
-  const { register, setValue, reset, handleSubmit, watch } = useForm<
-    z.infer<typeof discountingSchema>
-  >({});
+  const { register, setValue, reset, handleSubmit, watch } = useForm({});
 
   const queryClient = useQueryClient();
 
@@ -85,6 +84,13 @@ const CreateDiscountPage = () => {
           setDays(daysLeft);
           setValue("extraInfo", value.other);
         }
+        // Handle array of issuing banks
+        if (key === "issuingBanks" && Array.isArray(value)) {
+          value.forEach((bank, index) => {
+            setValue(`issuingBanks[${index}].country`, bank.country);
+            setValue(`issuingBanks[${index}].bank`, bank.bank);
+          });
+        }
       });
     }
   }, [discountingData]);
@@ -93,7 +99,7 @@ const CreateDiscountPage = () => {
 
   const [loader, setLoader] = useState(false);
 
-  const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async ({
+  const onSubmit: SubmitHandler<typeof discountingSchema> = async ({
     data,
     isDraft,
     isProceed = false,
@@ -105,13 +111,16 @@ const CreateDiscountPage = () => {
     submit();
     if (
       data.confirmingBank &&
-      data.issuingBank.country === data.confirmingBank.country
+      data.issuingBanks.some(
+        (bank: any) => bank.country === data.confirmingBank.country
+      )
     )
       return toast.error(
         "Confirming bank country cannot be the same as issuing bank country"
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
+
     const currentDate = new Date();
     const futureDate = new Date(
       currentDate.setDate(currentDate.getDate() + days)
@@ -127,6 +136,7 @@ const CreateDiscountPage = () => {
 
     let reqData;
     const baseData = {
+      issuingBanks: data.issuingBanks, // Handle the array of issuing banks
       type: "LC Discounting",
       transhipment: data.transhipment === "yes" ? true : false,
       amount: {
@@ -154,7 +164,7 @@ const CreateDiscountPage = () => {
       reqData = {
         ...rest,
         ...baseData,
-        draft: "true",
+        draft: true,
       };
       setLoader(true);
       const { response, success } = discountingData?._id
@@ -167,8 +177,8 @@ const CreateDiscountPage = () => {
       if (!success) return toast.error(response);
       else {
         toast.success("LC saved as draft");
-        reset();
         router.push("/");
+        reset();
         setValues(getStateValues(useDiscountingStore.getInitialState()));
         queryClient.invalidateQueries({
           queryKey: ["fetch-lcs-drafts"],
@@ -194,12 +204,12 @@ const CreateDiscountPage = () => {
         },
         expectedDiscountingDate: expectedDiscountingDate,
       };
-      console.log(data, preparedData);
 
-      const validationResult = discountingSchema.safeParse(preparedData);
-      console.log(validationResult);
-      if (validationResult.success) {
-        const validatedData = validationResult.data;
+      try {
+        const validatedData = await discountingSchema.validate(preparedData, {
+          abortEarly: false,
+        });
+
         if (isProceed) {
           const { confirmingBank2, extraInfo, ...rest } = validatedData;
           reqData = {
@@ -216,29 +226,22 @@ const CreateDiscountPage = () => {
           stopLoading();
           if (!success) return toast.error(response);
           else {
-            const notificationResp = await sendNotification({
-              role: "bank",
-              title: `New LC Discounting Request ${response.data._id}`,
-              body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
-            });
             setValues(getStateValues(useDiscountingStore.getInitialState()));
             toast.success("LC created successfully");
-            reset();
             router.push("/");
+            reset();
           }
         } else {
           let openDisclaimerBtn = document.getElementById("open-disclaimer");
-          // @ts-ignore
-          openDisclaimerBtn.click();
+          openDisclaimerBtn?.click();
         }
-      } else {
-        if (
-          validationResult.error &&
-          validationResult.error.errors.length > 0
-        ) {
-          validationResult.error.errors.forEach((error) => {
-            toast.error(`${error.message}`);
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          error.errors.forEach((errMessage) => {
+            toast.error(errMessage);
           });
+        } else {
+          console.error("Unexpected error during validation:", error);
         }
       }
     }

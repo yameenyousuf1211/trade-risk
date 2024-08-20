@@ -20,12 +20,16 @@ interface Props {
 export const RiskStep1 = ({ register, watch, setValue }: Props) => {
   const [date, setDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
   useEffect(() => {
-    if (watch("transaction") !== "Outright Sales") {
-      // Clear the value of outrightSales
+    const transaction = watch("transaction");
+    if (transaction !== "Outright Sales") {
       setValue("outrightSales", undefined);
+    } else if (transaction === "Outright Sales" && !watch("outrightSales")) {
+      setValue("outrightSales", "Pre Sales");
     }
-  }, [watch("transaction"), register]);
+  }, [watch("transaction"), setValue]);
+
   return (
     <div className="py-4 pt-6 px-4 border border-borderCol rounded-lg w-full bg-white">
       <div className="flex items-center gap-x-2 ml-2 mb-3">
@@ -78,6 +82,7 @@ export const RiskStep1 = ({ register, watch, setValue }: Props) => {
             <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
               <PopoverTrigger asChild>
                 <Button
+                  disabled
                   variant={"outline"}
                   className="w-fit justify-start text-left font-normal border-none text-[#B5B5BE] hover:bg-transparent text-sm bg-transparent"
                   id="period-expiry-date"
@@ -100,7 +105,6 @@ export const RiskStep1 = ({ register, watch, setValue }: Props) => {
           </div>
         </label>
       </div>
-      {/* Condition rendering */}
       {watch("transaction") === "Outright Sales" && (
         <div className="px-2 pt-2 border border-borderCol rounded-lg w-full bg-[#F5F7F9]">
           <p className="font-semibold text-sm text-lightGray mb-2 ml-2">

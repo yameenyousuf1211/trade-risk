@@ -1,4 +1,6 @@
-"use client";
+import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -21,12 +23,9 @@ import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
 import { ApiResponse, Country, IBids, IBidsInfo, IRisk } from "@/types/type";
 import { compareValues, convertDateToString } from "@/utils";
-import React, { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "../../services/apis/helpers.api";
 import { TableDialog } from "./TableDialog";
 import { useAuth } from "@/context/AuthProvider";
-import { useRouter, useSearchParams } from "next/navigation";
 
 const TableDataCell = ({ data }: { data: string | number }) => {
   return (
@@ -52,9 +51,14 @@ export const BankTable = ({
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [tableData, setTableData] = useState<(IBids | IRisk)[]>([]);
+  const [filteredData, setFilteredData] = useState<(IBids | IRisk)[]>([]);
   const { user } = useAuth();
   const filterParams = useSearchParams();
   const filter = filterParams.get("filter");
+  const selectedCountry = filterParams.get("country");
+  const fromDate = filterParams.get("fromDate");
+  const toDate = filterParams.get("toDate");
+  const searchQuery = filterParams.get("search") || "";
 
   useEffect(() => {
     if (data && data.data) {
@@ -66,7 +70,6 @@ export const BankTable = ({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
   });
-  console.log(tableData, "dddd");
 
   useEffect(() => {
     if (
@@ -78,6 +81,51 @@ export const BankTable = ({
       setAllCountries(countriesData.response);
     }
   }, [countriesData]);
+
+  useEffect(() => {
+    let filtered = [...tableData];
+
+    if (selectedCountry) {
+      filtered = filtered.filter(
+        (item) =>
+          (item as IBids)?.lcInfo?.[1]?.country?.toLowerCase() ===
+            selectedCountry.toLowerCase() ||
+          (item as IRisk)?.issuingBank?.country?.toLowerCase() ===
+            selectedCountry.toLowerCase()
+      );
+    }
+
+    if (fromDate || toDate) {
+      const from = fromDate ? new Date(fromDate) : null;
+      const to = toDate ? new Date(toDate) : null;
+
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.createdAt);
+
+        if (from && to) {
+          return itemDate >= from && itemDate <= to;
+        } else if (from) {
+          return itemDate >= from;
+        } else if (to) {
+          return itemDate <= to;
+        }
+        return true;
+      });
+    }
+
+    if (searchQuery) {
+      filtered = filtered.filter((item) =>
+        (
+          (item as IBids)?.bidBy?.[0] ||
+          (item as IRisk)?.issuingBank?.name ||
+          ""
+        )
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      );
+    }
+    setFilteredData(filtered);
+  }, [selectedCountry, fromDate, toDate, tableData, searchQuery]);
 
   const getCountryFlagByName = (countryName: string): string | undefined => {
     if (countryName) {
@@ -91,12 +139,11 @@ export const BankTable = ({
   const [sortedKey, setSortedKey] = useState<string>("");
 
   const handleSort = (key: string) => {
-    console.log(key);
     setSortedKey(key);
     let isDescending = sortedKey.includes(key);
     setSortedKey(isDescending ? "" : key);
 
-    let sortedData: (IBids | IRisk)[] = [...tableData].sort((a, b) => {
+    let sortedData: (IBids | IRisk)[] = [...filteredData].sort((a, b) => {
       let valueA, valueB;
       switch (key) {
         case "Date Submitted":
@@ -138,7 +185,7 @@ export const BankTable = ({
       return compareValues(valueA, valueB, isDescending);
     });
 
-    setTableData(sortedData);
+    setFilteredData(sortedData);
   };
 
   const filteredHeaders =
@@ -147,8 +194,6 @@ export const BankTable = ({
           (header) => !["Discounting Rate", "Discount Margin"].includes(header)
         )
       : myBidsColumnHeaders;
-
-  console.log(tableData, "_______");
 
   return (
     <div className="">
@@ -203,11 +248,12 @@ export const BankTable = ({
             {isLoading ? (
               <div className="w-full h-full center">{/* <Loader /> */}</div>
             ) : (
-              tableData &&
-              tableData?.map((item: IBids | IRisk, index: number) => (
+              filteredData &&
+              filteredData?.map((item: IBids | IRisk, index: number) => (
                 <TableRow key={index} className="border-none font-roboto">
                   <TableDataCell data={convertDateToString(item?.createdAt)} />
                   <TableCell className="px-1 py-1 max-w-[200px]">
+                    {" "}
                     <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                       <p className="text-[16px] emoji-font">
                         {allCountries &&
@@ -275,25 +321,24 @@ export const BankTable = ({
                         ".00" || ""
                     }
                   />
-
                   <TableCell className="px-1 py-1 max-w-[200px]">
-                    {(item as IBids).status !== "Pending" ? (
-                      <AddBid
-                        triggerTitle={item.status}
-                        status={item.status}
-                        isInfo={item.status !== "Add bid" && !isAddNewBid}
-                        setIsAddNewBid={setIsAddNewBid}
-                        isDiscount={
-                          ((item as IBids).bidType &&
-                            (item as IBids).bidType.includes("Discount")) ||
-                          false
-                        }
-                        border
-                        bidData={item}
-                        id={isCorporate ? item?.lc[0] : item?._id}
-                        isRisk={isRisk}
-                        isCorporate={isCorporate}
-                      />
+                    <AddBid
+                      triggerTitle={item.status}
+                      status={item.status}
+                      isInfo={item.status !== "Add bid" && !isAddNewBid}
+                      setIsAddNewBid={setIsAddNewBid}
+                      isDiscount={
+                        ((item as IBids).bidType &&
+                          (item as IBids).bidType.includes("Discount")) ||
+                        false
+                      }
+                      border
+                      bidData={item}
+                      id={isCorporate ? item?.lc[0] : item?._id}
+                      isRisk={isRisk}
+                      isCorporate={isCorporate}
+                    />
+                    {/* {(item as IBids).status !== "Pending" ? (
                     ) : (
                       <Button
                         variant="ghost"
@@ -301,9 +346,8 @@ export const BankTable = ({
                       >
                         {item?.status}
                       </Button>
-                    )}
+                    )} */}
                   </TableCell>
-
                 </TableRow>
               ))
             )}

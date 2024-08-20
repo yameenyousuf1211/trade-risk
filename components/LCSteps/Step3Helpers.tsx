@@ -90,11 +90,13 @@ export const Period = ({
   let lcStartDate = watch("period.startDate");
   let lcEndDate = watch("period.endDate");
   let lcPeriodType = watch("period.expectedDate");
-  const [startDate, setStartDate] = useState<any>("");
-  const [endDate, setEndDate] = useState<any>("");
 
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const [portCountries, setPortCountries] = useState<string[]>([]);
   const [ports, setPorts] = useState<string[]>([]);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
 
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],
@@ -108,9 +110,9 @@ export const Period = ({
       portsData.response &&
       portsData.response.length > 0
     ) {
-      const allPortCountries = portsData.response.map((port: any) => {
-        return port.country;
-      });
+      const allPortCountries = portsData.response.map(
+        (port: any) => port.country
+      );
       setPortCountries(allPortCountries);
     }
   }, [portsData]);
@@ -125,15 +127,29 @@ export const Period = ({
     shipmentCountry && fetchPorts();
   }, [shipmentCountry]);
 
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
-
   const handleRadioChange = (e: any) => {
     setValue("period.expectedDate", e.target.value);
+    // Reset LC Expiry Date when LC Issued Date or Expected Date changes
+    setEndDate(null);
+    setValue("period.endDate", null);
   };
 
   const updateValue = (name: string, value: any) => {
     setValue(name, value);
+  };
+
+  const handleExpiryDateSelect = (date: Date) => {
+    const today = new Date();
+    if (date.toDateString() === today.toDateString()) {
+      return toast.error("LC Expiry Date cannot be today's date");
+    }
+    if (lcStartDate && date <= lcStartDate) {
+      return toast.error(
+        "LC Expiry Date must be at least one day after the LC Issuance date"
+      );
+    }
+    setEndDate(date);
+    updateValue("period.endDate", date);
   };
 
   return (
@@ -197,26 +213,18 @@ export const Period = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              {lcPeriodType === "yes" ? (
-                <ValidatingCalendar
-                  initialDate={lcStartDate}
-                  onChange={(date) => {
-                    updateValue("period.startDate", date);
-                    setStartDate(date);
-                  }}
-                  onClose={() => setDatePopoverOpen(false)}
-                  isPast
-                />
-              ) : (
-                <ValidatingCalendar
-                  initialDate={lcStartDate}
-                  onChange={(date) => {
-                    updateValue("period.startDate", date);
-                    setStartDate(date);
-                  }}
-                  onClose={() => setDatePopoverOpen(false)}
-                />
-              )}
+              <ValidatingCalendar
+                initialDate={lcStartDate}
+                onChange={(date) => {
+                  updateValue("period.startDate", date);
+                  setStartDate(date);
+                  // Reset LC Expiry Date when LC Start Date changes
+                  setEndDate(null);
+                  setValue("period.endDate", null);
+                }}
+                onClose={() => setDatePopoverOpen(false)}
+                isPast
+              />
             </PopoverContent>
           </Popover>
         </div>
@@ -245,10 +253,7 @@ export const Period = ({
                 isEndDate={true}
                 startDate={startDate}
                 initialDate={lcEndDate}
-                onChange={(date) => {
-                  updateValue("period.endDate", date);
-                  // setStartDate("");
-                }}
+                onChange={handleExpiryDateSelect}
                 onClose={() => setIsPopoverOpen(false)}
               />
             </PopoverContent>
@@ -307,10 +312,12 @@ export const Transhipment = ({
       ? setValue("expectedDiscountingDate", date)
       : setValue("expectedConfirmationDate", date);
   };
+  let lcStartDate = watch("period.startDate");
+  let lcEndDate = watch("period.endDate");
 
-  // useEffect(() => {
-  //   setDate(expectedDate);
-  // }, [expectedDate]);
+  useEffect(() => {
+    if (lcEndDate || lcStartDate) setDate(undefined);
+  }, [lcStartDate, lcEndDate]);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const currentDate = new Date();

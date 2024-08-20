@@ -3,9 +3,10 @@ import React from "react";
 interface Props {
   watch: any;
   register: any;
+  step?:number
 }
 
-export const RiskStep8 = ({ register, watch }: Props) => {
+export const RiskStep8 = ({ register, watch,step = 8 }: Props) => {
   const riskParticipationTransaction = watch(
     "riskParticipationTransaction.type"
   );
@@ -14,7 +15,7 @@ export const RiskStep8 = ({ register, watch }: Props) => {
       <div className="flex items-center gap-x-2 ml-2 mb-3">
         <p className="size-6 rounded-full bg-[#255EF2] center text-white font-semibold text-sm">
           {/* {riskParticipationTransaction === "LC Confirmation" ? 7 : 8} */}
-          8
+          {step}
         </p>
         <p className="font-semibold text-[16px] text-lightGray">
           Additional notes

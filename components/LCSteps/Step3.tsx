@@ -1,4 +1,3 @@
-"use client";
 import { DDInput } from "./helpers";
 import { Plus, X } from "lucide-react";
 import { Period, Transhipment } from "./Step3Helpers";
@@ -35,23 +34,22 @@ export const Step3 = ({
   const [showConfirmingBank2, setShowConfirmingBank2] = useState(false);
   const { addStep, removeStep } = useStepStore();
 
-  let issuingCountry = watch("issuingBank.country");
-  let issuingBank = watch("issuingBank.bank");
-  let advisingCountry = watch("advisingBank.country");
-  let advisingBank = watch("advisingBank.bank");
-  let confirmingCountry = watch("confirmingBank.country");
-  let confirmingBank = watch("confirmingBank.bank");
-  let confirming2Country = watch("confirmingBank2.country");
-  let confirming2Bank = watch("confirmingBank2.bank");
-  let expectedDate = isDiscount
+  // Watch the first element of the issuingBanks array
+  const issuingCountry = watch("issuingBanks[0].country");
+  const issuingBank = watch("issuingBanks[0].bank");
+  const advisingCountry = watch("advisingBank.country");
+  const advisingBank = watch("advisingBank.bank");
+  const confirmingCountry = watch("confirmingBank.country");
+  const confirmingBank = watch("confirmingBank.bank");
+  const expectedDate = isDiscount
     ? watch("expectedDiscountingDate")
     : watch("expectedConfirmationDate");
-  let startDate = watch("period.startDate");
-  let endDate = watch("period.endDate");
-  let productDescription = watch("productDescription");
-  let shipmentCountry = watch("shipmentPort.country");
-  let shipmentPort = watch("shipmentPort.port");
-  let transhipment = watch("transhipment");
+  const startDate = watch("period.startDate");
+  const endDate = watch("period.endDate");
+  const productDescription = watch("productDescription");
+  const shipmentCountry = watch("shipmentPort.country");
+  const shipmentPort = watch("shipmentPort.port");
+  const transhipment = watch("transhipment");
 
   useEffect(() => {
     if (
@@ -66,11 +64,11 @@ export const Step3 = ({
       transhipment
     ) {
       addStep(LC_DETAILS);
-    } else removeStep(LC_DETAILS);
-    if (confirmingCountry) setShowConfirmingBank(true);
-    if (advisingCountry) {
-      setShowAdvisingBank(true);
+    } else {
+      removeStep(LC_DETAILS);
     }
+    if (confirmingCountry) setShowConfirmingBank(true);
+    if (advisingCountry) setShowAdvisingBank(true);
   }, [
     issuingCountry,
     issuingBank,
@@ -122,7 +120,7 @@ export const Step3 = ({
               placeholder="Select a country"
               label="Country"
               value={issuingCountry}
-              id="issuingBank.country"
+              id="issuingBanks[0].country"
               data={countries}
               setValue={setValue}
               flags={flags}
@@ -131,7 +129,7 @@ export const Step3 = ({
               placeholder="Select bank"
               label="Bank"
               value={issuingBank}
-              id="issuingBank.bank"
+              id="issuingBanks[0].bank"
               setValue={setValue}
               disabled={
                 !issuingBanks ||
@@ -151,7 +149,10 @@ export const Step3 = ({
               <p className="font-semibold mb-2 ml-3">Advising Bank</p>
               <p
                 className="bg-red-500 center text-white rounded-full size-6 shadow-md z-10 cursor-pointer mb-1"
-                onClick={() => setShowAdvisingBank(false)}
+                onClick={() => {
+                  setShowAdvisingBank(false);
+                  setValue("advisingBank", undefined); // Set advisingBank to undefined
+                }}
               >
                 <X className="size-5 text-white" />
               </p>
@@ -202,7 +203,7 @@ export const Step3 = ({
 
       <div className="py-3 px-2 rounded-md border border-borderCol bg-[#F5F7F9]">
         <p className="font-semibold mb-2">Confirming Bank</p>
-        {showConfirmingBank && (
+        {showConfirmingBank ? (
           <div className="relative flex items-center gap-x-3 w-full">
             <div className="flex items-center gap-x-2 w-full">
               <p className="font-semibold">1.</p>
@@ -235,14 +236,31 @@ export const Step3 = ({
             />
             <div
               className="absolute top-3 -right-2 bg-red-500 center text-white rounded-full size-6 shadow-md z-10 cursor-pointer"
-              onClick={() => setShowConfirmingBank(false)}
+              onClick={() => {
+                setShowConfirmingBank(false);
+                setValue("confirmingBank", undefined); // Set confirmingBank to undefined
+              }}
             >
               <X className="size-5 text-white" />
             </div>
           </div>
+        ) : (
+          <div
+            onClick={() =>
+              showConfirmingBank
+                ? setShowConfirmingBank2(true)
+                : setShowConfirmingBank(true)
+            }
+            className="cursor-pointer bg-white ml-4 center gap-x-3 border-2 border-dotted border-borderCol py-3 rounded-md mt-2"
+          >
+            <div className=" center p-1 border border-black rounded-full">
+              <Plus className="size-4" />
+            </div>
+            <p className="text-sm text-lightGray">Add Confirming Bank</p>
+          </div>
         )}
 
-        {showConfirmingBank2 ? (
+        {/* {showConfirmingBank2 ? (
           <div className="relative flex items-center gap-x-3 w-full mt-3">
             <div className="flex items-center gap-x-2 w-full">
               <p className="font-semibold">2.</p>
@@ -295,7 +313,7 @@ export const Step3 = ({
             </div>
             <p className="text-sm text-lightGray">Add Confirming Bank</p>
           </div>
-        )}
+        )} */}
       </div>
       <Period setValue={setValue} watch={watch} flags={flags} />
       <Transhipment

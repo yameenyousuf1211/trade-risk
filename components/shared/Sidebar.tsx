@@ -41,9 +41,9 @@ const SliderCard = ({
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["bid-status"],
-      });
+      // queryClient.invalidateQueries({
+      //   queryKey: ["bid-status-change"],
+      // });
     },
   });
 
@@ -101,11 +101,14 @@ const RequestCard = ({
 }) => {
   console.log("🚀 ~ data:", data);
   const { user } = useAuth();
-  const pendingBids =
-    data?.status !== "Expired"
-      ? data.bids.filter((bid) => bid.status === "Pending")
-      : [];
-  const showData = !data.bids.some((bid) => bid.bidBy === user?._id);
+
+  const bidsExist = Array.isArray(data?.bids);
+  const pendingBids = bidsExist
+    ? data.bids.filter((bid) => bid.status === "Pending")
+    : [];
+  const showData = bidsExist
+    ? !data.bids.some((bid) => bid.bidBy === user?._id)
+    : true;
 
   const otherBond = data?.otherBond?.cashMargin ?? 0;
   const bidBond = data?.bidBond?.cashMargin ?? 0;

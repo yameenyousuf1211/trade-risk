@@ -19,9 +19,9 @@ export const DatePicker = ({
   isLg,
   disabled,
   value,
+  isPast = false,
   placeholder,
   returnDate,
-  currentSetDate,
   onDateChange,
 }: {
   setValue?: any;
@@ -29,10 +29,10 @@ export const DatePicker = ({
   name?: string;
   isLg?: boolean;
   disabled?: boolean;
+  isPast?: boolean;
   value?: Date;
   placeholder?: string;
   returnDate?: boolean;
-  currentSetDate?: string;
   onDateChange?: any;
 }) => {
   const [date, setDate] = useState<Date>();
@@ -69,8 +69,6 @@ export const DatePicker = ({
         >
           {date && date instanceof Date ? (
             format(date, "PPP")
-          ) : currentSetDate ? (
-            currentSetDate
           ) : (
             <>
               <span>{placeholder ? placeholder : ""}</span>
@@ -84,6 +82,7 @@ export const DatePicker = ({
         <ValidatingCalendar
           initialDate={date}
           maxDate={maxDate}
+          isPast={isPast}
           onChange={(date) => {
             setDate(date);
             setValue?.(`${name || "validity"}`, date);

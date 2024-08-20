@@ -20,7 +20,7 @@ const defaultValue = {
   performanceBond: undefined,
   retentionMoneyBond: undefined,
   otherBond: undefined,
-  issuingBank: undefined,
+  issuingBanks: undefined,
   beneficiaryBanksDetails: undefined,
   purpose: "",
   remarks: "",

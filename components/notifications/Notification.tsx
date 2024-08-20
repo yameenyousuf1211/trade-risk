@@ -18,7 +18,6 @@ const Notification = ({ notification }: { notification: INotifications }) => {
     queryKey: [`fetch-data`, requestId],
     queryFn: () => fetchSingleLc2(requestId),
   });
-
   const { mutateAsync } = useMutation({
     mutationFn: updateNotification,
     onSuccess: () => {
@@ -55,14 +54,19 @@ const Notification = ({ notification }: { notification: INotifications }) => {
           {isLoading ? (
             <div className="text-center">Loading...</div>
           ) : (
-            <TableBidStatus id={requestId} lcData={data} isRisk={false} isNotification={true}/>
+            <TableBidStatus
+              id={requestId}
+              lcData={data}
+              isRisk={false}
+              isNotification={true}
+            />
           )}
         </div>
       ) : (
         <div className="flex gap-3 mt-2">
           {isLoading ? (
             <div className="text-center">Loading...</div>
-          ) : data?.status !== 'Accepted' ? (
+          ) : data?.status !== "Accepted" ? (
             <>
               <TableDialog
                 bids={data?.bids}
@@ -78,7 +82,9 @@ const Notification = ({ notification }: { notification: INotifications }) => {
               />
             </>
           ) : (
-            <div className="border-gray-300 cursor-default bg-[#2F3031] text-white py-2 px-20 rounded-lg">Accepted</div>
+            <div className="border-gray-300 cursor-default bg-[#2F3031] text-white py-2 px-20 rounded-lg">
+              Accepted
+            </div>
           )}
         </div>
       )}

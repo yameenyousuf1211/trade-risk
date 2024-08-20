@@ -28,6 +28,7 @@ export const DDInput = ({
   flags,
   type,
   onSelectValue,
+  extStyle = ""
 }: {
   id: string;
   label: string;
@@ -38,6 +39,7 @@ export const DDInput = ({
   disabled?: boolean;
   type?: string;
   setValue: UseFormSetValue<any>;
+  extStyle?:string;
   onSelectValue?: (value: string) => void;
 }) => {
   const [ddOpen, setDdOpen] = useState(false);
@@ -48,7 +50,7 @@ export const DDInput = ({
       id={id}
       className={`${
         type !== "baseRate" && "border"
-      } text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white`}
+      } text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white ${extStyle}`}
     >
       {type !== "baseRate" && <p className="text-lightGray">{label}</p>}
       <Popover open={ddOpen} onOpenChange={setDdOpen} modal={true}>

@@ -28,6 +28,7 @@ import Loader from "@/components/ui/loader";
 import useLcIssuance, { getStateValues } from "@/store/issueance.store";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
+import * as Yup from "yup";
 
 const IssuancePage = () => {
   const { user } = useAuth();
@@ -35,9 +36,7 @@ const IssuancePage = () => {
   const { countries, flags } = useCountries();
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
-  const { register, setValue, reset, watch, handleSubmit } = useForm<
-    z.infer<typeof lcIssuanceSchema>
-  >({});
+  const { register, setValue, reset, watch, handleSubmit } = useForm({});
 
   const { startLoading, stopLoading, isLoading } = useLoading();
   const [isDraftLoading, setIsDraftLoading] = useState<boolean>(false);
@@ -77,6 +76,10 @@ const IssuancePage = () => {
     }
   }, [issuanceData]);
 
+  useEffect(() => {
+    router.prefetch("/");
+  }, []);
+
   // reset the form on page navigation
   useEffect(() => {
     const handleRouteChange = () => {
@@ -87,9 +90,7 @@ const IssuancePage = () => {
     handleRouteChange();
   }, [pathname, router]);
 
-  const onSubmit: SubmitHandler<z.infer<typeof lcIssuanceSchema>> = async (
-    data
-  ) => {
+  const onSubmit: SubmitHandler<typeof lcIssuanceSchema> = async (data) => {
     // Ensure default values for optional fields
     const lcStartDateString = data.period?.startDate;
     const lcEndDateString = data.period?.endDate;
@@ -105,12 +106,11 @@ const IssuancePage = () => {
       },
     };
 
-    const validationResult = lcIssuanceSchema.safeParse(preparedData);
-    console.log(validationResult);
-    console.log(data);
+    try {
+      await lcIssuanceSchema.validate(preparedData, {
+        abortEarly: false,
+      });
 
-    if (validationResult.success) {
-      const validatedData = validationResult.data;
       const reqData = {
         ...data,
         type: "LG Issuance",
@@ -144,7 +144,7 @@ const IssuancePage = () => {
       unwantedProps.forEach((prop) => delete reqData[prop]);
 
       try {
-        startLoading();
+        startLoading(); // Start the general loading state
         let result;
         if (issuanceData?._id) {
           result = await onUpdateLC({
@@ -159,27 +159,23 @@ const IssuancePage = () => {
         if (!success) {
           toast.error(response);
         } else {
-          const notificationResp = await sendNotification({
-            role: "bank",
-            title: "New LC Issuance Request",
-            body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
-          });
-          console.log(notificationResp, "res");
           toast.success("LC created successfully");
-          reset();
           router.push("/");
+          reset();
         }
       } catch (error) {
         console.error(error, "error");
         toast.error("An unexpected error occurred");
       } finally {
-        stopLoading();
+        stopLoading(); // Stop the general loading state
       }
-    } else {
-      if (validationResult.error && validationResult.error.errors.length > 0) {
-        validationResult.error.errors.forEach((error) => {
-          toast.error(`Validation Error: ${error.message}`);
+    } catch (validationError) {
+      if (validationError instanceof Yup.ValidationError) {
+        validationError.errors.forEach((errorMessage) => {
+          toast.error(`Validation Error: ${errorMessage}`);
         });
+      } else {
+        console.error("Unexpected error during validation:", validationError);
       }
     }
   };
@@ -241,14 +237,14 @@ const IssuancePage = () => {
   //   }
   // };
 
-  const onSaveAsDraft: SubmitHandler<z.infer<typeof lcIssuanceSchema>> = async (
+  const onSaveAsDraft: SubmitHandler<typeof lcIssuanceSchema> = async (
     data
   ) => {
     setIsDraftLoading(true);
     const reqData = {
       ...data,
       type: "LG Issuance",
-      draft: "true",
+      draft: true,
     };
     console.log(reqData, "REQDATA");
     try {
@@ -264,8 +260,8 @@ const IssuancePage = () => {
         toast.error(response);
       } else {
         toast.success("Issuance draft created successfully");
-        reset();
         router.push("/");
+        reset();
       }
     } catch (error) {
       console.error(error);

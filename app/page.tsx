@@ -18,8 +18,6 @@ interface SearchParams {
   };
 }
 
-
-
 const HomePage = ({ searchParams }: SearchParams) => {
   const { page, limit, search, filter } = searchParams;
   const { user } = useAuth();
@@ -35,9 +33,9 @@ const HomePage = ({ searchParams }: SearchParams) => {
     });
   console.log("fetching LCSSS", data);
   console.log(user?.business, "user");
-  // if (user && user.role !== "corporate") {
-  //   redirect("/dashboard");
-  // }
+  if (user && user.type !== "corporate") {
+    redirect("/dashboard");
+  }
 
   return (
     <DashboardLayout>

@@ -166,6 +166,55 @@ const CurrentBankingPage = () => {
     });
   };
 
+  function convertBusinessData(originalData: any) {
+    return {
+      name: originalData.name,
+      email: originalData.email,
+      role: "admin",
+      type: originalData.role,
+      fcmTokens: [],
+
+      businessData: {
+        name: originalData.name,
+        email: originalData.email,
+        type: originalData.role,
+        address: originalData.address,
+        country: originalData.country,
+        phone: `+${originalData.phone}`,
+        constitution: originalData.constitution,
+        businessType: originalData.businessType,
+        productInfo: {
+          products: originalData.productInfo.products,
+          annualSalary: parseInt(originalData.productInfo.annualSalary),
+          annualValueExports: parseInt(
+            originalData.productInfo.annualValueExports
+          ),
+          annualValueImports: parseInt(
+            originalData.productInfo.annualValueImports
+          ),
+        },
+        currentBanks: originalData.currentBanks.map((bank) => ({
+          name: bank.name,
+          country: bank.country,
+          city: bank.city,
+        })),
+        bank: originalData.bank,
+        commercialRegistrationNumber: originalData.crNumber,
+        accountNumber: originalData.accountNumber,
+        swiftCode: originalData.swiftCode,
+        accountHolderName: originalData.accountHolderName,
+        accountCountry: originalData.accountCountry,
+        accountCity: originalData.accountCity,
+        pocName: originalData.pocName,
+        businessNature: originalData.businessNature,
+        pocEmail: originalData.pocEmail,
+        pocPhone: `${originalData.pocPhone}`,
+        poc: originalData.poc,
+        pocDesignation: originalData.pocDesignation,
+      },
+    };
+  }
+
   const handleSubmit = async () => {
     if (Object.keys(allBanks).length === 0) {
       return toast.error("Please add at least one bank");
@@ -192,11 +241,15 @@ const CurrentBankingPage = () => {
       ...data
     } = allData;
 
-    const reqData = {
+    let reqData: any = {
       ...data,
       role: "corporate",
       currentBanks: formattedBanks,
     };
+
+    reqData = convertBusinessData(reqData);
+
+    console.log("🚀 ~ handleSubmit ~ reqData:", reqData);
     const { response, success } = await onRegister(reqData);
     console.log("Email = ", response?.data?.email);
     console.log("Password = ", response?.data?.password);

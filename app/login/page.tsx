@@ -86,7 +86,7 @@ export default function LoginPage() {
       }
       setUser(response.data.user);
       toast.success("Login successfully");
-      router.push(response.data.user.role === "corporate" ? "/" : "/dashboard");
+      router.push(response.data.user.type === "corporate" ? "/" : "/dashboard");
     } else return toast.error(response as string);
   };
 

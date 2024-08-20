@@ -47,7 +47,33 @@ const BankRegisterPage = () => {
   const onSubmit: SubmitHandler<typeof bankSchema> = async (data) => {
     if (!procceed)
       return toast.error("Please view and sign the agreement first");
-    const { response, success } = await onRegister(data);
+
+    const reqData = {
+      name: data?.name,
+      email: data?.email,
+      type: "bank",
+      role: "admin",
+      fcmTokens: ["adflskjdfklsdjfkldsj"],
+      businessData: {
+        name: data?.name,
+        // pocName: data?.pocName,
+        email: data?.email,
+        type: data?.role ,
+        address: data?.address ,
+        swiftCode: data?.swiftCode ,
+        pocEmail: data?.pocEmail ,
+        pocPhone: data?.pocPhone ,
+        country: data?.accountCountry ,
+        confirmationLcs: data?.confirmationLcs,
+        discountingLcs: data?.discountingLcs,
+        guaranteesCounterGuarantees: data?.guaranteesCounterGuarantees,
+        discountingAvalizedBills: data?.discountingAvalizedBills,
+        avalizationExportBills: data?.avalizationExportBills,
+        riskParticipation: data?.riskParticipation,
+      },
+    };
+
+    const { response, success } = await onRegister(reqData);
     if (!success) return toast.error(response);
     else {
       toast.success("Account Register successfully");
@@ -76,38 +102,15 @@ const BankRegisterPage = () => {
       <section className="max-w-[800px] mx-auto w-full max-xs:px-1 z-10">
         <h2 className="font-semibold text-3xl text-center">Register</h2>
         <p className="font-roboto text-para text-center mt-5">
-          Please fill in the form below to register your bank
+          Please complete the form below to register your bank. The designated
+          point of contact will also serve as the admin for user access at your
+          bank.
         </p>
         <form
           className="max-w-[800px] mx-auto w-full shadow-md bg-white rounded-xl xs:p-8 max-xs:py-8 max-xs:px-4 z-10 mt-5 flex flex-col sm:gap-y-6 gap-y-3"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="flex items-center gap-x-2 w-full max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full relative">
-              <FloatingInput
-                name="name"
-                placeholder="Bank Name"
-                register={register}
-              />
-              {errors.name && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
-                  {errors.name.message}
-                </span>
-              )}
-            </div>
-            <div className="w-full relative">
-              <FloatingInput
-                name="email"
-                placeholder="Email"
-                register={register}
-              />
-              {errors.email && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
-                  {errors.email.message}
-                </span>
-              )}
-            </div>
-
             <div className="w-full relative">
               <CountrySelect
                 setIsoCode={setIsoCode}
@@ -121,10 +124,38 @@ const BankRegisterPage = () => {
                 </span>
               )}
             </div>
+
+            <div className="w-full relative">
+              <FloatingInput
+                name="name"
+                placeholder="Bank Name"
+                register={register}
+              />
+              {errors.name && (
+                <span className="mt-1 absolute text-[11px] text-red-500">
+                  {errors.name.message}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-x-2 w-full max-sm:flex-col max-sm:gap-y-3">
+            <div className="w-full relative">
+              <FloatingInput
+                name="email"
+                placeholder="Bank Email Address"
+                register={register}
+              />
+              {errors.email && (
+                <span className="mt-1 absolute text-[11px] text-red-500">
+                  {errors.email.message}
+                </span>
+              )}
+            </div>
+
             <div className="w-full relative">
               <FloatingInput
                 name="swiftCode"
-                placeholder="Swift"
+                placeholder="Swift Code"
                 register={register}
               />
               {errors.swiftCode && (
@@ -153,8 +184,24 @@ const BankRegisterPage = () => {
             <div className="w-full relative">
               <FloatingInput
                 register={register}
+                name="pocName"
+                placeholder="Authorized Point of Contact Name"
+                type="text"
+              />
+              {errors.pocName && (
+                <span className="mt-1 absolute text-[11px] text-red-500">
+                  {errors.pocName.message}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-x-2 w-full">
+            <div className="w-full relative">
+              <FloatingInput
+                register={register}
                 name="pocEmail"
-                placeholder="Point of Contact Email"
+                placeholder="Authorized Point of Contact Email"
                 type="email"
               />
               {errors.pocEmail && (

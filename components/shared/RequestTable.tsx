@@ -262,15 +262,15 @@ export const RequestTable = ({
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="min-w-[90px] px-1 py-1">
-                      <div className="flex w-full items-center justify-center gap-x-2 rounded-md border border-borderCol p-2 py-2.5">
+                    {/* <TableCell className="px-1 py-1 min-w-[90px]">
+                      <div className="flex items-center justify-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <div className="tex-sm truncate text-lightGray">
                           {item?.createdBy?.swiftCode
                             ? item?.createdBy?.swiftCode
                             : "-"}
                         </div>
                       </div>
-                    </TableCell>
+                    </TableCell> */}
                     <TableDataCell
                       data={
                         item?.period?.startDate
@@ -289,7 +289,11 @@ export const RequestTable = ({
                           ? convertDateToString(item?.period?.endDate)
                           : item?.expiryDate
                             ? convertDateToString((item as IRisk)?.expiryDate)
-                            : convertDateToString(item?.otherBond?.lgExpiryDate)
+                            : item?.otherBond?.lgExpiryDate
+                              ? convertDateToString(
+                                  item?.otherBond?.lgExpiryDate,
+                                )
+                              : "-"
                       }
                     />
                     <TableDataCell

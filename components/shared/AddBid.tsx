@@ -181,6 +181,16 @@ export const AddBid = ({
     performanceBond +
     retentionMoneyBond;
 
+  const formatNumberWithCommas = (value: string | number) => {
+    if (value === undefined || value === null) {
+      return "";
+    }
+
+    value = value.toString();
+    const numberString = value.replace(/,/g, "");
+    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   return (
     <Dialog>
       {isRisk ? (
@@ -227,46 +237,36 @@ export const AddBid = ({
       ) : (
         <DialogTrigger
           className={`${
-            status === "Pending"
-              ? "bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]  rounded-md w-full p-2 capitalize hover:opacity-85 border border-[#F2994A]"
-              : isNotification
-              ? "bg-[#2F3031] text-white hover:bg-[#2F3031] hover:text-white"
-              : lcData &&
-                (lcData?.status === "Expired" ||
-                  lcData?.status === "Accepted") &&
-                (status === "Add bid" || status === "Rejected")
-              ? "bg-[#1A1A26] text-white text-sm"
-              : status === "Rejected"
-              ? ` bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
-                  border && "border border-[#D20000]"
-                }`
-              : status === "Accepted"
+            lcData?.status === "Pending"
+              ? "bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A] rounded-md w-full p-2 capitalize hover:opacity-85 border border-[#F2994A]"
+              : lcData?.status === "Accepted"
               ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
                   border && "border border-[#29C084]"
                 }`
-              : status === "Expired"
+              : lcData?.status === "Rejected"
+              ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
+                  border && "border border-[#D20000]"
+                }`
+              : lcData?.status === "Expired"
               ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
                   border &&
                   "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
                 }`
-              : status === "Add bid" && !isBank
+              : lcData?.status === "Add bid" && !isBank
               ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
-              : status === "Add bid" && isBank
+              : lcData?.status === "Add bid" && isBank
               ? "bg-[#1A1A26] text-white text-sm"
+              : isNotification
+              ? "bg-[#2F3031] text-white hover:bg-[#2F3031] hover:text-white"
               : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
           } rounded-md w-full ${
             isNotification ? "w-28" : ""
           } p-2 capitalize hover:opacity-85 font-roboto`}
-          disabled={
-            (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
-            (status === "Add bid" || status === "Rejected")
-          }
+          disabled={lcData?.status !== "Add bid" || status !== "Add bid"}
         >
-          {lcData &&
-          (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
-          (status === "Add bid" || status === "Rejected")
+          {lcData?.status === "Expired"
             ? "Not Applicable"
-            : triggerTitle || "Pending"}
+            : lcData?.status || triggerTitle || "Pending"}
         </DialogTrigger>
       )}
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
@@ -332,8 +332,9 @@ export const AddBid = ({
                       <LCInfo
                         label="Value of Transaction"
                         value={
-                          riskData?.riskParticipationTransaction?.amount.toString() ||
-                          "-"
+                          formatNumberWithCommas(
+                            riskData?.riskParticipationTransaction?.amount ?? 0
+                          ) || "-"
                         }
                       />
                       <LCInfo
@@ -365,24 +366,24 @@ export const AddBid = ({
                         label="LC Advising Bank"
                         value={riskData?.advisingBank?.bank || "-"}
                       />
-                      <LCInfo
+                      {/* <LCInfo
                         label="Confirming Bank"
                         value={riskData?.confirmingBank?.bank || "-"}
-                      />
-                      <LCInfo
+                      /> */}
+                      {/* <LCInfo
                         label="LC Discounted"
                         value={
                           riskData?.transhipment === true
                             ? "Allowed"
                             : "Not allowed"
                         }
-                      />
-                      <LCInfo
+                      /> */}
+                      {/* <LCInfo
                         label="Expected Discounting Date"
                         value={convertDateToCommaString(
                           riskData?.expectedDateDiscounting || ""
                         )}
-                      />
+                      /> */}
                       <LCInfo
                         label="Issuance/Expected Issuance Date"
                         value={convertDateToCommaString(

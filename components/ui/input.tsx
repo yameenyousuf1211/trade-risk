@@ -53,7 +53,7 @@ const Input = <T extends FieldValues>({
         className
       )}
       max={max}
-      {...register(name as Path<T>)}
+      {...(!register ? {} : register(name as Path<T>))}
       // onChange={handleChange}
       {...otherProps}
       {...otherPropsBlur}

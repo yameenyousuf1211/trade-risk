@@ -292,7 +292,7 @@ export const Sidebar = ({
       queryKey: ["bid-status", "fetch-risks"],
       queryFn: () =>
         fetchRisk({ createdBy: riskType === "myRisk" ? true : false }),
-      enabled: !!user?._id,
+      enabled: !!user?._id && user.type === "bank",
     });
 
   console.log(allRisk, "ALL_RISKS");

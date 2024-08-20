@@ -83,7 +83,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Confirmation Rate</p>
           <p className="text-lg font-semibold text-text">
-            {data.amount}% {data?.perAnnum && "per annum"}
+            {data.confirmationPrice}% {data?.perAnnum && "per annum"}
           </p>
         </div>
 
@@ -314,111 +314,102 @@ export const TableDialog = ({
                         <p className="text-[12px] text-para">PDF, 1.4 MB</p>
                       </div>
                     </div>
-                    <p className="cursor-pointer text-sm font-medium underline">
-                      View attachments
-                    </p>
                   </div>
-                  <LCInfo
-                    label="Transaction Type"
-                    value={riskData?.transaction || ""}
-                  />
-                  <LCInfo
-                    label="Risk Participation"
-                    value={riskData?.riskParticipation || ""}
-                  />
-                  <LCInfo
-                    label="Transaction Offered"
-                    value={riskData?.riskParticipationTransaction?.type || ""}
-                  />
-                  <LCInfo
-                    label="Value of Transaction"
-                    value={
-                      formatNumberWithCommas(
-                        riskData?.riskParticipationTransaction?.amount,
-                      ) || ""
-                    }
-                  />
-                  <LCInfo
-                    label="Return"
-                    value={
-                      riskData?.riskParticipationTransaction?.returnOffer || ""
-                    }
-                  />
-                  <LCInfo
-                    label="Participation Offered"
-                    value={
-                      riskData?.riskParticipationTransaction?.perAnnum || ""
-                    }
-                    noBorder
-                  />
+                  <p className="text-sm font-medium cursor-pointer underline">
+                    View attachments
+                  </p>
                 </div>
-                {/* Separator */}
-                <div className="h-[2px] w-full bg-borderCol" />
-                {/* LC Details */}
-                <div className="mt-4 px-4">
-                  <h2 className="text-xl font-semibold">LC Details</h2>
-                  <LCInfo
-                    label="LC Issuing Bank"
-                    value={riskData?.issuingBank?.bank || ""}
-                  />
-                  <LCInfo
-                    label="LC Advising Bank"
-                    value={riskData?.advisingBank?.bank || ""}
-                  />
-                  {lcData?.type ? (
-                    <LCInfo
-                      label="Confirming Bank"
-                      value={riskData?.confirmingBank?.bank || ""}
-                    />
-                  ) : null}
-                  {lcData?.type ? (
-                    <LCInfo
-                      label="LC Discounted"
-                      value={
-                        riskData?.transhipment === true
-                          ? "Allowed"
-                          : "Not allowed"
-                      }
-                    />
-                  ) : null}
-                  {lcData?.type ? (
-                    <LCInfo
-                      label="Expected Discounting Date"
-                      value={convertDateToCommaString(
-                        riskData?.expectedDateDiscounting || "",
-                      )}
-                    />
-                  ) : null}
-                  <LCInfo
-                    label="Issuance/Expected Issuance Date"
-                    value={convertDateToCommaString(
-                      (riskData?.startDate
-                        ? riskData?.startDate
-                        : riskData?.period?.startDate) || "",
-                    )}
-                    noBorder
-                  />
-                  <LCInfo
-                    label="Date of Expiry"
-                    value={convertDateToCommaString(riskData?.expiryDate || "")}
-                    noBorder
-                  />
-                  <LCInfo
-                    label="Payment Terms"
-                    value={riskData?.paymentTerms || ""}
-                    noBorder
-                  />
-                  <LCInfo
-                    label="Port of Shipment"
-                    value={riskData?.shipmentPort?.port || ""}
-                    noBorder
-                  />
-                  <LCInfo
-                    label="Transhipment"
-                    value={riskData?.transhipment === true ? "Yes" : "No"}
-                    noBorder
-                  />
-                  {/* <LCInfo
+                <LCInfo
+                  label="Transaction Type"
+                  value={riskData?.transaction || ""}
+                />
+                <LCInfo
+                  label="Risk Participation"
+                  value={riskData?.riskParticipation || ""}
+                />
+                <LCInfo
+                  label="Transaction Offered"
+                  value={riskData?.riskParticipationTransaction?.type || ""}
+                />
+                <LCInfo
+                  label="Value of Transaction"
+                  value={
+                    formatNumberWithCommas(
+                      riskData?.riskParticipationTransaction?.amount
+                    ) + ".00" || ""
+                  }
+                />
+                <LCInfo
+                  label="Return"
+                  value={
+                    riskData?.riskParticipationTransaction?.returnOffer || ""
+                  }
+                />
+                <LCInfo
+                  label="Participation Offered"
+                  value={riskData?.riskParticipationTransaction?.perAnnum || ""}
+                  noBorder
+                />
+              </div>
+              {/* Separator */}
+              <div className="h-[2px] w-full bg-borderCol" />
+              {/* LC Details */}
+              <div className="px-4 mt-4">
+                <h2 className="text-xl font-semibold">LC Details</h2>
+                <LCInfo
+                  label="LC Issuing Bank"
+                  value={riskData?.issuingBank?.bank || ""}
+                />
+                <LCInfo
+                  label="LC Advising Bank"
+                  value={riskData?.advisingBank?.bank || ""}
+                />
+                <LCInfo
+                  label="Confirming Bank"
+                  value={riskData?.confirmingBank?.bank || ""}
+                />
+                <LCInfo
+                  label="LC Discounted"
+                  value={
+                    riskData?.transhipment === true ? "Allowed" : "Not allowed"
+                  }
+                />
+                <LCInfo
+                  label="Expected Discounting Date"
+                  value={convertDateToCommaString(
+                    riskData?.expectedDateDiscounting || ""
+                  )}
+                />
+                <LCInfo
+                  label="Issuance/Expected Issuance Date"
+                  value={convertDateToCommaString(
+                    (riskData?.startDate
+                      ? riskData?.startDate
+                      : riskData?.period?.startDate) || ""
+                  )}
+                  noBorder
+                />
+                <LCInfo
+                  label="Date of Expiry"
+                  value={convertDateToCommaString(riskData?.expiryDate || "")}
+                  noBorder
+                />
+                <LCInfo
+                  label="Payment Terms"
+                  value={riskData?.paymentTerms || ""}
+                  noBorder
+                />
+                <LCInfo
+                  label="Port of Shipment"
+                  value={riskData?.shipmentPort?.port || ""}
+                  noBorder
+                />
+                <LCInfo
+                  label="Transhipment"
+                  value={riskData?.transhipment === true ? "Yes" : "No"}
+                  noBorder
+                />
+                {/* <LCInfo
                   label="Expected Confirmation Date"
                   value={convertDateToCommaString(
                     riskData?.expectedDateConfimation || ""

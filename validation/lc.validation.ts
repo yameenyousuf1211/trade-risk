@@ -12,7 +12,7 @@ export const generalLcSchema = Yup.object().shape({
     .required(),
   amount: Yup.string()
     .required("Enter amount")
-    .matches(/^\d+$/, "Enter a valid number"),
+    .matches(/^\d+$/, "Amount: Enter a valid number"),
   paymentTerms: Yup.mixed()
     .oneOf(
       ["Sight LC", "Usance LC", "Deferred LC", "UPAS LC"],
@@ -161,7 +161,7 @@ export const discountingSchema = generalLcSchema.concat(
           .required(),
         pricePerAnnum: Yup.string()
           .required("Enter expected price")
-          .matches(/^\d+(\.\d+)?$/, "Enter a valid number")
+          .matches(/^\d+(\.\d+)?$/, "Price per annum: Enter a valid number")
           .test(
             "is-valid-price",
             "Price per annum must be less than 100",

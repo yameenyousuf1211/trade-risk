@@ -20,7 +20,7 @@ export const fetchLcs = async ({
     if (!userId) return;
     const { data } = await api.get(
       `/lcs?limit=${limit || 7}&page=${page || 1}&draft=${
-        draft || false
+        draft? "yes": ""
       }&search=${search || ""}&filter=${
         (filter && encodeURIComponent(filter)) || ""
       }&createdBy=${userId}`
@@ -46,7 +46,7 @@ export const fetchAllLcs = async ({
 }) => {
   try {
     const { data } = await api.get(
-      `/lcs?limit=${limit || 7}&page=${page || 1}&draft=${false}&search=${
+      `/lcs?limit=${limit || 7}&page=${page || 1}&search=${
         search || ""
       }&filter=${(filter && encodeURIComponent(filter)) || ""}`
     );

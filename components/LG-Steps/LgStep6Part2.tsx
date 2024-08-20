@@ -26,6 +26,13 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   const [number, setNumber] = useState("");
   const { data } = useLcIssuance();
 
+  useEffect(() => {
+    if (number && !number?.toString()?.includes(".00")) {
+      setNumber((prev) => prev + ".00");
+    }
+  }, [number]);
+
+
   const { data: currency } = useQuery({
     queryKey: ["currency"],
     queryFn: getCurrency,
@@ -53,6 +60,13 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   console.log("🚀 ~ expectedDate:", expectedDate);
   console.log("🚀 ~ lgExpiryDate:", lgExpiryDate);
   const { addStep, removeStep } = useStepStore();
+
+
+  useEffect(() => {
+    if (cashMargin && !cashMargin?.toString()?.includes(".00")) {
+      setValue(`${name}.cashMargin`, cashMargin + ".00");
+    }
+  }, [cashMargin]);
 
   useEffect(() => {
     if (!lgDetailCurrency) setValue(`${name}.lgDetailCurrency`, "USD");
@@ -168,7 +182,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               }
             />
           </label>
-          <label
+          {/* <label
             id="cashMargin"
             className="border flex-1 p-1 pl-2 rounded-md flex items-center justify-between bg-white"
           >
@@ -209,10 +223,9 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
                 placeholder=""
               />
             </label>
-          </label>
-        </div>
-        <div className="flex items-center gap-3">
-          <label
+          </label> */}
+
+<label
             id="lgTenor"
             className="border flex-1 py-1 px-2 rounded-md flex items-center justify-between bg-white"
           >
@@ -251,6 +264,9 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               />
             </label>
           </label>
+        </div>
+        <div className="flex items-center gap-3">
+        
           <label
             id="expectedDate"
             className="border p-1 px-2 rounded-md w-[55%] flex items-center justify-between bg-white"

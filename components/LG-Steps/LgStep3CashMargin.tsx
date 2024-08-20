@@ -48,7 +48,10 @@ export default function LgStep3CashMargin({
       </div>
 
       {confirmingBanks?.map((e, i) => (
-        <div className=" border border-[#E2E2EA] bg-[#F5F7F9]  rounded-lg mt-4 relative">
+        <div
+          key={i}
+          className="border border-[#E2E2EA] bg-[#F5F7F9] rounded-lg mt-4 relative"
+        >
           <p className="px-4 pt-2 font-semibold text-[#1A1A26] font-poppins">
             Issuing Bank
           </p>
@@ -65,12 +68,12 @@ export default function LgStep3CashMargin({
             >
               <p className="w-full text-sm text-lightGray">Swift Code</p>
               <Input
-//                 value={e.value}
-//                 onChange={(e) =>
-//                   setValue(`issuingBank.swiftCode${i}`, e.target.value)
-//                 }
-//                 register={register}
-//                 name={`issuingBank.swiftCode${i}`}
+                //                 value={e.value}
+                //                 onChange={(e) =>
+                //                   setValue(`issuingBank.swiftCode${i}`, e.target.value)
+                //                 }
+                //                 register={register}
+                //                 name={`issuingBank.swiftCode${i}`}
                 type="text"
                 className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                 placeholder="Enter Code"

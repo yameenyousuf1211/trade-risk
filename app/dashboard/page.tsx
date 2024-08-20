@@ -1,8 +1,6 @@
 "use client";
 import { LineCharts, ProgressCharts } from "@/components/charts";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
-import { LGTempDialog } from "@/components/LG-Output/Dialog";
-import LGTableDialog from "@/components/shared/lgTableDialog";
 import { RequestTable } from "@/components/shared/RequestTable";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { useAuth } from "@/context/AuthProvider";

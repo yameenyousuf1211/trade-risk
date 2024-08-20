@@ -8,7 +8,7 @@ import { PreviewLGCash } from "./content/PreviewLGCash";
 import { LGCashBankRightSection } from "./content/LGCashBankRightSection";
 import { LGCashCorporateRightSection } from "./content/LGCashCorporateRightSection";
 
-export const MarginBank = () => {
+export const LGCashMarginDialog = () => {
   const {
     createdAt,
     createdBy,

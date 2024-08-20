@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { BankData, AssignedValues } from "../types/LGBankTypes";
+import { BankData, AssignedValues, GenType } from "../types/LGBankTypes";
 
 interface BidState {
   selectedBank: string;
@@ -9,6 +9,8 @@ interface BidState {
   showPreview: boolean;
   allAssigned: boolean;
   bankData: BankData;
+  details: GenType[];
+  lgDetails: GenType[];
   setSelectedBank: (bank: string) => void;
   setSelectedLgType: (lgType: string) => void;
   setPricingValue: (value: string) => void;
@@ -26,6 +28,21 @@ export const useBidStore = create<BidState>((set, get) => ({
   assignedValues: {},
   showPreview: false,
   allAssigned: false,
+  details: [
+    { label: "Request Expiry Date:", value: "10 Oct,2024" },
+    { label: "Purpose of LG:", value: "Best Electronics in Pakistan" },
+    { label: "Beneficiary Name", value: "Nishat Group" },
+    { label: "Beneficiary Country", value: "Pakistan" },
+    { label: "Beneficiary Address", value: "7- Main Gulberg, Lahore, Punjab" },
+    { label: "Beneficiary Phone", value: "+92 21 8726368" },
+  ],
+  lgDetails: [
+    { label: "Amount", value: "USD 20,000" },
+    { label: "Expected Date of issuance", value: "October 11, 2024" },
+    { label: "Expiry Date", value: "November 20, 2024" },
+    { label: "LG Tenor", value: "12 Months" },
+    { label: "LG Text Draft", value: "Draft.png" },
+  ],
   bankData: {
     "Meezan Bank": {
       name: "Meezan Bank",
@@ -104,7 +121,7 @@ export const useBidStore = create<BidState>((set, get) => ({
       selectedBank,
       selectedLgType,
       bankData,
-      assignedValues
+      assignedValues,
     );
 
     if (nextOption) {
@@ -123,7 +140,7 @@ export const useBidStore = create<BidState>((set, get) => ({
       selectedBank,
       selectedLgType,
       bankData,
-      assignedValues
+      assignedValues,
     );
 
     if (nextOption) {
@@ -143,7 +160,7 @@ function findNextOption(
   currentBank: string,
   currentLgType: string,
   bankData: BankData,
-  assignedValues: AssignedValues
+  assignedValues: AssignedValues,
 ) {
   const banks = Object.keys(bankData);
   const currentBankIndex = banks.indexOf(currentBank);

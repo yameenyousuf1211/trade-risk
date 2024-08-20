@@ -7,7 +7,7 @@ import { ILcs } from "@/types/type";
 import { useState } from "react";
 
 const SkeletonButton = () => (
-  <div className="bg-[#F2994A33] rounded-md w-full p-2 h-10 animate-pulse"></div>
+  <div className="h-10 w-full animate-pulse rounded-md bg-[#F2994A33] p-2"></div>
 );
 
 export const TableBidStatus = ({
@@ -50,10 +50,10 @@ export const TableBidStatus = ({
           className={` ${
             isNotification
               ? "bg-[#2F3031] text-white hover:bg-[#2f3031d2] hover:text-white"
-              : "bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]"
-          }  rounded-md w-full p-2 capitalize hover:opacity-85`}
+              : "bg-[#F2994A33] text-[#F2994A] hover:bg-[#F2994A33] hover:text-[#F2994A]"
+          } w-full rounded-md p-2 capitalize hover:opacity-85`}
         >
-          {data?.response.data}
+          {(data as any)?.response?.data}
         </Button>
       )}
     </>

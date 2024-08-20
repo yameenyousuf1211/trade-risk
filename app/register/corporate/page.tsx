@@ -58,11 +58,15 @@ const CompanyInfoPage = () => {
     getValues,
     handleSubmit,
     trigger,
-    formState: { errors, isValid, isDirty },
+    formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(companyInfoSchema),
     mode: "all",
   });
+    // console.log("🚀 ~ CompanyInfoPage ~ getValues:", getValues())
+  
+  // const isValid = true
+
 
   useEffect(() => {
     if (corporateData) {
@@ -79,16 +83,17 @@ const CompanyInfoPage = () => {
     getValues("phone");
     if (corporateData) {
       setAllowSubmit(true);
-    } else if (isValid && isDirty) {
+    } else if (isValid) {
       setAllowSubmit(true);
     } else {
-      (!isValid || !isDirty) && setAllowSubmit(false);
+      !isValid && setAllowSubmit(false);
     }
-  }, [errors, isValid, isDirty, corporateData]);
+  }, [errors, isValid, corporateData]);
 
   const onSubmit: SubmitHandler<typeof companyInfoSchema> = async (
     data: any
   ) => {
+    console.log("🚀 ~ CompanyInfoPage ~ data:", data)
     setValues(data);
     localStorage.setItem("corporateData", JSON.stringify(data));
     router.push("/register/corporate/product-info");
@@ -159,7 +164,7 @@ const CompanyInfoPage = () => {
             <div className="w-full relative">
               <FloatingInput
                 name="crNumber"
-                placeholder="Commercial Registration Number"
+                placeholder="Commercial registration number"
                 register={register}
               />
               {errors.crNumber && (
@@ -174,12 +179,12 @@ const CompanyInfoPage = () => {
               <CountrySelect
                 setIsoCode={setIsoCode}
                 setValue={setValue}
-                name="accountCountry"
+                name="country"
                 placeholder="Company Country"
               />
-              {errors.accountCountry && (
+              {errors.country && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
-                  {errors.accountCountry.message}
+                  {errors.country.message}
                 </span>
               )}
             </div>

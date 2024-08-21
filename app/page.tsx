@@ -28,7 +28,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
     useQuery({
       queryKey: ["bid-status", page, limit, search, filter],
       queryFn: () =>
-        fetchLcs({ page, limit, search, filter, userId: user?.business?._id }),
+        fetchLcs({ page, limit, search, filter, userId: user?.business?._id, draft: false}),
       enabled: !!user?.business?._id,
     });
   console.log("fetching LCSSS", data);

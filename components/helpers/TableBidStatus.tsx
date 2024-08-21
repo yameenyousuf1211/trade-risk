@@ -51,8 +51,8 @@ export const TableBidStatus = ({
           className={` ${
             isNotification
               ? "bg-[#2F3031] text-white hover:bg-[#2f3031d2] hover:text-white"
-              : "bg-[#F2994A33] text-[#F2994A] hover:bg-[#F2994A33] hover:text-[#F2994A]"
-          } w-full rounded-md p-2 capitalize hover:opacity-85`}
+              : "bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]"
+          }  rounded-md w-full p-2 capitalize hover:opacity-85`}
         >
           {(data as any)?.response?.data}
         </Button>

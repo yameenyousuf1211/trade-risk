@@ -37,6 +37,8 @@ export const UserProfile = () => {
       }),
   });
 
+  console.log("Profile Data: ", user);
+
   return (
     <div className="flex items-center gap-x-4">
       <div>
@@ -93,8 +95,10 @@ export const UserProfile = () => {
         </Avatar>
 
         <div>
-          <h2 className="font-semibold capitalize">{user?.name}</h2>
-          <p className="text-para font-roboto text-sm">{user?.email}</p>
+          <h2 className="font-semibold capitalize">
+            {user?.business?.pocName}
+          </h2>
+          <p className="text-para font-roboto text-sm">{user?.name}</p>
         </div>
       </div>
       <DropdownMenu>

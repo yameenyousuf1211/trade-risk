@@ -61,6 +61,8 @@ export const BidCard = ({
     }
   };
 
+  console.log("corporate: ", data);
+
   return (
     <div className="rounded-lg border border-borderCol px-3 py-5">
       <div className="grid grid-cols-2 gap-y-4">
@@ -71,11 +73,11 @@ export const BidCard = ({
           </p>
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="mb-1 text-lg font-semibold capitalize">
-            {data.userInfo?.name || ""}
+          <p className="capitalize text-lg font-semibold mb-1">
+            {data.bidBy?.name || ""}
           </p>
-          <p className="text-sm capitalize text-para">
-            {data.userInfo?.country || ""}
+          <p className="capitalize text-sm text-para">
+            {data.bidBy?.country || ""}
           </p>
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>

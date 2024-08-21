@@ -121,9 +121,6 @@ const CreateRequestPage = () => {
       return toast.error("LC Issuance date cannot be greater than expiry date");
 
     const currentDate = new Date();
-    const futureDate = new Date(
-      currentDate.setDate(currentDate.getDate() + days)
-    );
 
     let extraInfoObj;
     if (
@@ -131,7 +128,7 @@ const CreateRequestPage = () => {
       data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
-      extraInfoObj = { days: futureDate, other: data.extraInfo };
+      extraInfoObj = { days: days, other: data.extraInfo };
     }
 
     let reqData;
@@ -209,7 +206,7 @@ const CreateRequestPage = () => {
           expectedConfirmationDate,
         };
 
-        console.log(preparedData, "pipiipi");
+        console.log(preparedData.extraInfo, "pipiipi");
         try {
           const validatedData = await confirmationSchema.validate(
             preparedData,

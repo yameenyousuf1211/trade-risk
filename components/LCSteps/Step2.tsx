@@ -49,7 +49,7 @@ export const Step2 = ({
     amount || ""
   );
   const [rawValue, setRawValue] = useState("");
-  const [otherValue, setOtherValue] = useState("");
+  const [otherValue, setOtherValue] = useState(extraInfo?.other || "shipment");
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
@@ -113,6 +113,11 @@ export const Step2 = ({
       addStep(AMOUNT);
     } else removeStep(AMOUNT);
   }, [amount, paymentTerms]);
+
+  useEffect(() => {
+    // Update extraInfo in the form state when `days` or `otherValue` changes
+    setValue("extraInfo", { days, other: otherValue });
+  }, [days, otherValue]);
 
   return (
     <div
@@ -226,7 +231,7 @@ export const Step2 = ({
                   className="text-sm text-lightGray border-none focus-visible:ring-0 focus-visible:ring-offset-0 max-w-[150px] bg-[#F5F7F9] outline-none"
                   onChange={(e: any) => {
                     if (e.target.value > 999) return;
-                    else setDays(e.target.value);
+                    else setDays(Number(e.target.value));
                   }}
                 />
                 <div className="flex items-center gap-x-1">
@@ -261,49 +266,54 @@ export const Step2 = ({
               <BgRadioInput
                 id="payment-shipment"
                 label="BL Date/Shipment Date"
-                name="extraInfo"
+                name="extraInfo.other"
                 value="shipment"
                 register={register}
-                checked={extraInfo === "shipment"}
+                checked={otherValue === "shipment"}
+                onChange={() => setOtherValue("shipment")}
               />
               <BgRadioInput
                 id="payment-acceptance"
                 label="Acceptance Date"
-                name="extraInfo"
+                name="extraInfo.other"
                 value="acceptance"
                 register={register}
-                checked={extraInfo === "acceptance"}
+                checked={otherValue === "acceptance"}
+                onChange={() => setOtherValue("acceptance")}
               />
             </div>
             <div className="flex items-center gap-x-3 justify-between">
               <BgRadioInput
                 id="payment-negotiation"
                 label="Negotiation Date"
-                name="extraInfo"
+                name="extraInfo.other"
                 value="negotiation"
                 register={register}
-                checked={extraInfo === "negotiation"}
+                checked={otherValue === "negotiation"}
+                onChange={() => setOtherValue("negotiation")}
               />
               <BgRadioInput
                 id="payment-invoice"
                 label="Invoice Date"
-                name="extraInfo"
+                name="extraInfo.other"
                 value="invoice"
                 register={register}
-                checked={extraInfo === "invoice"}
+                checked={otherValue === "invoice"}
+                onChange={() => setOtherValue("invoice")}
               />
               <BgRadioInput
                 id="payment-extra-sight"
                 label="Sight"
-                name="extraInfo"
+                name="extraInfo.other"
                 value="sight"
                 register={register}
-                checked={extraInfo === "sight"}
+                checked={otherValue === "sight"}
+                onChange={() => setOtherValue("sight")}
               />
             </div>
             <div
               className={`flex bg-white items-end gap-x-5 px-3 py-4 w-full rounded-md mb-2 border border-borderCol ${
-                extraInfo === "others" && "!bg-[#EEE9FE]"
+                otherValue === "others" && "!bg-[#EEE9FE]"
               }`}
             >
               <label
@@ -313,10 +323,11 @@ export const Step2 = ({
                 <input
                   type="radio"
                   value="others"
-                  {...register("extraInfo")}
+                  {...register("extraInfo.other")}
                   id="payment-others"
-                  checked={extraInfo === "others"}
+                  checked={otherValue === "others"}
                   className="accent-primaryCol size-4"
+                  onChange={() => setOtherValue("others")}
                 />
                 Others
               </label>
@@ -326,7 +337,7 @@ export const Step2 = ({
                 value={otherValue}
                 onChange={(e: any) => setOtherValue(e.target.value)}
                 className="text-sm bg-transparent !border-b-2 !border-b-neutral-300 rounded-none border-transparent focus-visible:ring-0 focus-visible:ring-offset-0 outline-none w-[80%]"
-                disabled={extraInfo !== "others"}
+                disabled={otherValue !== "others"}
               />
             </div>
           </>

@@ -24,7 +24,6 @@ import { DisclaimerDialog } from "@/components/helpers";
 import useDiscountingStore, { getStateValues } from "@/store/discounting.store";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
-import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
@@ -80,7 +79,7 @@ const CreateDiscountPage = () => {
           setValue(key, value.price);
         }
         if (key === "extraInfo") {
-          const daysLeft = calculateDaysLeft(value.dats);
+          const daysLeft = calculateDaysLeft(value.days);
           setDays(daysLeft);
           setValue("extraInfo", value.other);
         }
@@ -120,20 +119,10 @@ const CreateDiscountPage = () => {
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
-
+  
     const currentDate = new Date();
-    const futureDate = new Date(
-      currentDate.setDate(currentDate.getDate() + days)
-    );
-    let extraInfoObj;
-    if (
-      data.paymentTerms &&
-      data.paymentTerms !== "Sight LC" &&
-      data.extraInfo
-    ) {
-      extraInfoObj = { dats: futureDate, other: data.extraInfo };
-    }
-
+    const futureDate = new Date(currentDate.setDate(currentDate.getDate() + days));
+  
     let reqData;
     const baseData = {
       issuingBanks: data.issuingBanks, // Handle the array of issuing banks
@@ -146,9 +135,11 @@ const CreateDiscountPage = () => {
         ...data.period,
         expectedDate: data.period?.expectedDate === "yes" ? true : false,
       },
-      ...(extraInfoObj && { extraInfo: extraInfoObj }),
+      extraInfo: {
+        days,
+        other: data.extraInfo.other || "shipment", // Default to 'shipment' if not provided
+      },
     };
-
     if (isDraft) {
       const {
         confirmingBank2,
@@ -203,8 +194,12 @@ const CreateDiscountPage = () => {
           endDate: lcEndDate,
         },
         expectedDiscountingDate: expectedDiscountingDate,
+        exporterInfo: {
+          ...data.exporterInfo,
+          bank:"Something"
+        }
       };
-
+  
       try {
         const validatedData = await discountingSchema.validate(preparedData, {
           abortEarly: false,
@@ -245,7 +240,7 @@ const CreateDiscountPage = () => {
         }
       }
     }
-  };
+  };  
 
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);

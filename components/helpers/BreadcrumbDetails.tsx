@@ -105,10 +105,9 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["fetch-lcs-drafts"],
-      queryFn: () => fetchLcs({ draft: true, userId: user._id }),
-      enabled: !!user?._id,
+      queryFn: () => fetchLcs({ draft: true, userId: user?.business?._id }),
+      enabled: !!user?.business?._id,
     });
-
   const filteredData =
     data &&
     data?.data?.length &&

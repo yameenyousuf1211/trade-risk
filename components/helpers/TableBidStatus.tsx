@@ -41,6 +41,7 @@ export const TableBidStatus = ({
           isDiscount={
             (lcData?.type && lcData?.type?.includes("Discount")) || false
           }
+          bidData={lcData?.bids}
           id={lcData?._id}
           isRisk={isRisk}
         />

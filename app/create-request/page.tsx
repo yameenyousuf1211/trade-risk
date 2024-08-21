@@ -24,7 +24,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import useConfirmationStore, { getStateValues } from "@/store/lc.store";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
-import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
@@ -78,7 +77,7 @@ const CreateRequestPage = () => {
           setValue(key, value.price);
         }
         if (key === "extraInfo") {
-          const daysLeft = calculateDaysLeft(value.dats);
+          const daysLeft = calculateDaysLeft(value.days);
           setDays(daysLeft);
           setValue("extraInfo", value.other);
         }
@@ -132,7 +131,7 @@ const CreateRequestPage = () => {
       data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
-      extraInfoObj = { dats: futureDate, other: data.extraInfo };
+      extraInfoObj = { days: futureDate, other: data.extraInfo };
     }
 
     let reqData;

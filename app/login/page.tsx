@@ -84,9 +84,9 @@ export default function LoginPage() {
           await registerServiceWorker();
         }
       }
-      setUser(response.data.user);
+      setUser(response?.data?.user);
       toast.success("Login successfully");
-      router.push(response.data.user.type === "corporate" ? "/" : "/dashboard");
+      router.push(response?.data?.user?.type === "corporate" ? "/" : "/dashboard");
     } else return toast.error(response as string);
   };
 

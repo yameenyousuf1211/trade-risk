@@ -103,7 +103,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Bid Expiry</p>
           <p className="text-lg font-semibold">
-            {convertDateToYYYYMMDD(data.validity)}
+            {convertDateToYYYYMMDD(data.bidValidity)}
           </p>
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
@@ -210,16 +210,16 @@ export const TableDialog = ({
     queryFn: () => fetchSingleLc(lcId),
   });
 
-  console.log("🚀 ~ lcData:", lcData);
+  console.log("🚀 ~ lcData1:", lcData);
   const { data: riskData } = useQuery({
     queryKey: [`single-risk`, lcId],
     queryFn: () => fetchSingleRisk(lcId),
   });
   console.log(lcId, "LC++");
-
+  console.log(bids, "09090")
   const { user } = useAuth();
   const userBids =
-    isBank && user && bids?.filter((bid) => bid.bidBy === user._id);
+    isBank && user && bids?.filter((bid) => bid?.createdBy === user?._id);
 
   const otherBond = lcData?.otherBond?.cashMargin ?? 0;
   const bidBond = lcData?.bidBond?.cashMargin ?? 0;
@@ -501,17 +501,29 @@ export const TableDialog = ({
                           : lcData?.applicantDetails?.company) || ""
                       }
                     />
-                    <LCInfo
-                      label="Advising Bank"
-                      value={(lcData && lcData.advisingBank?.bank) || ""}
-                    />
-                    <LCInfo
-                      label="Confirming Bank"
-                      value={(lcData && lcData.confirmingBank?.bank) || ""}
-                    />
+                    {
+                      lcData?.advisingBank?.bank && (
+                        <LCInfo
+                          label="Advising Bank"
+                          value={(lcData && lcData.advisingBank?.bank) || ""}
+                        />
+                      )
+                    }
+                    {
+                      lcData?.confirmingBank?.bank && (
+                        <LCInfo
+                          label="Confirming Bank"
+                          value={(lcData && lcData.confirmingBank?.bank) || ""}
+                        />
+                      )
+                    }
                     <LCInfo
                       label="Payments Terms"
-                      value={(lcData && lcData.paymentTerms) || ""}
+                      value={
+                        lcData?.paymentTerms && lcData?.paymentTerms !== "Sight LC"
+                          ? `${lcData.paymentTerms} ${lcData.extraInfo?.days + " days" || ""} ${lcData.extraInfo?.other || ""}`
+                          : lcData?.paymentTerms || "-"
+                      }
                       noBorder
                     />
                   </div>

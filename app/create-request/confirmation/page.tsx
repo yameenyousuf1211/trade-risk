@@ -27,7 +27,6 @@ import useConfirmationDiscountingStore, {
 } from "@/store/confirmationDiscounting.store";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
-import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
@@ -112,7 +111,7 @@ const ConfirmationPage = () => {
   }: {
     isDraft: boolean;
     data: any;
-    isProceed;
+    isProceed?: boolean;
   }) => {
     submit();
     if (
@@ -131,13 +130,14 @@ const ConfirmationPage = () => {
     const futureDate = new Date(
       currentDate.setDate(currentDate.getDate() + days)
     );
+
     let extraInfoObj;
     if (
       data.paymentTerms &&
       data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
-      extraInfoObj = { dats: futureDate, other: data.extraInfo };
+      extraInfoObj = { days: futureDate, other: data.extraInfo.other };
     }
 
     let reqData;

@@ -131,14 +131,16 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["fetch-lcs-drafts"],
-      queryFn: () => fetchLcs({ draft: true, userId: user._id }),
-      enabled: !!user?._id,
+      queryFn: () => fetchLcs({ draft: true, userId: user?.business?._id }),
+      enabled: !!user?.business?._id,
     });
+
+  console.log(data, "drafts, 1")
 
   const filteredData =
     data &&
-    data?.data?.length&&
-    data?.data.filter((draft) => {
+    data.data?.length >0&&
+    data.data?.filter((draft) => {
       if (isConfirmation) {
         return draft.type === "LC Confirmation";
       } else if (isDiscounting) {

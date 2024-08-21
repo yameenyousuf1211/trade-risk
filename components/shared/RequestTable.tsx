@@ -339,7 +339,7 @@ export const RequestTable = ({
                           item.importerInfo?.applicantName) ||
                           item?.applicantDetails?.name ||
                           item?.applicantDetails?.company) ??
-                        ""
+                        "-"
                       }
                     />
                     <TableDataCell
@@ -447,7 +447,7 @@ export const RequestTable = ({
                         (item.importerInfo &&
                           item.importerInfo?.applicantName) ||
                         item?.applicantDetails?.crNumber ||
-                        ""
+                        "-"
                       }
                     />
                     <TableDataCell

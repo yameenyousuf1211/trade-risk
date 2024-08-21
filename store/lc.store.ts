@@ -49,7 +49,7 @@ const useConfirmationStore = create<UseConfirmationStore>((set, get) => ({
     pricePerAnnum: "",
     advisingBank: "",
   },
-  extraInfo: "shipment",
+  extraInfo: {days: "",other:""},
   setValues: (values: Partial<LcConfirmation | null>) =>
     set((state) => ({ ...state, ...values })),
 }));

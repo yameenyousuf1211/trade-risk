@@ -21,6 +21,11 @@ interface ImporterInfo {
   countryOfImport: string;
 }
 
+interface ExtraInfo {
+  days: number;
+  other: "shipment" | "upas" | "acceptance" | "negotiation" | "invoice" | "sight" | "others";
+}
+
 type TransactionData = {
   participantRole: "exporter" | "importer";
   amount: string;
@@ -34,14 +39,7 @@ type TransactionData = {
   transhipment: "yes" | "no";
   importerInfo: ImporterInfo;
   productDescription: string;
-  extraInfo:
-    | "shipment"
-    | "upas"
-    | "acceptance"
-    | "negotiation"
-    | "invoice"
-    | "sight"
-    | "others";
+  extraInfo: ExtraInfo; // Updated to use ExtraInfo type
 };
 
 interface LcConfirmation extends TransactionData {

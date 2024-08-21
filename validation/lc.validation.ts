@@ -82,20 +82,26 @@ export const generalLcSchema = Yup.object().shape({
     .min(1, "Product Description is required")
     .max(300, "Description cannot be more than 300 characters")
     .required("Add product description"),
-  extraInfo: Yup.mixed()
-    .oneOf(
-      [
-        "shipment",
-        "upas",
-        "acceptance",
-        "negotiation",
-        "invoice",
-        "sight",
-        "others",
-      ],
-      "Extra info is required"
-    )
-    .nullable(),
+  extraInfo: Yup.object().shape({
+    days: Yup.number()
+      .required("Days are required")
+      .min(1, "Days must be greater than 0")
+      .max(999, "Days must be less than or equal to 999"),
+    other: Yup.mixed()
+      .oneOf(
+        [
+          "shipment",
+          "upas",
+          "acceptance",
+          "negotiation",
+          "invoice",
+          "sight",
+          "others",
+        ],
+        "Extra info is required"
+      )
+      .required("Extra info is required"),
+  }),
 });
 
 export const confirmationSchema = generalLcSchema.concat(
@@ -161,14 +167,16 @@ export const discountingSchema = generalLcSchema.concat(
           .required(),
         pricePerAnnum: Yup.string()
           .required("Enter expected price")
-          .matches(/^\d+(\.\d+)?$/, "Price per annum: Enter a valid number")
+          .matches(/^\d+(\.\d+)?%?$/, "Price per annum: Enter a valid number or percentage")
           .test(
             "is-valid-price",
-            "Price per annum must be less than 100",
+            "Price per annum must be less than or equal to 100%",
             (value) => {
-              return parseFloat(value) <= 100;
+              if (!value) return false;
+              const numericValue = parseFloat(value.replace('%', '')); // Remove percentage sign and parse the number
+              return numericValue <= 100;
             }
-          ),
+          ),        
       })
       .required(),
   })

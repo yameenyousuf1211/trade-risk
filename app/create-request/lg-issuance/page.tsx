@@ -21,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthProvider";
 import useCountries from "@/hooks/useCountries";
 import { createLg, updateLg } from "@/services/apis/lg.apis";
-import { sendNotification } from "@/services/apis/notifications.api";
 import useLcIssuance from "@/store/issueance.store";
 import useStepStore from "@/store/lcsteps.store";
 import { LgDetails } from "@/types/lg";
@@ -309,11 +308,6 @@ export default function LgIssuance() {
     successMessage: string
   ) => {
     if (success) {
-      const notificationResp = await sendNotification({
-        role: "bank",
-        title: `New LC Discounting Request ${response.data._id}`,
-        body: `Ref no ${response.data.refId} from ${response.data?.issuingBank?.bank} by ${user?.name}`,
-      });
       storeData?.removeValues();
       toast.success(successMessage);
       console.log(response, "response");

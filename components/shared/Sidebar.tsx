@@ -272,7 +272,7 @@ export const Sidebar = ({
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["bid-status", "fetch-lcs", "fetch-risks"],
-      queryFn: () => fetchLcs({ userId: user._id }),
+      queryFn: () => fetchLcs({ userId: user?.business?._id }),
       enabled: !!user?._id,
     });
 
@@ -435,7 +435,7 @@ export const Sidebar = ({
       stopLoading();
     } else {
       startLoading();
-      const { data } = await fetchLcs({ userId: user._id, limit: 1000 });
+      const { data } = await fetchLcs({ userId: user?.business?._id, limit: 1000,draft: false});
       if (data.length > 0) {
         isCSV && generateCSV(data);
         isPDF && generatePDF(data);

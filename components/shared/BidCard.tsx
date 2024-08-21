@@ -90,7 +90,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Expiry</p>
           <p className="font-semibold text-lg">
-            {convertDateToYYYYMMDD(data.validity)}
+            {convertDateToYYYYMMDD(data.bidValidity)}
           </p>
         </div>
 

@@ -258,7 +258,7 @@ export const RequestTable = ({
                     <TableCell className="min-w-[90px] px-1 py-1">
                       <div className="flex w-full items-center justify-center gap-x-2 rounded-md border border-borderCol p-2 py-2.5">
                         <div className="tex-sm truncate text-lightGray">
-                          {item?.refId ? item?.refId : item?.refId}
+                          {item?.refId ? item?.refId : "-"}
                         </div>
                       </div>
                     </TableCell>
@@ -305,20 +305,16 @@ export const RequestTable = ({
                     <TableCell className="max-w-[180px] px-1 py-1">
                       <div className="flex w-full items-center justify-start gap-x-2 rounded-md border border-borderCol p-2 py-2.5">
                         <p className="emoji-font text-[16px]">
-                          {item.issuingBanks &&
+                          {item.issuingBanks?.[0]?.country &&
                             allCountries &&
-                            getCountryFlagByName(
-                              item?.issuingBanks?.[0]?.country,
-                            )}
+                            getCountryFlagByName(item.issuingBanks?.[0]?.country)}
                         </p>
                         <div
                           className={`truncate capitalize text-lightGray ${
-                            item.issuingBanks && item.issuingBanks[0]?.bank
-                              ? ""
-                              : "flex w-full justify-center"
+                            item.issuingBanks?.[0]?.bank ? "" : "flex w-full justify-center"
                           }`}
                         >
-                          {item.issuingBanks ? item.issuingBanks[0].bank : "-"}
+                          {item.issuingBanks?.[0]?.bank || "-"}
                         </div>
                       </div>
                     </TableCell>
@@ -343,7 +339,7 @@ export const RequestTable = ({
                           item.importerInfo?.applicantName) ||
                           item?.applicantDetails?.name ||
                           item?.applicantDetails?.company) ??
-                        ""
+                        "-"
                       }
                     />
                     <TableDataCell
@@ -425,19 +421,16 @@ export const RequestTable = ({
                     <TableCell className="max-w-[180px] px-1 py-1">
                       <div className="flex w-full items-center justify-start gap-x-2 rounded-md border border-borderCol p-2 py-2.5">
                         <p className="emoji-font text-[16px]">
-                          {item.issuingBanks &&
+                          {item.issuingBanks?.[0]?.country &&
                             allCountries &&
-                            getCountryFlagByName(item.issuingBanks[0]?.country)}
+                            getCountryFlagByName(item.issuingBanks?.[0]?.country)}
                         </p>
                         <div
                           className={`truncate capitalize text-lightGray ${
-                            item.issuingBanks && item.issuingBanks[0]?.bank
-                              ? ""
-                              : "flex w-full justify-center"
+                            item.issuingBanks?.[0]?.bank ? "" : "flex w-full justify-center"
                           }`}
                         >
-                          {(item.issuingBanks && item.issuingBanks[0]?.bank) ||
-                            "-"}
+                          {item.issuingBanks?.[0]?.bank || "-"}
                         </div>
                       </div>
                     </TableCell>
@@ -454,7 +447,7 @@ export const RequestTable = ({
                         (item.importerInfo &&
                           item.importerInfo?.applicantName) ||
                         item?.applicantDetails?.crNumber ||
-                        ""
+                        "-"
                       }
                     />
                     <TableDataCell

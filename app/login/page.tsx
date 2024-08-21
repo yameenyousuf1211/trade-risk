@@ -83,6 +83,7 @@ export default function LoginPage() {
           await registerServiceWorker();
         }
       }
+
       setUser(response.data.user);
       const toastId = toast.success(
         <div className="flex items-center justify-between w-full">
@@ -97,6 +98,7 @@ export default function LoginPage() {
         </div>
       );
       router.push(response.data.user.type === "corporate" ? "/" : "/dashboard");
+
     } else return toast.error(response as string);
   };
 

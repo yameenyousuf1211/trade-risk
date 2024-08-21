@@ -26,7 +26,6 @@ import { bankCountries } from "@/utils/data";
 import { useEffect, useState } from "react";
 import Loader from "@/components/ui/loader";
 import useLcIssuance, { getStateValues } from "@/store/issueance.store";
-import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
 import * as Yup from "yup";
 

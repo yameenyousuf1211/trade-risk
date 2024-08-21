@@ -36,7 +36,7 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
   } = useQuery({
     queryKey: ["fetch-my-bids", page, limit, filter, search],
     queryFn: () =>
-      fetchCorporateBids({ page, limit, filter, search, userId: user._id }),
+      fetchCorporateBids({ page, limit, filter, search, userId: user?.business?._id }),
     enabled: !!user,
   });
 

@@ -27,11 +27,22 @@ import { getCountries } from "../../services/apis/helpers.api";
 import { TableDialog } from "./TableDialog";
 import { useAuth } from "@/context/AuthProvider";
 
-const TableDataCell = ({ data }: { data: string | number }) => {
+const renderData = (data: string | number | undefined) => {
+  return data ? data : "-";
+};
+
+const getCenteredClass = (data: string | number | undefined) => {
+  return data === "-" ? "text-center w-full" : "text-start";
+};
+
+const TableDataCell = ({ data }: { data: string | number | undefined }) => {
+  const displayData = renderData(data);
   return (
     <TableCell className="px-1 py-1 max-w-[200px]">
-      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-center text-sm text-lightGray">
-        {data}
+      <div
+        className={`capitalize truncate border text-center border-borderCol rounded-md w-full p-2 py-2.5 text-sm text-lightGray`}
+      >
+        {displayData}
       </div>
     </TableCell>
   );
@@ -135,7 +146,7 @@ export const BankTable = ({
       return country ? country.flag : undefined;
     }
   };
-
+  console.log(data, "data")
   const [sortedKey, setSortedKey] = useState<string>("");
 
   const handleSort = (key: string) => {
@@ -249,7 +260,9 @@ export const BankTable = ({
               <div className="w-full h-full center">{/* <Loader /> */}</div>
             ) : (
               filteredData &&
-              filteredData?.map((item: IBids | IRisk, index: number) => (
+              filteredData?.map((item: IBids | IRisk, index: number) => {
+                console.log(item, "item123")
+                return(
                 <TableRow key={index} className="border-none font-roboto">
                   <TableDataCell data={convertDateToString(item?.createdAt)} />
                   <TableCell className="px-1 py-1 max-w-[200px]">
@@ -259,14 +272,20 @@ export const BankTable = ({
                         {allCountries &&
                           getCountryFlagByName(
                             (item as IBids)?.lcInfo?.[1]?.country ||
-                              (item as IRisk)?.issuingBank?.country ||
-                              (item as IRisk)?.risk[2]?.country
+                            (item as IRisk)?.issuingBanks?.[0]?.country || "-"
                           )}
+                          {/* // (item as IRisk)?.risk[2]?.country */}
                       </p>
-                      <div className="truncate text-lightGray capitalize">
+                      <div
+                        className={`truncate text-lightGray capitalize ${getCenteredClass(
+                          (item as IBids)?.lcInfo?.[1]?.country ||
+                          (item as IRisk)?.issuingBanks?.[0]?.country || "-"
+                        )}`}
+                      >
                         {(item as IBids)?.lcInfo?.[1]?.country ||
-                          (item as IRisk)?.issuingBank?.country ||
-                          (item as IRisk)?.risk[2]?.country}
+                          (item as IRisk)?.issuingBanks?.[0]?.country || "-"
+                        }
+                        {/* // (item as IRisk)?.risk[2]?.country */}
                       </div>
                     </div>
                   </TableCell>
@@ -279,27 +298,26 @@ export const BankTable = ({
                             getCountryFlagByName((item as any).bidBy?.[2])}
                         </p>
                         <div className="truncate text-lightGray capitalize">
-                          {(item as any).bidBy?.[0] || ""}
+                          {(item as any).bidBy?.[0] || renderData(null)}
                         </div>
                       </div>
                     </TableCell>
                   )}
                   <TableDataCell
                     data={
-                      ((item as IBids)?.confirmationPrice &&
+                      renderData(
+                        (item as IBids)?.confirmationPrice &&
                         (item as IBids).confirmationPrice.toLocaleString() +
-                          ".00 %") ||
-                      "Not Applicable"
+                          ".00 %" || ""
+                      )
                     }
                   />
                   {filter !== "LC Confirmation" && (
                     <>
                       <TableDataCell
-                        data={
+                        data={renderData(
                           (item as IBids)?.discountBaseRate
-                            ? (item as IBids).discountBaseRate
-                            : "Not Applicable"
-                        }
+                        )}
                       />
 
                       <TableDataCell
@@ -313,13 +331,13 @@ export const BankTable = ({
                     </>
                   )}
                   <TableDataCell
-                    data={
+                    data={renderData(
                       "USD " +
                         ((item as IBids).confirmationPrice ||
                           (item as IRisk).riskParticipationTransaction
                             ?.amount) +
                         ".00" || ""
-                    }
+                    )}
                   />
                   <TableCell className="px-1 py-1 max-w-[200px]">
                     <AddBid
@@ -349,7 +367,7 @@ export const BankTable = ({
                     )} */}
                   </TableCell>
                 </TableRow>
-              ))
+              )})
             )}
           </TableBody>
         </Table>

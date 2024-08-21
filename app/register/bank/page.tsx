@@ -7,6 +7,7 @@ import {
 import { FloatingInput } from "@/components/helpers/FloatingInput";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { Button } from "@/components/ui/button";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { onRegister } from "@/services/apis";
 import { bankSchema } from "@/validation";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -58,12 +59,12 @@ const BankRegisterPage = () => {
         name: data?.name,
         // pocName: data?.pocName,
         email: data?.email,
-        type: data?.role ,
-        address: data?.address ,
-        swiftCode: data?.swiftCode ,
-        pocEmail: data?.pocEmail ,
-        pocPhone: data?.pocPhone ,
-        country: data?.accountCountry ,
+        type: data?.role,
+        address: data?.address,
+        swiftCode: data?.swiftCode,
+        pocEmail: data?.pocEmail,
+        pocPhone: data?.pocPhone,
+        country: data?.accountCountry,
         confirmationLcs: data?.confirmationLcs,
         discountingLcs: data?.discountingLcs,
         guaranteesCounterGuarantees: data?.guaranteesCounterGuarantees,
@@ -197,7 +198,7 @@ const BankRegisterPage = () => {
           </div>
 
           <div className="flex items-center gap-x-2 w-full">
-            <div className="w-full relative">
+            <div className="w-full relative p-1">
               <FloatingInput
                 register={register}
                 name="pocEmail"
@@ -212,7 +213,22 @@ const BankRegisterPage = () => {
             </div>
 
             <div className="w-full relative">
-              <TelephoneInput
+              <label
+                id="pocPhone"
+                className="border flex-1 p-1 px-1 rounded-md  flex items-center justify-between bg-white"
+              >
+                <p className=" text-sm w-32 text-lightGray">Phone Number</p>
+                <PhoneInput
+                  value={phoneInput}
+                  name="pocPhone"
+                  // className="h-10"
+                  onChange={(value) => {
+                    setValue("pocPhone", value);
+                  }}
+                />
+              </label>
+
+              {/* <TelephoneInput
                 name="pocPhone"
                 placeholder="POC Telephone"
                 setValue={setValue}
@@ -220,7 +236,7 @@ const BankRegisterPage = () => {
                 value={phoneInput}
                 setAllowSubmit={setAllowSubmit}
                 trigger={trigger}
-              />
+              /> */}
               {errors.pocPhone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.pocPhone.message}

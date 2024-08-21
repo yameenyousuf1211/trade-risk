@@ -746,8 +746,9 @@ export const AddBid = ({
                     <DatePicker
                       setValue={setValue}
                       key={lcData?._id}
-                      maxDate={lcData?.period?.endDate}
-                      isPast={true}
+                      maxDate={null}
+                      // maxDate={lcData?.period?.endDate}
+                      // isPast={false}
                     />
                   </div>
                   {errors.validity && (

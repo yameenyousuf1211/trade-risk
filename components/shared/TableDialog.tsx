@@ -59,6 +59,8 @@ export const BidCard = ({
     }
   };
 
+  console.log("corporate: ", data);
+
   return (
     <div className="border border-borderCol py-5 px-3 rounded-lg">
       <div className="grid grid-cols-2 gap-y-4">
@@ -71,10 +73,10 @@ export const BidCard = ({
 
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="capitalize text-lg font-semibold mb-1">
-            {data.userInfo?.name || ""}
+            {data.bidBy?.name || ""}
           </p>
           <p className="capitalize text-sm text-para">
-            {data.userInfo?.country || ""}
+            {data.bidBy?.country || ""}
           </p>
         </div>
 
@@ -472,7 +474,7 @@ export const TableDialog = ({
                 <div className="px-4  bg-[#F5F7F9]">
                   <LCInfo
                     label="LC Issuing Bank"
-                    value={(lcData && lcData.issuingBanks?.bank) || ""}
+                    value={(lcData && lcData.issuingBanks[0]?.bank) || ""}
                   />
                   <LCInfo
                     label="LC Applicant"

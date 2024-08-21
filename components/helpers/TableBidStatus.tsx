@@ -17,7 +17,7 @@ export const TableBidStatus = ({
   isRisk = false,
 }: {
   id: string;
-  isNotification?: boolean;  
+  isNotification?: boolean;
   lcData: ILcs;
   isRisk?: boolean;
 }) => {
@@ -33,7 +33,7 @@ export const TableBidStatus = ({
         <SkeletonButton />
       ) : data ? (
         <AddBid
-        isNotification={isNotification}
+          isNotification={isNotification}
           triggerTitle={data.response.data || ""}
           status={data.response.data}
           isInfo={data.response.data !== "Add bid" && !isAddNewBid}
@@ -47,7 +47,11 @@ export const TableBidStatus = ({
       ) : (
         <Button
           variant="ghost"
-          className={` ${isNotification ? 'bg-[#2F3031] text-white hover:bg-[#2f3031d2] hover:text-white' : 'bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]'}  rounded-md w-full p-2 capitalize hover:opacity-85`}
+          className={` ${
+            isNotification
+              ? "bg-[#2F3031] text-white hover:bg-[#2f3031d2] hover:text-white"
+              : "bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]"
+          }  rounded-md w-full p-2 capitalize hover:opacity-85`}
         >
           {data?.response.data}
         </Button>

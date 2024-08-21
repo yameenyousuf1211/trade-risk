@@ -70,19 +70,13 @@ export const BidCard = ({
             {data._id?.slice(0, 6) || "12365"}
           </p>
         </div>
-        //{" "}
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          //{" "}
           <p className="mb-1 text-lg font-semibold capitalize">
-            // {data.userInfo?.name || ""}
-            //{" "}
+            {data.userInfo?.name || ""}
           </p>
-          //{" "}
           <p className="text-sm capitalize text-para">
-            // {data.userInfo?.country || ""}
-            //{" "}
+            {data.userInfo?.country || ""}
           </p>
-          //{" "}
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Confirmation Rate</p>

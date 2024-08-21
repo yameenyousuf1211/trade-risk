@@ -34,7 +34,6 @@ export const TableBidStatus = ({
       ) : data ? (
         <AddBid
           isNotification={isNotification}
-          isNotification={isNotification}
           triggerTitle={data.response.data || ""}
           status={data.response.data}
           isInfo={data.response.data !== "Add bid" && !isAddNewBid}

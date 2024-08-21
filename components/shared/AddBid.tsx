@@ -181,7 +181,7 @@ export const AddBid = ({
     return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
   const userBidStatus = lcData?.bids?.find(bid => bid?.createdBy === user?._id)?.status;
-  const computedStatus = userBidStatus || lcData?.status;
+  const computedStatus = userBidStatus || triggerTitle ||lcData?.status;
 
   return (
     <Dialog>
@@ -229,24 +229,24 @@ export const AddBid = ({
       ) : (
         <DialogTrigger
           className={`${
-            userBidStatus === "Pending"
+            computedStatus === "Pending"
               ? "bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A] rounded-md w-full p-2 capitalize hover:opacity-85 border border-[#F2994A]"
-              : userBidStatus === "Accepted"
+              : computedStatus === "Accepted"
               ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
                   border && "border border-[#29C084]"
                 }`
-              : userBidStatus === "Rejected"
+              : computedStatus === "Rejected"
               ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
                   border && "border border-[#D20000]"
                 }`
-              : lcData?.status === "Expired"
+              : computedStatus === "Expired"
               ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
                   border &&
                   "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
                 }`
-              : lcData?.status === "Add bid" && !isBank
+              : computedStatus === "Add bid" && !isBank
               ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
-              : lcData?.status === "Add bid" && isBank
+              : computedStatus === "Add bid" && isBank
               ? "bg-[#1A1A26] text-white text-sm"
               : isNotification
               ? "bg-[#2F3031] text-white hover:bg-[#2F3031] hover:text-white"
@@ -258,7 +258,7 @@ export const AddBid = ({
         >
           {computedStatus === "Expired"
             ? "Not Applicable"
-            : computedStatus || triggerTitle || "Pending"}
+            : computedStatus || triggerTitle}
         </DialogTrigger>
       )}
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">

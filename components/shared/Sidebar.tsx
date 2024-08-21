@@ -435,7 +435,7 @@ export const Sidebar = ({
       stopLoading();
     } else {
       startLoading();
-      const { data } = await fetchLcs({ userId: user?.business?._id, limit: 1000 });
+      const { data } = await fetchLcs({ userId: user?.business?._id, limit: 1000,draft: false});
       if (data.length > 0) {
         isCSV && generateCSV(data);
         isPDF && generatePDF(data);

@@ -126,20 +126,14 @@ const ConfirmationPage = () => {
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
     const issueBankChange = data.issuingBanks;
-    const currentDate = new Date();
-    const futureDate = new Date(
-      currentDate.setDate(currentDate.getDate() + days)
-    );
-
     let extraInfoObj;
     if (
       data.paymentTerms &&
       data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
-      extraInfoObj = { days: futureDate, other: data.extraInfo.other };
+      extraInfoObj = { days,other: data.extraInfo.other };
     }
-
     let reqData;
     const baseData = {
       issuingBanks: issueBankChange,
@@ -199,6 +193,7 @@ const ConfirmationPage = () => {
         const lcEndDateString = data.period?.endDate;
         const expectedDateString = data?.expectedConfirmationDate;
         const lcStartDate = lcStartDateString
+
           ? new Date(lcStartDateString)
           : null;
         const lcEndDate = lcEndDateString ? new Date(lcEndDateString) : null;
@@ -230,6 +225,8 @@ const ConfirmationPage = () => {
             ...baseData,
           };
 
+          console.log("reqData", reqData);
+          
           const { response, success } = confirmationData?._id
             ? await onUpdateLC({
                 payload: reqData,

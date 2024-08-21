@@ -116,6 +116,8 @@ export const Step2 = ({
 
   useEffect(() => {
     // Update extraInfo in the form state when `days` or `otherValue` changes
+    console.log("days", days, "otherValue", otherValue);
+    
     setValue("extraInfo", { days, other: otherValue });
   }, [days, otherValue]);
 

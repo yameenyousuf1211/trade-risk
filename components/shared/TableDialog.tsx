@@ -472,7 +472,7 @@ export const TableDialog = ({
                 <div className="px-4  bg-[#F5F7F9]">
                   <LCInfo
                     label="LC Issuing Bank"
-                    value={(lcData && lcData.issuingBanks[0]?.bank) || ""}
+                    value={(lcData && lcData.issuingBanks?.bank) || ""}
                   />
                   <LCInfo
                     label="LC Applicant"

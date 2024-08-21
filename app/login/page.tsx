@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useAuth } from "@/context/AuthProvider";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { CircleCheckIcon, CircleX, Eye, EyeOff } from "lucide-react";
 import { registerGCMToken } from "@/services/apis/notifications.api";
 import {
   arrayBufferToBase64,
@@ -40,9 +40,8 @@ export default function LoginPage() {
   );
 
   const registerServiceWorker = async () => {
-    const register = await navigator.serviceWorker.register(
-      "/service-worker.js"
-    );
+    const register =
+      await navigator.serviceWorker.register("/service-worker.js");
     const registrationReady = await navigator.serviceWorker.ready;
     // console.log(registrationReady)
     const subscription = await register.pushManager.subscribe({
@@ -85,7 +84,18 @@ export default function LoginPage() {
         }
       }
       setUser(response.data.user);
-      toast.success("Login successfully");
+      const toastId = toast.success(
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center">
+            <CircleCheckIcon className="mr-2 size-5" />
+            <h1 className="text-[1rem]">You have logged in successfully!</h1>
+          </div>
+          <CircleX
+            className="ml-2 size-5 hover:cursor-pointer"
+            onClick={() => toast.dismiss(toastId)}
+          />
+        </div>
+      );
       router.push(response.data.user.type === "corporate" ? "/" : "/dashboard");
     } else return toast.error(response as string);
   };

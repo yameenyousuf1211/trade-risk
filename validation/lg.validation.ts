@@ -1,3 +1,4 @@
+import { LG } from "@/utils";
 import * as Yup from "yup";
 
 const bondSchema = Yup.object()
@@ -25,7 +26,7 @@ const bondSchema = Yup.object()
     draft: Yup.string().nullable(),
   })
   // SuperRefine equivalent
-  .test("contract-logic", null, function (input) {
+  .test("contract-logic", "", function (input) {
     if (input.Contract === true) {
       // Add any conditional validations here
       // For example, uncommenting the lines below would make these fields required when Contract is true
@@ -119,13 +120,13 @@ export const lgValidator = Yup.object()
     physicalLgCountry: Yup.string().nullable(),
     physicalLgSwiftCode: Yup.string().nullable(),
   })
-  .test("beneficiaryBanksDetails-required", null, function (input) {
+  .test("beneficiaryBanksDetails-required", "", function (input) {
     if (input.type === LG.reIssuanceInAnotherCountry) {
       return input.beneficiaryBanksDetails !== undefined;
     }
     return true;
   })
-  .test("issueLgWithStandardText-required", null, function (input) {
+  .test("issueLgWithStandardText-required", "", function (input) {
     if (input.type === LG.cashMargin) {
       return input.issueLgWithStandardText !== undefined;
     }

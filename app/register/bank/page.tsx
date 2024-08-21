@@ -57,7 +57,7 @@ const BankRegisterPage = () => {
       fcmTokens: ["adflskjdfklsdjfkldsj"],
       businessData: {
         name: data?.name,
-        // pocName: data?.pocName,
+        pocName: data?.pocName,
         email: data?.email,
         type: data?.role,
         address: data?.address,

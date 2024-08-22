@@ -57,10 +57,7 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
     router.push(`${pathname}?${queryString}`, { scroll: false });
   };
 
-  console.log(data);
-    if(isLoading){
-    return <div>Loading...</div>
-    }
+   
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">

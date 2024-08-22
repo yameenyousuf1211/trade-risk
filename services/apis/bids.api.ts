@@ -134,7 +134,7 @@ export const fetchCorporateBids = async ({
 }) => {
   try {
     const { data } = await api.get(
-      `/bids?limit=${limit || 7}&page=${page || 1}&filter=${
+      `/bids?limit=${limit || 7}&page=${page || 1}&type=${
         (filter && encodeURIComponent(filter)) || ""
       }&search=${search || ""}&corporateBusinessId=${userId}`
     );
@@ -158,7 +158,9 @@ export const getBidsCount = async () => {
 export const getTotalRequests = async () => {
   try {
     const { data } = await api.get(`/lcs/total-request/list`);
-    return data.data.data;
+    console.log("total-requests",data );
+    
+    return data.data;
   } catch (error: any) {
     console.log(error);
     return error.response?.data?.message || "Something went wrong";

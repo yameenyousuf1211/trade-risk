@@ -285,3 +285,7 @@ input[type="checkbox"]:checked::after {
 textarea{
   resize: none; /*remove the resize handle on the bottom right*/
 }
+
+.uppercase-input {
+  text-transform: uppercase;
+}

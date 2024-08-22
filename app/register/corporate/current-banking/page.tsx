@@ -27,11 +27,13 @@ import { useQuery } from "@tanstack/react-query";
 import useLoading from "@/hooks/useLoading";
 import { Country } from "@/types/type";
 import { bankCountries } from "@/utils/data";
+import { Input } from "@/components/ui/input";
 
 interface Bank {
   country: string;
   name: string;
   city: string;
+  swiftCode: string
 }
 
 const CurrentBankingPage = () => {
@@ -68,6 +70,9 @@ const CurrentBankingPage = () => {
 
   const [bankOpen, setBankOpen] = useState(false);
   const [bankVal, setBankVal] = useState("");
+
+  const [swiftCodeOpen, setSwiftCodeOpen] = useState(false);
+  const [swiftCodeVal, setSwiftCodeVal] = useState("");
 
   const [allCountries, setAllCountries] = useState<Country[]>(bankCountries);
   const [countries, setCountries] = useState<string[]>([]);
@@ -133,11 +138,13 @@ const CurrentBankingPage = () => {
     if (!countryVal) return toast.error("Please select a country");
     if (!bankVal) return toast.error("Please select a bank");
     if (!cityVal) return toast.error("Please select a city");
+    if (!swiftCodeVal) return toast.error("Please enter a swift code");
 
     const newBank: Bank = {
       country: countryVal,
       name: bankVal,
       city: cityVal,
+      swiftCode: swiftCodeVal,
     };
     setAllBanks((prevBanks) => ({
       ...prevBanks,
@@ -147,6 +154,7 @@ const CurrentBankingPage = () => {
     setCountryVal("");
     setBankVal("");
     setCityVal("");
+    setSwiftCodeVal("");
   };
 
   const handleBankDelete = (country: string, index: number) => {
@@ -193,10 +201,11 @@ const CurrentBankingPage = () => {
             originalData.productInfo.annualValueImports
           ),
         },
-        currentBanks: originalData.currentBanks.map((bank) => ({
+        currentBanks: originalData.currentBanks.map((bank:Bank) => ({
           name: bank.name,
           country: bank.country,
           city: bank.city,
+          swiftCode: bank.swiftCode
         })),
         bank: originalData.bank,
         commercialRegistrationNumber: originalData.crNumber,
@@ -249,7 +258,7 @@ const CurrentBankingPage = () => {
 
     reqData = convertBusinessData(reqData);
 
-    console.log("🚀 ~ handleSubmit ~ reqData:", reqData);
+    // console.log("🚀 ~ handleSubmit ~ reqData:", reqData);
     const { response, success } = await onRegister(reqData);
     console.log("Email = ", response?.data?.email);
     console.log("Password = ", response?.data?.password);
@@ -288,9 +297,9 @@ const CurrentBankingPage = () => {
                   <span className="truncate w-full text-left">
                     {countryVal
                       ? countries?.find(
-                          (country: string) =>
-                            country.toLowerCase() === countryVal.toLowerCase()
-                        )
+                        (country: string) =>
+                          country.toLowerCase() === countryVal.toLowerCase()
+                      )
                       : "Select country*"}
                   </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -341,9 +350,9 @@ const CurrentBankingPage = () => {
                   <span className="truncate w-full text-left">
                     {bankVal
                       ? banks?.response.find(
-                          (bank: string) =>
-                            bank.toLowerCase() === bankVal.toLowerCase()
-                        )
+                        (bank: string) =>
+                          bank.toLowerCase() === bankVal.toLowerCase()
+                      )
                       : "Select bank*"}
                   </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -401,8 +410,8 @@ const CurrentBankingPage = () => {
                     {cityVal
                       ? cityVal
                       : countryVal
-                      ? "Select city*"
-                      : "Select city*"}
+                        ? "Select city*"
+                        : "Select city*"}
                   </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -444,18 +453,27 @@ const CurrentBankingPage = () => {
               </PopoverContent>
             </Popover>
 
+            {/* swift code */}
+            <input
+              value={swiftCodeVal}
+              disabled={countryVal === "" || bankVal === "" || cityVal === ""}
+              onChange={(e) => setSwiftCodeVal(e.target.value.toUpperCase())}
+              placeholder="Add Swift Code"
+              className="border p-2 w-[230px] rounded-md  placeholder:text-sm py-3 capitalize text-sm uppercase-input px-3"
+            />
+
             <Button
               variant="ghost"
               type="button"
               onClick={handleBankAdd}
-              className="bg-[#F5F7F9] text-center font-semibold text-[16px] mt-4 py-5"
+              className="bg-[#F5F7F9] text-center font-semibold text-[16px] mt-2 py-6 w-[230px]"
             >
               Add Bank
             </Button>
           </div>
 
           {/* Selected Details */}
-          <div className="font-roboto col-span-2 border border-borderCol rounded-md h-64 overflow-y-auto w-full grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-3">
+          <div className="font-roboto col-span-2 border border-borderCol rounded-md h-80 overflow-y-auto w-full grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-3">
             {Object.keys(allBanks)
               .filter((country) => country !== "Pakistan")
               .map((country) => (

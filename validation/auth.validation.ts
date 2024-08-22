@@ -69,14 +69,10 @@ const pointOfContractSchema = Yup.object().shape({
     .email("*Must be a valid email."),
   pocPhone: Yup.string()
     .required("*POC phone is required")
-    .min(4, "*POC Phone number is required")
-    .matches(/^\d+(\.\d+)?$/, "*Enter a valid number"),
+    .min(4, "*POC Phone number is required"),
   pocName: Yup.string()
     .required("*POC name is required")
     .min(1, "*Poc name field cannot be empty."),
-  poc: Yup.string()
-    .required("*Poc field cannot be empty.")
-    .min(1, "*Poc field cannot be empty."),
   pocDesignation: Yup.string()
     .required("*POC designation field cannot be empty.")
     .min(1, "*Poc designation field cannot be empty."),

@@ -70,3 +70,21 @@ export const logoutUser = async () => {
     };
   }
 };
+
+export const phoneVerification = async (payload: string) => {
+  try {
+    const { data } = await api.post("/auth/phone-verification", {
+      phoneNo: payload,
+    });
+
+    return {
+      success: true,
+      response: data,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      response: error?.response?.data?.message || "Something went wrong",
+    };
+  }
+}

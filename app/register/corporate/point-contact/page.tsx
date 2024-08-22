@@ -7,12 +7,12 @@ import Link from "next/link";
 import { Paperclip, X } from "lucide-react";
 import useRegisterStore from "@/store/register.store";
 import { useEffect, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { pointOfContractSchema } from "@/validation";
-import { z } from "zod";
-import { TelephoneInput } from "@/components/helpers";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { phoneVerification } from "@/services/apis";
+import { toast } from "sonner";
 
 const PointContactPage = () => {
   const router = useRouter();
@@ -51,27 +51,35 @@ const PointContactPage = () => {
   useEffect(() => {
     if (contactData) {
       setAllowSubmit(true);
-    } else if (isValid && isDirty) {
+    } else if (isValid  && pdfFile) {
       setAllowSubmit(true);
     } else {
-      (!isValid || !isDirty) && setAllowSubmit(false);
+      setAllowSubmit(false);
     }
-    if (!pdfFile) setAllowSubmit(false);
   }, [errors, isValid, isDirty, contactData, pdfFile]);
 
   const onSubmit: SubmitHandler<typeof pointOfContractSchema> = async (
     data: any
   ) => {
-    if (!pdfFile) return setPdfError(true);
+    if (!pdfFile) {
+      setPdfError(true);
+      return;
+    }
+    const {success} = await phoneVerification(data.pocPhone);
+
+    if(!success){
+      toast.error("Invalid phone number");
+      return;
+    }
+
     setValues(data);
 
     localStorage.setItem("contactData", JSON.stringify(data));
     router.push("/register/corporate/current-banking");
   };
+
   const [phoneInput, setPhoneInput] = useState<string>("");
   let phone = getValues("pocPhone");
-
-  useEffect(() => {}, [phoneInput]);
 
   return (
     <CorporateStepLayout
@@ -83,18 +91,33 @@ const PointContactPage = () => {
         className="max-w-2xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-6"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="w-full relative">
-          <FloatingInput
-            register={register}
-            type="text"
-            name="pocName"
-            placeholder="Authorized Point of Contact"
-          />
-          {errors.pocName && (
-            <span className="mt-1 absolute text-[11px] text-red-500">
-              {errors.pocName.message}
-            </span>
-          )}
+         <div className="flex items-center gap-x-2">
+           <div className="w-full relative">
+            <FloatingInput
+              register={register}
+              type="text"
+              name="pocName"
+              placeholder="Authorized Point of Contact"
+            />
+            {errors.pocName && (
+              <span className="mt-1 absolute text-[11px] text-red-500">
+                {errors.pocName.message}
+              </span>
+            )}
+           </div>
+           <div className="w-full relative">
+            <FloatingInput
+              type="text"
+              name="pocDesignation"
+              placeholder="POC Designation"
+              register={register}
+            />
+            {errors.pocDesignation && (
+              <span className="mt-1 absolute text-[11px] text-red-500">
+                {errors.pocDesignation.message}
+              </span>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-x-2">
           <div className="w-full relative">
@@ -111,54 +134,32 @@ const PointContactPage = () => {
             )}
           </div>
           <div className="w-full relative">
-            <TelephoneInput
+          <label
+            id="beneficiaryDetails.address"
+            className="border  w-full  rounded-md  flex items-center justify-between bg-white"
+          >
+            <p className=" text-sm pl-2  font-roboto text-gray-400 ">Phone Number</p>
+            <PhoneInput
+              value={phoneInput}
+              isOnBoarding={true}
+              className=""
               name="pocPhone"
-              placeholder="pocPhone"
-              setValue={setValue}
-              setPhoneInput={setPhoneInput}
-              trigger={trigger}
-              value={(contactData && JSON.parse(contactData).pocPhone) || ""}
+              onChange={(value) => {
+                setValue('pocPhone', value);
+                trigger('pocPhone');
+                setPhoneInput(value);
+              }}
             />
-            {(phone === "" || phone === undefined) && errors.pocPhone && (
+          </label>
+          {errors.pocPhone && (
               <span className="mt-1 absolute text-[11px] text-red-500">
                 {errors.pocPhone.message}
               </span>
             )}
-          </div>
         </div>
-
-        <div className="h-[2px] w-full bg-borderCol/80" />
-
-        <div className="flex items-center gap-x-2">
-          <div className="w-full relative">
-            <FloatingInput
-              type="text"
-              name="poc"
-              placeholder="Authorized User"
-              register={register}
-            />
-            {errors.poc && (
-              <span className="mt-1 absolute text-[11px] text-red-500">
-                {errors.poc.message}
-              </span>
-            )}
-          </div>
-          <div className="w-full relative">
-            <FloatingInput
-              type="text"
-              name="pocDesignation"
-              placeholder="POC Designation"
-              register={register}
-            />
-            {errors.pocDesignation && (
-              <span className="mt-1 absolute text-[11px] text-red-500">
-                {errors.pocDesignation.message}
-              </span>
-            )}
-          </div>
+        
         </div>
-
-        <div className="w-full font-roboto">
+        <div className="w-full font-roboto relative">
           <label
             htmlFor="pdf-file"
             className="flex items-center justify-between border border-borderCol py-4 rounded-md px-4 cursor-pointer"
@@ -187,7 +188,7 @@ const PointContactPage = () => {
             onChange={(e) => setPdfFile(e.target.files?.[0])}
           />
           {(Object.keys(errors).length > 0 || pdfError) && !pdfFile && (
-            <span className="text-[11px] text-red-500">
+            <span className=" mt-1 absolute text-[11px] text-red-500">
               Please select a file
             </span>
           )}
@@ -197,7 +198,7 @@ const PointContactPage = () => {
           <Button
             className="disabled:bg-borderCol disabled:text-[#9f9faf] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
             size="lg"
-            disabled={!isValid}
+            disabled={!allowSubmit}
           >
             Continue
           </Button>

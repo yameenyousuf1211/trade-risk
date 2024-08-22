@@ -36,7 +36,7 @@ export const onRegister = async (payload: IRegisterFields | any) => {
     return { success: true, response: response.data };
   } catch (error) {
     console.error(error);
-    return { success: false, response: (error as any).response.data.message };
+    return { success: false, response: (error as any).response?.data?.message };
   }
 };
 

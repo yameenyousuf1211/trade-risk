@@ -114,6 +114,7 @@ export const ProgressCharts = ({
     queryFn: () => (isBank ? getBidsCount() : getTotalRequests()),
   });
 
+
   const [accepted, setAccepted] = useState(0);
   const [rejected, setRejected] = useState(0);
   const [expired, setExpired] = useState(0);
@@ -121,7 +122,10 @@ export const ProgressCharts = ({
   const [maxValue, setMaxValue] = useState(0);
 
   useEffect(() => {
+    console.log("USEEFFECT DATA",data);
+    
     if (data && data.length > 0) {
+      
       const statusCounts = {
         Accepted: 0,
         Rejected: 0,
@@ -132,7 +136,7 @@ export const ProgressCharts = ({
       if (data && Array.isArray(data))
         data?.forEach((item: Count) => {
           // @ts-ignore
-          if (isBank) statusCounts[item.count] = item.count;
+          if (isBank) statusCounts[item.status] = item.count;
           // @ts-ignore
           else statusCounts[item.status] = item.count;
         });
@@ -152,6 +156,11 @@ export const ProgressCharts = ({
     }
   }, [data]);
 
+  console.log("Accepted", accepted);
+  console.log("Rejected", rejected);
+  console.log("Expired", expired);
+  console.log("Pending", pending);
+  
   return (
     <div
       className={`bg-[white] ${

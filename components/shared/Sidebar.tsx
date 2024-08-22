@@ -99,7 +99,6 @@ const RequestCard = ({
   riskType?: string;
   data: ILcs | IRisk;
 }) => {
-  console.log("🚀 ~ data:", data);
   const { user } = useAuth();
 
   const bidsExist = Array.isArray(data?.bids);

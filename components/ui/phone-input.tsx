@@ -31,7 +31,7 @@ type PhoneInputProps = Omit<
 
 const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
   React.forwardRef<React.ElementRef<typeof RPNInput.default>, PhoneInputProps>(
-    ({ className, onChange, ...props }, ref) => {
+    ({ className, onChange,  ...props }, ref) => { // Default isOnBoarding to false
       const [country, setCountry] = React.useState<RPNInput.Country>("PK"); // Default country set to Pakistan
 
       return (
@@ -39,17 +39,7 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
           ref={ref}
           className={cn("flex", className)}
           flagComponent={FlagComponent}
-          country={country} // Set the country explicitly
-          countrySelectComponent={({ value, onChange, options }) => (
-            <CountrySelect
-              value={country}
-              onChange={(selectedCountry) => {
-                setCountry(selectedCountry);
-                onChange?.(selectedCountry);
-              }}
-              options={options}
-            />
-          )}
+          countrySelectComponent={CountrySelect}
           inputComponent={InputComponent}
           onChange={(value) => onChange?.(value || ("" as RPNInput.Value))}
           {...props}
@@ -59,11 +49,11 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
   );
 PhoneInput.displayName = "PhoneInput";
 
-const InputComponent = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, value, onChange, ...props }, ref) => (
-    <div className="mx-1 flex-1">
+const InputComponent = React.forwardRef<HTMLInputElement, InputProps & { isOnBoarding?: boolean }>(
+  ({ className, value, onChange, isOnBoarding = false, ...props }, ref) => (
+    <div className={`mx-1 flex-1 ${isOnBoarding ? 'mt-1' : ''}`}>
       <input
-        placeholder="Enter Number"
+        placeholder={isOnBoarding ? 'Number' : 'Enter Number'}
         value={(value as string)?.replace(/^\+/, "")} // Remove "+" sign in the input
         onChange={(e) => {
           const sanitizedValue = e.target.value.replace(/^\+/, "");
@@ -75,7 +65,11 @@ const InputComponent = React.forwardRef<HTMLInputElement, InputProps>(
             },
           });
         }}
-        className={cn("p-2 border border-[#E2E2EA] rounded-lg", className)}
+        className={cn(
+          "border border-[#E2E2EA] rounded-lg",
+          isOnBoarding ? "py-1 w-24 text-sm placeholder:px-2 placeholder:text-sm" : "p-2", // Conditional styling based on isOnBoarding
+          className
+        )}
         {...props}
         ref={ref}
       />
@@ -87,11 +81,13 @@ InputComponent.displayName = "InputComponent";
 const CountrySelect = ({
   disabled,
   value,
+  isOnBoarding = true,
   onChange,
   options,
 }: {
   disabled?: boolean;
   value: RPNInput.Country;
+  isOnBoarding?: boolean;
   onChange: (value: RPNInput.Country) => void;
   options: { label: string; value: RPNInput.Country }[];
 }) => {
@@ -108,16 +104,17 @@ const CountrySelect = ({
         <Button
           type="button"
           variant={"outline"}
-          className={cn("flex gap-4  bg-[#F1F1F5]")}
+          className={cn("flex gap-4 bg-[#F1F1F5]", isOnBoarding ? 'py-1 h-8 p-0 rounded-none my-1 gap-0' : 'p-2')}
           disabled={disabled}
         >
-          <span className="flex items-center">
-            {(value && RPNInput.getCountryCallingCode(value)) || "+1"}
+          <span className={`flex items-center ${isOnBoarding ? 'text-xs mx-1' : ''}`}>
+            {(value && `+${RPNInput.getCountryCallingCode(value)}`) || "+1"}
           </span>
           <LucideChevronDown
             className={cn(
-              "-mr-2 h-4 w-4 opacity-50",
-              disabled ? "hidden" : "opacity-100"
+              "h-4 w-4 opacity-50",
+              disabled ? "hidden" : "opacity-100",
+              isOnBoarding ? 'h-3 w-3 mr-1' : '-mr-2'
             )}
           />
         </Button>

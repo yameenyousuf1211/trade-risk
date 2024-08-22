@@ -2,8 +2,19 @@
 import {
   CountrySelect,
   DisclaimerDialog,
-  TelephoneInput,
 } from "@/components/helpers";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { FloatingInput } from "@/components/helpers/FloatingInput";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { Button } from "@/components/ui/button";
@@ -11,13 +22,17 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { onRegister } from "@/services/apis";
 import { bankSchema } from "@/validation";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Check } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { getBanks } from "@/services/apis/helpers.api";
+import { bankCountries } from "@/utils/data";
+import { cn } from "@/utils";
 
 const CheckBoxInput = ({ label, id }: { label: string; id: string }) => {
   return (
@@ -33,11 +48,13 @@ const CheckBoxInput = ({ label, id }: { label: string; id: string }) => {
 const BankRegisterPage = () => {
   const router = useRouter();
   const [allowSubmit, setAllowSubmit] = useState(false);
-
+  const [countryOpen, setCountryOpen] = useState(false);
+  const [bankOpen, setBankOpen] = useState(false);
   const {
     register,
     setValue,
     handleSubmit,
+    watch,
     formState: { errors, isDirty, isValid },
     trigger,
   } = useForm({
@@ -45,21 +62,23 @@ const BankRegisterPage = () => {
     mode: "all",
   });
 
+  const accountCountry = watch("accountCountry");
+  const bankVal = watch("bank");
   const onSubmit: SubmitHandler<typeof bankSchema> = async (data) => {
     if (!procceed)
       return toast.error("Please view and sign the agreement first");
 
     const reqData = {
-      name: data?.name,
+      name: data?.pocName,
       email: data?.email,
       type: "bank",
       role: "admin",
       fcmTokens: ["adflskjdfklsdjfkldsj"],
       businessData: {
-        name: data?.name,
+        name: data?.pocName,
         pocName: data?.pocName,
         email: data?.email,
-        type: data?.role,
+        type: data?.type,
         address: data?.address,
         swiftCode: data?.swiftCode,
         pocEmail: data?.pocEmail,
@@ -84,10 +103,17 @@ const BankRegisterPage = () => {
     }
   };
 
-  const [isoCode, setIsoCode] = useState("");
   const [procceed, setProceed] = useState(false);
   const [procceedErr, setProceedErr] = useState(false);
   const [phoneInput, setPhoneInput] = useState<string>("");
+
+  const countryNames = bankCountries.map((country) => country.name);
+
+  const { data: banks, isLoading: banksLoading } = useQuery({
+    queryKey: ["banks", accountCountry],
+    queryFn: () => getBanks(accountCountry),
+    enabled: !!accountCountry,
+  });
 
   useEffect(() => {
     if (isValid && isDirty) setAllowSubmit(true);
@@ -108,17 +134,60 @@ const BankRegisterPage = () => {
           bank.
         </p>
         <form
-          className="max-w-[800px] mx-auto w-full shadow-md bg-white rounded-xl xs:p-8 max-xs:py-8 max-xs:px-4 z-10 mt-5 flex flex-col sm:gap-y-6 gap-y-3"
+          className="max-w-[800px] mx-auto w-full shadow-md bg-white rounded-xl xs:p-8 max-xs:py-8 max-xs:px-4 z-10 mt-3 flex flex-col sm:gap-y-[22px] gap-y-2"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="flex items-center gap-x-2 w-full max-sm:flex-col max-sm:gap-y-3">
             <div className="w-full relative">
-              <CountrySelect
-                setIsoCode={setIsoCode}
-                setValue={setValue}
-                name="accountCountry"
-                placeholder="Bank Country"
-              />
+              <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    aria-expanded={countryOpen}
+                    role="combobox"
+                    className={`capitalize font-roboto w-full justify-between py-6 font-normal text-sm ${accountCountry ? "text-lightGray" : "text-gray-400"
+                      } `}
+                  >
+                    {accountCountry
+                      ? countryNames?.find(
+                        (country) =>
+                          country.toLowerCase() === accountCountry.toLowerCase()
+                      )
+                      : "Bank Country"}
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command className="font-roboto">
+                    <CommandInput placeholder="Search country..." />
+                    <CommandEmpty>No country found.</CommandEmpty>
+                    <CommandGroup className="max-h-[300px] overflow-y-auto">
+                      {countryNames &&
+                        countryNames.length > 0 &&
+                        countryNames.map((country, idx) => (
+                          <CommandItem
+                            key={country}
+                            value={country}
+                            onSelect={(currentValue) => {
+                              setCountryOpen(false); // Close the dropdown
+                              setValue('accountCountry', currentValue, { shouldValidate: true });
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                country.toLowerCase() === accountCountry?.toLowerCase()
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {country}
+                          </CommandItem>
+                        ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               {errors.accountCountry && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.accountCountry.message}
@@ -127,11 +196,49 @@ const BankRegisterPage = () => {
             </div>
 
             <div className="w-full relative">
-              <FloatingInput
-                name="name"
-                placeholder="Bank Name"
-                register={register}
-              />
+              <Popover onOpenChange={setBankOpen} open={bankOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    disabled={!accountCountry}
+                    className="capitalize font-roboto w-full justify-between truncate  py-6"
+                  >
+                    <span className="truncate w-full text-left">
+                      {bankVal
+                        ? banks?.response.find(
+                          (bank: string) =>
+                            bank.toLowerCase() === bankVal.toLowerCase()
+                        )
+                        : "Bank Name"}
+                    </span>
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[230px] p-0">
+                  <Command className="font-roboto">
+                    <CommandInput placeholder="Search bank..." />
+                    <CommandEmpty>No bank found.</CommandEmpty>
+                    <CommandGroup className="max-h-[300px] overflow-y-auto">
+                      {!banksLoading &&
+                        banks &&
+                        banks.success &&
+                        banks?.response.map((bank: string) => (
+                          <CommandItem
+                            key={bank}
+                            value={bank}
+                            onSelect={(currentValue) => {
+                              setBankOpen(false);
+                              setValue("bank", currentValue);
+                            }}
+                          >
+                            {bank}
+                          </CommandItem>
+                        ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               {errors.name && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.name.message}
@@ -250,7 +357,7 @@ const BankRegisterPage = () => {
           </p>
 
           {/* Checkboxes */}
-          <div className="bg-[#F5F7F9] grid sm:grid-cols-2 grid-cols-1 gap-x-2 gap-y-3 p-2 rounded-lg border border-borderCol">
+          <div className="bg-[#F5F7F9] grid sm:grid-cols-2 grid-cols-1 gap-x-2 gap-y-1 p-2 rounded-lg border border-borderCol">
             <CheckBoxInput
               label="Confirmation of LCs"
               id="confirmation-of-lcs"

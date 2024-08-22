@@ -94,10 +94,7 @@ const productsInfoSchema = Yup.object().shape({
 });
 
 const bankSchema = Yup.object().shape({
-  role: Yup.string().default("bank"),
-  name: Yup.string()
-    .required("*Bank name is required")
-    .min(1, "*Bank name is required"),
+  type: Yup.string().default("bank"),
   pocName: Yup.string()
     .required("*Authorized Point of Contact Name is required")
     .min(1, "*Authorized Point of Contact Name is required"),
@@ -108,9 +105,9 @@ const bankSchema = Yup.object().shape({
   accountCountry: Yup.string().required("*Select a country"),
   pocPhone: Yup.string()
     .required("*POC Phone number is required")
-    .min(4, "*POC Phone number is required")
-    .matches(/^\d+(\.\d+)?$/, "*Enter a valid number"),
+    .min(4, "*POC Phone number is required"),
   address: Yup.string().required("*Bank address is required"),
+  bank: Yup.string(),
   swiftCode: Yup.string()
     .min(8, "at least 8 characters long.")
     .max(11, "must be less than 11 characters."),

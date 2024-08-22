@@ -224,6 +224,7 @@ const ConfirmationPage = () => {
           reqData = {
             ...rest,
             ...baseData,
+            draft: false,
           };
 
           

@@ -37,7 +37,7 @@ export const UserProfile = () => {
       }),
   });
 
-  console.log("Profile Data: ", user);
+  // console.log("Profile Data: ", user);
 
   return (
     <div className="flex items-center gap-x-4">

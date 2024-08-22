@@ -136,7 +136,7 @@ export const fetchCorporateBids = async ({
     const { data } = await api.get(
       `/bids?limit=${limit || 7}&page=${page || 1}&filter=${
         (filter && encodeURIComponent(filter)) || ""
-      }&search=${search || ""}&lcOwner=${userId}`
+      }&search=${search || ""}&corporateBusinessId=${userId}`
     );
     return data.data;
   } catch (error: any) {

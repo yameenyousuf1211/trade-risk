@@ -27,6 +27,8 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
 
   const pathname = usePathname();
   const { user } = useAuth();
+
+  
   const {
     isLoading,
     data,
@@ -37,7 +39,6 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
     queryKey: ["fetch-my-bids", page, limit, filter, search],
     queryFn: () =>
       fetchCorporateBids({ page, limit, filter, search, userId: user?.business?._id }),
-    enabled: !!user,
   });
 
   if (user && user.type !== "corporate") {
@@ -56,6 +57,10 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
     router.push(`${pathname}?${queryString}`, { scroll: false });
   };
 
+  console.log(data);
+    if(isLoading){
+    return <div>Loading...</div>
+    }
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">
@@ -102,7 +107,7 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
           </div>
         </div>
         <div className="w-[20vw] max-w-[300p x] sticky top-10 h-[80vh]">
-          <Sidebar isBank={false} />
+          {/* <Sidebar isBank={false} /> */}
         </div>
       </div>
     </DashboardLayout>

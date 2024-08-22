@@ -130,9 +130,10 @@ export const Period = ({
 
   const handleRadioChange = (e: any) => {
     setValue("period.expectedDate", e.target.value);
+    setValue("period.startDate", null);
+    setValue("period.endDate", null);
     // Reset LC Expiry Date when LC Issued Date or Expected Date changes
     setEndDate(null);
-    setValue("period.endDate", null);
   };
 
   const updateValue = (name: string, value: any) => {
@@ -141,17 +142,22 @@ export const Period = ({
 
   const handleExpiryDateSelect = (date: Date) => {
     const today = new Date();
-    if (date.toDateString() === today.toDateString()) {
-      return toast.error("LC Expiry Date cannot be today's date");
+    today.setHours(0, 0, 0, 0); // Reset time to avoid issues with time comparison
+    const lcStartDateMidnight = lcStartDate ? new Date(lcStartDate) : null;
+    lcStartDateMidnight?.setHours(0, 0, 0, 0); // Reset lcStartDate time for comparison
+
+    if (date < today) {
+      return toast.error("LC Expiry Date cannot be in the past or today's date");
     }
-    if (lcStartDate && date <= lcStartDate) {
+    if (lcStartDate && lcStartDateMidnight && date <= lcStartDateMidnight) {
       return toast.error(
         "LC Expiry Date must be at least one day after the LC Issuance date"
       );
     }
     setEndDate(date);
     updateValue("period.endDate", date);
-  };
+  
+};
 
   return (
     <div className="flex items-start gap-x-4 my-5 h-full">
@@ -219,12 +225,13 @@ export const Period = ({
                 onChange={(date) => {
                   updateValue("period.startDate", date);
                   setStartDate(date);
+
                   // Reset LC Expiry Date when LC Start Date changes
                   setEndDate(null);
                   setValue("period.endDate", null);
                 }}
                 onClose={() => setDatePopoverOpen(false)}
-                isPast
+                isPast={lcPeriodType === "yes"}
               />
             </PopoverContent>
           </Popover>
@@ -254,6 +261,7 @@ export const Period = ({
                 isEndDate={true}
                 startDate={startDate}
                 initialDate={lcEndDate}
+
                 onChange={handleExpiryDateSelect}
                 onClose={() => setIsPopoverOpen(false)}
               />

@@ -120,7 +120,6 @@ const CreateRequestPage = () => {
     if (data.period?.startDate > data.period?.endDate)
       return toast.error("LC Issuance date cannot be greater than expiry date");
 
-    const currentDate = new Date();
 
     let extraInfoObj;
     if (
@@ -128,7 +127,7 @@ const CreateRequestPage = () => {
       data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
-      extraInfoObj = { days: days, other: data.extraInfo };
+      extraInfoObj = { days: days, other: data.extraInfo.otherValue };
     }
 
     let reqData;
@@ -146,6 +145,8 @@ const CreateRequestPage = () => {
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
 
+    if(baseData.issuingBanks[0]._id) delete baseData.issuingBanks[0]._id
+    
     try {
       setLoader(true); // Start the loader
       startLoading(); // Start the general loading state
@@ -164,7 +165,7 @@ const CreateRequestPage = () => {
         reqData = {
           ...rest,
           ...baseData,
-          draft: true,
+          draft: "true",
         };
 
         const { response, success } = confirmationData?._id
@@ -206,7 +207,6 @@ const CreateRequestPage = () => {
           expectedConfirmationDate,
         };
 
-        console.log(preparedData.extraInfo, "pipiipi");
         try {
           const validatedData = await confirmationSchema.validate(
             preparedData,
@@ -222,7 +222,7 @@ const CreateRequestPage = () => {
               ...baseData,
               draft: false,
             };
-
+           
             const { response, success } = confirmationData?._id
               ? await onUpdateLC({
                   payload: reqData,

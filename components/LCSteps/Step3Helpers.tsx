@@ -163,7 +163,8 @@ export const Period = ({
 
     setEndDate(date);
     updateValue("period.endDate", date);
-  };
+  
+};
 
   useEffect(() => {
     if (lcPeriodType === "yes") {

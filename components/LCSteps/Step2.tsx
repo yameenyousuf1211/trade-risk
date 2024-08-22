@@ -121,6 +121,8 @@ export const Step2 = ({
 
   console.log("extraInfo", extraInfo);
 
+  console.log("extraInfo", extraInfo);
+  
   return (
     <div
       id="step2"
@@ -219,7 +221,7 @@ export const Step2 = ({
           />
         </div>
         {/* Days input */}
-        {paymentTerms && paymentTerms !== "Sight LC" && (
+        {paymentTerms && paymentTerms == "Usance LC" && (
           <>
             <div className="my-3 ml-2 flex items-center gap-x-2">
               <div className="flex items-center border-b-2 border-black">

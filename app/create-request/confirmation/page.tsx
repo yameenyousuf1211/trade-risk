@@ -215,6 +215,7 @@ const ConfirmationPage = () => {
           preparedData,
           {
             abortEarly: false,
+            stripUnknown: true,
           }
         );
 
@@ -225,7 +226,6 @@ const ConfirmationPage = () => {
             ...baseData,
           };
 
-          console.log("reqData", reqData);
           
           const { response, success } = confirmationData?._id
             ? await onUpdateLC({

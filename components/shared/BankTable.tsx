@@ -101,7 +101,7 @@ export const BankTable = ({
         (item) =>
           (item as IBids)?.lcInfo?.[1]?.country?.toLowerCase() ===
             selectedCountry.toLowerCase() ||
-          (item as IRisk)?.issuingBank?.country?.toLowerCase() ===
+          (item as IRisk)?.issuingBanks?.[0].country?.toLowerCase() ===
             selectedCountry.toLowerCase()
       );
     }
@@ -128,7 +128,7 @@ export const BankTable = ({
       filtered = filtered.filter((item) =>
         (
           (item as IBids)?.bidBy?.[0] ||
-          (item as IRisk)?.issuingBank?.name ||
+          (item as IRisk)?.issuingBanks?.[0]?.bank ||
           ""
         )
           .toLowerCase()
@@ -146,7 +146,6 @@ export const BankTable = ({
       return country ? country.flag : undefined;
     }
   };
-  console.log(data, "data")
   const [sortedKey, setSortedKey] = useState<string>("");
 
   const handleSort = (key: string) => {
@@ -164,10 +163,10 @@ export const BankTable = ({
         case "Country of issuing bank":
           valueA =
             (a as IBids).lcInfo?.[1]?.country ||
-            (a as IRisk).issuingBank?.country;
+            (a as IRisk).issuingBanks?.[0].country;
           valueB =
             (b as IBids).lcInfo?.[1]?.country ||
-            (b as IRisk).issuingBank?.country;
+            (b as IRisk).issuingBanks?.[0].country;
           break;
         case "Confirmation Rate":
           valueA = (a as IBids).confirmationPrice || (a as IRisk).transhipment;
@@ -206,6 +205,7 @@ export const BankTable = ({
         )
       : myBidsColumnHeaders;
 
+      
   return (
     <div className="">
       <div className="flex items-center justify-between hide-scrollbar overflow-x-auto xl:gap-x-2 mb-2">
@@ -272,36 +272,40 @@ export const BankTable = ({
                         {allCountries &&
                           getCountryFlagByName(
                             (item as IBids)?.lcInfo?.[1]?.country ||
-                            (item as IRisk)?.issuingBanks?.[0]?.country || "-"
+                            (item as IRisk)?.lc?.issuingBanks?.[0]?.country || "-"
                           )}
                           {/* // (item as IRisk)?.risk[2]?.country */}
                       </p>
                       <div
                         className={`truncate text-lightGray capitalize ${getCenteredClass(
                           (item as IBids)?.lcInfo?.[1]?.country ||
-                          (item as IRisk)?.issuingBanks?.[0]?.country || "-"
+                          (item as IRisk)?.lc?.issuingBanks?.[0]?.country || "-"
                         )}`}
                       >
                         {(item as IBids)?.lcInfo?.[1]?.country ||
-                          (item as IRisk)?.issuingBanks?.[0]?.country || "-"
+                          (item as IRisk)?.lc?.issuingBanks?.[0]?.bank || "-"
                         }
-                        {/* // (item as IRisk)?.risk[2]?.country */}
                       </div>
                     </div>
                   </TableCell>
                   {isCorporate && (
-                    <TableCell className="px-1 py-1 max-w-[200px]">
-                      <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                        <p className="text-[16px]">
-                          {(item as IBids).bidBy &&
-                            allCountries &&
-                            getCountryFlagByName((item as any).bidBy?.[2])}
-                        </p>
-                        <div className="truncate text-lightGray capitalize">
-                          {(item as any).bidBy?.[0] || renderData(null)}
-                        </div>
-                      </div>
-                    </TableCell>
+             <TableCell className="px-1 py-1 max-w-[200px]">
+             <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
+               <p className="text-[16px]">
+                 {(item as IBids).bidBy &&
+                   allCountries &&
+                   getCountryFlagByName((item as any).bidBy?.[2])}
+               </p>
+               <div className={`truncate text-lightGray capitalize ${getCenteredClass(
+                 (item as IBids)?.lcInfo?.[1]?.country ||
+                 (item as IRisk)?.lc?.confirmingBank?.country || "-"
+               )}`}>
+                 <p>
+                   {(item as any).lc?.confirmingBank?.bank || "-"}
+                 </p>
+               </div>
+             </div>
+           </TableCell>
                   )}
                   <TableDataCell
                     data={

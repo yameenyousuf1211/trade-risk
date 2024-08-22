@@ -92,7 +92,7 @@ export const AddBid = ({
     queryFn: () => fetchSingleLc(id),
   });
 
-  console.log("🚀 ~ lcData:", bidData);
+  // console.log("🚀 ~ lcData:", bidData);
   const { data: riskData } = useQuery<IRisk>({
     queryKey: [`single-risk`, id],
     queryFn: () => fetchSingleRisk(id),

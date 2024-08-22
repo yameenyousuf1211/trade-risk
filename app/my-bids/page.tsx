@@ -37,8 +37,10 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
 
   if (user && user.type !== "bank") {
     redirect("/");
-  }
+  } 
 
+  console.log("~ bids data", data);
+  
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">

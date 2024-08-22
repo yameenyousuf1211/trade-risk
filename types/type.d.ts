@@ -207,6 +207,7 @@ export interface ILcs {
 }
 
 export interface IBids {
+  issuingBanks: any;
   _id: string;
   status: string;
   bidType: string;
@@ -229,7 +230,7 @@ export interface IBids {
   };
   lcInfo: ILcInfo | any;
   confirmationPrice: string | number;
-  lc?: string[];
+  lc?: string[] 
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -309,6 +310,7 @@ interface ShipmentPort {
 }
 
 export interface IRisk {
+  lc: any;
   refId?: string;
   type?: string;
   status: string;

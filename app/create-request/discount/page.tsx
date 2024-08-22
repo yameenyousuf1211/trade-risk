@@ -119,13 +119,19 @@ const CreateDiscountPage = () => {
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
-  
-    const currentDate = new Date();
-    const futureDate = new Date(currentDate.setDate(currentDate.getDate() + days));
-  
+    
+    let extraInfoObj;
+    if (
+      data.paymentTerms &&
+      data.paymentTerms !== "Sight LC" &&
+      data.extraInfo
+    ) {
+      extraInfoObj = { days: days, other: data.extraInfo.otherValue };
+    }
+
     let reqData;
     const baseData = {
-      issuingBanks: data.issuingBanks, // Handle the array of issuing banks
+      issuingBanks: data.issuingBanks, 
       type: "LC Discounting",
       transhipment: data.transhipment === "yes" ? true : false,
       amount: {
@@ -135,11 +141,12 @@ const CreateDiscountPage = () => {
         ...data.period,
         expectedDate: data.period?.expectedDate === "yes" ? true : false,
       },
-      extraInfo: {
-        days,
-        other: data.extraInfo.other || "shipment", // Default to 'shipment' if not provided
-      },
+      ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
+
+    if(baseData.issuingBanks[0]._id) delete baseData.issuingBanks[0]._id
+
+
     if (isDraft) {
       const {
         confirmingBank2,
@@ -201,8 +208,10 @@ const CreateDiscountPage = () => {
       };
   
       try {
+        
         const validatedData = await discountingSchema.validate(preparedData, {
           abortEarly: false,
+          stripUnknown: true,
         });
 
         if (isProceed) {

@@ -43,7 +43,7 @@ export const Step2 = ({
   let amount = watch("amount");
   let currencyVal = watch("currency");
   let paymentTerms = watch("paymentTerms");
-  let extraInfo = watch("extraInfo");
+  let extraInfo = watch("extraInfo") || { days: 0, other: 'shipment' };
 
   const [currencyValue, setCurrencyValue] = useState<string | number>(
     amount || ""
@@ -53,7 +53,7 @@ export const Step2 = ({
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
-    if (paymentTerms === "Sight LC") {
+    if (paymentTerms !== "Usance LC") {
       setValue("extraInfo", undefined);
     }
   }, [paymentTerms]);
@@ -116,11 +116,11 @@ export const Step2 = ({
 
   useEffect(() => {
     // Update extraInfo in the form state when `days` or `otherValue` changes
-    console.log("days", days, "otherValue", otherValue);
-    
     setValue("extraInfo", { days, other: otherValue });
   }, [days, otherValue]);
 
+  console.log("extraInfo", extraInfo);
+  
   return (
     <div
       id="step2"
@@ -219,7 +219,7 @@ export const Step2 = ({
           />
         </div>
         {/* Days input */}
-        {paymentTerms && paymentTerms !== "Sight LC" && (
+        {paymentTerms && paymentTerms == "Usance LC" && (
           <>
             <div className="flex items-center gap-x-2 my-3 ml-2">
               <div className="border-b-2 border-black flex items-center">
@@ -271,8 +271,7 @@ export const Step2 = ({
                 name="extraInfo.other"
                 value="shipment"
                 register={register}
-                checked={otherValue === "shipment"}
-                onChange={() => setOtherValue("shipment")}
+                checked={extraInfo.other === "shipment"}
               />
               <BgRadioInput
                 id="payment-acceptance"
@@ -280,8 +279,7 @@ export const Step2 = ({
                 name="extraInfo.other"
                 value="acceptance"
                 register={register}
-                checked={otherValue === "acceptance"}
-                onChange={() => setOtherValue("acceptance")}
+                checked={extraInfo.other === "acceptance"}
               />
             </div>
             <div className="flex items-center gap-x-3 justify-between">
@@ -291,8 +289,7 @@ export const Step2 = ({
                 name="extraInfo.other"
                 value="negotiation"
                 register={register}
-                checked={otherValue === "negotiation"}
-                onChange={() => setOtherValue("negotiation")}
+                checked={extraInfo.other === "negotiation"}
               />
               <BgRadioInput
                 id="payment-invoice"
@@ -300,8 +297,7 @@ export const Step2 = ({
                 name="extraInfo.other"
                 value="invoice"
                 register={register}
-                checked={otherValue === "invoice"}
-                onChange={() => setOtherValue("invoice")}
+                checked={extraInfo.other === "invoice"}
               />
               <BgRadioInput
                 id="payment-extra-sight"
@@ -309,13 +305,12 @@ export const Step2 = ({
                 name="extraInfo.other"
                 value="sight"
                 register={register}
-                checked={otherValue === "sight"}
-                onChange={() => setOtherValue("sight")}
+                checked={extraInfo.other === "sight"}
               />
             </div>
             <div
               className={`flex bg-white items-end gap-x-5 px-3 py-4 w-full rounded-md mb-2 border border-borderCol ${
-                otherValue === "others" && "!bg-[#EEE9FE]"
+                extraInfo.other === "others" && "!bg-[#EEE9FE]"
               }`}
             >
               <label
@@ -327,7 +322,7 @@ export const Step2 = ({
                   value="others"
                   {...register("extraInfo.other")}
                   id="payment-others"
-                  checked={otherValue === "others"}
+                  checked={extraInfo.other === "others"}
                   className="accent-primaryCol size-4"
                   onChange={() => setOtherValue("others")}
                 />

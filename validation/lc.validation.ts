@@ -19,7 +19,7 @@ export const generalLcSchema = Yup.object().shape({
       "Select a payment term"
     )
     .required(),
-  currency: Yup.string().default("USD").required("Currency is required"),
+  currency: Yup.string().default("USD").optional(),
   issuingBanks: Yup.array()
     .of(
       Yup.object().shape({
@@ -82,26 +82,33 @@ export const generalLcSchema = Yup.object().shape({
     .min(1, "Product Description is required")
     .max(300, "Description cannot be more than 300 characters")
     .required("Add product description"),
-  extraInfo: Yup.object().shape({
-    days: Yup.number()
-      .required("Days are required")
-      .min(1, "Days must be greater than 0")
-      .max(999, "Days must be less than or equal to 999"),
-    other: Yup.mixed()
-      .oneOf(
-        [
-          "shipment",
-          "upas",
-          "acceptance",
-          "negotiation",
-          "invoice",
-          "sight",
-          "others",
-        ],
-        "Extra info is required"
-      )
-      .required("Extra info is required"),
-  }),
+    extraInfo: Yup.object().shape({
+      days: Yup.number()
+        .required("Days are required").when("paymentTerms", (paymentTerms,schema) => {
+          return typeof paymentTerms === "string" && paymentTerms === "Usance LC"
+          ? schema.required("Extra info is required")
+          : schema.notRequired();
+        })
+        .max(999, "Days must be less than or equal to 999"),
+      other: Yup.mixed()
+        .oneOf(
+          [
+            "shipment",
+            "upas",
+            "acceptance",
+            "negotiation",
+            "invoice",
+            "sight",
+            "others",
+          ],
+          "Invalid option"
+        )
+       
+    }).when("paymentTerms", (paymentTerms, schema) => {
+      return typeof paymentTerms === "string" && paymentTerms === "Usance LC"
+        ? schema.required("Extra info is required")
+        : schema.notRequired();
+    }),
 });
 
 export const confirmationSchema = generalLcSchema.concat(

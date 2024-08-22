@@ -12,19 +12,40 @@ const LgStep4: React.FC<LgStepsProps2> = ({
   setStepCompleted,
   data,
   flags,
+  cities,
   setValue,
   step,
 }) => {
   const beneficiaryCountry = watch("beneficiaryDetails.country");
+  const beneficaryCity = watch("beneficiaryDetails.city")
   const beneficiaryName = watch("beneficiaryDetails.name");
   console.log("🚀 ~ beneficiaryName:", beneficiaryName);
   const beneficiaryAddress = watch("beneficiaryDetails.address");
   const beneficiaryPhoneNumber = watch("beneficiaryDetails.phoneNumber");
   const { addStep, removeStep } = useStepStore();
 
+  const [filteredCities, setFilteredCities] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (beneficiaryCountry) {
+      const selectedCountry = cities.find(
+        (country: { name: string; }) => country.name.toLowerCase() === beneficiaryCountry.toLowerCase()
+      );
+
+      if (selectedCountry) {
+        setFilteredCities(selectedCountry.cities);
+      } else {
+        setFilteredCities([]);
+      }
+    } else {
+      setFilteredCities([]);
+    }
+  }, [beneficiaryCountry, cities]);
+
   useEffect(() => {
     if (
       beneficiaryCountry &&
+      beneficaryCity &&
       beneficiaryName &&
       beneficiaryAddress &&
       beneficiaryPhoneNumber
@@ -33,6 +54,7 @@ const LgStep4: React.FC<LgStepsProps2> = ({
     } else removeStep(BENEFICIARY);
   }, [
     beneficiaryCountry,
+    beneficaryCity,
     beneficiaryName,
     beneficiaryAddress,
     beneficiaryPhoneNumber,
@@ -81,13 +103,13 @@ const LgStep4: React.FC<LgStepsProps2> = ({
             flags={flags}
           />
           <DDInput
-            placeholder="Select"
+            placeholder="Select City"
             label="Select City"
             id="beneficiaryDetails.city"
-            value={beneficiaryCountry}
-            data={data}
+            value={beneficaryCity}
+            data={filteredCities}
             setValue={setValue}
-            flags={flags}
+            disabled={!beneficiaryCountry}
           />
         </div>
         <div className="flex items-center gap-3">

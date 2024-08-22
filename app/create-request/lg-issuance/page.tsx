@@ -146,12 +146,12 @@ export default function LgIssuance() {
     if (storeData.data._id) {
       const { response, success } = await updateLg(
         responseData,
-        storeData.data._id
+        storeData.data._id,
       );
       handleResponse(
         success,
         response,
-        "LG Issuance request updated successfully"
+        "LG Issuance request updated successfully",
       );
     } else {
       // Create new draft
@@ -159,7 +159,7 @@ export default function LgIssuance() {
       handleResponse(
         success,
         response,
-        "LG Issuance request created successfully"
+        "LG Issuance request created successfully",
       );
     }
 
@@ -180,7 +180,7 @@ export default function LgIssuance() {
       handleResponse(
         success,
         response,
-        "LG Issuance request submitted successfully"
+        "LG Issuance request submitted successfully",
       );
       setIsLoading(false);
     } catch (validationError) {
@@ -240,7 +240,7 @@ export default function LgIssuance() {
             delete responseData[element];
           } else {
             responseData[element]["cashMargin"] = convertStringToNumber(
-              responseData[element]["cashMargin"]
+              responseData[element]["cashMargin"],
             )?.toString();
           }
         });
@@ -264,10 +264,10 @@ export default function LgIssuance() {
         if (responseData?.otherBond?.cashMargin) {
           console.log(responseData.otherBond?.cashMargin, "cashMargin");
           responseData.otherBond.cashMargin = convertStringToNumber(
-            responseData?.otherBond?.cashMargin
+            responseData?.otherBond?.cashMargin,
           )?.toString();
           responseData.otherBond.lgDetailAmount = convertStringToNumber(
-            responseData.otherBond.cashMargin
+            responseData.otherBond.cashMargin,
           );
         }
       }
@@ -279,10 +279,10 @@ export default function LgIssuance() {
       delete responseData?.otherBond?._id;
       responseData["lgDetailsType"] = "Choose any other type of LGs";
       responseData.otherBond["lgDetailAmount"] = convertStringToNumber(
-        responseData.otherBond["lgDetailAmount"]
+        responseData.otherBond["lgDetailAmount"],
       );
       responseData.otherBond["cashMargin"] = convertStringToNumber(
-        responseData.otherBond["cashMargin"]
+        responseData.otherBond["cashMargin"],
       )?.toString();
 
       if (responseData.otherBond?.lgTenor?.lgTenorValue) {
@@ -305,7 +305,7 @@ export default function LgIssuance() {
   const handleResponse = async (
     success: boolean,
     response: any,
-    successMessage: string
+    successMessage: string,
   ) => {
     if (success) {
       storeData?.removeValues();
@@ -321,7 +321,8 @@ export default function LgIssuance() {
   const handleValidationErrors = (error: any) => {
     if (error) {
       error.errors.forEach((errorItem: any) => {
-        toast.error(`Validation Error: ${errorItem.message}`);
+        console.log(errorItem);
+        toast.error(`Validation Error: ${errorItem}`);
       });
     }
   };
@@ -332,7 +333,8 @@ export default function LgIssuance() {
 
   return (
     <CreateLCLayout isRisk={false} isLg={true}>
-      <div className="bg-white min-h-screen my-5 border border-[#E2E2EA] rounded-lg p-6 flex flex-col gap-5 items-center">
+      <pre>{JSON.stringify(watch(), null, 2)}</pre>
+      <div className="my-5 flex min-h-screen flex-col items-center gap-5 rounded-lg border border-[#E2E2EA] bg-white p-6">
         <LgStep1
           register={register}
           watch={watch}
@@ -379,6 +381,7 @@ export default function LgIssuance() {
             watch={watch}
             data={countryNames}
             flags={countryFlags}
+            cities={bankCountries}
             setValue={setValue}
           />
         )}
@@ -456,15 +459,13 @@ export default function LgIssuance() {
           />
         )}
 
-        {/* {lgIssuance === LG.cashMargin && ( */}
-        <LgStep8
+        {/* <LgStep8
           step={9}
           setValue={setValue}
           register={register}
           watch={watch}
           setStepCompleted={handleStepCompletion}
-        />
-        {/* // /ss)} */}
+        /> */}
 
         <LgStep9
           register={register}
@@ -488,7 +489,7 @@ export default function LgIssuance() {
           setValue={setValue}
           step={11}
         />
-        <div className="flex items-center gap-x-4 w-full">
+        <div className="flex w-full items-center gap-x-4">
           <Button
             // onClick={handleSubmit(saveAsDraft)}
             onClick={handleSubmit((data) => {
@@ -496,7 +497,7 @@ export default function LgIssuance() {
             })}
             type="button"
             variant="ghost"
-            className="!bg-[#F1F1F5] w-1/3"
+            className="w-1/3 !bg-[#F1F1F5]"
             // disabled={loader}
           >
             {loader ? <Loader2 className="animate-spin" /> : "Save as draft"}
@@ -505,7 +506,7 @@ export default function LgIssuance() {
             type="button"
             size="lg"
             // disabled={isLoading}
-            className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
+            className="w-2/3 bg-primaryCol text-white hover:bg-primaryCol/90"
             // onClick={handleSubmit(onSubmit)}
             onClick={handleSubmit((data) => {
               onSubmit({ data: data, draft: false, type: "LG Issuance" });

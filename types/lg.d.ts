@@ -12,6 +12,7 @@ export interface LgStepsProps2 {
   register: UseFormRegister<any>;
   data: string[];
   flags: string[];
+  cities?: any;
   setValue: UseFormSetValue<any>;
   setStepCompleted: (index: number, status: boolean) => void;
   watch: UseFormWatch<any>;

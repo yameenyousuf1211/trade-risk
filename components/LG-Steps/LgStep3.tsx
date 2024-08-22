@@ -54,23 +54,23 @@ const LgStep3: React.FC<LgStepsProps3> = ({
   return (
     <div
       id="lg-step3"
-      className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target "
+      className="scroll-target w-full rounded-lg border border-borderCol px-2 py-3"
     >
-      <div className="flex items-center gap-x-2 ml-3 mb-3">
-        <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
+      <div className="mb-3 ml-3 flex items-center gap-x-2">
+        <p className="center size-6 rounded-full bg-primaryCol text-sm font-semibold text-white">
           3
         </p>
-        <p className="font-semibold text-[16px] text-lightGray">
+        <p className="text-[16px] font-semibold text-lightGray">
           LG Issuing Bank/Expected (you can add three banks if you are not sure
           yet which bank will issue the LG)
         </p>
       </div>
 
-      <div className=" border border-[#E2E2EA] bg-[#F5F7F9]  rounded-lg ">
-        <p className="px-4 pt-2 font-semibold text-[#1A1A26] font-poppins">
+      <div className="rounded-lg border border-[#E2E2EA] bg-[#F5F7F9]">
+        <p className="px-4 pt-2 font-poppins font-semibold text-[#1A1A26]">
           Issuing Bank
         </p>
-        <div className="flex items-center gap-3 pt-2 px-2 pb-2">
+        <div className="flex items-center gap-3 px-2 pb-2 pt-2">
           <DDInput
             placeholder="Select Country"
             label="Issuing Bank Country"
@@ -94,7 +94,7 @@ const LgStep3: React.FC<LgStepsProps3> = ({
           />
           <label
             id="issuingBank.swiftCode"
-            className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+            className="flex w-full items-center justify-between rounded-md border bg-white p-1 px-3"
           >
             <p className="w-full text-sm text-lightGray">Swift Code</p>
             <Input
@@ -105,7 +105,7 @@ const LgStep3: React.FC<LgStepsProps3> = ({
               register={register}
               name="issuingBank.swiftCode"
               type="text"
-              className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+              className="block w-[180px] border-none bg-none text-end text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               placeholder="Enter Code"
             />
           </label>
@@ -115,10 +115,10 @@ const LgStep3: React.FC<LgStepsProps3> = ({
       {additionalBanks.map((bankId, index) => (
         <div
           key={bankId}
-          className="border border-[#E2E2EA] bg-[#F5F7F9] rounded-lg mt-4"
+          className="mt-4 rounded-lg border border-[#E2E2EA] bg-[#F5F7F9]"
         >
-          <div className="flex justify-between items-center px-4 pt-2">
-            <p className="font-semibold text-[#1A1A26] font-poppins">
+          <div className="flex items-center justify-between px-4 pt-2">
+            <p className="font-poppins font-semibold text-[#1A1A26]">
               Issuing Bank (Optional)
             </p>
             <XCircle
@@ -126,7 +126,7 @@ const LgStep3: React.FC<LgStepsProps3> = ({
               onClick={() => handleRemoveBank(index)}
             />
           </div>
-          <div className="flex items-center gap-3 pt-2 px-2 pb-2">
+          <div className="flex items-center gap-3 px-2 pb-2 pt-2">
             <DDInput
               placeholder="Select Country"
               label="Issuing Bank Country"
@@ -151,14 +151,14 @@ const LgStep3: React.FC<LgStepsProps3> = ({
             />
             <label
               id={`test`}
-              className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+              className="flex w-full items-center justify-between rounded-md border bg-white p-1 px-3"
             >
               <p className="w-full text-sm text-lightGray">Swift Code</p>
               <Input
                 register={register}
                 name={`test`}
                 type="text"
-                className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+                className="block w-[180px] border-none bg-none text-end text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 placeholder="Enter Code"
               />
             </label>
@@ -167,13 +167,13 @@ const LgStep3: React.FC<LgStepsProps3> = ({
       ))}
 
       {additionalBanks.length < 2 && (
-        <div className="border border-dashed border-spacing-7 rounded-lg border-[#E2E2EA] flex items-center justify-center mt-4 p-12">
+        <div className="mt-4 flex border-spacing-7 items-center justify-center rounded-lg border border-dashed border-[#E2E2EA] p-12">
           <div
-            className="flex flex-col items-center cursor-pointer"
+            className="flex cursor-pointer flex-col items-center"
             onClick={handleAddBank}
           >
             <PlusCircle />
-            <p className="font-semibold font-poppins">Add other Bank</p>
+            <p className="font-poppins font-semibold">Add other Bank</p>
           </div>
         </div>
       )}

@@ -39,6 +39,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { Input } from "@/components/ui/input";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
@@ -58,10 +60,12 @@ const CompanyInfoPage = () => {
     getValues,
     handleSubmit,
     trigger,
-    formState: { errors, isValid },
+
+    formState: { errors, isValid,dirtyFields },
   } = useForm({
     resolver: yupResolver(companyInfoSchema),
     mode: "all",
+
   });
   // console.log("🚀 ~ CompanyInfoPage ~ getValues:", getValues())
 
@@ -80,6 +84,9 @@ const CompanyInfoPage = () => {
   }, [corporateData]);
   useEffect(() => {
     getValues("phone");
+    console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ getValues", getValues("phone"));
+    console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ phoneInput", corporateData);
+    
     if (corporateData) {
       setAllowSubmit(true);
     } else if (isValid) {
@@ -92,7 +99,6 @@ const CompanyInfoPage = () => {
   const onSubmit: SubmitHandler<typeof companyInfoSchema> = async (
     data: any
   ) => {
-    console.log("🚀 ~ CompanyInfoPage ~ data:", data);
     setValues(data);
     localStorage.setItem("corporateData", JSON.stringify(data));
     router.push("/register/corporate/product-info");
@@ -124,7 +130,6 @@ const CompanyInfoPage = () => {
 
   let phone = getValues("phone");
 
-  useEffect(() => {}, [phoneInput]);
 
   const handleNatureChange = (e: any) => {
     const { value } = e.target;
@@ -134,6 +139,13 @@ const CompanyInfoPage = () => {
     setValue("businessNature", nonDigitsOnly);
   };
 
+  // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ phoneInput", phoneInput);
+  // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ isValid", isValid);
+  // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ allowSubmit", allowSubmit);
+  console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ error", dirtyFields);
+  
+  
+    
   return (
     <AuthLayout>
       <section className="max-w-2xl mx-auto w-full max-xs:px-1 z-10 ">
@@ -259,14 +271,34 @@ const CompanyInfoPage = () => {
               )}
             </div>
             <div className="w-full relative">
-              <TelephoneInput
+              {/* <TelephoneInput
                 name="phone"
                 placeholder="Telephone"
                 setValue={setValue}
                 setPhoneInput={setPhoneInput}
                 trigger={trigger}
                 value={(corporateData && JSON.parse(corporateData).phone) || ""}
+              /> */}
+                <div className="flex items-center gap-3">
+          <label
+            id="beneficiaryDetails.address"
+            className="border  pl-3 w-full  rounded-md  flex items-center justify-between bg-white"
+          >
+            <p className=" text-sm  font-roboto text-gray-400 ">Phone Number</p>
+            <PhoneInput
+            value={phoneInput}
+             isOnBoarding={true}
+              // value={phoneInput}
+              name="phone"
+              onChange={(value) => {
+                console.log("🚀 ~ file: page.tsx ~ line 238 ~ onChange ~ value", value);
+                setValue('phone', value);
+                trigger('phone');
+                setValue("phone", value || ""); 
+              }}
               />
+          </label>
+        </div>
               {errors.phone && (
                 <span className="mt-1 absolute text-[11px] text-red-500">
                   {errors.phone.message}

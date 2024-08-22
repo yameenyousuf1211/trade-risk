@@ -41,6 +41,8 @@ import { cn } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Input } from "@/components/ui/input";
+import { phoneVerification } from "@/services/apis";
+import { toast } from "sonner";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
@@ -99,6 +101,14 @@ const CompanyInfoPage = () => {
   const onSubmit: SubmitHandler<typeof companyInfoSchema> = async (
     data: any
   ) => {
+    const {response,success} = await phoneVerification(data.phone);
+
+    if(!success){
+      console.log("🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ response", response);
+      toast.error("Phone number is invalid");
+      return;
+    }
+
     setValues(data);
     localStorage.setItem("corporateData", JSON.stringify(data));
     router.push("/register/corporate/product-info");

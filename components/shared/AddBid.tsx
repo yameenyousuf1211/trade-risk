@@ -77,7 +77,6 @@ export const AddBid = ({
   isBank?: boolean;
   isRisk?: boolean;
 }) => {
-  console.log("🚀 ~ status:", status);
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
@@ -228,38 +227,40 @@ export const AddBid = ({
         </DialogTrigger>
       ) : (
         <DialogTrigger
-          className={`${
-            computedStatus === "Pending"
-              ? "bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A] rounded-md w-full p-2 capitalize hover:opacity-85 border border-[#F2994A]"
-              : computedStatus === "Accepted"
-              ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
-                  border && "border border-[#29C084]"
-                }`
-              : computedStatus === "Rejected"
-              ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
-                  border && "border border-[#D20000]"
-                }`
-              : computedStatus === "Expired"
-              ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
-                  border &&
-                  "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
-                }`
-              : computedStatus === "Add bid" && !isBank
-              ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
-              : computedStatus === "Add bid" && isBank
-              ? "bg-[#1A1A26] text-white text-sm"
-              : isNotification
-              ? "bg-[#2F3031] text-white hover:bg-[#2F3031] hover:text-white"
-              : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
-          } rounded-md w-full ${
-            isNotification ? "w-28" : ""
-          } p-2 capitalize hover:opacity-85 font-roboto`}
-          disabled={computedStatus !== "Add bid"}
-        >
-          {computedStatus === "Expired"
-            ? "Not Applicable"
-            : computedStatus || triggerTitle}
-        </DialogTrigger>
+        className={`${
+          status === "Accepted"
+            ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
+                border && "border border-[#29C084]"
+              }`
+            : lcData?.status === "Accepted" || lcData?.status === "Expired"
+            ? "bg-[#1A1A26] text-white text-sm cursor-not-allowed"
+            : status === "Rejected"
+            ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
+                border && "border border-[#D20000]"
+              }`
+            : status === "Expired"
+            ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
+                border && "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
+              }`
+            : status === "Add bid" && !isBank
+            ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
+            : status === "Add bid" && isBank
+            ? "bg-primaryCol text-white text-sm"
+            : "px-3 mt-2 bg-[#F2994A] hover:bg-[#F2994A]/90 text-white opacity-80"
+        } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
+        disabled={
+          (lcData?.status === "Accepted" || lcData?.status === "Expired") &&
+          status !== "Accepted"
+        }
+      >
+        {status === "Accepted"
+          ? "Accepted"
+          : (lcData?.status === "Accepted" || lcData?.status === "Expired")
+          ? "Not Applicable"
+          : computedStatus || "Pending"}
+      </DialogTrigger>
+      
+
       )}
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
@@ -695,7 +696,7 @@ export const AddBid = ({
                         : status === "Submitted"
                         ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
                         : status === "Pending"
-                        ? "bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]  border border-[#F2994A]"
+                        ? "bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#c2bdb9]  border border-[#F2994A]"
                         : ""
                     } mt-2 text-black`}
                   >
@@ -839,7 +840,6 @@ export const AddBid = ({
                         name="confirmationPriceType"
                         value={"flat"}
                         onChange={(e) => {
-                          console.log(e.target.value);
                           setConfirmationPriceType(e.target.value);
                         }}
                         className="accent-primaryCol size-4"

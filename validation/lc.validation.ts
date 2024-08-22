@@ -209,7 +209,7 @@ export const confirmationDiscountSchema = generalLcSchema.concat(
           .required(),
         pricePerAnnum: Yup.string()
           .required("Enter expected price")
-          .matches(/^\d+(\.\d+)?$/, "Enter a valid number"),
+          // .matches(/^\d+(\.\d+)?$/, "Enter a valid number"),
       })
       .required(),
     discountingInfo: Yup.object()
@@ -222,7 +222,7 @@ export const confirmationDiscountSchema = generalLcSchema.concat(
           .required(),
         pricePerAnnum: Yup.string()
           .required("Enter expected price")
-          .matches(/^\d+(\.\d+)?$/, "Enter a valid number")
+          // .matches(/^\d+(\.\d+)?$/, "Enter a valid number")
           .test(
             "is-valid-price",
             "Price per annum must be less than 100",

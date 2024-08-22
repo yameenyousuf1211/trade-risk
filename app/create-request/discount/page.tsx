@@ -119,7 +119,6 @@ const CreateDiscountPage = () => {
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
-
     let extraInfoObj;
     if (
       data.paymentTerms &&
@@ -207,6 +206,7 @@ const CreateDiscountPage = () => {
       };
 
       try {
+        
         const validatedData = await discountingSchema.validate(preparedData, {
           abortEarly: false,
           stripUnknown: true,

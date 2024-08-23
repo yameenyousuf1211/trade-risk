@@ -70,10 +70,8 @@ export const BidCard = ({
           </p>
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="capitalize text-para mb-1 text-sm">
-          Submitted by
-          </p>
-          <p className="capitalize text-lg font-semibold">
+          <p className="mb-1 text-sm capitalize text-para">Submitted by</p>
+          <p className="text-lg font-semibold capitalize">
             {data.bidBy?.name || ""}
           </p>
         </div>
@@ -93,19 +91,15 @@ export const BidCard = ({
             </p>
           </div>
         )}
-              <div className={data.status === "Expired" ? "opacity-50" : ""}>
-              <p className="mb-1 text-sm text-para">Country</p>
-              <p className="text-lg font-semibold">
-                {data.bidBy.country}
-              </p>
-            </div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          <p className="mb-1 text-sm text-para">Country</p>
+          <p className="text-lg font-semibold">{data.bidBy.country}</p>
+        </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Bid Recieved</p>
-          <p className="text-lg font-semibold">
-            {convertDate(data.createdAt)}
-          </p>
+          <p className="text-lg font-semibold">{convertDate(data.createdAt)}</p>
         </div>
-    
+
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Bid Expiry</p>
           <p className="text-lg font-semibold">
@@ -214,7 +208,7 @@ export const TableDialog = ({
   const { data: lcData } = useQuery({
     queryKey: [`single-lc`, lcId],
     queryFn: () => fetchSingleLc(lcId),
-    enabled:!isRisk,
+    enabled: !isRisk,
   });
 
   // console.log("🚀 ~ lcData1:", lcData);
@@ -223,7 +217,7 @@ export const TableDialog = ({
     queryFn: () => fetchSingleRisk(lcId),
     enabled: isRisk,
   });
- 
+
   const { user } = useAuth();
   const userBids =
     isBank && user && bids?.filter((bid) => bid?.createdBy === user?._id);
@@ -508,26 +502,23 @@ export const TableDialog = ({
                           : lcData?.applicantDetails?.company) || ""
                       }
                     />
-                    {
-                      lcData?.advisingBank?.bank && (
-                        <LCInfo
-                          label="Advising Bank"
-                          value={(lcData && lcData.advisingBank?.bank) || ""}
-                        />
-                      )
-                    }
-                    {
-                      lcData?.confirmingBank?.bank && (
-                        <LCInfo
-                          label="Confirming Bank"
-                          value={(lcData && lcData.confirmingBank?.bank) || ""}
-                        />
-                      )
-                    }
+                    {lcData?.advisingBank?.bank && (
+                      <LCInfo
+                        label="Advising Bank"
+                        value={(lcData && lcData.advisingBank?.bank) || ""}
+                      />
+                    )}
+                    {lcData?.confirmingBank?.bank && (
+                      <LCInfo
+                        label="Confirming Bank"
+                        value={(lcData && lcData.confirmingBank?.bank) || ""}
+                      />
+                    )}
                     <LCInfo
                       label="Payments Terms"
                       value={
-                        lcData?.paymentTerms && lcData?.paymentTerms !== "Sight LC"
+                        lcData?.paymentTerms &&
+                        lcData?.paymentTerms !== "Sight LC"
                           ? `${lcData.paymentTerms} ${lcData.extraInfo?.days + " days" || ""} ${lcData.extraInfo?.other || ""}`
                           : lcData?.paymentTerms || "-"
                       }
@@ -552,6 +543,16 @@ export const TableDialog = ({
                         lcData &&
                         lcData.period &&
                         convertDateToCommaString(lcData.period?.endDate)
+                      }
+                    />
+                    <LCInfo
+                      label="Confirmation Date (Expected)"
+                      value={
+                        lcData?.expectedConfirmationDate
+                          ? convertDateToCommaString(
+                              lcData?.expectedConfirmationDate,
+                            )
+                          : "-"
                       }
                     />
                     <LCInfo

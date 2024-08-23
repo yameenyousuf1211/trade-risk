@@ -68,7 +68,7 @@ export const ValidatingCalendar = ({
       selected={selectedDate}
       defaultMonth={(startDate as Date) && (startDate as Date)} // Start the calendar from this date
       disabled={{
-        before: startDate ? new Date(startDate) : undefined,
+        before: (startDate) ? new Date(startDate) : undefined,
         after: endDate ? new Date(endDate) : undefined,
       }} // @ts-ignore
       onSelect={handleDateSelect}
@@ -98,6 +98,7 @@ export const Period = ({
   const [ports, setPorts] = useState<string[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+  console.log(startDate, "START____DATE");
 
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],
@@ -112,7 +113,7 @@ export const Period = ({
       portsData.response.length > 0
     ) {
       const allPortCountries = portsData.response.map(
-        (port: any) => port.country
+        (port: any) => port.country,
       );
       setPortCountries(allPortCountries);
     }
@@ -147,30 +148,37 @@ export const Period = ({
     lcStartDateMidnight?.setHours(0, 0, 0, 0); // Reset lcStartDate time for comparison
 
     if (date < today) {
-      return toast.error("LC Expiry Date cannot be in the past or today's date");
+      return toast.error(
+        "LC Expiry Date cannot be in the past or today's date",
+      );
     }
     if (lcStartDate && lcStartDateMidnight && date <= lcStartDateMidnight) {
       return toast.error(
-        "LC Expiry Date must be at least one day after the LC Issuance date"
+        "LC Expiry Date must be at least one day after the LC Issuance date",
       );
     }
     setEndDate(date);
     updateValue("period.endDate", date);
-  
-};
+  };
+
+  useEffect(() => {
+    if (lcPeriodType === "yes") {
+      setStartDate(new Date());
+    }
+  }, [lcPeriodType]);
 
   return (
-    <div className="flex items-start gap-x-4 my-5 h-full">
-      <div className="border border-borderCol py-3 px-2 rounded-md w-[60%] bg-[#F5F7F9]">
+    <div className="my-5 flex h-full items-start gap-x-4">
+      <div className="w-[60%] rounded-md border border-borderCol bg-[#F5F7F9] px-2 py-3">
         {/* <p className="font-semibold mb-2 ml-3">LC Period</p> */}
-        <p className="font-semibold mb-2 ml-3"> LC Issuance</p>
+        <p className="mb-2 ml-3 font-semibold"> LC Issuance</p>
 
-        <div className="flex bg-white items-center gap-x-4 justify-between border border-borderCol rounded-md py-2 px-3 mb-3">
-          <div className="w-full rounded-md flex items-center gap-x-2">
+        <div className="mb-3 flex items-center justify-between gap-x-4 rounded-md border border-borderCol bg-white px-3 py-2">
+          <div className="flex w-full items-center gap-x-2 rounded-md">
             <input
               type="radio"
               id="date-lc-issued"
-              className="accent-primaryCol size-4"
+              className="size-4 accent-primaryCol"
               name="period.expectedDate"
               value="yes"
               checked={lcPeriodType === "yes"}
@@ -178,16 +186,16 @@ export const Period = ({
             />
             <label
               htmlFor="date-lc-issued"
-              className="text-sm text-lightGray font-normal"
+              className="text-sm font-normal text-lightGray"
             >
               Date LC Issued
             </label>
           </div>
-          <div className="w-full rounded-md flex items-center gap-x-2">
+          <div className="flex w-full items-center gap-x-2 rounded-md">
             <input
               type="radio"
               id="expected-date"
-              className="accent-primaryCol !bg-white size-4"
+              className="size-4 !bg-white accent-primaryCol"
               name="period.expectedDate"
               value="no"
               checked={lcPeriodType === "no"}
@@ -195,7 +203,7 @@ export const Period = ({
             />
             <label
               htmlFor="expected-date"
-              className="text-sm text-lightGray font-normal"
+              className="text-sm font-normal text-lightGray"
             >
               Expected date of LC issuance
             </label>
@@ -205,7 +213,7 @@ export const Period = ({
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
-                className={`w-fit justify-start text-left font-normal border-none ${
+                className={`w-fit justify-start border-none text-left font-normal ${
                   lcStartDate ? "text-black" : "text-[#B5B5BE]"
                 }`}
                 id="period-lc-date"
@@ -224,8 +232,7 @@ export const Period = ({
                 initialDate={lcStartDate}
                 onChange={(date) => {
                   updateValue("period.startDate", date);
-                  setStartDate(date);
-
+                  setStartDate(startDate);
                   // Reset LC Expiry Date when LC Start Date changes
                   setEndDate(null);
                   setValue("period.endDate", null);
@@ -239,15 +246,15 @@ export const Period = ({
         {/* LC Expiry Date */}
         <label
           id="period-expiry-date"
-          className="border bg-white border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between"
+          className="flex w-full items-center justify-between rounded-md border border-borderCol bg-white p-1 px-3"
         >
-          <p className="text-sm text-lightGray font-normal">LC Expiry Date</p>
+          <p className="text-sm font-normal text-lightGray">LC Expiry Date</p>
           {/* Popover for LC Expiry Date */}
           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
-                className={`w-fit justify-start text-left font-normal border-none ${
+                className={`w-fit justify-start border-none text-left font-normal ${
                   lcEndDate ? "text-black" : "text-[#B5B5BE]"
                 }`}
                 id="period-expiry-date"
@@ -261,7 +268,6 @@ export const Period = ({
                 isEndDate={true}
                 startDate={startDate}
                 initialDate={lcEndDate}
-
                 onChange={handleExpiryDateSelect}
                 onClose={() => setIsPopoverOpen(false)}
               />
@@ -270,9 +276,9 @@ export const Period = ({
         </label>
       </div>
       {/* Port of Shipment */}
-      <div className="border border-borderCol py-3 px-2 rounded-md w-[40%] h-[178px] min-h-40 bg-[#F5F7F9]">
-        <p className="font-semibold ml-3">Port of Shipment</p>
-        <div className="flex flex-col gap-y-2 mt-2">
+      <div className="h-[178px] min-h-40 w-[40%] rounded-md border border-borderCol bg-[#F5F7F9] px-2 py-3">
+        <p className="ml-3 font-semibold">Port of Shipment</p>
+        <div className="mt-2 flex flex-col gap-y-2">
           <DDInput
             id="shipmentPort.country"
             label="Country"
@@ -321,7 +327,6 @@ export const Transhipment = ({
   const setDate = (date: Date | string) => {
     setValue(expectedDateName, date);
   };
-  
 
   const { data } = useLcIssuance();
   const initialExpectedDate: string = data[expectedDate as keyof typeof data];
@@ -330,8 +335,7 @@ export const Transhipment = ({
     if (initialExpectedDate && !expectedDate) {
       setDate(new Date(initialExpectedDate));
     }
-  }, [data,initialExpectedDate]);
-
+  }, [data, initialExpectedDate]);
 
   let lcStartDate = watch("period.startDate");
   let lcEndDate = watch("period.endDate");
@@ -344,11 +348,11 @@ export const Transhipment = ({
   const currentDate = new Date();
   const nextWeekDate = addDays(
     period?.startDate ? period?.startDate : currentDate,
-    7
+    7,
   );
   const twoWeeksDate = addDays(
     period?.startDate ? period?.startDate : currentDate,
-    14
+    14,
   );
 
   const [showDescErr, setShowDescErr] = useState(false);
@@ -364,110 +368,82 @@ export const Transhipment = ({
   };
 
   return (
-    <div className="w-full flex items-start gap-x-4 justify-between mt-4">
-      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-44">
-        <p className="text-[16px] font-semibold mb-2 ml-3">
-          Transhipment Allowed
-        </p>
-        <BgRadioInput
-          id="transhipment-allowed-yes"
-          label="Yes"
-          name="transhipment"
-          value={"yes"}
-          register={register}
-          checked={transhipment === "yes"}
-        />
-        <BgRadioInput
-          id="transhipment-allowed-no"
-          label="No"
-          name="transhipment"
-          value={"no"}
-          register={register}
-          checked={transhipment === "no"}
-        />
-      </div>
+    <div className="flex w-full flex-col gap-6">
+      <div className="mt-4 flex w-full items-start justify-between gap-x-4">
+        <div className=" w-full rounded-md border border-borderCol bg-[#F5F7F9] px-2 py-3">
+          <p className="mb-2 ml-3 text-[16px] font-semibold">
+            Transhipment Allowed
+          </p>
+          <div className="flex  gap-2">
+            <BgRadioInput
+              id="transhipment-allowed-yes"
+              label="Yes"
+              name="transhipment"
+              value={"yes"}
+              register={register}
+              checked={transhipment === "yes"}
+            />
+            <BgRadioInput
+              id="transhipment-allowed-no"
+              label="No"
+              name="transhipment"
+              value={"no"}
+              register={register}
+              checked={transhipment === "no"}
+            />
+          </div>
+        </div>
 
-      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-44">
-        <p className="text-[16px] font-semibold mb-2 ml-3">
-          {isDiscount
-            ? "Expected Date for Discounting"
-            : "Expected Date to add Confirmation"}
-        </p>
-        <label
-          id="expected-confirmation-date"
-          className="border border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between "
-        >
-          <p className="text-sm text-lightGray font-normal">Select Date</p>
-          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-fit justify-start text-left font-normal border-none",
-                  !expectedDate &&
-                    "text-muted-foreground flex items-center text-sm justify-between w-fit"
-                )}
-                id="expected-confirmation-date"
-              >
-                {expectedDate ? (
-                  format(expectedDate, "PPP")
-                ) : (
-                  <span className="text-sm">DD/MM/YYYY</span>
-                )}
-                <CalendarIcon className="ml-2 h-4 w-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <ValidatingCalendar
-                startDate={period?.startDate}
-                endDate={period?.endDate}
-                initialDate={expectedDate}
-                onChange={(date) => {
-                  setDate(date);
-                }}
-                onClose={() => setIsPopoverOpen(false)}
-              />
-            </PopoverContent>
-          </Popover>
-        </label>
-
-        <div className="flex items-center mt-2 gap-x-2 justify-between w-full">
-          {/* Next week */}
-          <Button
-            type="button"
-            className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
-            onClick={() => {
-              setDate(nextWeekDate);
-            }}
+        <div className=" w-full h-[120px] rounded-md border border-borderCol bg-[#F5F7F9] px-2 py-3">
+          <p className="mb-2 ml-3 text-[16px] font-semibold">
+            {isDiscount
+              ? "Expected Date for Discounting"
+              : "Expected Date to add Confirmation"}
+          </p>
+          <label
+            id="expected-confirmation-date"
+            className="flex w-full items-center justify-between rounded-md border border-borderCol p-1 px-3 bg-white"
           >
-            <p className="text-white text-[12px] font-semibold">Next week</p>
-            <p className="text-[10px] text-white/80 font-normal -mt-1">
-              {" "}
-              {format(nextWeekDate, "d MMMM")}
-            </p>
-          </Button>
-          {/* 2 weeks */}
-          <Button
-            type="button"
-            className="flex flex-col gap-y-1 h-full w-full bg-[#1A1A26] hover:bg-[#1A1A26]/90"
-            onClick={() => {
-              setDate(twoWeeksDate);
-            }}
-          >
-            <p className="text-white text-[12px] font-semibold">Two Weeks</p>
-            <p className="text-[10px] text-white/80 font-normal -mt-1">
-              {" "}
-              {format(twoWeeksDate, "d MMMM")}
-            </p>
-          </Button>
+            <p className="text-sm font-normal text-lightGray">Select Date</p>
+            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-fit justify-start border-none text-left font-normal",
+                    !expectedDate &&
+                      "flex w-fit items-center justify-between text-sm text-muted-foreground",
+                  )}
+                  id="expected-confirmation-date"
+                >
+                  {expectedDate ? (
+                    format(expectedDate, "PPP")
+                  ) : (
+                    <span className="text-sm">DD/MM/YYYY</span>
+                  )}
+                  <CalendarIcon className="ml-2 h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <ValidatingCalendar
+                  startDate={period?.startDate}
+                  endDate={period?.endDate}
+                  initialDate={expectedDate}
+                  onChange={(date) => {
+                    setDate(date);
+                  }}
+                  onClose={() => setIsPopoverOpen(false)}
+                />
+              </PopoverContent>
+            </Popover>
+          </label>
         </div>
       </div>
-
-      <div className="border border-borderCol py-3 px-2 rounded-md w-full bg-[#F5F7F9] h-full">
+      <div className="h-full w-full rounded-md border border-borderCol bg-[#F5F7F9] px-2 py-3">
         <div className="mb-2 flex items-center gap-x-2">
-          <p className="font-semibold ml-3">Product Description</p>
+          <p className="ml-3 font-semibold">Product Description</p>
           {showDescErr && (
-            <span className="text-red-500 text-[12px]">
+            <span className="text-[12px] text-red-500">
               Only digits are not allowed
             </span>
           )}
@@ -477,7 +453,7 @@ export const Transhipment = ({
           register={register}
           onChange={(e) => handleDescChange(e.target.value)}
           placeholder="Enter the description of the product (being imported under this LC)"
-          className="bg-white border border-borderCol placeholder:text-para resize-none focus-visible:ring-0 focus-visible:ring-offset-0 "
+          className="resize-none border border-borderCol bg-white placeholder:text-para focus-visible:ring-0 focus-visible:ring-offset-0"
           rows={4}
         />
       </div>

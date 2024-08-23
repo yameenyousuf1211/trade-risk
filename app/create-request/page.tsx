@@ -145,7 +145,7 @@ const CreateRequestPage = () => {
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
 
-    if(baseData.issuingBanks[0]._id) delete baseData.issuingBanks[0]._id
+    if(baseData?.issuingBanks?.[0]?._id) delete baseData.issuingBanks[0]._id
     
     try {
       setLoader(true); // Start the loader
@@ -167,6 +167,7 @@ const CreateRequestPage = () => {
           ...baseData,
           draft: "true",
         };
+        console.log(reqData,"REQDATA_______FOR CONFIRMATION")
 
         const { response, success } = confirmationData?._id
           ? await onUpdateLC({

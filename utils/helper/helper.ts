@@ -306,8 +306,10 @@ export const mapCountryToIsoCode = (country: string) => {
     delete responseData.updatedAt;
     delete responseData.__v;
     delete responseData.status;
+
+    console.log("🚀 ~ responseData issuingBanks :", responseData.issuingBanks);
     
-    responseData.issuingBanks = responseData.issuingBanks.map((bank: Bank) => {
+    responseData.issuingBanks = responseData?.issuingBanks?.map((bank: Bank) => {
       // @ts-ignore
       delete bank._id;
       return bank;
@@ -404,7 +406,17 @@ export const mapCountryToIsoCode = (country: string) => {
     if (responseData?.applicantDetails?.crNumber)
       responseData.applicantDetails.crNumber =
         responseData.applicantDetails.crNumber?.toString();
-    console.log("🚀 ~ responseData:", responseData);
   };
-
   
+  export const bondRequiredFields = (responseData: any): boolean => {
+    if (responseData.lgDetailsType !== "Choose any other type of LGs") {
+      return (
+        responseData.bidBond?.Contract ||
+        responseData.advancePaymentBond?.Contract ||
+        responseData.performanceBond?.Contract ||
+        responseData.retentionMoneyBond?.Contract
+      ) || false;
+    }
+
+    return true;
+  };

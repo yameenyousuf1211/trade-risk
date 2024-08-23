@@ -58,13 +58,15 @@ const DraftCard = ({
   const handleEditLC = async () => {
     try {
       const response = await fetchSingleLc(draft?._id);
-      // console.log("response: ", response);
+      console.log("~ response: line 61 page draftsidebar ", response);
       isConfirmation && setConfirmationValues(response);
       isDiscounting && setDiscountingValues(response);
       isConfirmationDiscounting && setConfirmationDiscountingValues(response);
       console.log(response);
       isLCIssuance && setLCIssuance(response);
-    } catch (error) {}
+    } catch (error) {
+      console.log("~ error", error);
+    }
   };
 
 

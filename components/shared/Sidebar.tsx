@@ -280,7 +280,7 @@ export const Sidebar = ({
     data: allLcs,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
-      queryKey: ["bid-status", "fetch-all-lcs"],
+      queryKey: ["fetch-all-lcs"],
       queryFn: () => fetchAllLcs({ limit: 20 }),
       enabled: !!user?._id,
     });
@@ -289,7 +289,7 @@ export const Sidebar = ({
     data: allRisk,
   }: { data: ApiResponse<IRisk> | undefined; error: any; isLoading: boolean } =
     useQuery({
-      queryKey: ["bid-status", "fetch-risks"],
+      queryKey: ["fetch-risks"],
       queryFn: () =>
         fetchRisk({ createdBy: riskType === "myRisk" ? true : false }),
       enabled: !!user?._id && user.type === "bank",

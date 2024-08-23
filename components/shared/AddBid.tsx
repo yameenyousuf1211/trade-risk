@@ -17,11 +17,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
 import { cn } from "@/lib/utils";
 import { fetchSingleRisk } from "@/services/apis/risk.api";
-import { IRisk } from "@/types/type";
+import { IBids, IRisk } from "@/types/type";
 import { BgRadioInput, DDInput } from "../LCSteps/helpers";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
@@ -80,19 +80,22 @@ export const AddBid = ({
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
+  const [userBids,setUserBids] = useState<IBids[]>([]);
   const [confirmationPriceType, setConfirmationPriceType] = useState("");
   const { user } = useAuth();
   const buttonRef = useRef<HTMLButtonElement>(null); // console.log(id, "_______-id");
+  
+  console.log("🚀 ~ file: AddBid.tsx ~ line 116 ~ bidData ~ bidData", bidData);
+  
 
-  const userBids =
-    isBank && user && bidData?.filter((bid) => bid?.createdBy === user?._id);
+
   const { data: lcData, isLoading } = useQuery({
     queryKey: [`single-lc`, id],
     queryFn: () => fetchSingleLc(id),
     enabled: !isRisk,
   });
 
-  // console.log("🚀 ~ lcData:", bidData);
+  console.log("🚀 ~ lcDataaaaaaa:", lcData);
   const { data: riskData } = useQuery<IRisk>({
     queryKey: [`single-risk`, id],
     queryFn: () => fetchSingleRisk(id),
@@ -188,6 +191,9 @@ export const AddBid = ({
   };
   const userBidStatus = lcData?.bids?.find(bid => bid?.createdBy === user?._id)?.status;
   const computedStatus = userBidStatus || triggerTitle ||lcData?.status;
+
+
+
   return (
     <Dialog>
       {isRisk ? (
@@ -620,109 +626,122 @@ export const AddBid = ({
           <div className="w-full h-full flex flex-col justify-start px-5 overflow-y-auto max-h-[75vh]">
             <p className="text-xl font-semibold pt-5">Submit Your Bid</p>
             {isInfo ? (
-              <>
-              {userBids && userBids?.length() > 0 && userBids?.map((bid, index) => (
-                <div
-                  key={bid._id || index}
-                  className="flex flex-col gap-y-2 py-4 px-4 mt-3 border border-borderCol rounded-lg"
-                >
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para font-roboto">Bid Number</p>
-                    <p className="font-semibold text-lg">
-                      {bid._id?.substring(0, 6) || "100928"}
-                    </p>
-                  </div>
+    // This is where we filter the bids for the logged-in user
+    (() => {
+      console.log("🚀 ~ file: AddBid.tsx ~ line 116 ~ user ~ user", user);
+      
+      const userBids = lcData?.bids.filter(bid => bid?.bidBy?._id === user?.business?._id);
+      return (
+        <>
+          {userBids && userBids.length > 0 ? (
+            userBids.map((bid:IBids, index:number) => (
+              <div className="border-borderCol px-4 mt-3   py-4  border  rounded-lg">
+              <div
+              key={bid._id || index}
+              className="grid grid-cols-2 gap-y-3"
+            >
+              {/* Conditionally apply opacity to div based on status */}
             
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="font-semibold text-lg capitalize">
-                      {bid ? bid.bidBy.name : "Habib Bank Limited"}
-                    </p>
-                    <p className="font-roboto text-sm text-para capitalize">
-                      {bid ? bid.bidBy.country : "Pakistan"}
-                    </p>
-                  </div>
+              {/* Bid Number */}
+              <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                <p className="mb-1 text-sm text-para font-roboto">Bid Number</p>
+                <p className="text-lg font-semibold">
+                  {bid._id?.substring(0, 6) || "100928"}
+                </p>
+              </div>
             
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para font-roboto">Bid Submitted</p>
-                    <p className="font-semibold text-lg capitalize">
-                      {bid
-                        ? convertDateAndTimeToString(bid.createdAt)
-                        : "Jan 9 2023, 23:59"}
-                    </p>
-                  </div>
+              {/* Submitted by */}
+              <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                <p className="mb-1 text-sm text-para font-roboto">Submitted by</p>
+                <p className="text-lg font-semibold capitalize">
+                  {bid ? bid.bidBy.name : "Habib Bank Limited"}
+                </p>
+              </div>
             
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para font-roboto">Bid Expiry</p>
-                    <p className="font-semibold text-lg">
-                      {bid
-                        ? convertDateAndTimeToString(bid.bidValidity)
-                        : "Jan 9 2023, 23:59"}
-                    </p>
-                  </div>
+              {/* Confirmation Rate */}
+              <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                <p className="mb-1 text-sm text-para font-roboto">Confirmation Rate</p>
+                <p className="text-lg font-semibold text-text">
+                  {bid ? bid.confirmationPrice : "1.75"}% {bid?.perAnnum ? "per annum" : "flat"}
+                </p>
+              </div>
             
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para font-roboto">Confirmation Rate</p>
-                    <p className="text-lg font-semibold text-text">
-                      {bid ? bid.confirmationPrice : "1.75"}% {bid?.perAnnum ? 'per annum' : "flat"}
-                    </p>
-                  </div>
+              {/* Discounting Base Rate */}
+              <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                <p className="mb-1 text-sm text-para font-roboto">Discount Spread</p>
+                <p className="text-lg font-semibold">
+                  {bid ? (bid.discountBaseRate ? bid.discountBaseRate + "% per annum" : "Not Applicable") : "KIBOR + "}
+                </p>
+              </div>
             
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para font-roboto">Discounting Base Rate</p>
-                    <p className="font-semibold text-lg">
-                      {bid
-                        ? !bid.discountBaseRate && "Not Applicable"
-                        : "KIBOR + "}
-                      <span className="text-text">
-                        {bid
-                          ? bid.discountBaseRate
-                            ? bid.discountBaseRate + "% per annum"
-                            : ""
-                          : ""}
-                        {!bid && "2.22 % per annum"}
-                      </span>
-                    </p>
-                  </div>
-            
-                  <Button
-                    className={`${
-                      status === "Accepted"
-                        ? "bg-[#29C08433] hover:bg-[#29C08433]"
-                        : status === "Rejected"
-                        ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
-                        : status === "Expired"
-                        ? "bg-[#97979733] hover:bg-[#97979733]"
-                        : status === "Submitted"
-                        ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
-                        : status === "Pending"
-                        ? "bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#c2bdb9]  border border-[#F2994A]"
-                        : ""
-                    } mt-2 text-black`}
-                  >
-                    {status === "Accepted"
-                      ? "Bid Accepted"
-                      : status === "Rejected"
-                      ? "Bid Rejected"
-                      : status === "Expired"
-                      ? "Request Expired"
-                      : status === "Submitted"
-                      ? "Bid Submitted"
-                      : status}
-                  </Button>
+              {/* Country */}
+              <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                <p className="mb-1 text-sm text-para font-roboto">Country</p>
+                <p className="text-lg font-semibold capitalize">
+                  {bid ? bid.bidBy.country : "Pakistan"}
+                </p>
+              </div>
+
+                <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                  <p className="text-sm text-para font-roboto">Confirmation Rate</p>
+                  <p className="text-lg font-semibold text-text">
+                    {bid ? bid.confirmationPrice : "1.75"}% {bid?.perAnnum ? 'per annum' : "flat"}
+                  </p>
                 </div>
-              ))}
-            
-              {status === "Rejected" && !isCorporate && (
-                <Button
-                  onClick={() => {
-                    setIsAddNewBid && setIsAddNewBid(true);
-                  }}
-                  className="bg-[#5625F2]  text-white hover:bg-[#5625F2] mt-5"
+
+                <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                  <p className="text-sm text-para font-roboto">Discounting Base Rate</p>
+                  <p className="font-semibold text-lg">
+                    {bid ? (!bid.discountBaseRate && "Not Applicable") : "KIBOR + "}
+                    <span className="text-text">
+                      {bid ? (bid.discountBaseRate ? bid.discountBaseRate + "% per annum" : "") : ""}
+                      {!bid && "2.22 % per annum"}
+                    </span>
+                  </p>
+                </div>
+                <div className={bid.status === "Expired" ? "opacity-50" : ""}></div>
+              </div>
+              <Button
+                  className={`w-full ${
+                    bid.status === "Accepted"
+                      ? "bg-[#29C08433] hover:bg-[#29C08433]"
+                      : bid.status === "Rejected"
+                      ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
+                      : bid.status === "Expired"
+                      ? "bg-[#97979733] hover:bg-[#97979733]"
+                      : bid.status === "Pending"
+                      ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
+                      : ""
+                  } mt-2 text-black`}
                 >
-                  Submit A New Bid
+                  {bid.status === "Accepted"
+                    ? "Bid Accepted"
+                    : bid.status === "Rejected"
+                    ? "Bid Rejected"
+                    : bid.status === "Expired"
+                    ? "Request Expired"
+                    : bid.status === "Pending"
+                    ? "Bid Submitted"
+                    : bid.status}
                 </Button>
-              )}
-            </>
+              </div>
+            ))
+          ) : (
+            <p>No bids found for the logged-in user.</p>
+          )}
+
+          {/* Button for submitting a new bid if status is Rejected */}
+          {status === "Rejected" && !isCorporate && (
+            <Button
+              onClick={() => setIsAddNewBid(true)}
+              className="bg-[#5625F2] text-white hover:bg-[#5625F2] mt-5"
+            >
+              Submit A New Bid
+            </Button>
+          )}
+        </>
+      );
+    })()
             
             ) : (
               // Add Bids

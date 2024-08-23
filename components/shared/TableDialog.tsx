@@ -274,14 +274,10 @@ export const TableDialog = ({
             <X className="size-7" />
           </DialogClose>
         </div>
-
-        {lcData?.type === "LG Issuance" ? (
-          <LGIssuanceDialog />
-        ) : lcData?.type === "LG 100% Cash Margin" ? (
-          <div className="relative mt-0 flex h-full items-start justify-between overflow-y-hidden">
-            <LGCashMarginDialog />
-          </div>
-        ) : (
+        {
+          lcData?.type==='LG Issuance' ? (
+            <LGIssuanceDialog data={lcData}/>
+          ) : (
           <div className="relative mt-0 flex h-full items-start justify-between overflow-y-hidden">
             {/* Left Section */}
             {isRisk ? (
@@ -613,13 +609,13 @@ export const TableDialog = ({
                   <p className="text-xl font-semibold">{isBank ? 'View Bids' : "Bids received"}</p>
                 </div>
 
-                <div className="flex items-center gap-x-4">
+                {/* <div className="flex items-center gap-x-4">
                   <BidsSort />
                   <div className="flex items-center gap-x-1 text-sm">
                     <ListFilter className="size-5" />
                     <p>Filter</p>
                   </div>
-                </div>
+                </div> */}
               </div>
               {/* Bids */}
               <div className="mt-5 flex max-h-[65vh] flex-col gap-y-4 overflow-y-auto overflow-x-hidden">
@@ -644,7 +640,9 @@ export const TableDialog = ({
               </div>
             </div>
           </div>
-        )}
+
+          )
+        }
       </DialogContent>
     </Dialog>
   );

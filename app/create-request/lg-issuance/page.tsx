@@ -24,7 +24,9 @@ import { createLg, updateLg } from "@/services/apis/lg.apis";
 import useLcIssuance from "@/store/issueance.store";
 import useStepStore from "@/store/lcsteps.store";
 import { LgDetails } from "@/types/lg";
-import { convertStringToNumber, LG } from "@/utils";
+import { Bank } from "@/types/LGBankTypes";
+import { LGDetail } from "@/types/LGCorporateTypes";
+import { convertStringToNumber, LG, removeUnnecessaryFieldsForLgCreate } from "@/utils";
 import { bankCountries } from "@/utils/data";
 import { lgValidator } from "@/validation/lg.validation";
 import { Loader2 } from "lucide-react";
@@ -44,8 +46,10 @@ export default function LgIssuance() {
 
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
+  // const isoCodes = bankCountries.map((country) => country.isoCode);
+
   const storeData = useLcIssuance();
-  console.log("🚀 ~ LgIssuance ~ storeData:", storeData);
+  // console.log("🚀 ~ LgIssuance ~ storeData:", storeData);
   const { countries, flags } = useCountries();
   const lgIssuance = watch("lgIssuance");
 
@@ -113,27 +117,40 @@ export default function LgIssuance() {
   }, [storeData.data]);
 
   const onSubmit = async (data: LgDetails) => {
+    
     // Prepare data for submission
     const responseData = {
       ...data.data,
       type: "LG Issuance",
-      draft: Boolean(data.draft),
+      draft: data.draft,
       issueLgWithStandardText: Boolean(data.data.issueLgWithStandardText),
       physicalLg: Boolean(data.data.physicalLg),
     };
-    delete responseData.test;
 
-    // Set default value for lgDetailsType if not defined
-    if (responseData.lgDetailsType === undefined) {
-      responseData.lgDetailsType = "Choose any other type of LGs";
+
+    console.log("🚀 ~ onSubmit ~ responseData", responseData.draft);
+
+    if(responseData.draft == true){
+      handleDraftSubmission(responseData);
+    }
+    else{
+      handleFinalSubmission(responseData);
     }
 
-    // Handle draft submissions
-    if (responseData.draft) {
-      await handleDraftSubmission(responseData);
-    } else {
-      await handleFinalSubmission(responseData);
-    }
+
+    // delete responseData.test;
+
+    // // Set default value for lgDetailsType if not defined
+    // if (responseData.lgDetailsType === undefined) {
+    //   responseData.lgDetailsType = "Choose any other type of LGs";
+    // }
+
+    // // Handle draft submissions
+    // if (responseData.draft) {
+    //   await handleDraftSubmission(responseData);
+    // } else {
+    //   await handleFinalSubmission(responseData);
+    // }
   };
 
   // Function to handle draft submissions
@@ -169,11 +186,18 @@ export default function LgIssuance() {
   // Function to handle final submissions
   const handleFinalSubmission = async (responseData: any) => {
     removeUnnecessaryFieldsForLgCreate(responseData);
-    console.log("🚀 ~ handleFinalSubmission ~ responseData:", responseData);
-
+    removeUnnecessaryFields(responseData);
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData bidbond:", responseData.bidBond);
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond:", responseData.advancePaymentBond);
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond:", responseData.performanceBond)
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond:", responseData.retentionMoneyBond)
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
+    
     try {
-      await lgValidator.validate(responseData, {
-        abortEarly: false,
+     await lgValidator.validate(responseData, {
+       abortEarly: true,
+        stripUnknown: true,
+        strict: true,
       });
 
       const { response, success } = await createLg(responseData);
@@ -184,9 +208,12 @@ export default function LgIssuance() {
       );
       setIsLoading(false);
     } catch (validationError) {
+      console.log("🚀 ~ handleFinalSubmission ~ validationError", validationError);
+      
       if (validationError instanceof Yup.ValidationError) {
         handleValidationErrors(validationError);
       } else {
+        // toast.error("Unexpected error during validation");
         console.error("Unexpected error during validation:", validationError);
       }
     }
@@ -198,108 +225,12 @@ export default function LgIssuance() {
     delete responseData.createdAt;
     delete responseData.updatedAt;
     delete responseData.__v;
+    delete responseData.refId;
+    delete responseData.createdBy;
+    
   };
 
-  // Function to remove unnecessary fields for draft updates
-  const removeUnnecessaryFieldsForLgCreate = (responseData: any) => {
-    // Remove unnecessary fields based on lgIssuance type
-    delete responseData?._id;
-    delete responseData.createdAt;
-    delete responseData.updatedAt;
-    delete responseData.__v;
-    delete responseData.status;
 
-    if (responseData.lgIssuance !== LG.cashMargin) {
-      delete responseData.typeOfLg;
-      delete responseData.physicalLgSwiftCode;
-      delete responseData?.lgStandardText;
-
-      if (
-        responseData.lgDetailsType ===
-        "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)"
-      ) {
-        delete responseData.otherBond;
-        delete responseData?.status;
-        [
-          "bidBond",
-          "advancePaymentBond",
-          "performanceBond",
-          "retentionMoneyBond",
-        ].forEach((element) => {
-          delete responseData[element]?._id;
-
-          if (responseData[element]?.valueInPercentage)
-            responseData[element].valueInPercentage =
-              responseData[element].valueInPercentage?.toString();
-
-          if (responseData[element]?.lgTenor?.lgTenorValue)
-            responseData[element].lgTenor.lgTenorValue =
-              responseData[element].lgTenor.lgTenorValue?.toString();
-
-          if (!responseData[element]?.cashMargin) {
-            delete responseData[element];
-          } else {
-            responseData[element]["cashMargin"] = convertStringToNumber(
-              responseData[element]["cashMargin"]
-            )?.toString();
-          }
-        });
-      } else {
-        delete responseData.bidBond;
-        delete responseData.advancePaymentBond;
-        delete responseData.performanceBond;
-        delete responseData.retentionMoneyBond;
-        delete responseData?.status;
-        delete responseData.otherBond?._id;
-        delete responseData?.otherBond?.checked;
-
-        if (responseData.otherBond?.valueInPercentage)
-          responseData.otherBond.valueInPercentage =
-            responseData.otherBond.valueInPercentage?.toString();
-
-        if (responseData.otherBond?.lgTenor?.lgTenorValue)
-          responseData.otherBond.lgTenor.lgTenorValue =
-            responseData.otherBond.lgTenor.lgTenorValue?.toString();
-
-        if (responseData?.otherBond?.cashMargin) {
-          console.log(responseData.otherBond?.cashMargin, "cashMargin");
-          responseData.otherBond.cashMargin = convertStringToNumber(
-            responseData?.otherBond?.cashMargin
-          )?.toString();
-          responseData.otherBond.lgDetailAmount = convertStringToNumber(
-            responseData.otherBond.cashMargin
-          );
-        }
-      }
-    } else {
-      delete responseData.bidBond;
-      delete responseData.advancePaymentBond;
-      delete responseData.performanceBond;
-      delete responseData.retentionMoneyBond;
-      delete responseData?.otherBond?._id;
-      responseData["lgDetailsType"] = "Choose any other type of LGs";
-      responseData.otherBond["lgDetailAmount"] = convertStringToNumber(
-        responseData.otherBond["lgDetailAmount"]
-      );
-      responseData.otherBond["cashMargin"] = convertStringToNumber(
-        responseData.otherBond["cashMargin"]
-      )?.toString();
-
-      if (responseData.otherBond?.lgTenor?.lgTenorValue) {
-        responseData.otherBond.lgTenor.lgTenorValue =
-          responseData.otherBond?.lgTenor?.lgTenorValue?.toString();
-      }
-    }
-    if (
-      !responseData?.expectedPrice?.expectedPrice ||
-      responseData?.expectedPrice?.expectedPrice === "false"
-    )
-      delete responseData?.expectedPrice?.pricePerAnnum;
-    if (responseData?.applicantDetails?.crNumber)
-      responseData.applicantDetails.crNumber =
-        responseData.applicantDetails.crNumber?.toString();
-    console.log("🚀 ~ responseData:", responseData);
-  };
 
   // Function to handle API responses
   const handleResponse = async (
@@ -311,20 +242,29 @@ export default function LgIssuance() {
       storeData?.removeValues();
       toast.success(successMessage);
       console.log(response, "response");
-      router.push("/my-bids");
+      router.push("/");
     } else {
       toast.error(response);
     }
   };
 
-  // Function to handle validation errors
   const handleValidationErrors = (error: any) => {
-    if (error) {
-      error.errors.forEach((errorItem: any) => {
-        toast.error(`Validation Error: ${errorItem.message}`);
-      });
+    console.log("🚀 ~ handleValidationErrors ~ error", error);
+  
+    if (error && error.errors && Array.isArray(error.errors)) {
+      // Get the first error message
+      const fullErrorMessage = error.errors[0]; // Assume errors[0] contains the full error message
+  
+      // Extract the relevant part of the error message
+      const relevantErrorMessage = fullErrorMessage.split('\n')[0].trim(); // Get the first line and trim any extra spaces
+  
+      // Display the relevant error message
+      toast.error(`Validation Error: ${relevantErrorMessage}`);
+    } else {
+      toast.error("An unexpected error occurred.");
     }
   };
+  
 
   const handleStepCompletion = (index: number, status: boolean) => {
     setStepStatus(index, status);
@@ -380,6 +320,7 @@ export default function LgIssuance() {
             data={countryNames}
             flags={countryFlags}
             setValue={setValue}
+
           />
         )}
         {lgIssuance === LG.cashMargin ? (
@@ -456,7 +397,7 @@ export default function LgIssuance() {
           />
         )}
 
-        {/* {lgIssuance === LG.cashMargin && ( */}
+        {lgIssuance === LG.cashMargin && (
         <LgStep8
           step={9}
           setValue={setValue}
@@ -464,7 +405,7 @@ export default function LgIssuance() {
           watch={watch}
           setStepCompleted={handleStepCompletion}
         />
-        {/* // /ss)} */}
+)}
 
         <LgStep9
           register={register}

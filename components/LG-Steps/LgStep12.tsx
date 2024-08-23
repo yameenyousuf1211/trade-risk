@@ -13,27 +13,7 @@ const LgStep12: React.FC<LgStepsProps10> = ({
   step,
   setStepCompleted,
 }) => {
-  const expectedPrice = watch("expectedPrice.expectedPrice");
-  const pricingPerAnnum = watch("expectedPrice.pricePerAnnum");
   const lgIssuance = watch("lgIssuance");
-
-  const handleIncrement = () => {
-    const currentValue = parseInt(pricingPerAnnum) || 0;
-    const newValue = (currentValue + 1).toFixed(2);
-    setValue(
-      "expectedPrice.pricePerAnnum",
-      parseInt(newValue) > 100 ? "100.00" : newValue
-    );
-  };
-
-  const handleDecrement = () => {
-    const currentValue = parseInt(pricingPerAnnum) || 0;
-    const newValue = (currentValue - 1).toFixed(2);
-    setValue(
-      "expectedPrice.pricePerAnnum",
-      parseInt(newValue) < 0 ? "0.00" : newValue
-    );
-  };
 
   return (
     <div
@@ -63,7 +43,8 @@ const LgStep12: React.FC<LgStepsProps10> = ({
               new Date(new Date().setFullYear(new Date().getFullYear() + 1))
             }
             isLg={true}
-            name={``}
+            isPast={false}
+            name={`lastDateOfReceivingBids`}
             setValue={setValue}
           />
         </label>

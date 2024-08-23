@@ -35,7 +35,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
   const otherBondName = watch(`${name}.name`);
 
-  console.log("🚀 ~ cashMargin:", cashMargin);
+  // console.log("🚀 ~ cashMargin:", cashMargin);
 
   useEffect(() => {
     if (cashMargin && !cashMargin?.toString()?.includes(".00")) {
@@ -114,7 +114,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
               {...register(`${name}.Contract`)}
             /> */}
             <div onClick={() => {
-              setValue(`${name}.Contract`,checkedValue?false:true)
+              setValue(`${name}.Contract`,checkedValue ? false:true)
             }} className="bg-white border-[#5625F2] border-2 rounded-[5px] flex items-center justify-center h-[22px] w-[22px] cursor-pointer">
               {checkedValue ? (
                 <Check size={18} style={{ color: "#5625F2" }} />

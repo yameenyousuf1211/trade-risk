@@ -8,6 +8,8 @@ import {
   format,
 } from "date-fns";
 import { twMerge } from "tailwind-merge";
+import { LG } from "../constant/constant";
+import { Bank } from "@/types/LGBankTypes";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -273,3 +275,136 @@ export function convertStringToNumber(str: string): number {
   const number = parseFloat(cleanedStr); // Convert to a floating-point number
   return number;
 }
+
+type CountryToIsoMap = {
+  [key: string]: string;
+};
+
+export const mapCountryToIsoCode = (country: string) => {
+  const countryToIsoMap: CountryToIsoMap = {
+    pakistan: "PK",
+    india: "IN",
+    bangladesh: "BD",
+    "united arab emirates": "AE",
+    "saudi arabia": "SA",
+    oman: "OM",
+    bahrain: "BH",
+    qatar: "QA",
+    nigeria: "NG",
+  };
+  console.log(countryToIsoMap[country]);
+  
+  return countryToIsoMap[country] || null; 
+};
+
+
+  // Function to remove unnecessary fields for draft updates
+  export const removeUnnecessaryFieldsForLgCreate = (responseData: any) => {
+    // Remove unnecessary fields based on lgIssuance type
+    delete responseData?._id;
+    delete responseData.createdAt;
+    delete responseData.updatedAt;
+    delete responseData.__v;
+    delete responseData.status;
+    
+    responseData.issuingBanks = responseData.issuingBanks.map((bank: Bank) => {
+      // @ts-ignore
+      delete bank._id;
+      return bank;
+    });
+
+    if (responseData.lgIssuance !== LG.cashMargin) {
+      delete responseData.typeOfLg;
+      delete responseData.physicalLgSwiftCode;
+      delete responseData?.lgStandardText;
+      
+      if (
+        responseData.lgDetailsType != "Choose any other type of LGs"
+      ) {
+        delete responseData.otherBond;
+        delete responseData?.status;
+        [
+          "bidBond",
+          "advancePaymentBond",
+          "performanceBond",
+          "retentionMoneyBond",
+        ].forEach((element) => {
+          delete responseData[element]?._id;
+
+          if(responseData[element]?.Contract){
+            Boolean(responseData[element]?.checked) ? responseData[element].Contract = true : responseData[element].Contract = false;
+          }
+          if (responseData[element]?.valueInPercentage)
+            responseData[element].valueInPercentage =
+              responseData[element].valueInPercentage?.toString();
+
+          if (responseData[element]?.lgTenor?.lgTenorValue)
+            responseData[element].lgTenor.lgTenorValue =
+              responseData[element].lgTenor.lgTenorValue?.toString();
+
+          if (!responseData[element]?.cashMargin) {
+            delete responseData[element];
+          } else {
+            responseData[element]["cashMargin"] = convertStringToNumber(
+              responseData[element]["cashMargin"]
+            )?.toString();
+          }
+        });
+      } else {
+        delete responseData.bidBond;
+        delete responseData.advancePaymentBond;
+        delete responseData.performanceBond;
+        delete responseData.retentionMoneyBond;
+        delete responseData?.status;
+        delete responseData.otherBond?._id;
+        delete responseData?.otherBond?.checked;
+
+        if (responseData.otherBond?.valueInPercentage)
+          responseData.otherBond.valueInPercentage =
+            responseData.otherBond.valueInPercentage?.toString();
+
+        if (responseData.otherBond?.lgTenor?.lgTenorValue)
+          responseData.otherBond.lgTenor.lgTenorValue =
+            responseData.otherBond.lgTenor.lgTenorValue?.toString();
+
+        if (responseData?.otherBond?.cashMargin) {
+          console.log(responseData.otherBond?.cashMargin, "cashMargin");
+          responseData.otherBond.cashMargin = convertStringToNumber(
+            responseData?.otherBond?.cashMargin
+          )?.toString();
+          responseData.otherBond.lgDetailAmount = convertStringToNumber(
+            responseData.otherBond.cashMargin
+          );
+        }
+      }
+    } else {
+      delete responseData.bidBond;
+      delete responseData.advancePaymentBond;
+      delete responseData.performanceBond;
+      delete responseData.retentionMoneyBond;
+      delete responseData?.otherBond?._id;
+      responseData["lgDetailsType"] = "Choose any other type of LGs";
+      responseData.otherBond["lgDetailAmount"] = convertStringToNumber(
+        responseData.otherBond["lgDetailAmount"]
+      );
+      responseData.otherBond["cashMargin"] = convertStringToNumber(
+        responseData.otherBond["cashMargin"]
+      )?.toString();
+
+      if (responseData.otherBond?.lgTenor?.lgTenorValue) {
+        responseData.otherBond.lgTenor.lgTenorValue =
+          responseData.otherBond?.lgTenor?.lgTenorValue?.toString();
+      }
+    }
+    if (
+      !responseData?.expectedPrice?.expectedPrice ||
+      responseData?.expectedPrice?.expectedPrice === "false"
+    )
+      delete responseData?.expectedPrice?.pricePerAnnum;
+    if (responseData?.applicantDetails?.crNumber)
+      responseData.applicantDetails.crNumber =
+        responseData.applicantDetails.crNumber?.toString();
+    console.log("🚀 ~ responseData:", responseData);
+  };
+
+  

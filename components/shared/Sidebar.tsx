@@ -63,11 +63,11 @@ const SliderCard = ({
         {lcData.currency || "USD"}{" "}
         {info.confirmationPrice?.toLocaleString() + ".00" || "00"}
       </p>
-      <p className="font-roboto text-para font-medium mt-2">
-        {info.userInfo?.name || ""}
+      <p className="font-roboto text-para font-medium mt-1">
+        {info.bidBy?.name || ""}
       </p>
       <p className="font-roboto text-para text-sm font-light truncate capitalize">
-        {info.userInfo?.country || "Pakistan"}
+        {info.bidBy?.country || "Pakistan"}
       </p>
       <div className="flex items-center gap-x-2 mt-2">
         <Button

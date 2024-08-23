@@ -171,7 +171,7 @@ const RequestCard = ({
 
               <AddBid
                 triggerTitle="Add Bid"
-                status="Add bid"
+                status="Add Bid"
                 isBank
                 isDiscount={
                   ((data as ILcs).type &&

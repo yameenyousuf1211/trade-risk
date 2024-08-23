@@ -37,6 +37,30 @@ export const convertDateToYYYYMMDD = (date: any) => {
   const day = String(jsDate.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
+export function convertDate(mongooseDate: Date): string {
+  // Convert the Mongoose date to a JavaScript Date object if it's not already
+  const date = new Date(mongooseDate);
+
+  const dateOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',   // 4-digit year
+    month: 'short',    // Short month (e.g., Jan, Feb, Mar)
+    day: 'numeric'     // Day of the month (1-31)
+  };
+
+  // Define options for formatting the time
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    hour: '2-digit',   // 2-digit hour (e.g., 01, 14)
+    minute: '2-digit', // 2-digit minute (e.g., 05, 59)
+    hour12: false      // Use 24-hour format
+  };
+
+  // Format the date and time separately
+  const formattedDate = date.toLocaleDateString('en-US', dateOptions);
+  const formattedTime = date.toLocaleTimeString('en-US', timeOptions);
+
+  // Combine the formatted date and time into the desired format
+  return `${formattedDate}, ${formattedTime}`;
+}
 
 export const formatLeftDate = (date: any) => {
   if (!date) return;

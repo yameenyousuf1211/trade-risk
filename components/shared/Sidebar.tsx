@@ -41,9 +41,9 @@ const SliderCard = ({
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      // queryClient.invalidateQueries({
-      //   queryKey: ["bid-status-change"],
-      // });
+      queryClient.invalidateQueries({
+        queryKey: ["bid-status"],
+      });
     },
   });
 
@@ -56,11 +56,12 @@ const SliderCard = ({
     if (!success) return toast.error(response as string);
     else return toast.success(`Bid ${status}`);
   };
+  
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
       <p className="uppercase">
         {lcData.currency || "USD"}{" "}
-        {info.amount?.toLocaleString() + ".00" || "00"}
+        {info.confirmationPrice?.toLocaleString() + ".00" || "00"}
       </p>
       <p className="font-roboto text-para font-medium mt-2">
         {info.userInfo?.name || ""}

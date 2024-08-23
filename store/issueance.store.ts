@@ -17,9 +17,10 @@ const defaultValue = {
   lgDetailsType: "Choose any other type of LGs",
   bidBond: {
     Contract:false,
+    currencyType: "",
     cashMargin:"0",
-    expectedDate: new Date(),
-    valueInPercentage: "",
+    expectedDate: undefined,
+    valueInPercentage: undefined,
     lgTenor:{
       lgTenorType: "Months",
       lgTenorValue: ""
@@ -27,9 +28,10 @@ const defaultValue = {
   },
   advancePaymentBond: {
     Contract:false,
+    currencyType: "",
     cashMargin:"0",
-    expectedDate: new Date(),
-    lgExpiryDate: new Date(),
+    expectedDate: undefined,
+    lgExpiryDate: undefined,
 
     valueInPercentage: "",
     lgTenor:{
@@ -40,9 +42,10 @@ const defaultValue = {
   },
   performanceBond: {
     Contract:false,
+    currencyType: "",
     cashMargin:"0",
-    expectedDate: new Date(),
-    lgExpiryDate: new Date(),
+    expectedDate:undefined,
+    lgExpiryDate:undefined,
 
     valueInPercentage: "",
     lgTenor:{
@@ -53,9 +56,10 @@ const defaultValue = {
   },
   retentionMoneyBond: {
     Contract:false,
+    currencyType: "",
     cashMargin:"0",
-    expectedDate: new Date(),
-    lgExpiryDate: new Date(),
+    expectedDate:undefined,
+    lgExpiryDate:undefined,
 
     valueInPercentage: "",
     lgTenor:{
@@ -65,9 +69,10 @@ const defaultValue = {
   },
   otherBond: {
     Contract:false,
+    currencyType: "",
     cashMargin:"0",
-    expectedDate: new Date(),
-    lgExpiryDate: new Date(),
+    expectedDate:undefined,
+    lgExpiryDate:undefined,
     valueInPercentage: "",
     lgTenor:{
       lgTenorType: "Months",
@@ -88,7 +93,10 @@ const defaultValue = {
   physicalLgBank: "",
   physicalLgSwiftCode: null,
   type: "",
-  lastDateOfReceivingBids: ""
+  lastDateOfReceivingBids: "",
+  totalLgAmount: "",
+  totalContractValue: "",
+  totalContractCurrency: "",
 };
 
 const useLcIssuance = create<UseIssueanceStore>((set, get) => ({

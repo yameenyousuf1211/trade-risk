@@ -104,8 +104,14 @@ export const AddBid = ({
     onSuccess: () => {
       console.log("onsuccess.... invalidating queries");
       queryClient.invalidateQueries({
+        
         queryKey: ["bid-status"],
-        // queryKey: [ "fetch-risks"],
+       
+      });
+      queryClient.invalidateQueries({
+        
+        queryKey: ["fetch-lcs"],
+       
       });
     },
   });
@@ -154,8 +160,7 @@ export const AddBid = ({
     else {
       console.log(response?.data, "response?.data");
     buttonRef?.current?.click();
-    queryClient.invalidateQueries("fetch-lcs");
-    queryClient.invalidateQueries("bid-status");
+ 
     toast.success("Bid added");
     }
   };

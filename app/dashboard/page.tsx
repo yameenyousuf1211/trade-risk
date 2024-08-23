@@ -32,7 +32,7 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
       queryKey: ["fetch-lcs", page, limit, search, filter],
       queryFn: () => fetchAllLcs({ page, limit, search, filter }),
     });
-  console.log(data, "lctable");
+  // console.log(data, "lctable");
   return (
     <DashboardLayout>
       <div className="flex w-full px-2 2xl:px-10">

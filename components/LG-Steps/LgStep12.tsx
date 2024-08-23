@@ -16,8 +16,8 @@ const LgStep12: React.FC<LgStepsProps10> = ({
   const lgIssuance = watch("lgIssuance");
   const lastDateOfReceivingBids = watch("lastDateOfReceivingBids");
 
-  console.log("🚀 ~ lastDateOfReceivingBids", lastDateOfReceivingBids);
-  
+  console.log("🚀 ~ lastDateOfReceivingBidsss", lastDateOfReceivingBids);
+  console.log("🚀 ~ lastDateOfReceivingBidsss", new Date(lastDateOfReceivingBids));
   return (
     <div
       id={`lg-step${step}`}
@@ -41,14 +41,12 @@ const LgStep12: React.FC<LgStepsProps10> = ({
         >
           <p className="w-full text-sm text-lightGray">Select Date</p>
           <DatePicker
-                      value={!lastDateOfReceivingBids  ? undefined : new Date(lastDateOfReceivingBids)}
             maxDate={
               new Date(new Date().setFullYear(new Date().getFullYear() + 1))
             }
-            isLg={true}
             setValue={setValue}
             // value={lastDateOfReceivingBids}
-            isPast={false}
+            value={new Date(lastDateOfReceivingBids)}
             name={`lastDateOfReceivingBids`}
           />
         </label>

@@ -1,33 +1,42 @@
 import { LG } from "@/utils";
 import * as Yup from "yup";
 
-const bondSchema = Yup.object()
-  .shape({
-    Contract: Yup.boolean().default(false).required("Contract is required"),
-    currencyType: Yup.string()
-      .min(1, "Currency Type is required")
-      .default("USD"),
-    cashMargin: Yup.string().when("Contract", {
+const bondSchema = Yup.object().shape({
+  Contract: Yup.boolean().default(false).required("Contract is required"),
+  currencyType: Yup.string()
+    .min(1, "Currency Type is required")
+    .default("USD"),
+  cashMargin: Yup.number()
+    .when("Contract", {
       is: true,
-      then: (schema) => schema.required('Must enter LG Amount'),
-      otherwise: (schema) => schema.notRequired()
+      then: (schema) => schema.required("Must enter LG Amount"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  valueInPercentage: Yup.number()
+    // .typeError("valueInPercenta Percentage should be a number")
+    .nullable(),
+  expectedDate: Yup.date()
+    .when("Contract", {
+      is: true,
+      then: (schema) => schema.min(2).required("Expected Date is required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  lgExpiryDate: Yup.date().when("Contract", {
+    is: true,
+    then: (schema) => schema.required("LG Expiry Date is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  lgTenor: Yup.object()
+    .shape({
+      lgTenorType: Yup.string()
+        .min(1, "LG Tenor Type is required")
+        .default("Months"),
+      lgTenorValue: Yup.string().nullable(),
     })
-      .typeError("Cash Margin must be a String"),
-    valueInPercentage: Yup.string()
-      .typeError("Cash Margin Percentage should be a number")
-      .nullable(),
-    expectedDate: Yup.string().required("Expected Date is required"),
-    lgExpiryDate: Yup.string().required("LG Expiry Date is required"),
-    lgTenor: Yup.object()
-      .shape({
-        lgTenorType: Yup.string()
-          .min(1, "LG Tenor Type is required")
-          .default("Months"),
-        lgTenorValue: Yup.string().nullable(),
-      })
-      .nullable(),
-    draft: Yup.string().nullable(),
-  })
+    .nullable(),
+  draft: Yup.string().nullable(),
+});
+
   // // SuperRefine equivalent
   // .test("contract-logic", "", function (input) {
   //   if (input.Contract === true) {
@@ -118,7 +127,17 @@ export const lgValidator = Yup.object()
     // physicalLgBank: Yup.string().nullable(),
     // physicalLgCountry: Yup.string().nullable(),
     // physicalLgSwiftCode: Yup.string().nullable(),
-    lastDateOfReceivingBids: Yup.string().required("Last Date of Receiving Bids is required"),
+    lastDateOfReceivingBids: Yup.date().required("Last Date of Receiving Bids is required"),
+    totalContractValue: Yup.string().when('lgDetailsType' ,{
+      is:"Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
+      then: (schema) => schema.required("Total Contract Value is required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),    
+    totalContractCurrency: Yup.string().when('lgDetailsType' ,{
+      is:"Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
+      then: (schema) => schema.required("Total Contract Value is required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   }).test(
     'at-least-one-required',
     'At least one of Bond  must be provided.',

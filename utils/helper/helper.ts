@@ -369,11 +369,11 @@ export const mapCountryToIsoCode = (country: string) => {
               responseData[element].lgTenor.lgTenorValue?.toString();
 
           if (!responseData[element]?.cashMargin) {
-            delete responseData[element];
+          
           } else {
             responseData[element]["cashMargin"] = convertStringToNumber(
               responseData[element]["cashMargin"]
-            )?.toString();
+            ).toFixed()
           }
         });
       } else {
@@ -394,13 +394,12 @@ export const mapCountryToIsoCode = (country: string) => {
             responseData.otherBond.lgTenor.lgTenorValue?.toString();
 
         if (responseData?.otherBond?.cashMargin) {
-          console.log(responseData.otherBond?.cashMargin, "cashMargin");
           responseData.otherBond.cashMargin = convertStringToNumber(
             responseData?.otherBond?.cashMargin
-          )?.toString();
+          )?.toFixed();
           responseData.otherBond.lgDetailAmount = convertStringToNumber(
             responseData.otherBond.cashMargin
-          );
+          )?.toFixed();
         }
       }
     } else {
@@ -415,7 +414,7 @@ export const mapCountryToIsoCode = (country: string) => {
       );
       responseData.otherBond["cashMargin"] = convertStringToNumber(
         responseData.otherBond["cashMargin"]
-      )?.toString();
+      )?.toFixed()
 
       if (responseData.otherBond?.lgTenor?.lgTenorValue) {
         responseData.otherBond.lgTenor.lgTenorValue =
@@ -443,4 +442,27 @@ export const mapCountryToIsoCode = (country: string) => {
     }
 
     return true;
+  };
+
+export  const convertStringValueToDate = (responseData: any) => {
+    const convertDateFields = (obj: any, fields: string[]) => {
+      fields.forEach((field) => {
+        if (obj && obj[field]) {
+          obj[field] = new Date(obj[field]);
+        }
+      });
+    };
+  
+    // Convert date fields for responseData itself
+    convertDateFields(responseData, ['lastDateOfReceivingBids']);
+  
+    // Convert date fields for various bond types
+    const bondFields = ['expectedDate', 'lgExpiryDate'];
+    convertDateFields(responseData.bidBond, bondFields);
+    convertDateFields(responseData.advancePaymentBond, bondFields);
+    convertDateFields(responseData.performanceBond, bondFields);
+    convertDateFields(responseData.retentionMoneyBond, bondFields);
+    convertDateFields(responseData.otherBond, bondFields);
+    
+    // Add any additional bond objects here if needed
   };

@@ -109,7 +109,7 @@ const PointContactPage = () => {
             <FloatingInput
               type="text"
               name="pocDesignation"
-              placeholder="POC Designation"
+              placeholder="Designation"
               register={register}
             />
             {errors.pocDesignation && (
@@ -124,7 +124,7 @@ const PointContactPage = () => {
             <FloatingInput
               register={register}
               name="pocEmail"
-              placeholder="Point of Contact Email"
+              placeholder="Company Email"
               type="email"
             />
             {errors.pocEmail && (

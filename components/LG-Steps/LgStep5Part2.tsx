@@ -63,7 +63,7 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({
     }
   }, [selectedFiles]);
 
-  console.log("DATA COMING FROM FUCKINGGG STORE", lgStandardText);
+  // console.log("DATA COMING FROM FUCKINGGG STORE", lgStandardText);
 
   return (
     <div

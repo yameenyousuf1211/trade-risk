@@ -17,6 +17,7 @@ export interface LgStepsProps2 {
   watch: UseFormWatch<any>;
   name?: string;
   step?: number;
+  isoCodes?: string[];
   stepStatus?: boolean[] | null[];
 }
 

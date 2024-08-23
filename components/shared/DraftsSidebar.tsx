@@ -135,7 +135,7 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
       enabled: !!user?.business?._id,
     });
 
-  console.log(data, "drafts, 1")
+  // console.log(data, "drafts, 1")
 
   const filteredData =
     data &&

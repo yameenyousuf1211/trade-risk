@@ -24,8 +24,8 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
     const bondTypes = useMemo(() => [
         { name: 'bidBond', listValue: 'Bid Bond' },
         { name: 'advancePaymentBond', listValue: 'Advance Payment Bond' },
-        { name: 'performanceBond', listValue: 'Retention Bond' },
-        { name: 'retentionMoneyBond', listValue: 'Performance Bond' },
+        { name: 'retentionMoneyBond', listValue: 'Retention Bond ' },
+        { name: 'performanceBond', listValue: 'Performance Bond' },
     ], []);
 
     const bidBondAmount = convertStringToNumber(watch('bidBond.cashMargin') || '0');
@@ -39,6 +39,9 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
         return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       };
 
+      useEffect(() => {
+        setValue('totalLgAmount', bidBondAmount + advancePaymentBondAmount + performanceBondAmount + retentionMoneyBondAmount);
+      },[])
     return (
         <Table className='my-2' id={`TableData`}>
             <TableHeader className='bg-[#F5F7F9]'>

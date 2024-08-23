@@ -104,7 +104,7 @@ const CompanyInfoPage = () => {
     const {response,success} = await phoneVerification(data.phone);
 
     if(!success){
-      console.log("🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ response", response);
+      // console.log("🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ response", response);
       toast.error("Phone number is invalid");
       return;
     }

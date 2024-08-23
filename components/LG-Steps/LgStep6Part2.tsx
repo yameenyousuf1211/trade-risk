@@ -53,12 +53,12 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   const lgDetailAmount = watch(`${name}.lgDetailAmount`);
   const cashMargin = watch(`${name}.cashMargin`);
   const lgTenorType = watch(`${name}.lgTenor.lgTenorType`);
-  console.log("🚀 ~ cashMargin:", cashMargin);
+  // console.log("🚀 ~ cashMargin:", cashMargin);
   const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
   const expectedDate = watch(`${name}.expectedDate`);
   const lgExpiryDate = watch(`${name}.lgExpiryDate`);
-  console.log("🚀 ~ expectedDate:", expectedDate);
-  console.log("🚀 ~ lgExpiryDate:", lgExpiryDate);
+  // console.log("🚀 ~ expectedDate:", expectedDate);
+  // console.log("🚀 ~ lgExpiryDate:", lgExpiryDate);
   const { addStep, removeStep } = useStepStore();
 
 

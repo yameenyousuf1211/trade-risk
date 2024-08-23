@@ -89,12 +89,14 @@ export const AddBid = ({
   const { data: lcData, isLoading } = useQuery({
     queryKey: [`single-lc`, id],
     queryFn: () => fetchSingleLc(id),
+    enabled: !isRisk,
   });
 
   // console.log("🚀 ~ lcData:", bidData);
   const { data: riskData } = useQuery<IRisk>({
     queryKey: [`single-risk`, id],
     queryFn: () => fetchSingleRisk(id),
+    enabled: isRisk,
   });
 
   const { mutateAsync } = useMutation({
@@ -537,15 +539,16 @@ export const AddBid = ({
                       <LCInfo
                         label="LC Issuance (Expected)"
                         value={
-                          riskData?.startDate || riskData?.period?.startDate
-                            ? convertDateToCommaString(
-                                riskData?.startDate
-                                  ? riskData?.startDate
-                                  : riskData?.period?.startDate
-                              )
-                            : lcData?.createdAt
-                            ? convertDateToCommaString(lcData?.createdAt)
-                            : "-"
+                          // riskData?.startDate || riskData?.period?.startDate
+                          //   ? convertDateToCommaString(
+                          //       riskData?.startDate
+                          //         ? riskData?.startDate
+                          //         : riskData?.period?.startDate
+                          //     )
+                          //   : lcData?.createdAt
+                          //   ? convertDateToCommaString(lcData?.createdAt)
+                          //   : "-"
+                          convertDateToCommaString(lcData.period?.startDate)
                         }
                       />
                       <LCInfo
@@ -553,22 +556,14 @@ export const AddBid = ({
                         value={
                           lcData?.period?.endDate
                             ? convertDateToCommaString(lcData?.period?.endDate)
-                            : lcData?.otherBond?.lgExpiryDate
-                            ? convertDateToCommaString(
-                                lcData?.otherBond?.lgExpiryDate
-                              )
-                            : "-"
+                            :  "-"
                         }
                       />
                       <LCInfo
                         label="Confirmation Date (Expected)"
                         value={
-                          lcData?.period?.endDate
-                            ? convertDateToCommaString(lcData?.period?.endDate)
-                            : lcData?.otherBond?.expectedDate
-                            ? convertDateToCommaString(
-                                lcData?.otherBond?.expectedDate
-                              )
+                          lcData?.expectedConfirmationDate
+                            ? convertDateToCommaString(lcData?.expectedConfirmationDate)
                             : "-"
                         }
                       />

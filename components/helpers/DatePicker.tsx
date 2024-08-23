@@ -76,7 +76,6 @@ export const DatePicker = ({
             currentSetDate
           ) : (
             <>
-              <span>{placeholder ? placeholder : ""}</span>
               <span>DD/MM/YYYY</span>
             </>
           )}

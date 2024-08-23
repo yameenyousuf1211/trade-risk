@@ -105,7 +105,7 @@ export const generalLcSchema = Yup.object().shape({
         )
        
     }).when("paymentTerms", (paymentTerms, schema) => {
-      return typeof paymentTerms === "string" && paymentTerms === "Usance LC"
+      return typeof paymentTerms === "string" && paymentTerms !== "Usance LC"
         ? schema.required("Extra info is required")
         : schema.notRequired();
     }),

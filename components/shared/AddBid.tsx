@@ -181,7 +181,6 @@ export const AddBid = ({
   };
   const userBidStatus = lcData?.bids?.find(bid => bid?.createdBy === user?._id)?.status;
   const computedStatus = userBidStatus || triggerTitle ||lcData?.status;
-
   return (
     <Dialog>
       {isRisk ? (

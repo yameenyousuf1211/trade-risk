@@ -65,7 +65,7 @@ const companyInfoSchema = Yup.object().shape({
 
 const pointOfContractSchema = Yup.object().shape({
   pocEmail: Yup.string()
-    .required("*POC Email is required")
+    .required("*Company Email is required")
     .email("*Must be a valid email."),
   pocPhone: Yup.string()
     .required("*POC phone is required")
@@ -74,8 +74,8 @@ const pointOfContractSchema = Yup.object().shape({
     .required("*POC name is required")
     .min(1, "*Poc name field cannot be empty."),
   pocDesignation: Yup.string()
-    .required("*POC designation field cannot be empty.")
-    .min(1, "*Poc designation field cannot be empty."),
+    .required("*Designation field cannot be empty.")
+    .min(1, "*Designation field cannot be empty."),
 });
 
 const productsInfoSchema = Yup.object().shape({

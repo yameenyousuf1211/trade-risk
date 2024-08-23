@@ -53,12 +53,12 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   const lgDetailAmount = watch(`${name}.lgDetailAmount`);
   const cashMargin = watch(`${name}.cashMargin`);
   const lgTenorType = watch(`${name}.lgTenor.lgTenorType`);
-  console.log("🚀 ~ cashMargin:", cashMargin);
+  // console.log("🚀 ~ cashMargin:", cashMargin);
   const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
   const expectedDate = watch(`${name}.expectedDate`);
   const lgExpiryDate = watch(`${name}.lgExpiryDate`);
-  console.log("🚀 ~ expectedDate:", expectedDate);
-  console.log("🚀 ~ lgExpiryDate:", lgExpiryDate);
+  // console.log("🚀 ~ expectedDate:", expectedDate);
+  // console.log("🚀 ~ lgExpiryDate:", lgExpiryDate);
   const { addStep, removeStep } = useStepStore();
 
 
@@ -115,16 +115,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
     setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
   };
 
-  const handleOnChangeForCommmas = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    name: string
-  ) => {
-    const value = event.target.value;
-    if (!isNaN(value.replace(/,/g, ""))) {
-      setValue(name, !value ? "0" : formatNumberWithCommas(value));
-    }
-  };
-
+ 
   // Handler for input change
   const handleChange = (event: any) => {
     const { value } = event.target;
@@ -275,7 +266,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               Expected Date to Issue LG
             </p>
             <DatePicker
-              value={!expectedDate ? undefined : new Date(expectedDate)}
+              value={expectedDate}
               maxDate={
                 new Date(new Date().setFullYear(new Date().getFullYear() + 1))
               }
@@ -290,7 +281,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
           >
             <p className="w-full text-sm text-lightGray">LG Expiry Date</p>
             <DatePicker
-              value={!lgExpiryDate ? undefined : new Date(lgExpiryDate)}
+              value={lgExpiryDate}
               disabled={!expectedDate}
               maxDate={
                 new Date(

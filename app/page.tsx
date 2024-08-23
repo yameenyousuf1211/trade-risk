@@ -31,7 +31,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
         fetchLcs({ page, limit, search, filter, userId: user?.business?._id, draft: false}),
       enabled: !!user?.business?._id,
     });
-  console.log("fetching LCSSS", data);
+  // console.log("fetching LCSSS", data);
   console.log(user?.business, "user");
   if (user && user.type !== "corporate") {
     redirect("/dashboard");

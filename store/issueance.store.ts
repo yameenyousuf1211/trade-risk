@@ -15,17 +15,71 @@ const defaultValue = {
   applicantDetails: undefined,
   beneficiaryDetails: undefined,
   lgDetailsType: "Choose any other type of LGs",
-  bidBond: undefined,
-  advancePaymentBond: undefined,
-  performanceBond: undefined,
-  retentionMoneyBond: undefined,
-  otherBond: undefined,
+  bidBond: {
+    Contract:false,
+    cashMargin:"0",
+    expectedDate: new Date(),
+    valueInPercentage: "",
+    lgTenor:{
+      lgTenorType: "Months",
+      lgTenorValue: ""
+    }
+  },
+  advancePaymentBond: {
+    Contract:false,
+    cashMargin:"0",
+    expectedDate: new Date(),
+    lgExpiryDate: new Date(),
+
+    valueInPercentage: "",
+    lgTenor:{
+      lgTenorType: "Months",
+      lgTenorValue: ""
+    }
+
+  },
+  performanceBond: {
+    Contract:false,
+    cashMargin:"0",
+    expectedDate: new Date(),
+    lgExpiryDate: new Date(),
+
+    valueInPercentage: "",
+    lgTenor:{
+      lgTenorType: "Months",
+      lgTenorValue: ""
+    }
+
+  },
+  retentionMoneyBond: {
+    Contract:false,
+    cashMargin:"0",
+    expectedDate: new Date(),
+    lgExpiryDate: new Date(),
+
+    valueInPercentage: "",
+    lgTenor:{
+      lgTenorType: "Months",
+      lgTenorValue: ""
+    }
+  },
+  otherBond: {
+    Contract:false,
+    cashMargin:"0",
+    expectedDate: new Date(),
+    lgExpiryDate: new Date(),
+    valueInPercentage: "",
+    lgTenor:{
+      lgTenorType: "Months",
+      lgTenorValue: ""
+    }
+  },
   issuingBanks: undefined,
   beneficiaryBanksDetails: undefined,
   purpose: "",
   remarks: "",
   priceQuotes: "",
-  expectedPrice: undefined,
+  expectedPrice: "",
   typeOfLg: "Custom",
   issueLgWithStandardText: false,
   lgStandardText: "",
@@ -34,9 +88,7 @@ const defaultValue = {
   physicalLgBank: "",
   physicalLgSwiftCode: null,
   type: "",
-  createdAt: "",
-  updatedAt: "",
-  __v: 0,
+  lastDateOfReceivingBids: ""
 };
 
 const useLcIssuance = create<UseIssueanceStore>((set, get) => ({

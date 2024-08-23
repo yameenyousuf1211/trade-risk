@@ -22,7 +22,7 @@ export const TableBidStatus = ({
   isRisk?: boolean;
 }) => {
   const { data, isLoading } = useQuery({
-    queryKey: ["bid-status", "fetch-lcs", "fetch-risks", "fetch-all-lcs", id],
+    queryKey: ["bid-status", "fetch-lcs", "fetch-risks", id],
     queryFn: () => getBankLcStatus(id, isRisk ? "risk" : "lc"),
   });
   const [isAddNewBid, setIsAddNewBid] = useState<boolean>(false);

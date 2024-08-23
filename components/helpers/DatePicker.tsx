@@ -70,12 +70,12 @@ export const DatePicker = ({
           id={`${name || "validity"}`}
         >
           {date && date instanceof Date ? (
+            // console.log("date ERROR", date,name,placeholder),
             format(date, "PPP")
           ) : currentSetDate ? (
             currentSetDate
           ) : (
             <>
-              <span>{placeholder ? placeholder : ""}</span>
               <span>DD/MM/YYYY</span>
             </>
           )}

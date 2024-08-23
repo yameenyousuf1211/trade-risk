@@ -35,7 +35,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
   const otherBondName = watch(`${name}.name`);
 
-  console.log("🚀 ~ cashMargin:", cashMargin);
+  // console.log("🚀 ~ cashMargin:", cashMargin);
 
   useEffect(() => {
     if (cashMargin && !cashMargin?.toString()?.includes(".00")) {
@@ -114,13 +114,13 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
               {...register(`${name}.Contract`)}
             /> */}
             <div onClick={() => {
-              setValue(`${name}.Contract`,checkedValue?false:true)
+              setValue(`${name}.Contract`,checkedValue ? false:true)
             }} className="bg-white border-[#5625F2] border-2 rounded-[5px] flex items-center justify-center h-[22px] w-[22px] cursor-pointer">
               {checkedValue ? (
                 <Check size={18} style={{ color: "#5625F2" }} />
               ) : null}
             </div>
-            <p style={{ textWrap: "wrap", textAlign: "left" }}>{listValue}</p>
+            <p style={{  textAlign: "left" }}>{listValue}</p>
           </div>
         </TableDataCell>
       ) : (
@@ -188,27 +188,28 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <DatePicker
-          value={!expectedDate ? undefined : new Date(expectedDate)}
-          setValue={setValue}
-          disabled={!checkedValue}
-          name={`${name}.expectedDate`}
           maxDate={
             new Date(new Date().setFullYear(new Date().getFullYear() + 1))
           }
+          value={!expectedDate ? undefined : new Date(expectedDate)}
+          isLg
+          name={`${name}.expectedDate`}
+          setValue={setValue}
+          disabled={!checkedValue}
         />
       </TableCell>
       <TableCell>
         <DatePicker
-          value={!lgExpiryDate ? undefined : new Date(lgExpiryDate)}
-          disabled={!checkedValue}
-          setValue={setValue}
-          name={`${name}.lgExpiryDate`}
+            value={!lgExpiryDate ? undefined : new Date(lgExpiryDate)}
           maxDate={
             new Date(new Date().setFullYear(new Date().getFullYear() + 1))
           }
+          isLg
+          name={`${name}.lgExpiryDate`}
+          setValue={setValue}
+          disabled={!checkedValue}
         />
       </TableCell>
-      {name !== "advancePaymentBond" ? (
         <>
           <TableCell className="flex gap-2">
             <Select
@@ -251,12 +252,6 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
             </div>
           </TableCell>
         </>
-      ) : (
-        <>
-          <TableCell></TableCell>
-          <TableCell></TableCell>
-        </>
-      )}
     </TableRow>
   );
 };

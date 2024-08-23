@@ -5,6 +5,9 @@ import { Input } from "../ui/input";
 import { PhoneInput } from "../ui/phone-input";
 import useStepStore from "@/store/lcsteps.store";
 import { BENEFICIARY } from "@/utils/constant/lg";
+import { mapCountryToIsoCode } from "@/utils";
+import { useQuery } from "@tanstack/react-query";
+import { getCities } from "@/services/apis/helpers.api";
 
 const LgStep4: React.FC<LgStepsProps2> = ({
   register,
@@ -17,8 +20,9 @@ const LgStep4: React.FC<LgStepsProps2> = ({
 }) => {
   const beneficiaryCountry = watch("beneficiaryDetails.country");
   const beneficiaryName = watch("beneficiaryDetails.name");
-  console.log("🚀 ~ beneficiaryName:", beneficiaryName);
   const beneficiaryAddress = watch("beneficiaryDetails.address");
+  const beneficiaryCity = watch("beneficiaryDetails.city");
+
   const beneficiaryPhoneNumber = watch("beneficiaryDetails.phoneNumber");
   const { addStep, removeStep } = useStepStore();
 
@@ -37,7 +41,16 @@ const LgStep4: React.FC<LgStepsProps2> = ({
     beneficiaryAddress,
     beneficiaryPhoneNumber,
   ]);
+  const [isoCode, setIsoCode] = useState<string | null >("");
 
+  const {data:cities,isLoading} = useQuery({
+    queryKey: ["cities"],
+    queryFn: ()=>getCities(isoCode!),
+    enabled:isoCode?true:false
+  })
+
+  
+  
   return (
     <div
       id="lg-step4"
@@ -77,6 +90,9 @@ const LgStep4: React.FC<LgStepsProps2> = ({
             id="beneficiaryDetails.country"
             value={beneficiaryCountry}
             data={data}
+            onSelectValue={(value) => {
+              setIsoCode(mapCountryToIsoCode(value.toLowerCase()))
+            }}
             setValue={setValue}
             flags={flags}
           />
@@ -84,10 +100,10 @@ const LgStep4: React.FC<LgStepsProps2> = ({
             placeholder="Select"
             label="Select City"
             id="beneficiaryDetails.city"
-            value={beneficiaryCountry}
-            data={data}
+            value={beneficiaryCity}
             setValue={setValue}
-            flags={flags}
+            disabled={isLoading || !isoCode}
+            data={cities?.success && cities?.response.map((city:any)=>city.name)}
           />
         </div>
         <div className="flex items-center gap-3">

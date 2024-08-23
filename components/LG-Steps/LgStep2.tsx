@@ -17,7 +17,6 @@ const LgStep2: React.FC<LgStepsProps2> = ({
   const country = watch("applicantDetails.country");
   const company = watch("applicantDetails.company");
   const crNumber = watch("applicantDetails.crNumber");
-  const lgIssuance = watch("lgIssuance");
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
@@ -30,8 +29,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({
 
   const handleOnChange = (event: any) => {
     const value = event.target.value;
-    const filteredValue = value.replace(/[^0-9]/g, "");
-    setValue("applicantDetails.crNumber", !value ? 0 : parseInt(filteredValue));
+    setValue("applicantDetails.crNumber",value);
   };
 
   return (
@@ -64,12 +62,12 @@ const LgStep2: React.FC<LgStepsProps2> = ({
           placeholder="Select"
           label="Company"
           id="applicantDetails.company"
-          data={["Company 1", "Company 2", "Company 3"]}
+          data={["Saudi Aramco", "Saudi Telecom Company", "Saudi National Bank","Maaden","Al Rajhi Bank","SABIC","Saudi Electricity Company","Saudi Arabian Airlines","Saudi Basic Industries Corporation","Saudi Arabian Mining Company","Saudi Arabian Oil Company","Saudi Arabian Monetary Authority","Saudi Arabian General Investment Authority","Saudi Arabian Military Industries","Saudi Arabian Public Investment Fund"]}
           setValue={setValue}
           extStyle="flex-1"
         />
 
-        {lgIssuance === LG.cashMargin && (
+        {/* {lgIssuance === LG.cashMargin && (
           <DDInput
             value={company}
             placeholder="Select"
@@ -79,7 +77,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({
             setValue={() => null}
             extStyle="flex-1"
           />
-        )}
+        )} */}
         <label
           id="applicantDetails.crNumber"
           className="border p-1 px-3 rounded-md w-full flex items-center justify-between  bg-white flex-1"
@@ -91,7 +89,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({
             register={register}
             type="text"
             name="applicantDetails.crNumber"
-            className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+            className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px] uppercase"
             placeholder="-"
           />
         </label>

@@ -20,7 +20,8 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step,set
     setValue('expectedPrice.pricePerAnnum', parseInt(newValue) < 0 ? '0.00' : newValue);
   };
 
-  
+    console.log("🚀 ~ expectedPrice", expectedPrice);
+    
   return (
     <div id={`lg-step${step}`} className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target">
       <div className="flex items-center gap-x-2 ml-3 mb-3">
@@ -33,7 +34,7 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step,set
       </div>
       <div className='flex gap-3 items-center  rounded-lg'>
         <BgRadioInput
-          id="expectedPrice"
+          id="expectedPriceYes"
           label="Yes"
           name="expectedPrice.expectedPrice"
           value="true"
@@ -41,7 +42,7 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step,set
           checked={expectedPrice === "true"}
         />
         <BgRadioInput
-          id="expectedPrice2"
+          id="expectedPriceNo"
           label="No"
           name="expectedPrice.expectedPrice"
           value="false"

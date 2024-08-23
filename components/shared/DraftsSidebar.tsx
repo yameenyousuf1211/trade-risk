@@ -58,13 +58,15 @@ const DraftCard = ({
   const handleEditLC = async () => {
     try {
       const response = await fetchSingleLc(draft?._id);
-      // console.log("response: ", response);
+      console.log("~ response: line 61 page draftsidebar ", response);
       isConfirmation && setConfirmationValues(response);
       isDiscounting && setDiscountingValues(response);
       isConfirmationDiscounting && setConfirmationDiscountingValues(response);
       console.log(response);
       isLCIssuance && setLCIssuance(response);
-    } catch (error) {}
+    } catch (error) {
+      console.log("~ error", error);
+    }
   };
 
 
@@ -135,7 +137,7 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
       enabled: !!user?.business?._id,
     });
 
-  console.log(data, "drafts, 1")
+  // console.log(data, "drafts, 1")
 
   const filteredData =
     data &&

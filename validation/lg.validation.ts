@@ -7,14 +7,17 @@ const bondSchema = Yup.object()
     currencyType: Yup.string()
       .min(1, "Currency Type is required")
       .default("USD"),
-    cashMargin: Yup.string()
-      .typeError("Cash Margin must be a String")
-      .nullable(),
+    cashMargin: Yup.string().when("Contract", {
+      is: true,
+      then: (schema) => schema.required('Must enter LG Amount'),
+      otherwise: (schema) => schema.notRequired()
+    })
+      .typeError("Cash Margin must be a String"),
     valueInPercentage: Yup.string()
       .typeError("Cash Margin Percentage should be a number")
       .nullable(),
-    expectedDate: Yup.date().nullable(),
-    lgExpiryDate: Yup.date().nullable(),
+    expectedDate: Yup.string().required("Expected Date is required"),
+    lgExpiryDate: Yup.string().required("LG Expiry Date is required"),
     lgTenor: Yup.object()
       .shape({
         lgTenorType: Yup.string()
@@ -25,59 +28,57 @@ const bondSchema = Yup.object()
       .nullable(),
     draft: Yup.string().nullable(),
   })
-  // SuperRefine equivalent
-  .test("contract-logic", "", function (input) {
-    if (input.Contract === true) {
-      // Add any conditional validations here
-      // For example, uncommenting the lines below would make these fields required when Contract is true
-      // if (!input.expectedDate) {
-      //   return this.createError({
-      //     path: 'expectedDate',
-      //     message: "Expected Date is required",
-      //   });
-      // }
-      // if (!input.lgExpiryDate) {
-      //   return this.createError({
-      //     path: 'lgExpiryDate',
-      //     message: "LG Expiry Date is required",
-      //   });
-      // }
-    }
-    return true;
-  });
+  // // SuperRefine equivalent
+  // .test("contract-logic", "", function (input) {
+  //   if (input.Contract === true) {
+  //     // Add any conditional validations here
+  //     // For example, uncommenting the lines below would make these fields required when Contract is true
+  //     // if (!input.expectedDate) {
+  //     //   return this.createError({
+  //     //     path: 'expectedDate',
+  //     //     message: "Expected Date is required",
+  //     //   });
+  //     // }
+  //     // if (!input.lgExpiryDate) {
+  //     //   return this.createError({
+  //     //     path: 'lgExpiryDate',
+  //     //     message: "LG Expiry Date is required",
+  //     //   });
+  //     // }
+  //   }
+  //   return true;
+  // });
 
 // Define the main schema with all fields and refinements
 export const lgValidator = Yup.object()
   .shape({
-    type: Yup.string().min(1, "Type is required").required(),
-    lgIssuance: Yup.string().min(1, "LG Issuance is required").required(),
+    type: Yup.string().required("Type is required"),
+    lgIssuance: Yup.string().required("LG Issuance is required"),
     applicantDetails: Yup.object()
       .shape({
-        country: Yup.string().min(1).required(),
-        company: Yup.string().min(1).required(),
-        crNumber: Yup.string().min(1).required(),
+        country: Yup.string().required("Applicant Country is required"),
+        company: Yup.string().required("Applicant Company is required"),
+        crNumber: Yup.string().required("Applicant CR Number is required"),
       })
       .required(),
     beneficiaryDetails: Yup.object()
       .shape({
         name: Yup.string()
-          .min(1, "Beneficiary Name is Required")
           .required("Beneficiary Name is Required"),
         country: Yup.string()
-          .min(1, "Beneficiary Country is Required")
           .required("Beneficiary Country is Required"),
-        address: Yup.string().nullable(),
+        address: Yup.string().required("Beneficiary Address is Required"),
         phone: Yup.string().nullable(),
+        city: Yup.string().nullable(),
       })
       .required(),
     lgDetailsType: Yup.string()
-      .nullable()
-      .default("Choose any other type of LGs"),
-    bidBond: bondSchema.nullable(),
-    advancePaymentBond: bondSchema.nullable(),
-    performanceBond: bondSchema.nullable(),
-    retentionMoneyBond: bondSchema.nullable(),
-    otherBond: bondSchema.nullable(),
+      .default("Choose any other type of LGs").required(),
+    bidBond: bondSchema,
+    advancePaymentBond: bondSchema,
+    performanceBond: bondSchema,
+    retentionMoneyBond: bondSchema,
+    otherBond: bondSchema,
     issuingBanks: Yup.array()
       .of(
         Yup.object().shape({
@@ -102,33 +103,31 @@ export const lgValidator = Yup.object()
       .nullable(),
     purpose: Yup.string().nullable(),
     remarks: Yup.string().nullable(),
-    priceQuotes: Yup.string()
-      .min(1, "Price Quotes is required")
-      .required("Price Quotes is required"),
+    priceQuotes: Yup.string().required("Price Quotes is required"),
     expectedPrice: Yup.object()
       .shape({
-        expectedPrice: Yup.string().min(1).required(),
+        expectedPrice: Yup.string().required("Expected Price is required"),
         pricePerAnnum: Yup.string().nullable(),
       })
       .required(),
-    typeOfLg: Yup.string().nullable(),
-    issueLgWithStandardText: Yup.boolean().nullable(),
-    lgStandardText: Yup.string().nullable(),
+    // typeOfLg: Yup.string().nullable(),
+    // issueLgWithStandardText: Yup.boolean().nullable(),
+    // lgStandardText: Yup.string().nullable(),
     draft: Yup.boolean().nullable(),
-    physicalLg: Yup.boolean().nullable().default(false),
-    physicalLgBank: Yup.string().nullable(),
-    physicalLgCountry: Yup.string().nullable(),
-    physicalLgSwiftCode: Yup.string().nullable(),
-  })
-  .test("beneficiaryBanksDetails-required", "", function (input) {
-    if (input.type === LG.reIssuanceInAnotherCountry) {
-      return input.beneficiaryBanksDetails !== undefined;
+    // physicalLg: Yup.boolean().nullable().default(false),
+    // physicalLgBank: Yup.string().nullable(),
+    // physicalLgCountry: Yup.string().nullable(),
+    // physicalLgSwiftCode: Yup.string().nullable(),
+    lastDateOfReceivingBids: Yup.string().required("Last Date of Receiving Bids is required"),
+  }).test(
+    'at-least-one-required',
+    'At least one of Bond  must be provided.',
+    function (value) {
+      const { lgDetailsType, bidBond, advancePaymentBond, performanceBond, retentionMoneyBond } = value;
+      if (lgDetailsType == 'Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)') {
+        return !!bidBond || !!advancePaymentBond || !!performanceBond || !!retentionMoneyBond;
+      }
+      return true;
     }
-    return true;
-  })
-  .test("issueLgWithStandardText-required", "", function (input) {
-    if (input.type === LG.cashMargin) {
-      return input.issueLgWithStandardText !== undefined;
-    }
-    return true;
-  });
+  );
+

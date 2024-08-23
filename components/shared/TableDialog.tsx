@@ -60,8 +60,6 @@ export const BidCard = ({
     }
   };
 
-  console.log("bid data: ", data);
-
   return (
     <div className="rounded-lg border border-borderCol px-3 py-5">
       <div className="grid grid-cols-2 gap-y-4">
@@ -95,14 +93,12 @@ export const BidCard = ({
             </p>
           </div>
         )}
-            {data.bidType == "LC Confirmation" && (
               <div className={data.status === "Expired" ? "opacity-50" : ""}>
               <p className="mb-1 text-sm text-para">Country</p>
               <p className="text-lg font-semibold">
                 {data.bidBy.country}
               </p>
             </div>
-        )}
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Bid Recieved</p>
           <p className="text-lg font-semibold">
@@ -218,6 +214,7 @@ export const TableDialog = ({
   const { data: lcData } = useQuery({
     queryKey: [`single-lc`, lcId],
     queryFn: () => fetchSingleLc(lcId),
+    enabled:!isRisk,
   });
 
   // console.log("🚀 ~ lcData1:", lcData);

@@ -72,9 +72,11 @@ export const ValidatingCalendar = ({
       mode="single"
       selected={selectedDate}
       defaultMonth={(startDate as Date) && (startDate as Date)} // Start the calendar from this date
+
       // @ts-ignore
       disabled={disabled}
       // @ts-ignore
+
       onSelect={handleDateSelect}
       initialFocus
     />
@@ -103,7 +105,9 @@ export const Period = ({
   const [ports, setPorts] = useState<string[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
-  console.log(watch(), "START____DATE");
+
+
+
 
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],
@@ -157,6 +161,7 @@ export const Period = ({
     //     "LC Expiry Date cannot be in the past or today's date",
     //   );
     // }
+
     setEndDate(date);
     updateValue("period.endDate", date);
   };
@@ -275,6 +280,7 @@ export const Period = ({
                 isEndDate={true}
                 startDate={lcStartDate}
                 initialDate={lcEndDate}
+
                 disabled={{
                   before: lcStartDate
                     ? new Date(
@@ -284,6 +290,7 @@ export const Period = ({
                       )
                     : undefined, // Disable lcStartDate + 1 and all dates before it
                 }}
+
                 onChange={handleExpiryDateSelect}
                 onClose={() => setIsPopoverOpen(false)}
               />
@@ -386,11 +393,13 @@ export const Transhipment = ({
   return (
     <div className="flex w-full flex-col gap-6">
       <div className="mt-4 flex w-full items-start justify-between gap-x-4">
+
         <div className="w-full rounded-md border border-borderCol bg-[#F5F7F9] px-2 py-3">
           <p className="mb-2 ml-3 text-[16px] font-semibold">
             Transhipment Allowed
           </p>
           <div className="flex gap-2">
+
             <BgRadioInput
               id="transhipment-allowed-yes"
               label="Yes"
@@ -410,7 +419,9 @@ export const Transhipment = ({
           </div>
         </div>
 
+
         <div className="h-[120px] w-full rounded-md border border-borderCol bg-[#F5F7F9] px-2 py-3">
+
           <p className="mb-2 ml-3 text-[16px] font-semibold">
             {isDiscount
               ? "Expected Date for Discounting"
@@ -418,7 +429,9 @@ export const Transhipment = ({
           </p>
           <label
             id="expected-confirmation-date"
+
             className="flex w-full items-center justify-between rounded-md border border-borderCol bg-white p-1 px-3"
+
           >
             <p className="text-sm font-normal text-lightGray">Select Date</p>
             <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -448,12 +461,12 @@ export const Transhipment = ({
                   onChange={(date) => {
                     setDate(date);
                   }}
+
                   disabled={{
                     before: new Date(lcStartDate),
                     after: new Date(lcEndDate),
                   }}
-                  onClose={() => setIsPopoverOpen(false)}
-                />
+
               </PopoverContent>
             </Popover>
           </label>

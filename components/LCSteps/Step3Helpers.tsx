@@ -28,9 +28,10 @@ export const ValidatingCalendar = ({
   onClose,
   isPast,
   maxDate,
-  startDate,
+  startDate = new Date(),
   endDate,
   isEndDate = false,
+  disabled,
 }: {
   initialDate: Date | undefined;
   onChange: (date: Date) => void;
@@ -39,6 +40,10 @@ export const ValidatingCalendar = ({
   maxDate?: Date | string | undefined;
   startDate?: Date | string;
   endDate?: Date | string;
+  disabled?: {
+    before?: Date | undefined;
+    after?: Date | undefined;
+  };
   isEndDate?: boolean;
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
@@ -50,8 +55,8 @@ export const ValidatingCalendar = ({
     const today = new Date();
     if (isPast && date > today)
       return toast.error("Please dont select a date from future");
-    if (!isPast && date < today && !isEndDate)
-      return toast.error("Please don't select a past date ");
+    // if (!isPast && date < today && !isEndDate)
+    //   return toast.error("Please don't select a past date ");
     if (maxDate) {
       const max = new Date(maxDate);
       if (date > max)
@@ -67,10 +72,9 @@ export const ValidatingCalendar = ({
       mode="single"
       selected={selectedDate}
       defaultMonth={(startDate as Date) && (startDate as Date)} // Start the calendar from this date
-      disabled={{
-        before: (startDate) ? new Date(startDate) : undefined,
-        after: endDate ? new Date(endDate) : undefined,
-      }} // @ts-ignore
+      // @ts-ignore
+      disabled={disabled}
+      // @ts-ignore
       onSelect={handleDateSelect}
       initialFocus
     />
@@ -91,6 +95,7 @@ export const Period = ({
   let lcStartDate = watch("period.startDate");
   let lcEndDate = watch("period.endDate");
   let lcPeriodType = watch("period.expectedDate");
+  console.log(watch("expectedConfirmationDate"), "expectedConfirmationDate");
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -98,7 +103,7 @@ export const Period = ({
   const [ports, setPorts] = useState<string[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
-  console.log(startDate, "START____DATE");
+  console.log(watch(), "START____DATE");
 
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],
@@ -147,16 +152,11 @@ export const Period = ({
     const lcStartDateMidnight = lcStartDate ? new Date(lcStartDate) : null;
     lcStartDateMidnight?.setHours(0, 0, 0, 0); // Reset lcStartDate time for comparison
 
-    if (date < today) {
-      return toast.error(
-        "LC Expiry Date cannot be in the past or today's date",
-      );
-    }
-    if (lcStartDate && lcStartDateMidnight && date <= lcStartDateMidnight) {
-      return toast.error(
-        "LC Expiry Date must be at least one day after the LC Issuance date",
-      );
-    }
+    // if (date < today) {
+    //   return toast.error(
+    //     "LC Expiry Date cannot be in the past or today's date",
+    //   );
+    // }
     setEndDate(date);
     updateValue("period.endDate", date);
   };
@@ -237,6 +237,13 @@ export const Period = ({
                   setEndDate(null);
                   setValue("period.endDate", null);
                 }}
+                disabled={{
+                  after: lcPeriodType === "yes" ? new Date() : undefined,
+                  before:
+                    lcPeriodType === "no"
+                      ? new Date(new Date().setDate(new Date().getDate() + 1))
+                      : undefined,
+                }}
                 onClose={() => setDatePopoverOpen(false)}
                 isPast={lcPeriodType === "yes"}
               />
@@ -266,8 +273,17 @@ export const Period = ({
             <PopoverContent className="w-auto p-0">
               <ValidatingCalendar
                 isEndDate={true}
-                startDate={startDate}
+                startDate={lcStartDate}
                 initialDate={lcEndDate}
+                disabled={{
+                  before: lcStartDate
+                    ? new Date(
+                        new Date(lcStartDate).setDate(
+                          new Date(lcStartDate).getDate() + 1,
+                        ),
+                      )
+                    : undefined, // Disable lcStartDate + 1 and all dates before it
+                }}
                 onChange={handleExpiryDateSelect}
                 onClose={() => setIsPopoverOpen(false)}
               />
@@ -340,9 +356,9 @@ export const Transhipment = ({
   let lcStartDate = watch("period.startDate");
   let lcEndDate = watch("period.endDate");
 
-  useEffect(() => {
-    if (lcEndDate || lcStartDate) setDate(undefined);
-  }, [lcStartDate, lcEndDate]);
+  // useEffect(() => {
+  //   if (lcEndDate || lcStartDate) setDate(undefined);
+  // }, [lcStartDate, lcEndDate]);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const currentDate = new Date();
@@ -370,11 +386,11 @@ export const Transhipment = ({
   return (
     <div className="flex w-full flex-col gap-6">
       <div className="mt-4 flex w-full items-start justify-between gap-x-4">
-        <div className=" w-full rounded-md border border-borderCol bg-[#F5F7F9] px-2 py-3">
+        <div className="w-full rounded-md border border-borderCol bg-[#F5F7F9] px-2 py-3">
           <p className="mb-2 ml-3 text-[16px] font-semibold">
             Transhipment Allowed
           </p>
-          <div className="flex  gap-2">
+          <div className="flex gap-2">
             <BgRadioInput
               id="transhipment-allowed-yes"
               label="Yes"
@@ -394,7 +410,7 @@ export const Transhipment = ({
           </div>
         </div>
 
-        <div className=" w-full h-[120px] rounded-md border border-borderCol bg-[#F5F7F9] px-2 py-3">
+        <div className="h-[120px] w-full rounded-md border border-borderCol bg-[#F5F7F9] px-2 py-3">
           <p className="mb-2 ml-3 text-[16px] font-semibold">
             {isDiscount
               ? "Expected Date for Discounting"
@@ -402,7 +418,7 @@ export const Transhipment = ({
           </p>
           <label
             id="expected-confirmation-date"
-            className="flex w-full items-center justify-between rounded-md border border-borderCol p-1 px-3 bg-white"
+            className="flex w-full items-center justify-between rounded-md border border-borderCol bg-white p-1 px-3"
           >
             <p className="text-sm font-normal text-lightGray">Select Date</p>
             <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -431,6 +447,10 @@ export const Transhipment = ({
                   initialDate={expectedDate}
                   onChange={(date) => {
                     setDate(date);
+                  }}
+                  disabled={{
+                    before: new Date(lcStartDate),
+                    after: new Date(lcEndDate),
                   }}
                   onClose={() => setIsPopoverOpen(false)}
                 />

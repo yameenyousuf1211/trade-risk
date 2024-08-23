@@ -91,18 +91,18 @@ export const generalLcSchema = Yup.object().shape({
         })
         .max(999, "Days must be less than or equal to 999"),
       other: Yup.mixed()
-        .oneOf(
-          [
-            "shipment",
-            "upas",
-            "acceptance",
-            "negotiation",
-            "invoice",
-            "sight",
-            "others",
-          ],
-          "Invalid option"
-        )
+        // .oneOf(
+        //   [
+        //     "shipment",
+        //     "upas",
+        //     "acceptance",
+        //     "negotiation",
+        //     "invoice",
+        //     "sight",
+        //     "others",
+        //   ],
+          // "Invalid option"
+        // )
        
     }).when("paymentTerms", (paymentTerms, schema) => {
       return typeof paymentTerms === "string" && paymentTerms !== "Usance LC"

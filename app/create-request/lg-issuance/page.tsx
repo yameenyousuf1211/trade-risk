@@ -24,9 +24,7 @@ import { createLg, updateLg } from "@/services/apis/lg.apis";
 import useLcIssuance from "@/store/issueance.store";
 import useStepStore from "@/store/lcsteps.store";
 import { LgDetails } from "@/types/lg";
-import { Bank } from "@/types/LGBankTypes";
-import { LGDetail } from "@/types/LGCorporateTypes";
-import { convertStringToNumber, LG, removeUnnecessaryFieldsForLgCreate } from "@/utils";
+import {  LG, removeUnnecessaryFieldsForLgCreate } from "@/utils";
 import { bankCountries } from "@/utils/data";
 import { lgValidator } from "@/validation/lg.validation";
 import { Loader2 } from "lucide-react";
@@ -42,7 +40,6 @@ export default function LgIssuance() {
   const [isLoading, setIsLoading] = useState(false);
   const [loader, setLoader] = useState(false);
   const router = useRouter();
-  const { user } = useAuth();
 
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
@@ -77,8 +74,8 @@ export default function LgIssuance() {
             setValue(key, value);
           }
         }
-        if (key === "expectedPrice") {
-          setValue("expectedPrice.expectedPrice", value);
+        if (key == "expectedPrice") {
+          console.log("🚀 ~ expectedPrice store value 123", value);
         }
         if (key === "lgDetailsType") {
           setValue(key, value);
@@ -104,6 +101,8 @@ export default function LgIssuance() {
           setValue("physicalLgCountry", value);
         }
 
+  
+
         if (key == "expectedPrice") {
           if (value.expectedPrice === true) {
             setValue("expectedPrice.expectedPrice", "true");
@@ -119,6 +118,8 @@ export default function LgIssuance() {
   const onSubmit = async (data: LgDetails) => {
     
     // Prepare data for submission
+    console.log("🚀 ~ onSubmit ~ data", data.data.draft);
+    
     const responseData = {
       ...data.data,
       type: "LG Issuance",
@@ -127,10 +128,11 @@ export default function LgIssuance() {
       physicalLg: Boolean(data.data.physicalLg),
     };
 
-
     console.log("🚀 ~ onSubmit ~ responseData", responseData.draft);
+    
 
-    if(responseData.draft == true){
+
+    if(responseData.draft){
       handleDraftSubmission(responseData);
     }
     else{
@@ -185,9 +187,15 @@ export default function LgIssuance() {
 
   // Function to handle final submissions
   const handleFinalSubmission = async (responseData: any) => {
+
+    console.log("🚀 ~ before handleFinalSubmission ~ responseData lastDateOfReceivingBids:", responseData.lastDateOfReceivingBids);
+
     removeUnnecessaryFieldsForLgCreate(responseData);
     removeUnnecessaryFields(responseData);
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData bidbond:", responseData.bidBond);
+    // const validate = bondRequiredFields(responseData)
+    // if(!validate) return toast.error("Please Select at least one Bond");
+    
+    console.log("🚀 ~ handleFinalSubmission ~ responseData lastDateOfReceivingBids:", responseData.lastDateOfReceivingBids);
     // console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond:", responseData.advancePaymentBond);
     // console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond:", responseData.performanceBond)
     // console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond:", responseData.retentionMoneyBond)
@@ -227,7 +235,7 @@ export default function LgIssuance() {
     delete responseData.__v;
     delete responseData.refId;
     delete responseData.createdBy;
-    
+
   };
 
 

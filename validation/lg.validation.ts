@@ -7,14 +7,17 @@ const bondSchema = Yup.object()
     currencyType: Yup.string()
       .min(1, "Currency Type is required")
       .default("USD"),
-    cashMargin: Yup.string()
-      .typeError("Cash Margin must be a String")
-      .nullable(),
+    cashMargin: Yup.string().when("Contract", {
+      is: true,
+      then: (schema) => schema.required('Must enter LG Amount'),
+      otherwise: (schema) => schema.notRequired()
+    })
+      .typeError("Cash Margin must be a String"),
     valueInPercentage: Yup.string()
       .typeError("Cash Margin Percentage should be a number")
       .nullable(),
-    expectedDate: Yup.date().nullable(),
-    lgExpiryDate: Yup.date().nullable(),
+    expectedDate: Yup.string().required("Expected Date is required"),
+    lgExpiryDate: Yup.string().required("LG Expiry Date is required"),
     lgTenor: Yup.object()
       .shape({
         lgTenorType: Yup.string()
@@ -64,18 +67,18 @@ export const lgValidator = Yup.object()
           .required("Beneficiary Name is Required"),
         country: Yup.string()
           .required("Beneficiary Country is Required"),
-        address: Yup.string().nullable(),
+        address: Yup.string().required("Beneficiary Address is Required"),
         phone: Yup.string().nullable(),
         city: Yup.string().nullable(),
       })
       .required(),
     lgDetailsType: Yup.string()
       .default("Choose any other type of LGs").required(),
-    bidBond: bondSchema.nullable(),
-    advancePaymentBond: bondSchema.nullable(),
-    performanceBond: bondSchema.nullable(),
-    retentionMoneyBond: bondSchema.nullable(),
-    otherBond: bondSchema.nullable(),
+    bidBond: bondSchema,
+    advancePaymentBond: bondSchema,
+    performanceBond: bondSchema,
+    retentionMoneyBond: bondSchema,
+    otherBond: bondSchema,
     issuingBanks: Yup.array()
       .of(
         Yup.object().shape({
@@ -115,6 +118,16 @@ export const lgValidator = Yup.object()
     // physicalLgBank: Yup.string().nullable(),
     // physicalLgCountry: Yup.string().nullable(),
     // physicalLgSwiftCode: Yup.string().nullable(),
-    lastDateOfReceivingBids: Yup.date().required("Last Date of Receiving Bids is required"),
-  })
+    lastDateOfReceivingBids: Yup.string().required("Last Date of Receiving Bids is required"),
+  }).test(
+    'at-least-one-required',
+    'At least one of Bond  must be provided.',
+    function (value) {
+      const { lgDetailsType, bidBond, advancePaymentBond, performanceBond, retentionMoneyBond } = value;
+      if (lgDetailsType == 'Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)') {
+        return !!bidBond || !!advancePaymentBond || !!performanceBond || !!retentionMoneyBond;
+      }
+      return true;
+    }
+  );
 

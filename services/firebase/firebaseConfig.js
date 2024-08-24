@@ -11,6 +11,7 @@ const firebaseConfig = {
   appId: "1:197657815368:web:5bc3ed391b4a07286feb7d"
 };
 
+
 const app = initializeApp(firebaseConfig);
 
 // Use the modular approach to get the messaging instance

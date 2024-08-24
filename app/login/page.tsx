@@ -10,14 +10,16 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useAuth } from "@/context/AuthProvider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CircleCheckIcon, CircleX, Eye, EyeOff } from "lucide-react";
 import { registerGCMToken } from "@/services/apis/notifications.api";
+import { messaging } from "../../services/firebase/firebaseConfig";
 import {
   arrayBufferToBase64,
   urlBase64ToUint8Array,
 } from "@/utils/helper/service-worker";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { getToken } from "@firebase/messaging";
 export default function LoginPage() {
   const router = useRouter();
   const { setUser } = useAuth();
@@ -36,57 +38,70 @@ export default function LoginPage() {
   });
 
   const [notificationPermission, setNotificationPermission] = useState(
-    typeof window !== "undefined" ? Notification.permission : ""
+    typeof window !== "undefined" ? Notification.permission : "",
   );
 
-  const registerServiceWorker = async () => {
-    const register =
-      await navigator.serviceWorker.register("/service-worker.js");
-    const registrationReady = await navigator.serviceWorker.ready;
-    // console.log(registrationReady)
-    const subscription = await register.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(
-        "BKOPYlgOw1eAWgeVCt8uZWCTAaBUd4ReGVd9Qfs2EtK_DvRXuI_LFQSiyxjMN8rg47BWP9_8drlyE0O1GXMP4ew"
-      ),
-    });
-    // console.log(subscription);
-    const authToken = arrayBufferToBase64(
-      subscription.getKey("auth") as ArrayBuffer
-    );
-    const hashKey = arrayBufferToBase64(
-      subscription.getKey("p256dh") as ArrayBuffer
-    );
-    // console.log(subscription)
-    // console.log(authToken);
-    // console.log(hashKey)
-    if (subscription) {
-      const gcmToken = await registerGCMToken({
-        endpoint: subscription.endpoint,
-        expirationTime: subscription.expirationTime,
-        authToken,
-        hashKey,
-      });
-      console.log(gcmToken, "gcmtoken");
+  const [fcmToken, setFcmToken] = useState<string>("");
+
+  // REGISTERING NOTIFICATIONS SERVICE
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/firebase-messaging-sw.js")
+        .then((registration) => {
+          console.log(
+            "Service Worker registered with scope:",
+            registration.scope,
+          );
+        })
+        .catch((error) => {
+          console.error("Service Worker registration failed:", error);
+        });
     }
-  };
+  }, []);
+
+  // NOTIFICATIONS PERMISSION
+
+  async function requestPermission() {
+    //requesting permission using Notification API
+    const permission = await Notification.requestPermission();
+
+    if (permission === "granted") {
+      const token = await getToken(messaging, {
+        vapidKey:
+          "BIJbtJkCgGGt4R1zHAQUiTSig_iSelqiWZe7zve-mUJajAiMoul0qaLnROe5T6l0r0EKwJJFs9sDKYHB-xmqFE0",
+      });
+
+      //We can send token to server
+      console.log("Token generated : ", token);
+      setFcmToken(token);
+    } else if (permission === "denied") {
+      //notifications are blocked
+      alert("You denied for the notification");
+    }
+  }
+
+  useEffect(() => {
+    requestPermission();
+  }, []);
 
   const onSubmit: SubmitHandler<typeof loginSchema> = async (data) => {
-    const { response, success } = await mutateAsync(data);
-    console.log(response, "pipipi");
+    const { response, success } = await mutateAsync({
+      ...data,
+      fcmToken: fcmToken,
+    });
 
     if (success) {
       const permission = await Notification.requestPermission();
       setNotificationPermission(permission);
       if (permission === "granted") {
-        if ("serviceWorker" in navigator) {
-          await registerServiceWorker();
-        }
+        console.log(permission, "PERMISSIONS");
       }
 
       setUser(response.data.user);
       const toastId = toast.success(
-        <div className="flex items-center justify-between w-full">
+        <div className="flex w-full items-center justify-between">
           <div className="flex items-center">
             <CircleCheckIcon className="mr-2 size-5" />
             <h1 className="text-[1rem]">You have logged in successfully!</h1>
@@ -95,22 +110,21 @@ export default function LoginPage() {
             className="ml-2 size-5 hover:cursor-pointer"
             onClick={() => toast.dismiss(toastId)}
           />
-        </div>
+        </div>,
       );
       router.push(response.data.user.type === "corporate" ? "/" : "/dashboard");
-
     } else return toast.error(response as string);
   };
 
   return (
     <AuthLayout>
-      <section className="max-w-md mx-auto w-full max-xs:px-4 z-10">
-        <h2 className="font-bold text-5xl text-center">Sign In</h2>
-        <p className="text-para font-roboto font-normal text-center mt-5">
+      <section className="max-xs:px-4 z-10 mx-auto w-full max-w-md">
+        <h2 className="text-center text-5xl font-bold">Sign In</h2>
+        <p className="mt-5 text-center font-roboto font-normal text-para">
           Sign in using your registered credentials to start trading
         </p>
         <form
-          className="bg-white rounded-3xl p-8 z-10 mt-8 flex flex-col gap-y-7"
+          className="z-10 mt-8 flex flex-col gap-y-7 rounded-3xl bg-white p-8"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="relative">
@@ -121,23 +135,23 @@ export default function LoginPage() {
               register={register}
             />
             {errors.email && (
-              <span className="mt-1 absolute text-red-500 text-[12px]">
+              <span className="absolute mt-1 text-[12px] text-red-500">
                 {errors.email.message}
               </span>
             )}
           </div>
 
-          <div className="relative w-full mb-1">
+          <div className="relative mb-1 w-full">
             <input
               type={showPass ? "text" : "password"}
               id="password"
-              className="block px-2.5 pb-2.5 pt-2.5 w-full text-sm text-lightGray bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
+              className="peer block w-full appearance-none rounded-lg border border-borderCol bg-transparent px-2.5 pb-2.5 pt-2.5 text-sm text-lightGray focus:border-text focus:outline-none focus:ring-0"
               placeholder=""
               {...register("password")}
             />
             <label
               htmlFor="password"
-              className="absolute text-sm text-gray-400  duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white  px-2 peer-focus:px-2 peer-focus:text-text peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
+              className="absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-2 text-sm text-gray-400 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-text rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
             >
               Password
             </label>
@@ -153,7 +167,7 @@ export default function LoginPage() {
               )}
             </button>
             {errors.password && (
-              <span className="mt-1 absolute text-red-500 text-[12px]">
+              <span className="absolute mt-1 text-[12px] text-red-500">
                 {errors.password.message}
               </span>
             )}
@@ -164,14 +178,14 @@ export default function LoginPage() {
               <input type="checkbox" id="remember" />
               <label
                 htmlFor="remember"
-                className="text-sm font-roboto text-para leading-none"
+                className="font-roboto text-sm leading-none text-para"
               >
                 Remember Me
               </label>
             </div>
             <Link
               href="/login/forgot-password"
-              className="text-text font-roboto text-sm"
+              className="font-roboto text-sm text-text"
             >
               Forgot Password
             </Link>
@@ -179,7 +193,7 @@ export default function LoginPage() {
 
           <Button
             role="submit"
-            className="py-6 bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
+            className="rounded-lg bg-primaryCol py-6 text-[16px] hover:bg-primaryCol/90"
             size="lg"
             disabled={isSubmitting}
           >
@@ -187,9 +201,9 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="text-para font-roboto mt-10 text-sm text-center">
+        <p className="mt-10 text-center font-roboto text-sm text-para">
           Don&apos;t have a TradeRisk account?{" "}
-          <Link href="/register" className="text-text font-medium">
+          <Link href="/register" className="font-medium text-text">
             Register now
           </Link>
         </p>

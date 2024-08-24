@@ -137,6 +137,22 @@ export const DisclaimerDialog = ({
             Thank you for choosing our software to enhance your export
             management capabilities.
           </p>
+          <p>
+            For further clarification, assistance, or support, please contact
+            our designated customer service representatives.
+          </p>
+          <p>
+            Thank you for choosing our software to enhance your export
+            management capabilities.
+          </p>
+          <p>
+            For further clarification, assistance, or support, please contact
+            our designated customer service representatives.
+          </p>
+          <p>
+            Thank you for choosing our software to enhance your export
+            management capabilities.
+          </p>
         </div>
 
         <DialogClose className="hidden" id="close-disclaimer"></DialogClose>

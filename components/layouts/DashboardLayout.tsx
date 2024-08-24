@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Header } from "../shared/Header";
 import NotificationPopup from "../notifications/NotificationPopup";
+import { messaging } from "@/services/firebase/firebaseConfig";
 
 export default function AuthLayout({
   children,
@@ -14,9 +15,10 @@ export default function AuthLayout({
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.addEventListener("message", (event) => {
         const data = event.data;
+        console.log(data?.notification,"data?.no")
         setNotification({
-          title: data.title,
-          message: data.body,
+          title: data?.notification?.title,
+          message: data?.notification?.body,
         });
 
         setTimeout(() => {
@@ -36,7 +38,7 @@ export default function AuthLayout({
           onClose={() => setNotification(null)}
         />
       )}
-      <main className="bg-bg px-2 relative min-h-[88vh] w-full flex flex-col items-center justify-center py-10 overscroll-none">
+      <main className="relative flex min-h-[88vh] w-full flex-col items-center justify-center overscroll-none bg-bg px-2 py-10">
         {children}
       </main>
     </div>

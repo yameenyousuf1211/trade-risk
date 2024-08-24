@@ -452,7 +452,6 @@ export const Transhipment = ({
                     before: new Date(lcStartDate),
                     after: new Date(lcEndDate),
                   }}
-                  onClose={() => setIsPopoverOpen(false)}
                 />
               </PopoverContent>
             </Popover>

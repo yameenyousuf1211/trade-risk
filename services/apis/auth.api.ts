@@ -87,4 +87,23 @@ export const phoneVerification = async (payload: string) => {
       response: error?.response?.data?.message || "Something went wrong",
     };
   }
-}
+
+};
+
+export const emailVerification = async (payload: string) => {
+  try {
+    const { data } = await api.post("/auth/check-email", {
+      email: payload,
+    });
+
+    return {
+      success: true,
+      response: data?.data,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      response: error?.response?.data?.message || "Something went wrong",
+    };
+  }
+};

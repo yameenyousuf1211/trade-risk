@@ -31,7 +31,9 @@ type PhoneInputProps = Omit<
 
 const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
   React.forwardRef<React.ElementRef<typeof RPNInput.default>, PhoneInputProps>(
-    ({ className, onChange,  ...props }, ref) => { // Default isOnBoarding to false
+
+    ({ className, onChange, ...props }, ref) => {
+      // Default isOnBoarding to false
       const [country, setCountry] = React.useState<RPNInput.Country>("PK"); // Default country set to Pakistan
 
       return (
@@ -45,37 +47,41 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
           {...props}
         />
       );
-    }
+    },
   );
 PhoneInput.displayName = "PhoneInput";
 
-const InputComponent = React.forwardRef<HTMLInputElement, InputProps & { isOnBoarding?: boolean }>(
-  ({ className, value, onChange, isOnBoarding = false, ...props }, ref) => (
-    <div className={`mx-1 flex-1 ${isOnBoarding ? 'mt-1' : ''}`}>
-      <input
-        placeholder={isOnBoarding ? 'Number' : 'Enter Number'}
-        value={(value as string)?.replace(/^\+/, "")} // Remove "+" sign in the input
-        onChange={(e) => {
-          const sanitizedValue = e.target.value.replace(/^\+/, "");
-          onChange?.({
-            ...e,
-            target: {
-              ...e.target,
-              value: sanitizedValue,
-            },
-          });
-        }}
-        className={cn(
-          "border border-[#E2E2EA] rounded-lg",
-          isOnBoarding ? "py-1 w-24 text-sm placeholder:px-2 placeholder:text-sm" : "p-2", // Conditional styling based on isOnBoarding
-          className
-        )}
-        {...props}
-        ref={ref}
-      />
-    </div>
-  )
-);
+
+const InputComponent = React.forwardRef<
+  HTMLInputElement,
+  InputProps & { isOnBoarding?: boolean }
+>(({ className, value, onChange, isOnBoarding = false, ...props }, ref) => (
+  <div className={`mx-1 flex-1  ${isOnBoarding ? "mt-1 w-full !px-2" : ""}`}>
+    <input
+      placeholder={isOnBoarding ? "Phone number" : "Enter Number"}
+      value={(value as string)?.replace(/^\+/, "")} // Remove "+" sign in the input
+      onChange={(e) => {
+        const sanitizedValue = e.target.value.replace(/^\+/, "");
+        onChange?.({
+          ...e,
+          target: {
+            ...e.target,
+            value: sanitizedValue,
+          },
+        });
+      }}
+      className={cn(
+        "rounded-lg border border-[#E2E2EA]",
+        isOnBoarding
+          ? "w-full h-[40px] px-2  py-1 text-sm placeholder:px-2 placeholder:text-sm"
+          : "p-2", // Conditional styling based on isOnBoarding
+        className,
+      )}
+      {...props}
+      ref={ref}
+    />
+  </div>
+));
 InputComponent.displayName = "InputComponent";
 
 const CountrySelect = ({
@@ -95,7 +101,7 @@ const CountrySelect = ({
     (country: RPNInput.Country) => {
       onChange(country);
     },
-    [onChange]
+    [onChange],
   );
 
   return (
@@ -104,17 +110,26 @@ const CountrySelect = ({
         <Button
           type="button"
           variant={"outline"}
-          className={cn("flex gap-4 bg-[#F1F1F5]", isOnBoarding ? 'py-1 h-8 p-0 rounded-none my-1 gap-0' : 'p-2')}
+
+          className={cn(
+            "flex gap-4",
+            isOnBoarding
+              ? "my-1 w-[99px] h-[40px] gap-0 !rounded-[8px] rounded-none !border border-[#E2E2EA] p-0 py-1"
+              : "p-2",
+          )}
           disabled={disabled}
         >
-          <span className={`flex items-center ${isOnBoarding ? 'text-xs mx-1' : ''}`}>
+          <span
+            className={`flex items-center ${isOnBoarding ? "mx-1 text-xs" : ""}`}
+          >
             {(value && `+${RPNInput.getCountryCallingCode(value)}`) || "+1"}
           </span>
           <LucideChevronDown
             className={cn(
               "h-4 w-4 opacity-50",
               disabled ? "hidden" : "opacity-100",
-              isOnBoarding ? 'h-3 w-3 mr-1' : '-mr-2'
+
+              isOnBoarding ? "mr-1 h-3 w-3" : "-mr-2",
             )}
           />
         </Button>
@@ -148,7 +163,7 @@ const CountrySelect = ({
                     <CheckIcon
                       className={cn(
                         "ml-auto h-4 w-4",
-                        option.value === value ? "opacity-100" : "opacity-0"
+                        option.value === value ? "opacity-100" : "opacity-0",
                       )}
                     />
                   </CommandItem>
@@ -165,7 +180,7 @@ const CountrySelect = ({
 const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
   const Flag = flags[country];
   return (
-    <span className="bg-foreground/20 flex h-4 w-6 overflow-hidden rounded-sm">
+    <span className="flex h-4 w-6 overflow-hidden rounded-sm bg-foreground/20">
       {Flag && <Flag title={countryName} />}
     </span>
   );

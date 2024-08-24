@@ -148,6 +148,7 @@ export const fetchCorporateBids = async ({
 export const getBidsCount = async () => {
   try {
     const { data } = await api.get(`/bids/count/list`);
+    
     return data.data;
   } catch (error: any) {
     console.log(error);

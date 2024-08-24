@@ -11,9 +11,9 @@ import { IBids } from "@/types/type";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  convertDate,
   convertDateAndTimeToString,
   convertDateToCommaString,
-  convertDateToYYYYMMDD,
 } from "@/utils";
 import { toast } from "sonner";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
@@ -33,13 +33,12 @@ export const BidCard = ({
   isBank?: boolean;
   isRisk?: boolean;
 }) => {
-  console.log(data, "hhhhhhh");
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      // queryClient.invalidateQueries({ queryKey: ["bid-status"] });
+      queryClient.invalidateQueries({ queryKey: ["bid-status"] });
       // queryClient.invalidateQueries({
       //   queryKey: ["bid-status"],
       // });
@@ -61,8 +60,6 @@ export const BidCard = ({
     }
   };
 
-  console.log("corporate: ", data);
-
   return (
     <div className="rounded-lg border border-borderCol px-3 py-5">
       <div className="grid grid-cols-2 gap-y-4">
@@ -73,11 +70,9 @@ export const BidCard = ({
           </p>
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="capitalize text-lg font-semibold mb-1">
+          <p className="mb-1 text-sm capitalize text-para">Submitted by</p>
+          <p className="text-lg font-semibold capitalize">
             {data.bidBy?.name || ""}
-          </p>
-          <p className="capitalize text-sm text-para">
-            {data.bidBy?.country || ""}
           </p>
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
@@ -97,15 +92,18 @@ export const BidCard = ({
           </div>
         )}
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="mb-1 text-sm text-para">Bid Recieved</p>
-          <p className="text-lg font-semibold">
-            {convertDateToYYYYMMDD(data.createdAt)}
-          </p>
+          <p className="mb-1 text-sm text-para">Country</p>
+          <p className="text-lg font-semibold">{data.bidBy.country}</p>
         </div>
+        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          <p className="mb-1 text-sm text-para">Bid Recieved</p>
+          <p className="text-lg font-semibold">{convertDate(data.createdAt)}</p>
+        </div>
+
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Bid Expiry</p>
           <p className="text-lg font-semibold">
-            {convertDateToYYYYMMDD(data.bidValidity)}
+            {convertDate(data.bidValidity)}
           </p>
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
@@ -205,20 +203,21 @@ export const TableDialog = ({
   isViewAll?: boolean;
   isRisk?: boolean;
 }) => {
-  console.log("🚀 ~ isRisk:", isRisk);
+  // console.log("🚀 ~ isRisk:", isRisk);
   // Get LC
   const { data: lcData } = useQuery({
     queryKey: [`single-lc`, lcId],
     queryFn: () => fetchSingleLc(lcId),
+    enabled: !isRisk,
   });
 
-  console.log("🚀 ~ lcData:", lcData?.type);
+
   const { data: riskData } = useQuery({
     queryKey: [`single-risk`, lcId],
     queryFn: () => fetchSingleRisk(lcId),
+    enabled: isRisk,
   });
-  console.log(lcId, "LC++");
-  console.log(bids, "09090")
+
   const { user } = useAuth();
   const userBids =
     isBank && user && bids?.filter((bid) => bid?.createdBy === user?._id);
@@ -499,26 +498,23 @@ export const TableDialog = ({
                           : lcData?.applicantDetails?.company) || ""
                       }
                     />
-                    {
-                      lcData?.advisingBank?.bank && (
-                        <LCInfo
-                          label="Advising Bank"
-                          value={(lcData && lcData.advisingBank?.bank) || ""}
-                        />
-                      )
-                    }
-                    {
-                      lcData?.confirmingBank?.bank && (
-                        <LCInfo
-                          label="Confirming Bank"
-                          value={(lcData && lcData.confirmingBank?.bank) || ""}
-                        />
-                      )
-                    }
+                    {lcData?.advisingBank?.bank && (
+                      <LCInfo
+                        label="Advising Bank"
+                        value={(lcData && lcData.advisingBank?.bank) || ""}
+                      />
+                    )}
+                    {lcData?.confirmingBank?.bank && (
+                      <LCInfo
+                        label="Confirming Bank"
+                        value={(lcData && lcData.confirmingBank?.bank) || ""}
+                      />
+                    )}
                     <LCInfo
                       label="Payments Terms"
                       value={
-                        lcData?.paymentTerms && lcData?.paymentTerms !== "Sight LC"
+                        lcData?.paymentTerms &&
+                        lcData?.paymentTerms !== "Sight LC"
                           ? `${lcData.paymentTerms} ${lcData.extraInfo?.days + " days" || ""} ${lcData.extraInfo?.other || ""}`
                           : lcData?.paymentTerms || "-"
                       }
@@ -543,6 +539,16 @@ export const TableDialog = ({
                         lcData &&
                         lcData.period &&
                         convertDateToCommaString(lcData.period?.endDate)
+                      }
+                    />
+                    <LCInfo
+                      label="Confirmation Date (Expected)"
+                      value={
+                        lcData?.expectedConfirmationDate
+                          ? convertDateToCommaString(
+                              lcData?.expectedConfirmationDate,
+                            )
+                          : "-"
                       }
                     />
                     <LCInfo
@@ -600,7 +606,7 @@ export const TableDialog = ({
                   <p className="rounded-xl bg-primaryCol px-3 py-1 text-lg font-semibold text-white">
                     {isBank ? userBids?.length : bids?.length}
                   </p>
-                  <p className="text-xl font-semibold">Your Bids</p>
+                  <p className="text-xl font-semibold">{isBank ? 'View Bids' : "Bids received"}</p>
                 </div>
 
                 {/* <div className="flex items-center gap-x-4">

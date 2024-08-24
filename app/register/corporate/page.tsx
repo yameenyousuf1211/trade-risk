@@ -41,7 +41,8 @@ import { cn } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Input } from "@/components/ui/input";
-import { phoneVerification } from "@/services/apis";
+
+import { emailVerification, phoneVerification } from "@/services/apis";
 import { toast } from "sonner";
 
 const CompanyInfoPage = () => {
@@ -63,7 +64,10 @@ const CompanyInfoPage = () => {
     handleSubmit,
     trigger,
 
-    formState: { errors, isValid,dirtyFields },
+    watch,
+
+    formState: { errors, isValid, dirtyFields },
+
   } = useForm({
     resolver: yupResolver(companyInfoSchema),
     mode: "all",
@@ -86,9 +90,17 @@ const CompanyInfoPage = () => {
   }, [corporateData]);
   useEffect(() => {
     getValues("phone");
-    console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ getValues", getValues("phone"));
-    console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ phoneInput", corporateData);
-    
+
+    console.log(
+      "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ getValues",
+      getValues("phone"),
+    );
+    console.log(
+      "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ phoneInput",
+      corporateData,
+    );
+
+
     if (corporateData) {
       setAllowSubmit(true);
     } else if (isValid) {
@@ -99,12 +111,30 @@ const CompanyInfoPage = () => {
   }, [errors, isValid, corporateData]);
 
   const onSubmit: SubmitHandler<typeof companyInfoSchema> = async (
-    data: any
+    data: any,
   ) => {
-    const {response,success} = await phoneVerification(data.phone);
 
-    if(!success){
-      console.log("🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ response", response);
+    console.log("hello");
+    const { response: emailResponse, success: emailSuccess } =
+      await emailVerification(data.email);
+    console.log(emailResponse, "email");
+
+    if (emailResponse?.isExist) {
+      console.log(
+        "🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ emailResponse",
+        emailResponse,
+      );
+      toast.error("Email is already exists");
+      return;
+    }
+    const { response, success } = await phoneVerification(data.phone);
+
+    if (!success) {
+      console.log(
+        "🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ response",
+        response,
+      );
+
       toast.error("Phone number is invalid");
       return;
     }
@@ -152,51 +182,68 @@ const CompanyInfoPage = () => {
   // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ phoneInput", phoneInput);
   // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ isValid", isValid);
   // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ allowSubmit", allowSubmit);
-  console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ error", dirtyFields);
-  
-  
-    
+
+  console.log(
+    "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ error",
+    dirtyFields,
+  );
+
+  /// Reseting city when entering country!
+  const { accountCountry, accountCity } = watch();
+  console.log(accountCity, "ACCOUNTCITY");
+
+  useEffect(() => {
+    if (accountCountry != JSON.parse(corporateData as string)?.accountCountry) {
+      setValue("accountCity", "");
+      setCityVal("");
+      console.log(cityVal, "accountCity");
+    } else {
+      setValue("accountCity", JSON.parse(corporateData as string)?.accountCity);
+    }
+  }, [accountCountry]);
+
+
   return (
     <AuthLayout>
-      <section className="max-w-2xl mx-auto w-full max-xs:px-1 z-10 ">
-        <h2 className="font-semibold text-3xl text-center">Company Info</h2>
-        <p className="text-para font-roboto text-center mt-5">
+      <section className="max-xs:px-1 z-10 mx-auto w-full max-w-2xl">
+        <h2 className="text-center text-3xl font-semibold">Company Info</h2>
+        <p className="mt-5 text-center font-roboto text-para">
           Please add information about your company. This cannot be changed
           later.
         </p>
         <form
-          className="max-w-2xl mx-auto w-full shadow-md bg-white rounded-3xl xs:p-8 max-xs:py-8 max-xs:px-4 z-10 mt-8 flex flex-col sm:gap-y-6 gap-y-3"
+          className="max-xs:py-8 max-xs:px-4 z-10 mx-auto mt-8 flex w-full max-w-2xl flex-col gap-y-3 rounded-3xl bg-white shadow-md sm:gap-y-6 xs:p-8"
           onSubmit={handleSubmit(onSubmit)}
         >
           <h3 className="text-[#585858]">Your Company information</h3>
-          <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full relative">
+          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
+            <div className="relative w-full">
               <FloatingInput
                 name="name"
                 placeholder="Company Name"
                 register={register}
               />
               {errors.name && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.name.message}
                 </span>
               )}
             </div>
-            <div className="w-full relative">
+            <div className="relative w-full">
               <FloatingInput
                 name="crNumber"
                 placeholder="Commercial registration number"
                 register={register}
               />
               {errors.crNumber && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.crNumber.message}
                 </span>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full relative">
+          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
+            <div className="relative w-full">
               <CountrySelect
                 setIsoCode={setIsoCode}
                 setValue={setValue}
@@ -204,12 +251,12 @@ const CompanyInfoPage = () => {
                 placeholder="Company Country"
               />
               {errors.country && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.country.message}
                 </span>
               )}
             </div>
-            <div className="w-full relative">
+            <div className="relative w-full">
               <Select
                 onValueChange={(value) => {
                   setValue("constitution", value, { shouldValidate: true });
@@ -217,7 +264,7 @@ const CompanyInfoPage = () => {
                 }}
               >
                 <SelectTrigger
-                  className={`capitalize font-roboto w-full py-5 px-4 ${
+                  className={`w-full px-4 py-5 font-roboto capitalize ${
                     corporateData || constitution
                       ? "text-lightGray"
                       : "text-gray-400"
@@ -248,26 +295,26 @@ const CompanyInfoPage = () => {
                 </SelectContent>
               </Select>
               {errors.constitution && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.constitution.message}
                 </span>
               )}
             </div>
           </div>
-          <div className="w-full relative">
+          <div className="relative w-full">
             <FloatingInput
               name="address"
               placeholder="Company Address"
               register={register}
             />
             {errors.address && (
-              <span className="mt-1 absolute text-[11px] text-red-500">
+              <span className="absolute mt-1 text-[11px] text-red-500">
                 {errors.address.message}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-x-2 max-sm:flex-col max-xs:gap-y-3">
-            <div className="w-full relative">
+          <div className="max-sm:flex-col max-xs:gap-y-3 flex items-center gap-x-2">
+            <div className="relative w-full">
               <FloatingInput
                 name="email"
                 placeholder="Company Email"
@@ -275,12 +322,13 @@ const CompanyInfoPage = () => {
                 register={register}
               />
               {errors.email && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.email.message}
                 </span>
               )}
             </div>
-            <div className="w-full relative">
+
+            <div className="relative w-full">
               {/* <TelephoneInput
                 name="phone"
                 placeholder="Telephone"
@@ -289,41 +337,43 @@ const CompanyInfoPage = () => {
                 trigger={trigger}
                 value={(corporateData && JSON.parse(corporateData).phone) || ""}
               /> */}
-                <div className="flex items-center gap-3">
-          <label
-            id="beneficiaryDetails.address"
-            className="border  pl-3 w-full  rounded-md  flex items-center justify-between bg-white"
-          >
-            <p className=" text-sm  font-roboto text-gray-400 ">Phone Number</p>
-            <PhoneInput
-            value={phoneInput}
-             isOnBoarding={true}
-              // value={phoneInput}
-              name="phone"
-              onChange={(value) => {
-                console.log("🚀 ~ file: page.tsx ~ line 238 ~ onChange ~ value", value);
-                setValue('phone', value);
-                trigger('phone');
-                setValue("phone", value || ""); 
-              }}
-              />
-          </label>
-        </div>
+
+              <div className="flex items-center gap-3">
+                <label
+                  id="beneficiaryDetails.address"
+                  className="bo rder flex w-full items-center justify-between rounded-md bg-white pl-3"
+                >
+                  <div className="w-full">
+                    <PhoneInput
+                      value={phoneInput}
+                      isOnBoarding={true}
+                      // value={phoneInput}
+                      name="phone"
+                      onChange={(value) => {
+                        setValue("phone", value);
+                        trigger("phone");
+                        setValue("phone", value || "");
+                      }}
+                    />
+                  </div>
+                </label>
+              </div>
+
               {errors.phone && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.phone.message}
                 </span>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full relative">
+          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
+            <div className="relative w-full">
               <div className="relative w-full">
                 <input
                   type="text"
                   id="businessNature"
                   {...register("businessNature")}
-                  className="z-[1] relative px-2.5 pb-2.5 pt-2.5 w-full text-sm text-lightGray font-roboto bg-transparent rounded-lg border border-borderCol appearance-none focus:outline-none focus:ring-0 focus:border-text peer"
+                  className="peer relative z-[1] w-full appearance-none rounded-lg border border-borderCol bg-transparent px-2.5 pb-2.5 pt-2.5 font-roboto text-sm text-lightGray focus:border-text focus:outline-none focus:ring-0"
                   placeholder=""
                   value={businessNature}
                   onKeyUp={(e: any) => e.target.value.replace(/\d/g, "")}
@@ -331,18 +381,18 @@ const CompanyInfoPage = () => {
                 />
                 <label
                   htmlFor="businessNature"
-                  className="z-[1] font-roboto absolute text-sm text-gray-400  duration-300 transform -translate-y-4 scale-75 top-2 origin-[0] bg-white  px-2 peer-focus:px-2 peer-focus:text-text peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
+                  className="absolute start-1 top-2 z-[1] origin-[0] -translate-y-4 scale-75 transform bg-white px-2 font-roboto text-sm text-gray-400 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-text rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
                 >
                   Nature of Business
                 </label>
               </div>
               {errors.businessNature && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.businessNature.message}
                 </span>
               )}
             </div>
-            <div className="w-full relative">
+            <div className="relative w-full">
               <Select
                 onValueChange={(value) => {
                   setValue("businessType", value, { shouldValidate: true });
@@ -350,7 +400,7 @@ const CompanyInfoPage = () => {
                 }}
               >
                 <SelectTrigger
-                  className={`capitalize font-roboto w-full py-5 px-4 ${
+                  className={`w-full px-4 py-5 font-roboto capitalize ${
                     corporateData || businessSector
                       ? "text-lightGray"
                       : "text-gray-400"
@@ -372,7 +422,7 @@ const CompanyInfoPage = () => {
                 </SelectContent>
               </Select>{" "}
               {errors.businessType && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.businessType.message}
                 </span>
               )}
@@ -382,20 +432,20 @@ const CompanyInfoPage = () => {
           <div className="h-[2px] w-full bg-borderCol" />
           <h3 className="text-[#585858]">Your main bank information</h3>
 
-          <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full relative">
+          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
+            <div className="relative w-full">
               <FloatingInput
                 name="bank"
                 placeholder="Bank Name"
                 register={register}
               />
               {errors.bank && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.bank.message}
                 </span>
               )}
             </div>
-            <div className="w-full relative">
+            <div className="relative w-full">
               <FloatingInput
                 name="accountNumber"
                 type="number"
@@ -404,42 +454,42 @@ const CompanyInfoPage = () => {
                 register={register}
               />
               {errors.accountNumber && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.accountNumber.message}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full relative">
+          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
+            <div className="relative w-full">
               <FloatingInput
                 name="swiftCode"
                 placeholder="SWIFT Code"
                 register={register}
               />
               {errors.swiftCode && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.swiftCode.message}
                 </span>
               )}
             </div>
-            <div className="w-full relative">
+            <div className="relative w-full">
               <FloatingInput
                 name="accountHolderName"
                 placeholder="Account holder name"
                 register={register}
               />
               {errors.accountHolderName && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.accountHolderName.message}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-x-2 max-sm:flex-col max-sm:gap-y-3">
-            <div className="w-full relative">
+          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
+            <div className="relative w-full">
               <CountrySelect
                 setIsoCode={setIsoCode}
                 setValue={setValue}
@@ -451,31 +501,34 @@ const CompanyInfoPage = () => {
                 }
               />
               {errors.accountCountry && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.accountCountry.message}
                 </span>
               )}
             </div>
-            <div className="w-full relative">
+            <div className="relative w-full">
               <Popover open={cityOpen} onOpenChange={setCityOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     role="combobox"
                     aria-expanded={cityOpen}
-                    className={`capitalize font-roboto w-full justify-between font-normal text-sm ${
+                    className={`w-full justify-between font-roboto text-sm font-normal capitalize ${
                       cityVal ? "text-lightGray" : "text-gray-400"
                     }`}
                     disabled={!cities || cities.length <= 0}
                   >
-                    {cityVal
-                      ? cities?.find(
-                          (country: string) =>
-                            country.toLowerCase() === cityVal.toLowerCase()
-                        )
-                      : corporateData
-                      ? JSON.parse(corporateData).accountCity
-                      : "Account City"}
+                    {cityVal == "" &&
+                    accountCountry != JSON.parse(corporateData)?.accountCountry
+                      ? "Account City"
+                      : cityVal
+                        ? cities?.find(
+                            (country: string) =>
+                              country.toLowerCase() === cityVal.toLowerCase(),
+                          )
+                        : corporateData
+                          ? JSON.parse(corporateData).accountCity
+                          : "Account City"}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
@@ -495,7 +548,7 @@ const CompanyInfoPage = () => {
                                 currentValue.toLowerCase() ===
                                   cityVal.toLowerCase()
                                   ? ""
-                                  : currentValue
+                                  : currentValue,
                               );
                               setCityOpen(false);
                               setValue("accountCity", currentValue, {
@@ -508,7 +561,7 @@ const CompanyInfoPage = () => {
                                 "mr-2 h-4 w-4",
                                 country.toLowerCase() === cityVal.toLowerCase()
                                   ? "opacity-100"
-                                  : "opacity-0"
+                                  : "opacity-0",
                               )}
                             />
                             {country}
@@ -519,14 +572,14 @@ const CompanyInfoPage = () => {
                 </PopoverContent>
               </Popover>
               {errors.accountCity && (
-                <span className="mt-1 absolute text-[11px] text-red-500">
+                <span className="absolute left-0 top-10 mt-1 w-full text-[11px] text-red-500">
                   {errors.accountCity.message}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex items-center space-x-2 my-2">
+          <div className="my-2 flex items-center space-x-2">
             <input
               type="checkbox"
               id="agree"
@@ -535,7 +588,7 @@ const CompanyInfoPage = () => {
             />
             <label
               htmlFor="agree"
-              className="text-sm font-roboto text-[#44444F] leading-none"
+              className="font-roboto text-sm leading-none text-[#44444F]"
             >
               I agree to TradeRisk&apos;s{" "}
               <span className="text-text">
@@ -547,12 +600,12 @@ const CompanyInfoPage = () => {
             </label>
           </div>
           {/* Action Buttons */}
-          <div className="flex items-center gap-x-2 max-xs:flex-col-reverse max-xs:gap-y-3">
+          <div className="max-xs:flex-col-reverse max-xs:gap-y-3 flex items-center gap-x-2">
             <Link href="/login" className="text-center sm:w-1/3">
               <Button
                 type="button"
                 variant="ghost"
-                className="text-[#92929D] bg-[#F5F7F9] text-[16px]"
+                className="bg-[#F5F7F9] text-[16px] text-[#92929D]"
                 onClick={() => localStorage.removeItem("corporateData")}
               >
                 Go back to login
@@ -560,9 +613,9 @@ const CompanyInfoPage = () => {
             </Link>
             <Button
               type="submit"
-              className="w-full disabled:bg-borderCol disabled:text-[#B5B5BE] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
+              className="w-full rounded-lg bg-primaryCol text-[16px] hover:bg-primaryCol/90 disabled:bg-borderCol disabled:text-[#B5B5BE]"
               size="lg"
-              disabled={!allowSubmit}
+              // disabled={!allowSubmit}
             >
               Get Started
             </Button>

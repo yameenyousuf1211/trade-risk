@@ -456,10 +456,11 @@ const CurrentBankingPage = () => {
             {/* swift code */}
             <input
               value={swiftCodeVal}
-              disabled={countryVal === "" || bankVal === "" || cityVal === ""}
+
+              // disabled={countryVal === "" || bankVal === "" || cityVal === ""}
               onChange={(e) => setSwiftCodeVal(e.target.value.toUpperCase())}
               placeholder="Add Swift Code"
-              className="border p-2 w-[230px] rounded-md  placeholder:text-sm py-3 capitalize text-sm uppercase-input px-3"
+              className="border p-2 w-[230px] rounded-md  placeholder:text-sm py-3 text-sm  px-3"
             />
 
             <Button

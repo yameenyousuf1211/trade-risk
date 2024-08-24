@@ -13,28 +13,11 @@ const LgStep12: React.FC<LgStepsProps10> = ({
   step,
   setStepCompleted,
 }) => {
-  const expectedPrice = watch("expectedPrice.expectedPrice");
-  const pricingPerAnnum = watch("expectedPrice.pricePerAnnum");
   const lgIssuance = watch("lgIssuance");
+  const lastDateOfReceivingBids = watch("lastDateOfReceivingBids");
 
-  const handleIncrement = () => {
-    const currentValue = parseInt(pricingPerAnnum) || 0;
-    const newValue = (currentValue + 1).toFixed(2);
-    setValue(
-      "expectedPrice.pricePerAnnum",
-      parseInt(newValue) > 100 ? "100.00" : newValue
-    );
-  };
-
-  const handleDecrement = () => {
-    const currentValue = parseInt(pricingPerAnnum) || 0;
-    const newValue = (currentValue - 1).toFixed(2);
-    setValue(
-      "expectedPrice.pricePerAnnum",
-      parseInt(newValue) < 0 ? "0.00" : newValue
-    );
-  };
-
+  console.log("🚀 ~ lastDateOfReceivingBidsss", lastDateOfReceivingBids);
+  console.log("🚀 ~ lastDateOfReceivingBidsss", new Date(lastDateOfReceivingBids));
   return (
     <div
       id={`lg-step${step}`}
@@ -58,13 +41,13 @@ const LgStep12: React.FC<LgStepsProps10> = ({
         >
           <p className="w-full text-sm text-lightGray">Select Date</p>
           <DatePicker
-            //           value={!expectedDate ? undefined : new Date(expectedDate)}
             maxDate={
               new Date(new Date().setFullYear(new Date().getFullYear() + 1))
             }
-            isLg={true}
-            name={``}
             setValue={setValue}
+            // value={lastDateOfReceivingBids}
+            value={new Date(lastDateOfReceivingBids)}
+            name={`lastDateOfReceivingBids`}
           />
         </label>
       </div>

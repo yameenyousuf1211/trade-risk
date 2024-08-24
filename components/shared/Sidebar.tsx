@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { AddBid } from "./AddBid";
-import { fetchAllLcs, fetchLcs } from "@/services/apis/lcs.api";
+import { fetchAllLcs, fetchLcs, getBankLcStatus } from "@/services/apis/lcs.api";
 import { ApiResponse, IBids, ILcs, IRisk } from "@/types/type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatLeftDate, formatLeftDays } from "@/utils";
@@ -41,9 +41,9 @@ const SliderCard = ({
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      // queryClient.invalidateQueries({
-      //   queryKey: ["bid-status-change"],
-      // });
+      queryClient.invalidateQueries({
+        queryKey: ["bid-status"],
+      });
     },
   });
 
@@ -56,17 +56,18 @@ const SliderCard = ({
     if (!success) return toast.error(response as string);
     else return toast.success(`Bid ${status}`);
   };
+  
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
       <p className="uppercase">
         {lcData.currency || "USD"}{" "}
-        {info.amount?.toLocaleString() + ".00" || "00"}
+        {info.confirmationPrice?.toLocaleString() + ".00" || "00"}
       </p>
-      <p className="font-roboto text-para font-medium mt-2">
-        {info.userInfo?.name || ""}
+      <p className="font-roboto text-para font-medium mt-1">
+        {info.bidBy?.name || ""}
       </p>
       <p className="font-roboto text-para text-sm font-light truncate capitalize">
-        {info.userInfo?.country || "Pakistan"}
+        {info.bidBy?.country || "Pakistan"}
       </p>
       <div className="flex items-center gap-x-2 mt-2">
         <Button
@@ -99,7 +100,6 @@ const RequestCard = ({
   riskType?: string;
   data: ILcs | IRisk;
 }) => {
-  console.log("🚀 ~ data:", data);
   const { user } = useAuth();
 
   const bidsExist = Array.isArray(data?.bids);
@@ -171,7 +171,7 @@ const RequestCard = ({
 
               <AddBid
                 triggerTitle="Add Bid"
-                status="Add bid"
+                status="Add Bid"
                 isBank
                 isDiscount={
                   ((data as ILcs).type &&
@@ -280,7 +280,7 @@ export const Sidebar = ({
     data: allLcs,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
-      queryKey: ["bid-status", "fetch-all-lcs"],
+      queryKey: ["fetch-all-lcs"],
       queryFn: () => fetchAllLcs({ limit: 20 }),
       enabled: !!user?._id,
     });
@@ -289,7 +289,7 @@ export const Sidebar = ({
     data: allRisk,
   }: { data: ApiResponse<IRisk> | undefined; error: any; isLoading: boolean } =
     useQuery({
-      queryKey: ["bid-status", "fetch-risks"],
+      queryKey: ["fetch-risks"],
       queryFn: () =>
         fetchRisk({ createdBy: riskType === "myRisk" ? true : false }),
       enabled: !!user?._id && user.type === "bank",

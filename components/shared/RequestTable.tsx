@@ -289,10 +289,10 @@ export const RequestTable = ({
                         item?.period?.endDate
                           ? convertDateToString(item?.period?.endDate)
                           : item?.expiryDate
-                            ? convertDateToString((item as IRisk)?.expiryDate)
-                            : item?.otherBond?.lgExpiryDate
+                            ? convertDateToString((item as IRisk)?.lastDateOfReceivingBids)
+                            : item?.lastDateOfReceivingBids
                               ? convertDateToString(
-                                  item?.otherBond?.lgExpiryDate,
+                                  item?.lastDateOfReceivingBids
                                 )
                               : "-"
                       }
@@ -377,7 +377,7 @@ export const RequestTable = ({
                       <TableDialog
                         lcId={item._id}
                         bids={item.bids}
-                        isBank
+                        isBank={isBank}
                         isRisk={isRisk}
                       />
                     </TableCell>
@@ -407,8 +407,8 @@ export const RequestTable = ({
                       data={
                         (item as ILcs)?.period
                           ? convertDateToString(item?.period?.endDate)
-                          : (item as ILcs)?.otherBond?.lgExpiryDate
-                            ? convertDateToString(item?.otherBond?.lgExpiryDate)
+                          : (item as ILcs)?.lastDateOfReceivingBids
+                            ? convertDateToString(item?.lastDateOfReceivingBids)
                             : (item as IRisk)?.expiryDate &&
                               convertDateToString((item as IRisk)?.expiryDate)
                       }

@@ -51,7 +51,8 @@ const PointContactPage = () => {
   useEffect(() => {
     if (contactData) {
       setAllowSubmit(true);
-    } else if (isValid  && pdfFile) {
+
+    } else if (isValid && pdfFile) {
       setAllowSubmit(true);
     } else {
       setAllowSubmit(false);
@@ -59,15 +60,16 @@ const PointContactPage = () => {
   }, [errors, isValid, isDirty, contactData, pdfFile]);
 
   const onSubmit: SubmitHandler<typeof pointOfContractSchema> = async (
-    data: any
+    data: any,
   ) => {
     if (!pdfFile) {
       setPdfError(true);
       return;
     }
-    const {success} = await phoneVerification(data.pocPhone);
 
-    if(!success){
+    const { success } = await phoneVerification(data.pocPhone);
+
+    if (!success) {
       toast.error("Invalid phone number");
       return;
     }
@@ -88,11 +90,12 @@ const PointContactPage = () => {
       text="Give us the details of the POC our sales team should get in touch with after verification"
     >
       <form
-        className="max-w-2xl w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-6"
+        className="z-10 mt-5 flex w-full max-w-2xl flex-col gap-y-6 rounded-xl bg-white p-8 shadow-md"
         onSubmit={handleSubmit(onSubmit)}
       >
-         <div className="flex items-center gap-x-2">
-           <div className="w-full relative">
+
+        <div className="flex items-center gap-x-2">
+          <div className="relative w-full">
             <FloatingInput
               register={register}
               type="text"
@@ -100,78 +103,82 @@ const PointContactPage = () => {
               placeholder="Authorized Point of Contact"
             />
             {errors.pocName && (
-              <span className="mt-1 absolute text-[11px] text-red-500">
+
+              <span className="absolute mt-1 text-[11px] text-red-500">
                 {errors.pocName.message}
               </span>
             )}
-           </div>
-           <div className="w-full relative">
+          </div>
+          <div className="relative w-full">
             <FloatingInput
               type="text"
               name="pocDesignation"
-              placeholder="POC Designation"
+              placeholder="Designation"
               register={register}
             />
             {errors.pocDesignation && (
-              <span className="mt-1 absolute text-[11px] text-red-500">
+              <span className="absolute mt-1 text-[11px] text-red-500">
                 {errors.pocDesignation.message}
               </span>
             )}
           </div>
         </div>
         <div className="flex items-center gap-x-2">
-          <div className="w-full relative">
+          <div className="relative w-full">
             <FloatingInput
               register={register}
               name="pocEmail"
-              placeholder="Point of Contact Email"
+
+              placeholder="Company Email"
               type="email"
             />
             {errors.pocEmail && (
-              <span className="mt-1 absolute text-[11px] text-red-500">
+              <span className="absolute mt-1 text-[11px] text-red-500">
+
                 {errors.pocEmail.message}
               </span>
             )}
           </div>
-          <div className="w-full relative">
-          <label
-            id="beneficiaryDetails.address"
-            className="border  w-full  rounded-md  flex items-center justify-between bg-white"
-          >
-            <p className=" text-sm pl-2  font-roboto text-gray-400 ">Phone Number</p>
-            <PhoneInput
-              value={phoneInput}
-              isOnBoarding={true}
-              className=""
-              name="pocPhone"
-              onChange={(value) => {
-                setValue('pocPhone', value);
-                trigger('pocPhone');
-                setPhoneInput(value);
-              }}
-            />
-          </label>
-          {errors.pocPhone && (
-              <span className="mt-1 absolute text-[11px] text-red-500">
+
+          <div className="relative w-full">
+            <label
+              id="beneficiaryDetails.address"
+              className="flex w-full items-center justify-between rounded-md bg-white"
+            >
+              <div className="w-full">
+                <PhoneInput
+                  value={phoneInput}
+                  isOnBoarding={true}
+                  className=""
+                  name="pocPhone"
+                  onChange={(value) => {
+                    setValue("pocPhone", value);
+                    trigger("pocPhone");
+                    setPhoneInput(value);
+                  }}
+                />
+              </div>
+            </label>
+            {errors.pocPhone && (
+              <span className="absolute mt-1 text-[11px] text-red-500">
                 {errors.pocPhone.message}
               </span>
             )}
         </div>
-        
-        </div>
-        <div className="w-full font-roboto relative">
+
+        <div className="relative w-full font-roboto">
           <label
             htmlFor="pdf-file"
-            className="flex items-center justify-between border border-borderCol py-4 rounded-md px-4 cursor-pointer"
+            className="flex cursor-pointer items-center justify-between rounded-md border border-borderCol px-4 py-4"
           >
             <div className="flex items-center gap-x-1">
-              <Paperclip className="text-gray-500 size-4" />
+              <Paperclip className="size-4 text-gray-500" />
               <p className="text-sm">Upload authorization letter</p>
             </div>
-            <p className="center gap-x-1 relative text-sm text-[#92929D]">
+            <p className="center relative gap-x-1 text-sm text-[#92929D]">
               {pdfFile && (
                 <div
-                  className="bg-red-500 text-white size-4 rounded-full center text-[12px] z-20"
+                  className="center z-20 size-4 rounded-full bg-red-500 text-[12px] text-white"
                   onClick={() => setPdfFile(undefined)}
                 >
                   <X className="size-3" />
@@ -188,7 +195,8 @@ const PointContactPage = () => {
             onChange={(e) => setPdfFile(e.target.files?.[0])}
           />
           {(Object.keys(errors).length > 0 || pdfError) && !pdfFile && (
-            <span className=" mt-1 absolute text-[11px] text-red-500">
+
+            <span className="absolute mt-1 text-[11px] text-red-500">
               Please select a file
             </span>
           )}
@@ -196,7 +204,7 @@ const PointContactPage = () => {
 
         <div className="flex flex-col gap-y-2">
           <Button
-            className="disabled:bg-borderCol disabled:text-[#9f9faf] bg-primaryCol hover:bg-primaryCol/90 text-[16px] rounded-lg"
+            className="rounded-lg bg-primaryCol text-[16px] hover:bg-primaryCol/90 disabled:bg-borderCol disabled:text-[#9f9faf]"
             size="lg"
             disabled={!allowSubmit}
           >
@@ -207,7 +215,7 @@ const PointContactPage = () => {
             <Button
               type="button"
               variant="ghost"
-              className="text-lightGray text-[16px] w-full"
+              className="w-full text-[16px] text-lightGray"
             >
               Previous
             </Button>

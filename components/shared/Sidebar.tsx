@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { AddBid } from "./AddBid";
-import { fetchAllLcs, fetchLcs } from "@/services/apis/lcs.api";
+import { fetchAllLcs, fetchLcs, getBankLcStatus } from "@/services/apis/lcs.api";
 import { ApiResponse, IBids, ILcs, IRisk } from "@/types/type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatLeftDate, formatLeftDays } from "@/utils";

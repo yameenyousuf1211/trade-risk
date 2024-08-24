@@ -39,6 +39,7 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
     redirect("/");
   } 
 
+  console.log(data, "my-bids-data");
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">

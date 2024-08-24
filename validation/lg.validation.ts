@@ -12,9 +12,13 @@ const bondSchema = Yup.object().shape({
       then: (schema) => schema.required("Must enter LG Amount"),
       otherwise: (schema) => schema.notRequired(),
     }),
-  valueInPercentage: Yup.number()
-    // .typeError("valueInPercenta Percentage should be a number")
-    .nullable(),
+  valueInPercentage: Yup.number().when("Contract", {
+    is: true,
+    then: (schema) => schema.required("Value In Percentage is required"),
+    otherwise: (schema) => schema.notRequired(),
+  })
+  .nullable(),
+  // .typeError("valueInPercenta Percentage should be a number")
   expectedDate: Yup.date()
     .when("Contract", {
       is: true,
@@ -83,7 +87,11 @@ export const lgValidator = Yup.object()
       .required(),
     lgDetailsType: Yup.string()
       .default("Choose any other type of LGs").required(),
-    bidBond: bondSchema,
+    bidBond: bondSchema.when('lgDetailsType' ,{
+      is:"Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
+      then: (schema) => schema.required("Bid Bond is required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
     advancePaymentBond: bondSchema,
     performanceBond: bondSchema,
     retentionMoneyBond: bondSchema,
@@ -115,7 +123,7 @@ export const lgValidator = Yup.object()
     priceQuotes: Yup.string().required("Price Quotes is required"),
     expectedPrice: Yup.object()
       .shape({
-        expectedPrice: Yup.string().required("Expected Price is required"),
+        expectedPrice: Yup.string().required("Price Per Annum is required"),
         pricePerAnnum: Yup.string().nullable(),
       })
       .required(),
@@ -135,7 +143,7 @@ export const lgValidator = Yup.object()
     }),    
     totalContractCurrency: Yup.string().when('lgDetailsType' ,{
       is:"Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
-      then: (schema) => schema.required("Total Contract Value is required"),
+      then: (schema) => schema.required("Total Contract Currency is required"),
       otherwise: (schema) => schema.notRequired(),
     }),
   }).test(

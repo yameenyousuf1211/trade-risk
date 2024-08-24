@@ -262,7 +262,7 @@ export const AddBid = ({
         } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
         disabled={
           (lcData?.status === "Accepted" || lcData?.status === "Expired") &&
-          status !== "Accepted"
+          status !== "Accepted" || computedStatus === "Pending"
         }
       >
         {status === "Accepted"

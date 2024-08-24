@@ -203,9 +203,9 @@ export default function LgIssuance() {
     // if(!validate) return toast.error("Please Select at least one Bond");
     convertStringValueToDate(responseData)
     console.log("🚀 ~ handleFinalSubmission ~ responseData SubmittingBIDBOND:", responseData?.bidBond?.Contract);
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond DATE:", responseData?.advancePaymentBond?.expectedDate);
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond DATE:", responseData?.performanceBond?.expectedDate)
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond DATE:", responseData?.retentionMoneyBond?.expectedDate)
+    console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond DATE:", responseData?.advancePaymentBond?.Contract);
+    console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond DATE:", responseData?.performanceBond?.Contract)
+    console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond DATE:", responseData?.retentionMoneyBond?.Contract)
     // // console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
 
     try {

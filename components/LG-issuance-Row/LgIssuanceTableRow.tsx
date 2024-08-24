@@ -113,7 +113,8 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
               {...register(`${name}.Contract`)}
             /> */}
             <div onClick={() => {
-              setValue(`${name}.Contract`,checkedValue ? false:true)
+              setValue(`${name}.Contract`,!checkedValue)
+              console.log("🚀 ~ checkedValue:", checkedValue);
             }} className="bg-white border-[#5625F2] border-2 rounded-[5px] flex items-center justify-center h-[22px] w-[22px] cursor-pointer">
               {checkedValue ? (
                 <Check size={18} style={{ color: "#5625F2" }} />

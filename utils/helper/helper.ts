@@ -331,8 +331,6 @@ export const mapCountryToIsoCode = (country: string) => {
     delete responseData.__v;
     delete responseData.status;
 
-    console.log("🚀 ~ responseData issuingBanks :", responseData.issuingBanks);
-    
     responseData.issuingBanks = responseData?.issuingBanks?.map((bank: Bank) => {
       // @ts-ignore
       delete bank._id;
@@ -358,8 +356,9 @@ export const mapCountryToIsoCode = (country: string) => {
           delete responseData[element]?._id;
 
           if(responseData[element]?.Contract){
-            Boolean(responseData[element]?.checked) ? responseData[element].Contract = true : responseData[element].Contract = false;
+            Boolean(responseData[element].Contact)
           }
+
           if (responseData[element]?.valueInPercentage)
             responseData[element].valueInPercentage =
               responseData[element].valueInPercentage?.toString();

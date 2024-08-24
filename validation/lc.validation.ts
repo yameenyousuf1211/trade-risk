@@ -91,7 +91,6 @@ export const generalLcSchema = Yup.object().shape({
         })
         .max(999, "Days must be less than or equal to 999"),
       other: Yup.mixed()
-
         // .oneOf(
         //   [
         //     "shipment",

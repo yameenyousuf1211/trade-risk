@@ -456,7 +456,6 @@ const CurrentBankingPage = () => {
             {/* swift code */}
             <input
               value={swiftCodeVal}
-
               // disabled={countryVal === "" || bankVal === "" || cityVal === ""}
               onChange={(e) => setSwiftCodeVal(e.target.value.toUpperCase())}
               placeholder="Add Swift Code"

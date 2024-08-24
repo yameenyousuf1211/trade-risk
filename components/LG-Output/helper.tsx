@@ -26,11 +26,11 @@ export const BgRadioInputLG = ({
   return (
     <label
       htmlFor={id}
-      className={`px-2 py-2 w-full transition-colors duration-100 hover:cursor-pointer ${
+      className={`px-2 py-3 w-full transition-colors duration-100 hover:cursor-pointer ${
         checked && bgchecked
           ? "bg-[#EEE9FE]"
           : "border border-borderCol bg-white"
-      } rounded-sm flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
+      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
     >
       <input
         type="radio"
@@ -47,8 +47,8 @@ export const BgRadioInputLG = ({
           sidesublabel ? "flex flex-row justify-between" : "flex flex-col"
         }`}
       >
-        <span className="font-light text-xs">{label}</span>
-        {sublabel && <span className="text-[#797979] text-xs font-light">{sublabel}</span>}
+        <span className="font-semibold">{label}</span>
+        {sublabel && <span className="text-[#797979] text-sm">{sublabel}</span>}
         {sidesublabel && (
           <div className="flex">
             <Check className="text-green-300" />

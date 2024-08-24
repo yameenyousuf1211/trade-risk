@@ -24,7 +24,6 @@ import { compareValues, convertDateToString } from "@/utils";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
-import { LGTableBidStatus } from "../LG-Output/LG-Issuance-Corporate/LgTableBidStatus";
 
 type TableDataCellProps = {
   data?: string | number | Date | undefined;
@@ -486,18 +485,11 @@ export const RequestTable = ({
                       </Button>
                     </TableCell>
                     <TableCell className="max-w-[200px] px-1 py-1">
-                      {
-                        item.type == "LG Issuance" ? ( 
-                          <LGTableBidStatus data={item}/>
-                        ) : (
-
-                          <TableDialog
-                            lcId={item._id}
-                            bids={item.bids}
-                            isRisk={isRisk}
-                          />
-                        )
-                      }
+                      <TableDialog
+                        lcId={item._id}
+                        bids={item.bids}
+                        isRisk={isRisk}
+                      />
                     </TableCell>
                   </TableRow>
                 ))

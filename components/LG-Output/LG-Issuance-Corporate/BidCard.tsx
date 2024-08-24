@@ -2,216 +2,258 @@ import { useState } from "react";
 import { Check, X } from "lucide-react";
 import { BgRadioInputLG } from "../helper";
 import { Button } from "@/components/ui/button";
+import useLGStore from "../../../store/LGCorporateBidStore";
+import { BondStatus, IssuingBank } from "../../../types/LGCorporateTypes";
 import { ConfirmationModal } from "../ConfirmationModal";
-import { useMutation } from "@tanstack/react-query";
-import { respondBid } from "@/services/apis/lg.apis";
-import { convertDateToCommaString } from "@/utils";
 
-export const BidCard = ({ bidDetail, issuingBanks }: { bidDetail: any, issuingBanks: any }) => {
+export const BidCard = ({ bidDetail }: { bidDetail: any }) => {
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-  const [selectedBank, setSelectedBank] = useState<string | null>(null);
-  const [localBids, setLocalBids] = useState(bidDetail.bids);
 
-  const handleBankSelection = (bankName: string) => {
-    setSelectedBank(bankName);
+  const {
+    setSelectedBank,
+    setBidBondStatus,
+    setRetentionBondStatus,
+    setBidStatus,
+    resetForm,
+  } = useLGStore();
+
+  const handleBankSelection = (id: string, bankName: IssuingBank) => {
+    setSelectedBank(id, bankName);
   };
-  console.log(bidDetail, "bidDetail")
+
   const handleBondStatusChange = (
-    bondType: "bidBond" | "retentionBond" | "performanceBond" | "advancePaymentBond",
-    status: "Accepted" | "Rejected"
+    id: string,
+    bankName: IssuingBank,
+    bondType: "bidBond" | "retentionBond",
+    status: BondStatus
   ) => {
-    setLocalBids(prevBids =>
-      prevBids.map((bankBid: any) =>
-        bankBid.bank === selectedBank && bankBid.bidType === bondType
-          ? { ...bankBid, status }
-          : bankBid
-      )
-    );
+    if (bondType === "bidBond") {
+      setBidBondStatus(id, bankName, status);
+    } else {
+      setRetentionBondStatus(id, bankName, status);
+    }
   };
 
-  const allBondsResponded = localBids
-    .filter((bankBid: any) => bankBid.bank === selectedBank)
-    .every((bankBid: any) => bankBid.status === "Accepted" || bankBid.status === "Rejected");
-
-  const mutation = useMutation({
-    mutationFn: ({ requestData, status }: { requestData: any, status: string }) => respondBid(requestData, status),
-    onSuccess: (data) => {
-      console.log("API Response:", data);
-      // Handle successful response
-    },
-    onError: (error) => {
-      console.error("Error updating bid status:", error);
-    },
-  });
-  
   const handleSubmit = () => {
-    const overallStatus = localBids.some((bid: any) => bid.status === "Accepted")
-      ? "Accepted"
-      : "Rejected";
-    const requestData = {
-      id: bidDetail._id,
-      bids: localBids,
-    };
-    console.log(requestData, "requestData")
-    mutation.mutate({ requestData, status: overallStatus });
     setIsConfirmationOpen(true);
   };
 
   const handleConfirmSubmit = () => {
+    setBidStatus(bidDetail.id, "Submitted");
     setIsConfirmationOpen(false);
   };
 
   const handleReset = () => {
-    setSelectedBank(null);
-    setLocalBids(bidDetail.bids);
+    resetForm(bidDetail.id);
   };
 
   return (
-    <div className={`border border-borderCol rounded-lg mt-4`}>
+    <div
+      className={`${
+        bidDetail.bidStatus === "None" ? "" : "pointer-events-none"
+      }  border border-borderCol  rounded-lg mt-4`}
+    >
+      {/* <pre>{JSON.stringify(bidDetail, null, 2)}</pre> */}
+
       <div className="border-b-2 border-[#979797] py-3 px-3">
         <div className="grid grid-cols-3">
-          <div>
-            <p className="font-semibold text-xl">{bidDetail.bidBy.name}</p>
-            <p className="text-[#92929D] text-sm">Submitted By</p>
+          <div className="">
+            <p className="font-bold text-xl">{bidDetail.bidNumber}</p>
+            <p>Bid Number</p>
           </div>
           <div className="text-center">
-            <p className="font-semibold text-xl">
-              {convertDateToCommaString((bidDetail.bidValidity))}
-            </p>
-            <p className="text-[#92929D] text-sm">Bid Validity</p>
+            <p className="font-bold text-xl">{bidDetail.bidValidity}</p>
+            <p>Bid Validity</p>
           </div>
           <div className="text-end">
-            <p className="font-semibold text-xl">
-              {convertDateToCommaString((bidDetail.createdAt))}
-            </p>
-            <p className="text-[#92929D] text-sm">Created Date</p>
+            <p className="font-bold text-xl">{bidDetail.submittedDate}</p>
+            <p>Submitted date</p>
           </div>
-        </div>
-        <div className="grid grid-cols-2 mt-1">
-          <div className="text-start">
-            <p className="font-semibold text-xl">{bidDetail._id.substring(0, 6)}</p>
-            <p className="text-[#92929D] text-sm">Bid Number</p>
+          <div className="">
+            <p className="font-bold text-xl">{bidDetail.submittedBy}</p>
+            <p>Subited by</p>
           </div>
+          <div className="text-center"></div>
           <div className="text-end">
-            <p className="font-semibold text-xl">
-              {bidDetail.bidBy.country}
-            </p>
-            <p className="text-[#92929D] text-sm">Country</p>
+            <p className="font-bold text-xl"> {bidDetail.country}</p>
+            <p>Country</p>
           </div>
         </div>
 
-        {/* Issuing Banks */}
+        {/* issuing banks */}
         <div
           id="banksOption"
           className="border-borderCol border rounded-md bg-[#F5F7F9] grid grid-cols-3 gap-2 p-2 mt-2"
         >
           <h3 className="col-span-3">Select Issuing Bank</h3>
 
-          {issuingBanks?.map(
-            (bank: { bank: string; country: string }) => (
+          {bidDetail.banks.map(
+            (bank: { name: IssuingBank; country: string }) => (
               <BgRadioInputLG
-                key={bank.bank}
-                id={bank._id}
-                label={bank.bank}
+                key={bank.name}
+                id={`bank_${bidDetail.id}_${bank.name}`}
+                label={bank.name}
                 sublabel={bank.country}
-                name={bank.bank}
-                value={bank.bank}
-                checked={selectedBank === bank.bank}
-                bgchecked={selectedBank === bank.bank}
-                onChange={() => handleBankSelection(bank.bank)}
+                name={`selectedBank_${bidDetail.id}`}
+                value={bank.name}
+                checked={bidDetail.selectedBank === bank.name}
+                onChange={() => handleBankSelection(bidDetail.id, bank.name)}
               />
             )
           )}
         </div>
       </div>
 
-      {selectedBank && (
+      <div className="">
+        {/* actions, accept and reject */}
         <div className="px-5 py-5">
-          {localBids
-            .filter((bankBid: any) => bankBid.bank === selectedBank)
-            .map((bankBid: any) => (
-              <div key={bankBid._id}>
-                <div className="grid grid-cols-3 justify-center py-2">
-                  <h4 className="text-sm">{bankBid.bidType}</h4>
-                  <h4 className="text-center text-xs font-light text-[#A3A3A9]">
-                    Bid Pricing <span className="font-normal text-black">{bankBid.price ? `${bankBid.price}%` : "-"}</span>
-                  </h4>
-                  {bankBid.status === "Accepted" ? (
-                    <div className="flex gap-2 justify-end">
-                      <h6 className="text-[0.65rem] bg-[#29C084] p-1 text-white">
-                        Accepted
-                      </h6>
-                    </div>
-                  ) : bankBid.status === "Rejected" ? (
-                    <div className="flex gap-2 justify-end">
-                      <h6 className="text-[0.7rem] bg-[#F1F1F5] p-1">
-                        Rejected
-                      </h6>
-                    </div>
-                  ) : (
-                    <div className="flex gap-2 justify-end">
-                      <Check
-                        className={`bg-[#29C084] hover:cursor-pointer`}
-                        onClick={() =>
-                          handleBondStatusChange(
-                            bankBid.bidType as "bidBond" | "retentionBond" | "performanceBond" | "advancePaymentBond",
-                            "Accepted"
-                          )
-                        }
-                      />
-                      <X
-                        className={`bg-[#F1F1F5] hover:cursor-pointer`}
-                        onClick={() =>
-                          handleBondStatusChange(
-                            bankBid.bidType as "bidBond" | "retentionBond" | "performanceBond" | "advancePaymentBond",
-                            "Rejected"
-                          )
-                        }
-                      />
-                    </div>
-                  )}
+          {bidDetail.banks.map(
+            (bank: {
+              name: IssuingBank;
+              bidBond: { pricing: string; status: BondStatus };
+              retentionBond: { pricing: string; status: BondStatus };
+            }) =>
+              bank.name === bidDetail.selectedBank && (
+                <div key={bank.name}>
+                  <div className="grid grid-cols-3 justify-center py-2">
+                    <h4 className="font-semibold">Bid Bond</h4>
+                    <h4 className="text-center">
+                      Bid Pricing{" "}
+                      <span className="font-semibold">
+                        {bank.bidBond.pricing}
+                      </span>
+                    </h4>
+                    {bank.bidBond.status === "Accepted" ? (
+                      <div className="flex gap-2 justify-end">
+                        <h6 className="text-[0.65rem] bg-[#29C084] p-1 text-white">
+                          Accepted
+                        </h6>
+                      </div>
+                    ) : bank.bidBond.status === "Rejected" ? (
+                      <div className="flex gap-2 justify-end">
+                        <h6 className="text-[0.7rem] bg-[#F1F1F5] p-1">
+                          Rejected
+                        </h6>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2 justify-end">
+                        <Check
+                          className={`bg-[#29C084] hover:cursor-pointer`}
+                          onClick={() =>
+                            handleBondStatusChange(
+                              bidDetail.id,
+                              bank.name,
+                              "bidBond",
+                              "Accepted"
+                            )
+                          }
+                        />
+
+                        <X
+                          className={`bg-[#F1F1F5] hover:cursor-pointer`}
+                          onClick={() =>
+                            handleBondStatusChange(
+                              bidDetail.id,
+                              bank.name,
+                              "bidBond",
+                              "Rejected"
+                            )
+                          }
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-3 justify-between border-t-2 border-[#979797] py-2">
+                    <h4 className="font-semibold">Retention Bond</h4>
+                    <h4 className="text-center">
+                      Bid Pricing{" "}
+                      <span className="font-semibold">
+                        {bank.retentionBond.pricing}
+                      </span>
+                    </h4>
+
+                    {bank.retentionBond.status === "Accepted" ? (
+                      <div className="flex gap-2 justify-end">
+                        <h6 className="text-[0.65rem] bg-[#29C084] p-1 text-white">
+                          Accepted
+                        </h6>
+                      </div>
+                    ) : bank.retentionBond.status === "Rejected" ? (
+                      <div className="flex gap-2 justify-end">
+                        <h6 className="text-[0.7rem] bg-[#F1F1F5] p-1">
+                          Rejected
+                        </h6>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2 justify-end">
+                        <Check
+                          className={`bg-[#29C084] hover:cursor-pointer`}
+                          onClick={() =>
+                            handleBondStatusChange(
+                              bidDetail.id,
+                              bank.name,
+                              "retentionBond",
+                              "Accepted"
+                            )
+                          }
+                        />
+
+                        <X
+                          className={`bg-[#F1F1F5] hover:cursor-pointer`}
+                          onClick={() =>
+                            handleBondStatusChange(
+                              bidDetail.id,
+                              bank.name,
+                              "retentionBond",
+                              "Rejected"
+                            )
+                          }
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+          )}
         </div>
-      )}
 
-      {/* Actions: Submit and Reset */}
-      {bidDetail.status === "Expired" ? (
-        <div className="pt-0 px-2 pb-2">
-          <Button className="bg-[#B2B2B299] hover:bg-[#B2B2B299] w-full">
-            Expired
-          </Button>
-        </div>
-      ) : bidDetail.status === "Accepted" ||bidDetail.status === "Rejected" ? (
-        <div className="pt-0 px-2 pb-2">
-          <Button className="bg-[#39D09499] hover:bg-[#39D09499] w-full">
-            Submitted
-          </Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-3 pt-0 px-2 pb-2">
-          <Button
-            onClick={handleSubmit}
-            className="bg-[#29C084] hover:bg-[#29C084]"
-            disabled={!allBondsResponded}  // Disable if not all bonds are responded to
-          >
-            Submit
-          </Button>
-          <Button
-            onClick={handleReset}
-            className="bg-[#F1F1F5] text-black hover:bg-[#F1F1F5]"
-          >
-            Reset
-          </Button>
-        </div>
-      )}
+        {/* actions, submit and reset */}
+        {bidDetail.bidStatus === "Expired" ? (
+          <div className="pt-0 px-2 pb-2">
+            <Button className="bg-[#B2B2B299] hover:bg-[#B2B2B299]  w-full">
+              Expired
+            </Button>
+          </div>
+        ) : bidDetail.bidStatus === "Submitted" ? (
+          <div className="pt-0 px-2 pb-2">
+            <Button className="bg-[#39D09499] hover:bg-[#39D09499]  w-full">
+              Bid Submitted
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 pt-0 px-2 pb-2">
+            <Button
+              onClick={handleSubmit}
+              className="bg-[#29C084] hover:bg-[#29C084]"
+            >
+              Submit
+            </Button>
+            <Button
+              onClick={handleReset}
+              className="bg-[#F1F1F5] text-black hover:bg-[#F1F1F5]"
+            >
+              Reset
+            </Button>
+          </div>
+        )}
 
-      <ConfirmationModal
-        isOpen={isConfirmationOpen}
-        onConfirm={handleConfirmSubmit}
-        onCancel={() => setIsConfirmationOpen(false)}
-      />
+        <ConfirmationModal
+          isOpen={isConfirmationOpen}
+          onConfirm={handleConfirmSubmit}
+          onCancel={() => setIsConfirmationOpen(false)}
+        />
+      </div>
     </div>
   );
 };

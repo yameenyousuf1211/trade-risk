@@ -51,7 +51,6 @@ const PointContactPage = () => {
   useEffect(() => {
     if (contactData) {
       setAllowSubmit(true);
-
     } else if (isValid && pdfFile) {
       setAllowSubmit(true);
     } else {
@@ -66,7 +65,6 @@ const PointContactPage = () => {
       setPdfError(true);
       return;
     }
-
     const { success } = await phoneVerification(data.pocPhone);
 
     if (!success) {
@@ -93,7 +91,6 @@ const PointContactPage = () => {
         className="z-10 mt-5 flex w-full max-w-2xl flex-col gap-y-6 rounded-xl bg-white p-8 shadow-md"
         onSubmit={handleSubmit(onSubmit)}
       >
-
         <div className="flex items-center gap-x-2">
           <div className="relative w-full">
             <FloatingInput
@@ -103,7 +100,6 @@ const PointContactPage = () => {
               placeholder="Authorized Point of Contact"
             />
             {errors.pocName && (
-
               <span className="absolute mt-1 text-[11px] text-red-500">
                 {errors.pocName.message}
               </span>
@@ -128,18 +124,15 @@ const PointContactPage = () => {
             <FloatingInput
               register={register}
               name="pocEmail"
-
               placeholder="Company Email"
               type="email"
             />
             {errors.pocEmail && (
               <span className="absolute mt-1 text-[11px] text-red-500">
-
                 {errors.pocEmail.message}
               </span>
             )}
           </div>
-
           <div className="relative w-full">
             <label
               id="beneficiaryDetails.address"
@@ -164,8 +157,8 @@ const PointContactPage = () => {
                 {errors.pocPhone.message}
               </span>
             )}
+          </div>
         </div>
-
         <div className="relative w-full font-roboto">
           <label
             htmlFor="pdf-file"
@@ -195,7 +188,6 @@ const PointContactPage = () => {
             onChange={(e) => setPdfFile(e.target.files?.[0])}
           />
           {(Object.keys(errors).length > 0 || pdfError) && !pdfFile && (
-
             <span className="absolute mt-1 text-[11px] text-red-500">
               Please select a file
             </span>

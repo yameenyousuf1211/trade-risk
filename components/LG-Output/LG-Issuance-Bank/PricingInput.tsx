@@ -16,20 +16,20 @@ export const PricingInput: React.FC<PricingInputProps> = ({
   clientExpectedPrice,
 }) => {
   const getClientExpectedPrice = () => {
-    if (bankData.expectedPrice) {
-      return bankData.pricePerAnnum + " Per Annum";
+    if (clientExpectedPrice) {
+      return clientExpectedPrice;
     }
-else {
-  return "N/A";
-
-}
+    if (bankData && selectedBank && bankData[selectedBank]) {
+      return bankData[selectedBank].clientExpectedPrice;
+    }
+    return "N/A";
   };
 
   return (
     <div className="mt-2 flex flex-col">
       <div className="flex justify-between">
         <h6 className="mb-1 text-sm font-bold">Enter your Pricing Below</h6>
-        <h6 className="text-xs text-[#29C084]">
+        <h6 className="text-md text-[#29C084]">
           Client&apos;s Expected Price: {getClientExpectedPrice()}
         </h6>
       </div>
@@ -41,7 +41,7 @@ else {
           value={pricingValue}
           onChange={(e) => setPricingValue(e.target.value)}
         />
-        <h6 className="w-4/12 text-end text-sm text-gray-600">Per Annum</h6>
+        <h6 className="w-4/12 text-end">Per Annum</h6>
       </div>
     </div>
   );

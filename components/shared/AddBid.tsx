@@ -256,8 +256,8 @@ export const AddBid = ({
               }`
             : status === "Add bid" && !isBank
             ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
-            : status === "Add bid" && isBank
-            ? "bg-primaryCol text-white text-sm"
+            : status === "Add Bid" && isBank
+            ? "bg-[#1A1A26] text-white text-sm"
             : "px-3 mt-2 bg-[#F2994A] hover:bg-[#F2994A]/90 text-white opacity-80"
         } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
         disabled={
@@ -628,9 +628,9 @@ export const AddBid = ({
             {isInfo ? (
     // This is where we filter the bids for the logged-in user
     (() => {
-      console.log("🚀 ~ file: AddBid.tsx ~ line 116 ~ user ~ user", user);
+      // console.log("🚀 ~ file: AddBid.tsx ~ line 116 ~ user ~ user", user);
       
-      const userBids = lcData?.bids.filter(bid => bid?.bidBy?._id === user?.business?._id);
+      const userBids = lcData?.bids?.filter(bid => bid?.bidBy?._id === user?.business?._id);
       return (
         <>
           {userBids && userBids.length > 0 ? (

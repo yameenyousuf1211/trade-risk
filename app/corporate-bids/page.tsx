@@ -57,7 +57,8 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
     router.push(`${pathname}?${queryString}`, { scroll: false });
   };
 
-
+    console.log("CorporateBidsPage -> data", data);
+    
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">
@@ -104,7 +105,7 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
           </div>
         </div>
         <div className="w-[20vw] max-w-[300p x] sticky top-10 h-[80vh]">
-          {/* <Sidebar isBank={false} /> */}
+          <Sidebar isBank={false} />
         </div>
       </div>
     </DashboardLayout>

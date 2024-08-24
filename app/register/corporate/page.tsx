@@ -41,7 +41,6 @@ import { cn } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Input } from "@/components/ui/input";
-
 import { emailVerification, phoneVerification } from "@/services/apis";
 import { toast } from "sonner";
 
@@ -63,15 +62,12 @@ const CompanyInfoPage = () => {
     getValues,
     handleSubmit,
     trigger,
-
     watch,
 
     formState: { errors, isValid, dirtyFields },
-
   } = useForm({
     resolver: yupResolver(companyInfoSchema),
     mode: "all",
-
   });
   // console.log("🚀 ~ CompanyInfoPage ~ getValues:", getValues())
 
@@ -90,7 +86,6 @@ const CompanyInfoPage = () => {
   }, [corporateData]);
   useEffect(() => {
     getValues("phone");
-
     console.log(
       "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ getValues",
       getValues("phone"),
@@ -99,7 +94,6 @@ const CompanyInfoPage = () => {
       "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ phoneInput",
       corporateData,
     );
-
 
     if (corporateData) {
       setAllowSubmit(true);
@@ -113,7 +107,6 @@ const CompanyInfoPage = () => {
   const onSubmit: SubmitHandler<typeof companyInfoSchema> = async (
     data: any,
   ) => {
-
     console.log("hello");
     const { response: emailResponse, success: emailSuccess } =
       await emailVerification(data.email);
@@ -134,7 +127,6 @@ const CompanyInfoPage = () => {
         "🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ response",
         response,
       );
-
       toast.error("Phone number is invalid");
       return;
     }
@@ -170,7 +162,6 @@ const CompanyInfoPage = () => {
 
   let phone = getValues("phone");
 
-
   const handleNatureChange = (e: any) => {
     const { value } = e.target;
     // Remove digit characters
@@ -182,7 +173,6 @@ const CompanyInfoPage = () => {
   // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ phoneInput", phoneInput);
   // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ isValid", isValid);
   // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ allowSubmit", allowSubmit);
-
   console.log(
     "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ error",
     dirtyFields,
@@ -201,7 +191,6 @@ const CompanyInfoPage = () => {
       setValue("accountCity", JSON.parse(corporateData as string)?.accountCity);
     }
   }, [accountCountry]);
-
 
   return (
     <AuthLayout>
@@ -327,7 +316,6 @@ const CompanyInfoPage = () => {
                 </span>
               )}
             </div>
-
             <div className="relative w-full">
               {/* <TelephoneInput
                 name="phone"
@@ -337,7 +325,6 @@ const CompanyInfoPage = () => {
                 trigger={trigger}
                 value={(corporateData && JSON.parse(corporateData).phone) || ""}
               /> */}
-
               <div className="flex items-center gap-3">
                 <label
                   id="beneficiaryDetails.address"
@@ -358,7 +345,6 @@ const CompanyInfoPage = () => {
                   </div>
                 </label>
               </div>
-
               {errors.phone && (
                 <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.phone.message}

@@ -87,7 +87,6 @@ export const phoneVerification = async (payload: string) => {
       response: error?.response?.data?.message || "Something went wrong",
     };
   }
-
 };
 
 export const emailVerification = async (payload: string) => {

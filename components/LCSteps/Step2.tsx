@@ -43,7 +43,6 @@ export const Step2 = ({
   let amount = watch("amount");
   let currencyVal = watch("currency");
   let paymentTerms = watch("paymentTerms");
-
   let extraInfo = watch("extraInfo") || { days: 0, other: "" };
 
   const [currencyValue, setCurrencyValue] = useState<string | number>(
@@ -54,7 +53,6 @@ export const Step2 = ({
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
-
     if (paymentTerms === "Usance LC") {
       setValue("extraInfo", undefined);
     }
@@ -123,8 +121,6 @@ export const Step2 = ({
 
   console.log("extraInfo", extraInfo);
 
-  console.log("extraInfo", extraInfo);
-  
   return (
     <div
       id="step2"
@@ -223,7 +219,7 @@ export const Step2 = ({
           />
         </div>
         {/* Days input */}
-        {paymentTerms && paymentTerms == "Usance LC" && (
+        {paymentTerms && paymentTerms !== "Sight LC" && (
           <>
             <div className="my-3 ml-2 flex items-center gap-x-2">
               <div className="flex items-center border-b-2 border-black">
@@ -313,7 +309,6 @@ export const Step2 = ({
               />
             </div>
             <div
-
               className={`mb-2 flex w-full items-end gap-x-5 rounded-md border border-borderCol bg-white px-3 py-4 ${
                 extraInfo.other === "others" && "!bg-[#EEE9FE]"
               }`}
@@ -328,7 +323,6 @@ export const Step2 = ({
                   {...register("extraInfo.other")}
                   id="payment-others"
                   checked={extraInfo.other === "others"}
-
                   className="size-4 accent-primaryCol"
                   // onChange={() => setOtherValue("others")}
                 />

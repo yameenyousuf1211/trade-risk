@@ -9,10 +9,7 @@ import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker, Loader } from "../helpers";
 import Image from "next/image";
-import {
-  convertDateAndTimeToString,
-  convertDateToCommaString,
-} from "@/utils";
+import { convertDateAndTimeToString, convertDateToCommaString } from "@/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { addBidTypes } from "@/validation/bids.validation";
@@ -29,8 +26,6 @@ import { BgRadioInput, DDInput } from "../LCSteps/helpers";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
 import { yupResolver } from "@hookform/resolvers/yup";
-import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
-import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargin";
 
 const LCInfo = ({
   label,
@@ -88,12 +83,10 @@ export const AddBid = ({
   const [userBids,setUserBids] = useState<IBids[]>([]);
   const [confirmationPriceType, setConfirmationPriceType] = useState("");
   const { user } = useAuth();
-
   const buttonRef = useRef<HTMLButtonElement>(null); // console.log(id, "_______-id");
   
   console.log("🚀 ~ file: AddBid.tsx ~ line 116 ~ bidData ~ bidData", bidData);
   
-
 
 
   const { data: lcData, isLoading } = useQuery({
@@ -102,7 +95,7 @@ export const AddBid = ({
     enabled: !isRisk,
   });
 
-
+  console.log("🚀 ~ lcDataaaaaaa:", lcData);
   const { data: riskData } = useQuery<IRisk>({
     queryKey: [`single-risk`, id],
     queryFn: () => fetchSingleRisk(id),
@@ -116,7 +109,6 @@ export const AddBid = ({
       queryClient.invalidateQueries({
         
         queryKey: ["bid-status"],
-
        
       });
       queryClient.invalidateQueries({
@@ -135,7 +127,6 @@ export const AddBid = ({
   } = useForm({
     resolver: yupResolver(addBidTypes),
   });
-
   const onSubmit: SubmitHandler<typeof addBidTypes> = async (data) => {
     if (isDiscount && !discountBaseRate)
       return toast.error("Please provide discount base rate");
@@ -154,25 +145,27 @@ export const AddBid = ({
           ...baseData,
           discountMargin,
           discountBaseRate,
-          perAnnum: confirmationPriceType === "perAnnum",
+          perAnnum: confirmationPriceType === "perAnnum" ? true : false,
         }
       : baseData;
-
+    // @ts-ignore
     const riskReqData = {
       confirmationPrice: data.confirmationPrice,
       risk: riskData?._id,
       type: "Risk",
       validity: data.validity,
     };
-
     const { success, response } = await mutateAsync(
       isRisk ? riskReqData : reqData
     );
 
     if (!success) return toast.error(response);
+    else {
+      console.log(response?.data, "response?.data");
     buttonRef?.current?.click();
  
     toast.success("Bid added");
+    }
   };
 
   const otherBond = lcData?.otherBond?.cashMargin ?? 0;
@@ -196,11 +189,8 @@ export const AddBid = ({
     const numberString = value.replace(/,/g, "");
     return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
-
-  const userBidStatus = lcData?.bids?.find(
-    (bid) => bid?.createdBy === user?._id
-  )?.status;
-  const computedStatus = userBidStatus || triggerTitle || lcData?.status;
+  const userBidStatus = lcData?.bids?.find(bid => bid?.createdBy === user?._id)?.status;
+  const computedStatus = userBidStatus || triggerTitle ||lcData?.status;
 
 
 
@@ -284,111 +274,103 @@ export const AddBid = ({
       
 
       )}
-
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
-            <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
-              <h2 className="text-lg font-semibold">
-                {(lcData?.type && lcData?.type + " Request") ||
-                  "Risk Participation Request"}
-              </h2>
-              <DialogClose
-                onClick={() => setIsAddNewBid && setIsAddNewBid(false)}
-                >
-                <X className="size-7" />
-              </DialogClose>
-            </div>
-                {lcData && lcData?.type === "LG Issuance" ? (
-                  <LGIssuanceDialog data={lcData}/>
-                ) : (
+        <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
+          <h2 className="text-lg font-semibold">
+            {(lcData?.type && lcData?.type + " Request") ||
+              "Risk Participation Request"}
+          </h2>
+          <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>
+            <X className="size-7" />
+          </DialogClose>
+        </div>
 
-            <div className="overflow-y-hidden relative -mt-4 flex items-start justify-between h-full">
-              {/* Left Section */}
-              <div className="w-full border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[75vh]">
-                {isLoading ? (
-                  <div className="w-full h-full center">
-                    <Loader />
-                  </div>
-                ) : (
+        <div className="overflow-y-hidden relative -mt-4 flex items-start justify-between h-full">
+          {/* Left Section */}
+          <div className="w-full border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[75vh]">
+            {isLoading ? (
+              <div className="w-full h-full center">
+                <Loader />
+              </div>
+            ) : (
+              <>
+                {isRisk ? (
                   <>
-                    {isRisk ? (
-                      <>
-                        <div className="px-4 bg-bg pb-5">
-                          <div className=" bg-white border border-borderCol p-2 flex items-center justify-between w-full gap-x-2 rounded-lg">
-                            <div className="flex items-center gap-x-2">
-                              <Button
-                                type="button"
-                                className="block bg-red-200 p-1 hover:bg-red-300"
-                              >
-                                <Image
-                                  src="/images/pdf.png"
-                                  alt="pdf"
-                                  width={500}
-                                  height={500}
-                                  className="size-8"
-                                />
-                              </Button>
-                              <div>
-                                <p className="text-sm">BAFT Agreement</p>
-                                <p className="text-para text-[12px]">
-                                  PDF, 1.4 MB
-                                </p>
-                              </div>
-                            </div>
-                            <p className="text-sm font-medium cursor-pointer underline">
-                              View attachments
-                            </p>
+                    <div className="px-4 bg-bg pb-5">
+                      <div className=" bg-white border border-borderCol p-2 flex items-center justify-between w-full gap-x-2 rounded-lg">
+                        <div className="flex items-center gap-x-2">
+                          <Button
+                            type="button"
+                            className="block bg-red-200 p-1 hover:bg-red-300"
+                          >
+                            <Image
+                              src="/images/pdf.png"
+                              alt="pdf"
+                              width={500}
+                              height={500}
+                              className="size-8"
+                            />
+                          </Button>
+                          <div>
+                            <p className="text-sm">BAFT Agreement</p>
+                            <p className="text-para text-[12px]">PDF, 1.4 MB</p>
                           </div>
-                          <LCInfo
-                            label="Transaction Type"
-                            value={riskData?.transaction || ""}
-                          />
-                          <LCInfo
-                            label="Risk Participation"
-                            value={riskData?.riskParticipation || ""}
-                          />
-                          <LCInfo
-                            label="Transaction Offered"
-                            value={
+                        </div>
+                        <p className="text-sm font-medium cursor-pointer underline">
+                          View attachments
+                        </p>
+                      </div>
+                      <LCInfo
+                        label="Transaction Type"
+                        value={riskData?.transaction || ""}
+                      />
+                      <LCInfo
+                        label="Risk Participation"
+                        value={riskData?.riskParticipation || ""}
+                      />
+                      <LCInfo
+                        label="Transaction Offered"
+                        value={
                           riskData?.riskParticipationTransaction?.type || ""
-                            }
-                          />
-                          <LCInfo
-                            label="Value of Transaction"
-                            value={
-                              formatNumberWithCommas(
+                        }
+                      />
+                      <LCInfo
+                        label="Value of Transaction"
+                        value={
+                          formatNumberWithCommas(
                             riskData?.riskParticipationTransaction?.amount ?? 0
-                              ) || "-"
-                            }
-                          />
-                          <LCInfo
-                            label="Pricing offered"
-                            value={
+                          ) || "-"
+                        }
+                      />
+                      <LCInfo
+                        label="Pricing offered"
+                        value={
                           riskData?.riskParticipationTransaction?.returnOffer ||
                           "-"
-                            }
-                          />
-                          <LCInfo
-                            label="Participation Offered"
-                            value={
+                        }
+                      />
+                      <LCInfo
+                        label="Participation Offered"
+                        value={
                           riskData?.riskParticipationTransaction?.perAnnum ||
                           "-"
-                            }
-                            noBorder
-                          />
-                        </div>
-                        {/* Separator */}
-                        <div className="h-[2px] w-full bg-borderCol" />
-                        {/* LC Details */}
-                        <div className="px-4 mt-4">
-                          <h2 className="text-xl font-semibold">LC Details</h2>
-                          <LCInfo
-                            label="LC Issuing Bank"
-                            value={riskData?.issuingBanks[0]?.bank || "-"}
-                          />
-                          <LCInfo
-                            label="LC Advising Bank"
-                            value={riskData?.advisingBank?.bank || "-"}
-                          />
+                        }
+                        noBorder
+                      />
+                    </div>
+                    {/* Separator */}
+                    <div className="h-[2px] w-full bg-borderCol" />
+                    {/* LC Details */}
+                    <div className="px-4 mt-4">
+                      <h2 className="text-xl font-semibold">LC Details</h2>
+                      <LCInfo
+                        label="LC Issuing Bank"
+                        value={riskData?.issuingBanks[0]?.bank || "-"}
+                      />
+                      <LCInfo
+                        label="LC Advising Bank"
+                        value={riskData?.advisingBank?.bank || "-"}
+                      />
                       {/* <LCInfo
                         label="Confirming Bank"
                         value={riskData?.confirmingBank?.bank || "-"}
@@ -407,159 +389,153 @@ export const AddBid = ({
                           riskData?.expectedDateDiscounting || ""
                         )}
                       /> */}
-                          <LCInfo
-                            label="Issuance/Expected Issuance Date"
-                            value={convertDateToCommaString(
-                              (riskData?.startDate
-                                ? riskData?.startDate
-                                : riskData?.period?.startDate) || ""
-                            )}
-                            noBorder
-                          />
-                          <LCInfo
-                            label="Date of Expiry"
-                            value={convertDateToCommaString(
-                              riskData?.expiryDate || ""
-                            )}
-                            noBorder
-                          />
-                          <LCInfo
-                            label="Payment Terms"
-                            value={riskData?.paymentTerms || ""}
-                            noBorder
-                          />
-                          <LCInfo
-                            label="Port of Shipment"
-                            value={riskData?.shipmentPort?.port || ""}
-                            noBorder
-                          />
-                          <LCInfo
-                            label="Transhipment"
-                            value={
-                              riskData?.transhipment === true
-                                ? "Allowed"
-                                : "Not-Allowed" || ""
-                            }
-                            noBorder
-                          />
-                          <LCInfo
-                            label="Expected Confirmation Date"
-                            value={convertDateToCommaString(
-                              riskData?.expectedDateConfimation || ""
-                            )}
-                            noBorder
-                          />
+                      <LCInfo
+                        label="Issuance/Expected Issuance Date"
+                        value={convertDateToCommaString(
+                          (riskData?.startDate
+                            ? riskData?.startDate
+                            : riskData?.period?.startDate) || ""
+                        )}
+                        noBorder
+                      />
+                      <LCInfo
+                        label="Date of Expiry"
+                        value={convertDateToCommaString(
+                          riskData?.expiryDate || ""
+                        )}
+                        noBorder
+                      />
+                      <LCInfo
+                        label="Payment Terms"
+                        value={riskData?.paymentTerms || ""}
+                        noBorder
+                      />
+                      <LCInfo
+                        label="Port of Shipment"
+                        value={riskData?.shipmentPort?.port || ""}
+                        noBorder
+                      />
+                      <LCInfo
+                        label="Transhipment"
+                        value={
+                          riskData?.transhipment === true
+                            ? "Allowed"
+                            : "Not-Allowed" || ""
+                        }
+                        noBorder
+                      />
+                      <LCInfo
+                        label="Expected Confirmation Date"
+                        value={convertDateToCommaString(
+                          riskData?.expectedDateConfimation || ""
+                        )}
+                        noBorder
+                      />
 
-                          <h2 className="text-xl font-semibold mt-3">
-                            Importer Info
-                          </h2>
-                          <LCInfo
-                            label="Applicant"
-                            value={riskData?.importerInfo?.applicantName || ""}
-                          />
-                          <LCInfo
-                            label="Country of Import"
+                      <h2 className="text-xl font-semibold mt-3">
+                        Importer Info
+                      </h2>
+                      <LCInfo
+                        label="Applicant"
+                        value={riskData?.importerInfo?.applicantName || ""}
+                      />
+                      <LCInfo
+                        label="Country of Import"
                         value={riskData?.importerInfo?.countryOfImport || ""}
-                            noBorder
-                          />
+                        noBorder
+                      />
 
-                          <h2 className="text-xl font-semibold mt-3">
-                            Exporter Info
-                          </h2>
-                          <LCInfo
-                            label="Beneficiary"
+                      <h2 className="text-xl font-semibold mt-3">
+                        Exporter Info
+                      </h2>
+                      <LCInfo
+                        label="Beneficiary"
                         value={riskData?.exporterInfo?.beneficiaryName || ""}
-                          />
-                          <LCInfo
-                            label="Country of Export"
+                      />
+                      <LCInfo
+                        label="Country of Export"
                         value={riskData?.exporterInfo?.countryOfExport || ""}
-                          />
-                          <LCInfo
-                            label="Beneficiary Country"
+                      />
+                      <LCInfo
+                        label="Beneficiary Country"
                         value={riskData?.exporterInfo?.beneficiaryCountry || ""}
-                            noBorder
-                          />
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="pt-5 px-4 bg-bg">
-                          <h2 className="text-2xl font-semibold mb-1">
-                            <span className="text-para font-medium">
-                              LC Amount:
-                            </span>{" "}
-                            {lcData?.currency || "USD"}{" "}
-                            {lcData?.amount?.price
-                              ? lcData?.amount?.price?.toLocaleString() + ".00"
-                              : total?.toLocaleString() + ".00" ?? ""}
-                          </h2>
-                          <div className="h-[2px] w-full bg-neutral-800 mt-5" />
-                        </div>
+                        noBorder
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="pt-5 px-4 bg-bg">
+                      <h2 className="text-2xl font-semibold mb-1">
+                        <span className="text-para font-medium">
+                          LC Amount:
+                        </span>{" "}
+                        {lcData?.currency || "USD"}{" "}
+                        {lcData?.amount?.price
+                          ? lcData?.amount?.price?.toLocaleString() + ".00"
+                          : total?.toLocaleString() + ".00" ?? ""}
+                      </h2>
+                      <div className="h-[2px] w-full bg-neutral-800 mt-5" />
+                    </div>
 
-                        {/* Main Info */}
-                        <div className="px-4 bg-bg pb-5">
-                          <LCInfo
-                            label="LC Issuing Bank"
-                            value={lcData?.issuingBanks?.[0]?.bank || "-"}
-                          />
-                          <LCInfo
-                            label="Country of LC Issuing Bank"
-                            value={lcData?.issuingBanks?.[0]?.country || "-"}
-                          />
-                          <LCInfo
-                            label="LC Applicant"
-                            value={
-                              (lcData?.importerInfo?.applicantName
-                                ? lcData?.importerInfo?.applicantName
-                                : lcData?.applicantDetails?.company) || "-"
-                            }
-                          />
-                          {lcData?.advisingBank?.bank && (
-                            <LCInfo
-                              label="LC Advising Bank"
-                              value={lcData?.advisingBank?.bank}
-                            />
-                          )}
-                          {lcData?.confirmingBank?.bank && (
-                            <LCInfo
-                              label="Confirming Bank"
-                              value={lcData?.confirmingBank?.bank}
-                            />
-                          )}
-                          <LCInfo
-                            label="Payments Terms"
-                            value={
+                    {/* Main Info */}
+                    <div className="px-4 bg-bg pb-5">
+                      <LCInfo
+                        label="LC Issuing Bank"
+                        value={lcData?.issuingBanks?.[0]?.bank || "-"}
+                      />
+                      <LCInfo
+                        label="Country of LC Issuing Bank"
+                        value={lcData?.issuingBanks?.[0]?.country || "-"}
+                      />
+                      <LCInfo
+                        label="LC Applicant"
+                        value={
+                          (lcData?.importerInfo?.applicantName
+                            ? lcData?.importerInfo?.applicantName
+                            : lcData?.applicantDetails?.company) || "-"
+                        }
+                      />
+                      {lcData?.advisingBank?.bank && (
+                        <LCInfo
+                          label="LC Advising Bank"
+                          value={lcData?.advisingBank?.bank}
+                        />
+                      )}
+                      {lcData?.confirmingBank?.bank && (
+                        <LCInfo
+                          label="Confirming Bank"
+                          value={lcData?.confirmingBank?.bank}
+                        />
+                      )}
+                      <LCInfo
+                        label="Payments Terms"
+                        value={
                           lcData?.paymentTerms && lcData?.paymentTerms !== "Sight LC"
                             ? `${lcData.paymentTerms} ${lcData.extraInfo?.days + " days" || ""} ${lcData.extraInfo?.other || ""}`
-                                : lcData?.paymentTerms || "-"
-                            }
-                            noBorder
-                          />
-                          <div className=" bg-white border border-borderCol p-2 flex items-center justify-between w-full gap-x-2 rounded-lg">
-                            <div className="flex items-center gap-x-2">
-                              <Button
-                                type="button"
-                                className="block bg-red-200 p-1 hover:bg-red-300"
-                              >
-                                <Image
-                                  src="/images/pdf.png"
-                                  alt="pdf"
-                                  width={500}
-                                  height={500}
-                                  className="size-8"
-                                />
-                              </Button>
-                              <div>
-                                <p className="text-sm">LC-12390</p>
+                            : lcData?.paymentTerms || "-"
+                        }
+                        noBorder
+                      />
+                      <div className=" bg-white border border-borderCol p-2 flex items-center justify-between w-full gap-x-2 rounded-lg">
+                        <div className="flex items-center gap-x-2">
+                          <Button
+                            type="button"
+                            className="block bg-red-200 p-1 hover:bg-red-300"
+                          >
+                            <Image
+                              src="/images/pdf.png"
+                              alt="pdf"
+                              width={500}
+                              height={500}
+                              className="size-8"
+                            />
+                          </Button>
+                          <div>
+                            <p className="text-sm">LC-12390</p>
                             <p className="text-para text-[12px]">PDF, 1.4 MB</p>
-                              </div>
-                            </div>
-                            <p className="text-sm font-medium cursor-pointer underline">
-                              View attachments
-                            </p>
                           </div>
                         </div>
-
                         <p className="text-sm font-medium cursor-pointer underline">
                           View attachments
                         </p>
@@ -604,47 +580,44 @@ export const AddBid = ({
                       <LCInfo
                         label="Transhipment"
                         value={lcData?.transhipment === true ? "Yes" : "No"}
-                          />
-                          <LCInfo
-                            label="Port of Shipment"
-                            value={lcData?.shipmentPort?.port || ""}
-                          />
-                          <LCInfo
-                            label="Product Description"
-                            value={lcData?.productDescription || ""}
-                            noBorder
-                          />
+                      />
+                      <LCInfo
+                        label="Port of Shipment"
+                        value={lcData?.shipmentPort?.port || ""}
+                      />
+                      <LCInfo
+                        label="Product Description"
+                        value={lcData?.productDescription || ""}
+                        noBorder
+                      />
 
-                          <h2 className="text-xl font-semibold mt-3">
-                            Importer Info
-                          </h2>
-                          <LCInfo
-                            label="Applicant"
-                            value={lcData?.importerInfo?.applicantName || ""}
-                            noBorder
-                          />
-                          <LCInfo
-                            label="Country of Import"
+                      <h2 className="text-xl font-semibold mt-3">
+                        Importer Info
+                      </h2>
+                      <LCInfo
+                        label="Applicant"
+                        value={lcData?.importerInfo?.applicantName || ""}
+                        noBorder
+                      />
+                      <LCInfo
+                        label="Country of Import"
                         value={lcData?.importerInfo?.countryOfImport || ""}
-                          />
-                          <h2 className="text-xl font-semibold mt-3">
-                            Exporter Info
-                          </h2>
-                          <LCInfo
-                            label="Country"
-                            value={lcData?.exporterInfo?.countryOfExport || ""}
-                          />
-                          <LCInfo
-                            label="Charges on account of"
-                            value="Beneficiary"
-                            noBorder
-                          />
-                        </div>
-                      </>
-                    )}
+                      />
+                      <h2 className="text-xl font-semibold mt-3">
+                        Exporter Info
+                      </h2>
+                      <LCInfo
+                        label="Country"
+                        value={lcData?.exporterInfo?.countryOfExport || ""}
+                      />
+                      <LCInfo
+                        label="Charges on account of"
+                        value="Beneficiary"
+                        noBorder
+                      />
+                    </div>
                   </>
                 )}
-
               </>
             )}
           </div>
@@ -899,29 +872,59 @@ export const AddBid = ({
                   </div>
                 )}
 
-                    <div>
+                {isDiscount && (
+                  <div className="">
+                    <label
+                      htmlFor="discount"
+                      className="block font-semibold mb-2"
+                    >
+                      Discount Pricing
+                    </label>
+                    <div className="flex flex-col gap-y-3 items-center w-full">
                       <label
-                        htmlFor="confirmation"
-                        className="block font-semibold mb-2"
+                        id="base-rate"
+                        className="border border-borderCol py -2 .5 px-3 rounded-md w-full flex items-center justify-between"
                       >
-                        {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
+                        <p className="text-sm w-full text-black text-m uted-foreground">
+                          Select Base Rate
+                        </p>
+                        {/* <input
+                          type="number"
+                          id="base-rate"
+                          value={discountBaseRate}
+                          onChange={(e) => setDiscountBaseRate(e.target.value)}
+                          className="max-w-[120px] text-sm block bg-none border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+                          placeholder="0"
+                        /> */}
+                        <div className="text-end">
+                          <DDInput
+                            id="baseRate"
+                            label="Base Rate"
+                            type="baseRate"
+                            value={discountBaseRate}
+                            placeholder="Select Value"
+                            setValue={setValue}
+                            onSelectValue={(value) =>
+                              setDiscountBaseRate(value)
+                            }
+                            data={["KIBOR", "LIBOR", "SOFR"]}
+                          />
+                        </div>
                       </label>
+                      <Plus strokeWidth={4.5} className="size-4" />
                       <input
-                        placeholder="Enter your pricing per annum (%)"
                         type="text"
+                        placeholder="Margin (%)"
                         inputMode="numeric"
-                        className={cn(
-                          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        )}
-                        max={100}
-                        {...register("confirmationPrice")}
-                        onChange={(event) => {
-                          const newValue: any = event.target.value.replace(
+                        id="margin"
+                        value={discountMargin}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                          const newValue = e.target.value.replace(
                             /[^0-9.]/g,
                             ""
                           );
-                          event.target.value = newValue;
-                          setValue("confirmationPrice", newValue);
+                          e.target.value = newValue;
+                          setDiscountMargin(newValue);
                         }}
                         onBlur={(event: ChangeEvent<HTMLInputElement>) => {
                           if (
@@ -932,177 +935,50 @@ export const AddBid = ({
                           event.target.value += "%";
                         }}
                         onKeyUp={(event: any) => {
-                          if (Number(event.target.value.replace("%", "")) > 100) {
+                          if (
+                            Number(event.target.value.replace("%", "")) > 100
+                          ) {
                             event.target.value = "100.0%";
                           }
                         }}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       />
-                      {errors.confirmationPrice && (
-                        <span className="text-red-500 text-[12px]">
-                          {errors.confirmationPrice.message}
-                        </span>
-                      )}
                     </div>
-                    {isDiscount && (
-                      <div className="flex gap-3">
-                    {/* <BgRadioInput
-                      id="perAnnum"
-                      label="Per Annum"
-                      name="confirmationPriceType"
-                      value={"perAnnum"}
-                      register={register}
-                      onChange={(value) => setConfirmationPriceType(value)}
-                      checked={confirmationPriceType === "perAnnum"}
-                    /> */}
-                        <label
-                          className={`px-3 py-4 w-full transition-colors duration-100 ${
-                            confirmationPriceType === "perAnnum"
-                              ? "bg-[#EEE9FE]"
-                              : "border border-borderCol bg-white"
-                          } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
-                        >
-                          <input
-                            type="radio"
-                            name="confirmationPriceType"
-                            value={"perAnnum"}
-                            onChange={(e) => {
-                          console.log(e.target.value);
-                              setConfirmationPriceType(e.target.value);
-                            }}
-                            className="accent-primaryCol size-4"
-                          />
-                          Per Annum
-                        </label>
-                        <label
-                          className={`px-3 py-4 w-full transition-colors duration-100 ${
-                            confirmationPriceType === "flat"
-                              ? "bg-[#EEE9FE]"
-                              : "border border-borderCol bg-white"
-                          } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
-                        >
-                          <input
-                            type="radio"
-                            name="confirmationPriceType"
-                            value={"flat"}
-                            onChange={(e) => {
-                          console.log(e.target.value);
-                              setConfirmationPriceType(e.target.value);
-                            }}
-                            className="accent-primaryCol size-4"
-                          />
-                          Flat
-                        </label>
-                      </div>
-                    )}
-
-                    {isDiscount && (
-                      <div className="">
-                        <label
-                          htmlFor="discount"
-                          className="block font-semibold mb-2"
-                        >
-                          Discount Pricing
-                        </label>
-                        <div className="flex flex-col gap-y-3 items-center w-full">
-                          <label
-                            id="base-rate"
-                            className="border border-borderCol py-2 px-3 rounded-md w-full flex items-center justify-between"
-                          >
-                            <p className="text-sm w-full text-black">
-                              Select Base Rate
-                            </p>
-                        {/* <input
-                          type="number"
-                          id="base-rate"
-                          value={discountBaseRate}
-                          onChange={(e) => setDiscountBaseRate(e.target.value)}
-                          className="max-w-[120px] text-sm block bg-none border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
-                          placeholder="0"
-                        /> */}
-                            <div className="text-end">
-                              <DDInput
-                                id="baseRate"
-                                label="Base Rate"
-                                type="baseRate"
-                                value={discountBaseRate}
-                                placeholder="Select Value"
-                                setValue={setValue}
-                                onSelectValue={(value) =>
-                                  setDiscountBaseRate(value)
-                                }
-                                data={["KIBOR", "LIBOR", "SOFR"]}
-                              />
-                            </div>
-                          </label>
-                          <Plus strokeWidth={4.5} className="size-4" />
-                          <input
-                            type="text"
-                            placeholder="Margin (%)"
-                            inputMode="numeric"
-                            id="margin"
-                            value={discountMargin}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                              const newValue = e.target.value.replace(
-                                /[^0-9.]/g,
-                                ""
-                              );
-                              e.target.value = newValue;
-                              setDiscountMargin(newValue);
-                            }}
-                            onBlur={(event: ChangeEvent<HTMLInputElement>) => {
-                              if (
-                                event.target.value.includes("%") ||
-                                event.target.value.length === 0
-                              )
-                                return;
-                              event.target.value += "%";
-                            }}
-                            onKeyUp={(event: any) => {
-                              if (
-                                Number(event.target.value.replace("%", "")) > 100
-                              ) {
-                                event.target.value = "100.0%";
-                              }
-                            }}
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-2 mt-2">
-                      <DialogClose
-                        ref={buttonRef}
-                    // id="submit-button-close"
-                        className="hidden"
-                      ></DialogClose>
-                      <Button
-                        className="bg-[#29C084] hover:bg-[#29C084]/90 text-white hover:text-white w-full"
-                        size="lg"
-                        type="submit"
-                        disabled={isSubmitting}
-                      >
-                        Submit
-                      </Button>
-                      <DialogClose
-                        className="w-full"
-                        onClick={() => setIsAddNewBid(false)}
-                      >
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="lg"
-                          className="bg-borderCol hover:bg-borderCol/90 text-para hover:text-para w-full"
-                        >
-                          Cancel
-                        </Button>
-                      </DialogClose>
-                    </div>
-                  </form>
+                  </div>
                 )}
-              </div>
-            </div>
-        )}
+
+                <div className="flex items-center gap-2 mt-2">
+                  <DialogClose
+                    ref={buttonRef}
+                    // id="submit-button-close"
+                    className="hidden"
+                  ></DialogClose>
+                  <Button
+                    className="bg-[#29C084] hover:bg-[#29C084]/90 text-white hover:text-white w-full"
+                    size="lg"
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    Submit
+                  </Button>
+                  <DialogClose
+                    className="w-full"
+                    onClick={() => setIsAddNewBid(false)}
+                  >
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="lg"
+                      className="bg-borderCol hover:bg-borderCol/90 text-para hover:text-para w-full"
+                    >
+                      Cancel
+                    </Button>
+                  </DialogClose>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

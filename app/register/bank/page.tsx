@@ -131,20 +131,17 @@ const BankRegisterPage = () => {
           bank.
         </p>
         <form
-
           className="max-xs:py-8 max-xs:px-4 z-10 mx-auto mt-3 flex w-full max-w-[800px] flex-col gap-y-2 rounded-xl bg-white shadow-md sm:gap-y-[22px] xs:p-8"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="max-sm:flex-col max-sm:gap-y-3 flex w-full items-center gap-x-2">
             <div className="relative w-full">
-
               <Popover open={countryOpen} onOpenChange={setCountryOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     aria-expanded={countryOpen}
                     role="combobox"
-
                     className={`w-full justify-between py-6 font-roboto text-sm font-normal capitalize ${
                       accountCountry ? "text-lightGray" : "text-gray-400"
                     } `}
@@ -155,7 +152,6 @@ const BankRegisterPage = () => {
                             country.toLowerCase() ===
                             accountCountry.toLowerCase(),
                         )
-
                       : "Bank Country"}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
@@ -173,18 +169,15 @@ const BankRegisterPage = () => {
                             value={country}
                             onSelect={(currentValue) => {
                               setCountryOpen(false); // Close the dropdown
-
                               setValue("accountCountry", currentValue, {
                                 shouldValidate: true,
                               });
                               setValue('bank','')
-
                             }}
                           >
                             <Check
                               className={cn(
                                 "mr-2 h-4 w-4",
-
                                 country.toLowerCase() ===
                                   accountCountry?.toLowerCase()
                                   ? "opacity-100"
@@ -205,7 +198,6 @@ const BankRegisterPage = () => {
               )}
             </div>
 
-
             <div className="relative w-full">
               <Popover onOpenChange={setBankOpen} open={bankOpen}>
                 <PopoverTrigger asChild>
@@ -213,7 +205,6 @@ const BankRegisterPage = () => {
                     variant="outline"
                     role="combobox"
                     disabled={!accountCountry}
-
                     className={`w-full justify-between py-6 font-roboto text-sm font-normal capitalize ${
                       bankVal ? "text-lightGray" : "text-gray-400"
                     } `}
@@ -371,7 +362,6 @@ const BankRegisterPage = () => {
           </p>
 
           {/* Checkboxes */}
-
           <div className="grid grid-cols-1 gap-x-2 gap-y-1 rounded-lg border border-borderCol bg-[#F5F7F9] p-2 sm:grid-cols-2">
             <CheckBoxInput
               label="Confirmation of LCs"

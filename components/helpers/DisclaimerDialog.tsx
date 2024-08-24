@@ -152,7 +152,7 @@ export const DisclaimerDialog = ({
           <p>
             Thank you for choosing our software to enhance your export
             management capabilities.
-          </p>
+          </p>  
         </div>
 
         <DialogClose className="hidden" id="close-disclaimer"></DialogClose>

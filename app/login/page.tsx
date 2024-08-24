@@ -46,7 +46,7 @@ export default function LoginPage() {
   // REGISTERING NOTIFICATIONS SERVICE
 
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("/firebase-messaging-sw.js")
         .then((registration) => {
@@ -65,20 +65,22 @@ export default function LoginPage() {
 
   async function requestPermission() {
     //requesting permission using Notification API
-    const permission = await Notification.requestPermission();
+    if (typeof window !== "undefined") {
+      const permission = await Notification.requestPermission();
 
-    if (permission === "granted") {
-      const token = await getToken(messaging, {
-        vapidKey:
-          "BIJbtJkCgGGt4R1zHAQUiTSig_iSelqiWZe7zve-mUJajAiMoul0qaLnROe5T6l0r0EKwJJFs9sDKYHB-xmqFE0",
-      });
+      if (permission === "granted") {
+        const token = await getToken(messaging, {
+          vapidKey:
+            "BIJbtJkCgGGt4R1zHAQUiTSig_iSelqiWZe7zve-mUJajAiMoul0qaLnROe5T6l0r0EKwJJFs9sDKYHB-xmqFE0",
+        });
 
-      //We can send token to server
-      console.log("Token generated : ", token);
-      setFcmToken(token);
-    } else if (permission === "denied") {
-      //notifications are blocked
-      alert("You denied for the notification");
+        //We can send token to server
+        console.log("Token generated : ", token);
+        setFcmToken(token);
+      } else if (permission === "denied") {
+        //notifications are blocked
+        alert("You denied for the notification");
+      }
     }
   }
 

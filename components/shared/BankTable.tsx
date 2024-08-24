@@ -100,9 +100,11 @@ export const BankTable = ({
       filtered = filtered.filter(
         (item) =>
           (item as IBids)?.lcInfo?.[1]?.country?.toLowerCase() ===
+
           selectedCountry.toLowerCase() ||
           (item as IRisk)?.issuingBanks?.[0].country?.toLowerCase() ===
           selectedCountry.toLowerCase()
+
       );
     }
 
@@ -263,6 +265,7 @@ export const BankTable = ({
               filteredData &&
               filteredData?.map((item: IBids | IRisk, index: number) => {
                 console.log(item, "item123")
+
                 return (
                   <TableRow key={index} className="border-none font-roboto">
                     <TableDataCell data={convertDateToString(item?.createdAt)} />

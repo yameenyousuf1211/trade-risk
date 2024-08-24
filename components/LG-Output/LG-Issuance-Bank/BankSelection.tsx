@@ -12,19 +12,20 @@ export const BankSelection: React.FC<BankSelectionProps> = ({
   selectedBank,
   setSelectedBank,
 }) => {
+  console.log(bankData,"bankData")
   return (
     <div className="bg-[#F5F7F9] px-2 py-1 border border-[#E2E2EA] rounded-md">
-      <h3 className="mb-1">Bids for following banks are requested</h3>
+      <h3 className="mb-1">Bids for the following banks are requested</h3>
       <div id="banks" className="grid grid-cols-3 gap-1">
-        {Object.entries(bankData).map(([key, bank]: [string, Bank]) => (
+        {bankData.map((bank: Bank, index: number) => (
           <BgRadioInputLG
-            key={key}
-            id={`bank_${bank.name}`}
-            label={bank.name}
+            key={index}
+            id={`bank_${bank._id}`}
+            label={bank.bank}
             sublabel={bank.country}
-            value={bank.name}
-            checked={selectedBank === bank.name}
-            name={bank.name}
+            value={bank.bank}
+            checked={selectedBank === bank.bank}
+            name="bank"
             onChange={(event) => setSelectedBank(event.target.value)}
           />
         ))}

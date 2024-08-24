@@ -145,7 +145,9 @@ const CreateRequestPage = () => {
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
 
+
     if(baseData?.issuingBanks?.[0]?._id) delete baseData.issuingBanks[0]._id
+
     
     try {
       setLoader(true); // Start the loader

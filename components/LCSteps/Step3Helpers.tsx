@@ -155,15 +155,11 @@ export const Period = ({
     const lcStartDateMidnight = lcStartDate ? new Date(lcStartDate) : null;
     lcStartDateMidnight?.setHours(0, 0, 0, 0); // Reset lcStartDate time for comparison
 
-    // if (date < today) {
-    //   return toast.error(
-    //     "LC Expiry Date cannot be in the past or today's date",
-    //   );
-    // }
 
     setEndDate(date);
     updateValue("period.endDate", date);
-  };
+  
+};
 
   useEffect(() => {
     if (lcPeriodType === "yes") {
@@ -236,6 +232,7 @@ export const Period = ({
                 initialDate={lcStartDate}
                 onChange={(date) => {
                   updateValue("period.startDate", date);
+
                   setStartDate(startDate);
                   // Reset LC Expiry Date when LC Start Date changes
                   setEndDate(null);
@@ -279,6 +276,7 @@ export const Period = ({
                 isEndDate={true}
                 startDate={lcStartDate}
                 initialDate={lcEndDate}
+
 
                 disabled={{
                   before: lcStartDate

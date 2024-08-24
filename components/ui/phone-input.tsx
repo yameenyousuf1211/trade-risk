@@ -31,6 +31,7 @@ type PhoneInputProps = Omit<
 
 const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
   React.forwardRef<React.ElementRef<typeof RPNInput.default>, PhoneInputProps>(
+
     ({ className, onChange, ...props }, ref) => {
       // Default isOnBoarding to false
       const [country, setCountry] = React.useState<RPNInput.Country>("PK"); // Default country set to Pakistan
@@ -49,6 +50,7 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
     },
   );
 PhoneInput.displayName = "PhoneInput";
+
 
 const InputComponent = React.forwardRef<
   HTMLInputElement,
@@ -108,6 +110,7 @@ const CountrySelect = ({
         <Button
           type="button"
           variant={"outline"}
+
           className={cn(
             "flex gap-4",
             isOnBoarding
@@ -125,6 +128,7 @@ const CountrySelect = ({
             className={cn(
               "h-4 w-4 opacity-50",
               disabled ? "hidden" : "opacity-100",
+
               isOnBoarding ? "mr-1 h-3 w-3" : "-mr-2",
             )}
           />

@@ -131,7 +131,9 @@ const CreateDiscountPage = () => {
 
     let reqData;
     const baseData = {
-      issuingBanks: data.issuingBanks,
+
+      issuingBanks: data.issuingBanks, 
+
       type: "LC Discounting",
       transhipment: data.transhipment === "yes" ? true : false,
       amount: {
@@ -144,7 +146,9 @@ const CreateDiscountPage = () => {
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
 
+
     if (baseData.issuingBanks?.[0]._id) delete baseData.issuingBanks[0]._id;
+
 
     if (isDraft) {
       const {
@@ -207,6 +211,7 @@ const CreateDiscountPage = () => {
       };
 
       try {
+        
         const validatedData = await discountingSchema.validate(preparedData, {
           abortEarly: false,
           stripUnknown: true,

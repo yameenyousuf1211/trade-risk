@@ -122,7 +122,7 @@ export const LGTableBidStatus = ({
             <h3 className="text-lg text-[#1A1A26]">LC Confirmation Requested</h3>
             <h1 className="text-[#92929D] text-2xl">
               LG Amount:{" "}
-              <span className="font-semibold text-black">USD 45,000</span>
+              <span className="font-semibold text-black">{}</span>
             </h1>
             <h5 className="text-sm">
               Created at,{" "}

@@ -205,6 +205,8 @@ export const BankTable = ({
       )
       : myBidsColumnHeaders;
 
+      console.log("Dataaaa CORP",data);
+      
   return (
     <div className="">
       <div className="flex items-center justify-between hide-scrollbar overflow-x-auto xl:gap-x-2 mb-2">
@@ -357,7 +359,7 @@ export const BankTable = ({
                         }
                         border
                         bidData={item}
-                        id={isCorporate ? item?.lc?.[0] : item?.lc._id}
+                        id={item?.lc._id}
                         isRisk={isRisk}
                         isCorporate={isCorporate}
                       />

@@ -97,7 +97,6 @@ export const Period = ({
   let lcStartDate = watch("period.startDate");
   let lcEndDate = watch("period.endDate");
   let lcPeriodType = watch("period.expectedDate");
-  console.log(watch("expectedConfirmationDate"), "expectedConfirmationDate");
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);

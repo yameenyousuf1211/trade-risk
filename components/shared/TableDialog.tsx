@@ -610,7 +610,7 @@ export const TableDialog = ({
                   <p className="rounded-xl bg-primaryCol px-3 py-1 text-lg font-semibold text-white">
                     {isBank ? userBids?.length : bids?.length}
                   </p>
-                  <p className="text-xl font-semibold">Bids received</p>
+                  <p className="text-xl font-semibold">{isBank ? 'View Bids' : "Bids received"}</p>
                 </div>
 
                 <div className="flex items-center gap-x-4">

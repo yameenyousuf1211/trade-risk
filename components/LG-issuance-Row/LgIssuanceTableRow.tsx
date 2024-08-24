@@ -12,8 +12,6 @@ import { LgStepsProps5 } from "@/types/lg";
 import { Check, Link, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { DatePicker } from "../helpers";
-import { useQuery } from "@tanstack/react-query";
-import { getCurrency } from "@/services/apis/helpers.api";
 import { values } from "@/utils";
 import useLcIssuance from "@/store/issueance.store";
 
@@ -47,10 +45,10 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     [currency]
 );
 
-  useEffect(() => {
-    if (cashMargin && !cashMargin?.toString()?.includes(".00")) {
-      setValue(`${name}.cashMargin`, cashMargin + ".00");
-    }} , [cashMargin]);
+  // useEffect(() => {
+  //   if (cashMargin && !cashMargin?.toString()?.includes(".00")) {
+  //     setValue(`${name}.cashMargin`, cashMargin + ".00");
+  //   }} , [cashMargin]);
 
     
   const { data } = useLcIssuance();
@@ -68,30 +66,30 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   const lgDetails = watch("lgDetailsType");
   // const lgDetailsType = watch("lgDetailsType");
 
-  const handleOnChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    name: string
-  ) => {
-    const value = event.target.value;
-    const filteredValue = value.replace(/[^0-9]/g, "");
-    setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
-  };
+  // const handleOnChange = (
+  //   event: React.ChangeEvent<HTMLInputElement>,
+  //   name: string
+  // ) => {
+  //   const value = event.target.value;
+  //   const filteredValue = value.replace(/[^0-9]/g, "");
+  //   setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
+  // };
 
-  const formatNumberWithCommas = (value: string) => {
-    value = value?.toString();
-    const numberString = value.replace(/,/g, ""); // Remove existing commas
-    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
+  // const formatNumberWithCommas = (value: string) => {
+  //   value = value?.toString();
+  //   const numberString = value.replace(/,/g, ""); // Remove existing commas
+  //   return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  // };
 
-  const handleOnChangeForCommmas = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    name: string
-  ) => {
-    const value = event.target.value;
-    if (!isNaN(value.replace(/,/g, ""))) {
-      setValue(name, !value ? "0" : formatNumberWithCommas(value));
-    }
-  };
+  // const handleOnChangeForCommmas = (
+  //   event: React.ChangeEvent<HTMLInputElement>,
+  //   name: string
+  // ) => {
+  //   const value = event.target.value;
+  //   if (!isNaN(value.replace(/,/g, ""))) {
+  //     setValue(name, !value ? "0" : formatNumberWithCommas(value));
+  //   }
+  // };
 
   
   return (
@@ -114,7 +112,6 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
             /> */}
             <div onClick={() => {
               setValue(`${name}.Contract`,!checkedValue)
-              console.log("🚀 ~ checkedValue:", checkedValue);
             }} className="bg-white border-[#5625F2] border-2 rounded-[5px] flex items-center justify-center h-[22px] w-[22px] cursor-pointer">
               {checkedValue ? (
                 <Check size={18} style={{ color: "#5625F2" }} />
@@ -163,15 +160,6 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           value={cashMargin}
           // inputMode="numeric"
           register={register}
-          onChange={(e) => handleOnChangeForCommmas(e, `${name}.cashMargin`)}
-          onBlur={() =>
-            setValue(
-              `${name}.cashMargin`,
-              cashMargin?.includes(".00") || !cashMargin
-                ? cashMargin
-                : cashMargin + ".00"
-            )
-          }
           name={`${name}.cashMargin`}
           type="text"
           placeholder="Amount"

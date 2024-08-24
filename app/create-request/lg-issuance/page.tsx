@@ -107,11 +107,10 @@ export default function LgIssuance() {
 
 
         if (key == "expectedPrice") {
-          if (value.expectedPrice === true) {
-            setValue("expectedPrice.expectedPrice", "true");
-          } else {
-            setValue("expectedPrice.expectedPrice", "false");
-          }
+          if (value.expectedPrice) {
+            setValue("expectedPrice.expectedPrice", value.expectedPrice);
+          } 
+
           setValue("expectedPrice.pricePerAnnum", value.pricePerAnnum);
         }
       });
@@ -176,7 +175,7 @@ export default function LgIssuance() {
       handleResponse(
         success,
         response,
-        "LG Issuance request updated successfully"
+        "LG Issuance Draft request updated successfully"
       );
     } else {
       // Create new draft
@@ -184,7 +183,7 @@ export default function LgIssuance() {
       handleResponse(
         success,
         response,
-        "LG Issuance request created successfully"
+        "LG saved as a draft"
       );
     }
 
@@ -195,17 +194,17 @@ export default function LgIssuance() {
   const handleFinalSubmission = async (responseData: any) => {
 
     // console.log("🚀 ~ before handleFinalSubmission ~ responseData lastDateOfReceivingBids:", responseData.lastDateOfReceivingBids);
-    console.log("🚀 ~ handleFinalSubmission ~ responseData SubmittingBIDBONDBEFORE:", responseData?.bidBond?.Contract);
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData SubmittingBIDBONDBEFORE:", responseData?.bidBond?.Contract);
 
     removeUnnecessaryFieldsForLgCreate(responseData);
     removeUnnecessaryFields(responseData);
     // const validate = bondRequiredFields(responseData)
     // if(!validate) return toast.error("Please Select at least one Bond");
     convertStringValueToDate(responseData)
-    console.log("🚀 ~ handleFinalSubmission ~ responseData SubmittingBIDBOND:", responseData?.bidBond?.Contract);
-    console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond DATE:", responseData?.advancePaymentBond?.Contract);
-    console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond DATE:", responseData?.performanceBond?.Contract)
-    console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond DATE:", responseData?.retentionMoneyBond?.Contract)
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData SubmittingBIDBOND:", responseData?.bidBond?.Contract);
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond DATE:", responseData?.advancePaymentBond?.Contract);
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond DATE:", responseData?.performanceBond?.Contract)
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond DATE:", responseData?.retentionMoneyBond?.Contract)
     // // console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
 
     try {
@@ -223,12 +222,10 @@ export default function LgIssuance() {
       setIsLoading(false);
     } catch (validationError) {
       console.log("🚀 ~ handleFinalSubmission ~ validationError", validationError);
-
       if (validationError instanceof Yup.ValidationError) {
         handleValidationErrors(validationError);
       } else {
         // toast.error("Unexpected error during validation");
-        console.error("Unexpected error during validation:", validationError);
       }
     }
   };

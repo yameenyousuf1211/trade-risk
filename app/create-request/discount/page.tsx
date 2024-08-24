@@ -144,7 +144,7 @@ const CreateDiscountPage = () => {
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
 
-    if (baseData.issuingBanks[0]._id) delete baseData.issuingBanks[0]._id;
+    if (baseData.issuingBanks?.[0]._id) delete baseData.issuingBanks[0]._id;
 
     if (isDraft) {
       const {

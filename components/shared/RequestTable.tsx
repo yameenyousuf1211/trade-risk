@@ -376,7 +376,7 @@ export const RequestTable = ({
                       <TableDialog
                         lcId={item._id}
                         bids={item.bids}
-                        isBank
+                        isBank={isBank}
                         isRisk={isRisk}
                       />
                     </TableCell>

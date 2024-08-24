@@ -624,13 +624,18 @@ export const AddBid = ({
 
           {/* Right Section */}
           <div className="w-full h-full flex flex-col justify-start px-5 overflow-y-auto max-h-[75vh]">
-            <p className="text-xl font-semibold pt-5">Submit Your Bid</p>
+            <p className="text-xl font-semibold pt-5">{computedStatus == "Add bid" ? "Submit Your Bid" : "View Bids"}</p>
             {isInfo ? (
     // This is where we filter the bids for the logged-in user
     (() => {
       // console.log("🚀 ~ file: AddBid.tsx ~ line 116 ~ user ~ user", user);
-      
-      const userBids = lcData?.bids?.filter(bid => bid?.bidBy?._id === user?.business?._id);
+      let userBids;
+      if(isCorporate){
+        userBids = lcData?.bids
+      }
+      else{
+        userBids = lcData?.bids?.filter(bid => bid?.bidBy?._id === user?.business?._id);
+      }
       return (
         <>
           {userBids && userBids.length > 0 ? (

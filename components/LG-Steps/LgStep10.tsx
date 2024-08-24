@@ -5,9 +5,9 @@ import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 
 const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step,setStepCompleted }) => {
-  const expectedPrice = watch("expectedPrice.expectedPrice");
+  const expectedPrice = String(watch("expectedPrice.expectedPrice")) || "";
   const pricingPerAnnum = watch("expectedPrice.pricePerAnnum");
-
+  const obj = watch("expectedPrice");
   const handleIncrement = () => {
     const currentValue = parseInt(pricingPerAnnum) || 0;
     const newValue = (currentValue + 1).toFixed(2);
@@ -20,7 +20,7 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step,set
     setValue('expectedPrice.pricePerAnnum', parseInt(newValue) < 0 ? '0.00' : newValue);
   };
 
-    console.log("🚀 ~ expectedPrice", expectedPrice);
+    console.log("🚀 ~ expectedPrice", obj);
     
   return (
     <div id={`lg-step${step}`} className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target">
@@ -96,6 +96,7 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step,set
             <Button type="button" variant="ghost" className="bg-none border-none text-lg" onClick={handleIncrement}>
               +
             </Button>
+            <p className='text-black'>Per Annum</p>
           </div>
         </label>
       </div>

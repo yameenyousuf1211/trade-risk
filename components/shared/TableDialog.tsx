@@ -266,7 +266,7 @@ export const TableDialog = ({
           <Eye className="size-5" />
         )}
       </DialogTrigger>
-      <DialogContent className="h-full !max-h-[95vh] w-full max-w-4xl !p-0">
+      <DialogContent className="h-full !max-h-[95vh] w-full max-w-4xl !p-0 flex flex-col">
         <div className="flex max-h-20 items-center justify-between border-b border-b-borderCol !py-5 px-7">
           <h2 className="text-lg font-semibold">
             {(lcData && lcData?.type) || "Risk Participation Request"}

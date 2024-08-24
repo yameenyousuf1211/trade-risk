@@ -58,6 +58,7 @@ const groupBidsByBank = (bids: any[], issuingBanks: any[]) => {
         type: bid.bidType,
         amount: bid.amount || "-", // Placeholder, replace with actual amount if available
         price: bid.price,
+        status: bid.status || "Pending",
       });
     }
 
@@ -71,6 +72,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   const [selectedBank, setSelectedBank] = useState<string | undefined>();
   const [groupedBids, setGroupedBids] = useState<any>({});
   const [userBidStatus, setUserBidStatus] = useState<null>({});
+  const [userBid, setUserBid] = useState();
   const [pricingValue, setPricingValue] = useState<string>("");
   const [bondPrices, setBondPrices] = useState<{
     [bank: string]: { [bondType: string]: string | null };
@@ -106,21 +108,24 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   }, [selectedLgType, selectedBank, bondPrices]);
 
   useEffect(() => {
-    const userBids = data.bids.find(
-      (bid: any) => bid.createdBy === user._id
-    );
-    console.log(userBids, "userBids123");
+    const userBids = data.bids.find((bid: any) => bid.createdBy === user._id);
+    setUserBid(userBids);
     if (userBids) {
       // If there's a pending bid created by the logged-in user, group the bids
-      const groupedBidsWithBankData = groupBidsByBank(userBids.bids, data.issuingBanks);
+      const groupedBidsWithBankData = groupBidsByBank(
+        userBids.bids,
+        data.issuingBanks
+      );
       setGroupedBids(Object.values(groupedBidsWithBankData)); // Convert to array for rendering
       setShowPreview(true);
     }
-  
+
     if (userBids) {
       if (userBids.status === "Pending") {
         setUserBidStatus({
-          label: `Bid Submitted on ${convertDateToCommaString(userBids.createdAt)}`,
+          label: `Bid Submitted on ${convertDateToCommaString(
+            userBids.createdAt
+          )}`,
           status: "Pending",
         });
       } else if (userBids.status === "Accepted") {
@@ -140,7 +145,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
         });
       }
     }
-  }, [data.bids, data.issuingBanks, user._id]);  
+  }, [data.bids, data.issuingBanks, user._id]);
 
   const allBondsFilled = bondTypes.every((bond) =>
     Object.values(bondPrices).some((prices) => prices[bond.type])
@@ -168,7 +173,10 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           perAnnum: true,
         }))
       );
-      const groupedBidsWithBankData = groupBidsByBank(newBids, data.issuingBanks);
+      const groupedBidsWithBankData = groupBidsByBank(
+        newBids,
+        data.issuingBanks
+      );
       setGroupedBids(Object.values(groupedBidsWithBankData)); // Convert to array for rendering
 
       const requestData = {
@@ -200,15 +208,57 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     setShowPreview(false);
   };
 
-  const selectedBond = bondTypes.find((bond) => bond.type === selectedLgType)?.value;
+  const handleNewBid = () => {
+    setShowPreview(false);
+    setUserBidStatus({});
+    setUserBid(null);
+    setGroupedBids({});
+    setPricingValue("");
+    setBondPrices({});
+    setSelectedBank(
+      data.issuingBanks.length > 0 ? data.issuingBanks[0].bank : undefined
+    );
+    setSelectedLgType(bondTypes[0].type);
+  };
+
+  const selectedBond = bondTypes.find(
+    (bond) => bond.type === selectedLgType
+  )?.value;
 
   return (
-    <div className="mt-0 flex !h-full items-start justify-between overflow-y-scroll">
+    <div className="mt-0 flex w-full h-full items-start justify-between overflow-y-scroll">
       <div className="flex-1 border-r-2 border-[#F5F7F9]">
+        <div className="border-r-2 border-b-2  bg-[#F5F7F9] p-4 flex flex-col gap-3 border-[#F5F7F9]">
+          <h5 className="text-[12px] text-[#696974]">
+            Created at,{" "}
+            {new Date(data.createdAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "2-digit",
+              year: "numeric",
+            })}{" "}
+            {new Date(data.createdAt).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })}{" "}
+            by{" "}
+            <span className="text-blue-500">
+              {data.applicantDetails.company}
+            </span>
+          </h5>
+          <h3 className="text-[#92929D] text-base font-light">
+            Total LG Amount Requested{" "}
+            <span className="text-[20px] text-[#1A1A26] font-semibold">
+              USD 30000
+            </span>
+          </h3>
+        </div>
         <div className="ml-7 mr-1 mt-2">
           <LGInfo
             label="Request Expiry Date"
-            value={convertDateToCommaString(data.lastDateOfReceivingBids) || null}
+            value={
+              convertDateToCommaString(data.lastDateOfReceivingBids) || null
+            }
           />
           <LGInfo label="Purpose of LG" value={data.purpose || null} />
 
@@ -216,7 +266,10 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
             Beneficiary Details
           </h2>
 
-          <LGInfo label="Beneficiary Name" value={data.beneficiaryDetails?.name || null} />
+          <LGInfo
+            label="Beneficiary Name"
+            value={data.beneficiaryDetails?.name || null}
+          />
           <LGInfo
             label="Beneficiary Address"
             value={data.beneficiaryDetails?.address || null}
@@ -240,7 +293,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
             <h5 className="font-bold">Submit your bid</h5>
             <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
               <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
-              <h5 className="text-[0.95rem] font-semibold">James Hunt</h5>
+              <h5 className="text-[0.95rem] font-semibold">{user.name}</h5>
             </div>
           </div>
           <div className="mt-2 rounded-md border border-[#E2E2EA] p-2">
@@ -264,19 +317,41 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
               {selectedBond && (
                 <>
                   <h3 className="mb-1 font-bold mt-4">LG Details</h3>
-                  <LGInfo label="Contract" value={selectedBond?.Contract || null} />
-                  <LGInfo label="Currency Type" value={selectedBond?.currencyType || null} />
+                  <LGInfo
+                    label="Contract"
+                    value={selectedBond?.Contract || null}
+                  />
+                  <LGInfo
+                    label="Currency Type"
+                    value={selectedBond?.currencyType || null}
+                  />
                   <LGInfo
                     label="Expected Date"
-                    value={selectedBond.expectedDate ? new Date(selectedBond.expectedDate).toLocaleDateString() : null}
+                    value={
+                      selectedBond.expectedDate
+                        ? new Date(
+                            selectedBond.expectedDate
+                          ).toLocaleDateString()
+                        : null
+                    }
                   />
                   <LGInfo
                     label="LG Expiry Date"
-                    value={selectedBond.lgExpiryDate ? new Date(selectedBond.lgExpiryDate).toLocaleDateString() : null}
+                    value={
+                      selectedBond.lgExpiryDate
+                        ? new Date(
+                            selectedBond.lgExpiryDate
+                          ).toLocaleDateString()
+                        : null
+                    }
                   />
                   <LGInfo
                     label="LG Tenor"
-                    value={selectedBond.lgTenor ? `${selectedBond.lgTenor.lgTenorValue} ${selectedBond.lgTenor.lgTenorType}` : null}
+                    value={
+                      selectedBond.lgTenor
+                        ? `${selectedBond.lgTenor.lgTenorValue} ${selectedBond.lgTenor.lgTenorType}`
+                        : null
+                    }
                   />
                 </>
               )}
@@ -293,26 +368,29 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
               onClick={() => handleSubmitOrNext(data.lastDateOfReceivingBids)}
               type="submit"
               className={`mt-4 h-12 w-full ${
-                pricingValue || allBondsFilled ? "bg-[#44C894] text-white" : "bg-[#D3D3D3] text-[#ADADAD]"
+                pricingValue || allBondsFilled
+                  ? "bg-[#44C894] text-white"
+                  : "bg-[#D3D3D3] text-[#ADADAD]"
               }`}
               disabled={!pricingValue && !allBondsFilled}
             >
-              {allBondsFilled
-                ? "Preview"
-                : pricingValue
-                ? "Next"
-                : "Skip"}
+              {allBondsFilled ? "Preview" : pricingValue ? "Next" : "Skip"}
             </Button>
           </div>
         </div>
       ) : (
         <BidPreview
-        onBack={handleBack}
-        bidValidity={data.lastDateOfReceivingBids}
-        handleSubmit={handleSubmitOrNext}
-        bids={groupedBids} // Pass the grouped bids as an array
-        userBidStatus={userBidStatus}
-      />
+          onBack={handleBack}
+          bidValidity={data.lastDateOfReceivingBids}
+          handleSubmit={handleSubmitOrNext}
+          bids={groupedBids} // Pass the grouped bids as an array
+          userBidStatus={userBidStatus}
+          bidValidityDate={
+            userBid ? convertDateToCommaString(userBid.bidValidity) : undefined
+          }
+          bidNumber={userBid ? userBid._id.substring(0, 6) : undefined}
+          handleNewBid={handleNewBid}
+        />
       )}
     </div>
   );

@@ -102,9 +102,13 @@ export default function LgIssuance() {
         }
 
         if(key == "otherBond"){
+          setValue("otherBond.Contract", true);
+        }
+
 
         if (key == "expectedPrice") {
           if (value.expectedPrice === true) {
+            setValue("expectedPrice.expectedPrice", "true");
           } else {
             setValue("expectedPrice.expectedPrice", "false");
           }
@@ -204,19 +208,6 @@ export default function LgIssuance() {
     console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond DATE:", responseData?.retentionMoneyBond?.Contract)
     // // console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
 
-    console.log("🚀 ~ before handleFinalSubmission ~ responseData lastDateOfReceivingBids:", responseData.lastDateOfReceivingBids);
-
-    removeUnnecessaryFieldsForLgCreate(responseData);
-    removeUnnecessaryFields(responseData);
-    // const validate = bondRequiredFields(responseData)
-    // if(!validate) return toast.error("Please Select at least one Bond");
-    
-    console.log("🚀 ~ handleFinalSubmission ~ responseData lastDateOfReceivingBids:", responseData.lastDateOfReceivingBids);
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond:", responseData.advancePaymentBond);
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond:", responseData.performanceBond)
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond:", responseData.retentionMoneyBond)
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
-    
     try {
       await lgValidator.validate(responseData, {
         abortEarly: true,
@@ -232,6 +223,7 @@ export default function LgIssuance() {
       setIsLoading(false);
     } catch (validationError) {
       console.log("🚀 ~ handleFinalSubmission ~ validationError", validationError);
+
       if (validationError instanceof Yup.ValidationError) {
         handleValidationErrors(validationError);
       } else {
@@ -286,7 +278,6 @@ export default function LgIssuance() {
       toast.error("An unexpected error occurred.");
     }
   };
-  
 
 
   const handleStepCompletion = (index: number, status: boolean) => {
@@ -343,7 +334,6 @@ export default function LgIssuance() {
             data={countryNames}
             flags={countryFlags}
             setValue={setValue}
-
           />
         )}
         {lgIssuance === LG.cashMargin ? (

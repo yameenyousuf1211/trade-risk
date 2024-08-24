@@ -236,6 +236,9 @@ const CreateRequestPage = () => {
             } else {
               setValues(getStateValues(useConfirmationStore.getInitialState()));
               console.log(response, "response submit request");
+              queryClient.invalidateQueries({
+                queryKey: ["fetch-lcs"],
+              });
               toast.success("LC created successfully");
               router.push("/");
               reset();

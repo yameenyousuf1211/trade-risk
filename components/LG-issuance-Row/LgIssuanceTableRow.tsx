@@ -24,8 +24,9 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   watch,
   name,
   listValue,
+  currency
 }) => {
-  const checkedValue = watch(`${name}.Contract`);
+  const checkedValue = watch(`${name}.Contract`,false);
   const expectedDate = watch(`${name}.expectedDate`);
   const lgExpiryDate = watch(`${name}.lgExpiryDate`);
   const cashMargin = watch(`${name}.cashMargin`);
@@ -35,14 +36,23 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
   const otherBondName = watch(`${name}.name`);
 
-  // console.log("🚀 ~ cashMargin:", cashMargin);
+  // console.log("🚀 ~ checkedValuecheckedValue:", checkedValue);
+  const currencyOptions = useMemo(
+    () =>
+        currency?.response.map((curr: string, idx: number) => (
+            <SelectItem key={`${curr}-${idx + 1}`} value={curr}>
+                {curr}
+            </SelectItem>
+        )),
+    [currency]
+);
 
   useEffect(() => {
     if (cashMargin && !cashMargin?.toString()?.includes(".00")) {
       setValue(`${name}.cashMargin`, cashMargin + ".00");
-    }
-  }, [cashMargin]);
+    }} , [cashMargin]);
 
+    
   const { data } = useLcIssuance();
   useEffect(() => {
     //@ts-ignore
@@ -52,21 +62,9 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     }
   }, [data]);
 
-  const { data: currency } = useQuery({
-    queryKey: ["currency"],
-    queryFn: getCurrency,
-    staleTime: 10 * 60 * 5000,
-  });
+  
 
-  const currencyOptions = useMemo(
-    () =>
-      currency?.response.map((curr: string, idx: number) => (
-        <SelectItem key={`${curr}-${idx + 1}`} value={curr}>
-          {curr}
-        </SelectItem>
-      )),
-    [currency]
-  );
+  
   const lgDetails = watch("lgDetailsType");
   // const lgDetailsType = watch("lgDetailsType");
 
@@ -95,6 +93,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     }
   };
 
+  
   return (
     <TableRow
       className={`mt-5 ${checkedValue ? "bg-white" : "bg-[#F5F7F9]"}`}
@@ -114,7 +113,8 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
               {...register(`${name}.Contract`)}
             /> */}
             <div onClick={() => {
-              setValue(`${name}.Contract`,checkedValue ? false:true)
+              setValue(`${name}.Contract`,!checkedValue)
+              console.log("🚀 ~ checkedValue:", checkedValue);
             }} className="bg-white border-[#5625F2] border-2 rounded-[5px] flex items-center justify-center h-[22px] w-[22px] cursor-pointer">
               {checkedValue ? (
                 <Check size={18} style={{ color: "#5625F2" }} />
@@ -146,12 +146,13 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       <TableCell className="">
         <Select
           disabled={!checkedValue}
+          value={currencyType}
           onValueChange={(value) => {
             setValue(`${name}.currencyType`, value);
           }}
         >
           <SelectTrigger className="bg-borderCol/80" defaultValue={"USD"}>
-            <SelectValue placeholder="USD" />
+            <SelectValue  placeholder={"USD"}/>
           </SelectTrigger>
           <SelectContent>{currencyOptions}</SelectContent>
         </Select>
@@ -180,6 +181,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
         <Input
           disabled={!checkedValue}
           register={register}
+          value={valueInPercentage}
           name={`${name}.valueInPercentage`}
           onChange={(e) => handleOnChange(e, `${name}.valueInPercentage`)}
           placeholder="%"
@@ -191,8 +193,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           maxDate={
             new Date(new Date().setFullYear(new Date().getFullYear() + 1))
           }
-          value={!expectedDate ? undefined : new Date(expectedDate)}
-          isLg
+          value={expectedDate}
           name={`${name}.expectedDate`}
           setValue={setValue}
           disabled={!checkedValue}
@@ -200,11 +201,10 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <DatePicker
-            value={!lgExpiryDate ? undefined : new Date(lgExpiryDate)}
+            value={lgExpiryDate}
           maxDate={
             new Date(new Date().setFullYear(new Date().getFullYear() + 1))
           }
-          isLg
           name={`${name}.lgExpiryDate`}
           setValue={setValue}
           disabled={!checkedValue}
@@ -219,7 +219,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
               }}
             >
               <SelectTrigger
-                className="bg-borderCol/80"
+                className="bg-borderCol/80 max-w-24"
                 defaultValue={"Months"}
                 value={lgTenorType}
               >
@@ -256,4 +256,4 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   );
 };
 
-export default React.memo(LgIssuanceTableRow);
+export default LgIssuanceTableRow;

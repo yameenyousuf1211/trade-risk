@@ -1,95 +1,62 @@
-"use client";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format, isValid } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { ValidatingCalendar } from "../LCSteps/Step3Helpers";
 
 export const DatePicker = ({
   setValue,
   maxDate,
   name,
-  isLg,
-  disabled,
-  isPast,
   value,
-  placeholder,
-  returnDate,
-  currentSetDate,
-  onDateChange,
+  disabled,
 }: {
-  setValue?: any;
-  maxDate?: Date | string | any;
-  name?: string;
-  isLg?: boolean;
+  value: Date;
+  setValue: any;
+  maxDate: Date | string | any;
+  name: string;
   disabled?: boolean;
-  isPast?: boolean;
-  value?: Date;
-  placeholder?: string;
-  returnDate?: boolean;
-  currentSetDate?: string;
-  onDateChange?: any;
 }) => {
-  const [date, setDate] = useState<Date>();
+  const [date, setDate] = useState<Date | undefined>(value);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
+  // Sync local state with prop `value`
   useEffect(() => {
-    if (value && !date) setDate(value);
+    if (value) {
+      setDate(new Date(value));
+    }
   }, [value]);
 
-  useEffect(() => {
-    if (returnDate && onDateChange && date) {
-      onDateChange(format(date, "PPP"));
-    }
-  }, [date, returnDate, onDateChange]);
-
   return (
-    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={true}>
+    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
       <PopoverTrigger asChild>
         <Button
           disabled={disabled}
           variant={"outline"}
           className={cn(
-            `w-full ${
-              isLg
-                ? "justify-end gap-2 border-none"
-                : "justify-between text-left"
-            } font-normal`,
-            !date &&
-              `flex items-center text-muted-foreground ${
-                isLg ? "justify-end gap-2 border-none" : "justify-between"
-              } w-full`,
+            "w-full justify-between text-left font-normal",
+            !date && "text-muted-foreground flex items-center justify-between w-full"
           )}
-          id={`${name || "validity"}`}
+          id="validity"
         >
-          {date && date instanceof Date ? (
-            // console.log("date ERROR", date,name,placeholder),
-            format(date, "PPP")
-          ) : currentSetDate ? (
-            currentSetDate
-          ) : (
-            <>
-              <span>DD/MM/YYYY</span>
-            </>
-          )}
-          <CalendarIcon className="h-4 w-4" />
+          {date && isValid(date) ? format(date, "PPP") : <span>DD/MM/YYYY</span>}
+          <CalendarIcon className="mr-2 h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
         <ValidatingCalendar
           initialDate={date}
           maxDate={maxDate}
-          isPast={isPast}
-          onChange={(date) => {
-            setDate(date);
-            setValue?.(`${name || "validity"}`, date);
+          onChange={(newDate) => {
+            setDate(newDate);
+            if (name) {
+              setValue(name, newDate);
+            } else if (newDate) {
+              setValue("validity", newDate);
+            }
           }}
           onClose={() => setIsPopoverOpen(false)}
         />

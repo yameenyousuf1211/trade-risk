@@ -24,7 +24,7 @@ import { createLg, updateLg } from "@/services/apis/lg.apis";
 import useLcIssuance from "@/store/issueance.store";
 import useStepStore from "@/store/lcsteps.store";
 import { LgDetails } from "@/types/lg";
-import {  LG, removeUnnecessaryFieldsForLgCreate } from "@/utils";
+import { convertStringValueToDate, LG, removeUnnecessaryFieldsForLgCreate } from "@/utils";
 import { bankCountries } from "@/utils/data";
 import { lgValidator } from "@/validation/lg.validation";
 import { Loader2 } from "lucide-react";
@@ -101,11 +101,10 @@ export default function LgIssuance() {
           setValue("physicalLgCountry", value);
         }
 
-  
+        if(key == "otherBond"){
 
         if (key == "expectedPrice") {
           if (value.expectedPrice === true) {
-            setValue("expectedPrice.expectedPrice", "true");
           } else {
             setValue("expectedPrice.expectedPrice", "false");
           }
@@ -116,10 +115,10 @@ export default function LgIssuance() {
   }, [storeData.data]);
 
   const onSubmit = async (data: LgDetails) => {
-    
+
     // Prepare data for submission
     console.log("🚀 ~ onSubmit ~ data", data.data.draft);
-    
+
     const responseData = {
       ...data.data,
       type: "LG Issuance",
@@ -129,13 +128,13 @@ export default function LgIssuance() {
     };
 
     console.log("🚀 ~ onSubmit ~ responseData", responseData.draft);
-    
 
 
-    if(responseData.draft){
+
+    if (responseData.draft) {
       handleDraftSubmission(responseData);
     }
-    else{
+    else {
       handleFinalSubmission(responseData);
     }
 
@@ -159,7 +158,10 @@ export default function LgIssuance() {
   const handleDraftSubmission = async (responseData: any) => {
     setLoader(true);
     removeUnnecessaryFieldsForLgCreate(responseData);
-
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData lastDateOfReceivingBids DATE:", responseData.lastDateOfReceivingBids);
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond DATE:", responseData.advancePaymentBond.expectedDate);
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond DATE:", responseData.performanceBond.expectedDate)
+    // console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond DATE:", responseData.retentionMoneyBond.expectedDate)
     // Update existing data
     removeUnnecessaryFields(responseData);
     if (storeData.data._id) {
@@ -188,6 +190,20 @@ export default function LgIssuance() {
   // Function to handle final submissions
   const handleFinalSubmission = async (responseData: any) => {
 
+    // console.log("🚀 ~ before handleFinalSubmission ~ responseData lastDateOfReceivingBids:", responseData.lastDateOfReceivingBids);
+    console.log("🚀 ~ handleFinalSubmission ~ responseData SubmittingBIDBONDBEFORE:", responseData?.bidBond?.Contract);
+
+    removeUnnecessaryFieldsForLgCreate(responseData);
+    removeUnnecessaryFields(responseData);
+    // const validate = bondRequiredFields(responseData)
+    // if(!validate) return toast.error("Please Select at least one Bond");
+    convertStringValueToDate(responseData)
+    console.log("🚀 ~ handleFinalSubmission ~ responseData SubmittingBIDBOND:", responseData?.bidBond?.Contract);
+    console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond DATE:", responseData?.advancePaymentBond?.Contract);
+    console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond DATE:", responseData?.performanceBond?.Contract)
+    console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond DATE:", responseData?.retentionMoneyBond?.Contract)
+    // // console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
+
     console.log("🚀 ~ before handleFinalSubmission ~ responseData lastDateOfReceivingBids:", responseData.lastDateOfReceivingBids);
 
     removeUnnecessaryFieldsForLgCreate(responseData);
@@ -202,10 +218,9 @@ export default function LgIssuance() {
     // console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
     
     try {
-     await lgValidator.validate(responseData, {
-       abortEarly: true,
+      await lgValidator.validate(responseData, {
+        abortEarly: true,
         stripUnknown: true,
-        strict: true,
       });
 
       const { response, success } = await createLg(responseData);
@@ -217,7 +232,6 @@ export default function LgIssuance() {
       setIsLoading(false);
     } catch (validationError) {
       console.log("🚀 ~ handleFinalSubmission ~ validationError", validationError);
-      
       if (validationError instanceof Yup.ValidationError) {
         handleValidationErrors(validationError);
       } else {
@@ -258,14 +272,14 @@ export default function LgIssuance() {
 
   const handleValidationErrors = (error: any) => {
     console.log("🚀 ~ handleValidationErrors ~ error", error);
-  
+
     if (error && error.errors && Array.isArray(error.errors)) {
       // Get the first error message
       const fullErrorMessage = error.errors[0]; // Assume errors[0] contains the full error message
-  
+
       // Extract the relevant part of the error message
       const relevantErrorMessage = fullErrorMessage.split('\n')[0].trim(); // Get the first line and trim any extra spaces
-  
+
       // Display the relevant error message
       toast.error(`Validation Error: ${relevantErrorMessage}`);
     } else {
@@ -273,6 +287,7 @@ export default function LgIssuance() {
     }
   };
   
+
 
   const handleStepCompletion = (index: number, status: boolean) => {
     setStepStatus(index, status);
@@ -382,6 +397,7 @@ export default function LgIssuance() {
             step={8}
           />
         )}
+
         {lgIssuance === LG.cashMargin && (
           <LgStep4
             register={register}
@@ -406,14 +422,14 @@ export default function LgIssuance() {
         )}
 
         {lgIssuance === LG.cashMargin && (
-        <LgStep8
-          step={9}
-          setValue={setValue}
-          register={register}
-          watch={watch}
-          setStepCompleted={handleStepCompletion}
-        />
-)}
+          <LgStep8
+            step={9}
+            setValue={setValue}
+            register={register}
+            watch={watch}
+            setStepCompleted={handleStepCompletion}
+          />
+        )}
 
         <LgStep9
           register={register}
@@ -446,7 +462,7 @@ export default function LgIssuance() {
             type="button"
             variant="ghost"
             className="!bg-[#F1F1F5] w-1/3"
-            // disabled={loader}
+          // disabled={loader}
           >
             {loader ? <Loader2 className="animate-spin" /> : "Save as draft"}
           </Button>

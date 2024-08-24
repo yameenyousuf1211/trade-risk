@@ -2,7 +2,7 @@ import { LG } from "@/utils";
 import * as Yup from "yup";
 
 const bondSchema = Yup.object().shape({
-  Contract: Yup.boolean().default(false).required("Contract is required"),
+  Contract: Yup.boolean().default(false),
   currencyType: Yup.string()
     .min(1, "Currency Type is required")
     .default("USD"),
@@ -139,22 +139,48 @@ export const lgValidator = Yup.object()
     totalContractValue: Yup.string().when('lgDetailsType' ,{
       is:"Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
       then: (schema) => schema.required("Total Contract Value is required"),
-      otherwise: (schema) => schema.notRequired(),
+      otherwise: (schema) => schema.notRequired().optional().nullable(),
     }),    
     totalContractCurrency: Yup.string().when('lgDetailsType' ,{
       is:"Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
       then: (schema) => schema.required("Total Contract Currency is required"),
-      otherwise: (schema) => schema.notRequired(),
+      otherwise: (schema) => schema.notRequired().optional().nullable(),
     }),
-  }).test(
-    'at-least-one-required',
-    'At least one of Bond  must be provided.',
+  })
+  .test(
+    'at-least-one-bond',
+    'At least one of the bond fields must be provided.',
     function (value) {
       const { lgDetailsType, bidBond, advancePaymentBond, performanceBond, retentionMoneyBond } = value;
-      if (lgDetailsType == 'Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)') {
-        return !!bidBond || !!advancePaymentBond || !!performanceBond || !!retentionMoneyBond;
+  
+      if (lgDetailsType === 'Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)') {
+        // Check if at least one bond has Contract set to true
+        const isContractTrueInAnyBond =
+          (bidBond && bidBond.Contract) ||
+          (advancePaymentBond && advancePaymentBond.Contract) ||
+          (performanceBond && performanceBond.Contract) ||
+          (retentionMoneyBond && retentionMoneyBond.Contract);
+  
+        if (!isContractTrueInAnyBond) {
+          return this.createError({
+            path: 'lgDetailsType',
+            message: 'At least one of the provided bonds must have Contract set to true.',
+          });
+        }
       }
-      return true;
+      
+      if(lgDetailsType === 'Choose any other type of LGs'){
+        if(!value.otherBond.Contract){
+          return this.createError({
+          path: 'lgDetailsType',
+          message: "Please select at least one LG type"
+          })
+      }
+    }
+   
+      return true; // Validation passes
     }
   );
+  
+  
 

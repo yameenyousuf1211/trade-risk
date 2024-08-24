@@ -406,8 +406,8 @@ export const RequestTable = ({
                       data={
                         (item as ILcs)?.period
                           ? convertDateToString(item?.period?.endDate)
-                          : (item as ILcs)?.otherBond?.lgExpiryDate
-                            ? convertDateToString(item?.otherBond?.lgExpiryDate)
+                          : (item as ILcs)?.lastDateOfReceivingBids
+                            ? convertDateToString(item?.lastDateOfReceivingBids)
                             : (item as IRisk)?.expiryDate &&
                               convertDateToString((item as IRisk)?.expiryDate)
                       }

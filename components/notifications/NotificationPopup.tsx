@@ -6,6 +6,7 @@ import { TableDialog } from "../shared/TableDialog";
 import { fetchSingleLc2 } from "@/services/apis/lcs.api";
 import { TableBidStatus } from "../helpers";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "../ui/button";
 
 const ButtonSkeleton = () => {
   return (
@@ -61,7 +62,7 @@ const NotificationPopup = ({
         <p className="font-regular w-[330px] text-[14px] text-white">
           {message}
         </p>
-        {isLoading ? (
+        {/* {isLoading ? (
           <ButtonSkeleton />
         ) : user?.role === "bank" ? (
           <TableBidStatus
@@ -85,7 +86,10 @@ const NotificationPopup = ({
               buttonTitle="Reject"
             />
           </div>
-        )}
+        )} */}
+        <div className="mt-3">
+          <Button>Add Bid</Button>
+        </div>
       </div>
     </div>
   );

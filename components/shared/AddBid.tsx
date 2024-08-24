@@ -635,7 +635,7 @@ export const AddBid = ({
         <>
           {userBids && userBids.length > 0 ? (
             userBids.map((bid:IBids, index:number) => (
-              <div className="border-borderCol px-4 mt-3   py-4  border  rounded-lg">
+              <div className="border-borderCol px-4 mt-3   py-4  border  rounded-lg" key={bid._id}>
               <div
               key={bid._id || index}
               className="grid grid-cols-2 gap-y-3"

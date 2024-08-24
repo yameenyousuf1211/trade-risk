@@ -288,10 +288,10 @@ export const RequestTable = ({
                         item?.period?.endDate
                           ? convertDateToString(item?.period?.endDate)
                           : item?.expiryDate
-                            ? convertDateToString((item as IRisk)?.expiryDate)
-                            : item?.otherBond?.lgExpiryDate
+                            ? convertDateToString((item as IRisk)?.lastDateOfReceivingBids)
+                            : item?.lastDateOfReceivingBids
                               ? convertDateToString(
-                                  item?.otherBond?.lgExpiryDate,
+                                  item?.lastDateOfReceivingBids
                                 )
                               : "-"
                       }

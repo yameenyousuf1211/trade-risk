@@ -357,7 +357,7 @@ export const BankTable = ({
                         }
                         border
                         bidData={item}
-                        id={isCorporate ? item?.lc?.[0] : item?._id}
+                        id={isCorporate ? item?.lc?.[0] : item?.lc._id}
                         isRisk={isRisk}
                         isCorporate={isCorporate}
                       />

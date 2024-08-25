@@ -221,7 +221,7 @@ export const Step2 = ({
           />
         </div>
         {/* Days input */}
-        {paymentTerms && paymentTerms == "Usance LC" && (
+        {paymentTerms && paymentTerms !== "Sight LC" && (
           <>
             <div className="my-3 ml-2 flex items-center gap-x-2">
               <div className="flex items-center border-b-2 border-black">
@@ -256,7 +256,7 @@ export const Step2 = ({
                       if (days >= 999) return;
                       else
                         setDays((prev: any) =>
-                          Number(prev) > 1 ? Number(prev) - 1 : 1,
+                          Number(prev) > 1 ? Number(prev) - 1 : 1
                         );
                     }}
                   >

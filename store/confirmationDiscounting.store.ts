@@ -4,6 +4,17 @@ import {
 } from "@/types/lc";
 import { create } from "zustand";
 
+// Define the type for issuingBanks as an array of objects
+type IssuingBank = {
+  bank: string;
+  country: string;
+};
+
+type ExtraInfo = {
+  days: number;
+  other: "shipment" | "upas" | "acceptance" | "negotiation" | "invoice" | "sight" | "others";
+};
+
 type StateValues = Omit<UseConfrimationDiscountingStore, "setValues">;
 
 const useConfirmationStore = create<UseConfrimationDiscountingStore>(
@@ -16,10 +27,12 @@ const useConfirmationStore = create<UseConfrimationDiscountingStore>(
       bank: "",
       country: "",
     },
-    issuingBank: {
-      bank: "",
-      country: "",
-    },
+    issuingBanks: [
+      {
+        bank: "",
+        country: "",
+      },
+    ],
     lcPeriod: {
       startDate: undefined,
       endDate: undefined,
@@ -56,7 +69,10 @@ const useConfirmationStore = create<UseConfrimationDiscountingStore>(
       behalfOf: "",
       pricePerAnnum: "",
     },
-    extraInfo: "shipment",
+    extraInfo: {
+      days: 0,  // Default value for days
+      other: "shipment",  // Default value for other
+    },
     setValues: (values: Partial<LcConfrimationDiscounting | null>) =>
       set((state) => ({ ...state, ...values })),
   })

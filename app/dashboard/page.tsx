@@ -21,7 +21,7 @@ interface SearchParams {
 const DashboardPage = ({ searchParams }: SearchParams) => {
   const { page, limit, search, filter } = searchParams;
   const { user } = useAuth();
-  if (user && user.role !== "bank") {
+  if (user && user.type !== "bank") {
     redirect("/");
   }
   const {
@@ -32,20 +32,21 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
       queryKey: ["fetch-lcs", page, limit, search, filter],
       queryFn: () => fetchAllLcs({ page, limit, search, filter }),
     });
-console.log(data,"lctable")
+  // console.log(data, "lctable");
   return (
     <DashboardLayout>
-      <div className="flex w-full 2xl:px-10 px-2">
+      <div className="flex w-full px-2 2xl:px-10">
         <div className="w-4/5 p-2 xl:p-4">
-          <h2 className="text-4xl font-semibold mb-5 capitalize">
+          <h2 className="mb-5 text-4xl font-semibold capitalize">
             Welcome, {user && user.name}
           </h2>
           {/* Charts */}
-          <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 h-fit">
+          <div className="mb-4 flex h-fit flex-col gap-x-3 gap-y-4 xl:flex-row">
             <ProgressCharts title="Transactions Overview" isBank />
-            <LineCharts isBank/>
+            <LineCharts isBank />
           </div>
           {/* Data Table */}
+
           <RequestTable
             isBank={true}
             data={data}
@@ -54,7 +55,7 @@ console.log(data,"lctable")
             isLoading={isLoading}
           />
         </div>
-        <div className="w-full 1  /5 max-w-[3 00px] sticky top-10 h-[80vh]">
+        <div className="1 /5 max-w-[3 00px] sticky top-10 h-[80vh] w-full">
           <Sidebar isBank={true} />
         </div>
       </div>

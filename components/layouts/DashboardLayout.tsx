@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { useEffect, useState } from "react";
 import { Header } from "../shared/Header";
 import NotificationPopup from "../notifications/NotificationPopup";
@@ -11,8 +11,8 @@ export default function AuthLayout({
   const [notification, setNotification] = useState(null);
 
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('message', event => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("message", (event) => {
         const data = event.data;
         setNotification({
           title: data.title,
@@ -27,12 +27,18 @@ export default function AuthLayout({
   }, []);
 
   return (
-    <>
+    <div className="overscroll-none">
       <Header />
-      {notification && <NotificationPopup title={notification?.title} message={notification?.message} onClose={() => setNotification(null)}/>}
-      <main className="bg-bg px-2 relative min-h-[88vh] w-full flex flex-col items-center justify-center py-10">
+      {notification && (
+        <NotificationPopup
+          title={notification?.title}
+          message={notification?.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
+      <main className="bg-bg px-2 relative min-h-[88vh] w-full flex flex-col items-center justify-center py-10 overscroll-none">
         {children}
       </main>
-    </>
+    </div>
   );
 }

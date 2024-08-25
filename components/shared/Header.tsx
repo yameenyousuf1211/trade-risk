@@ -49,7 +49,7 @@ export const Header = () => {
         </Link>
       </div>
       <nav className="flex items-center gap-x-4 lg:gap-x-10 xl:gap-x-20">
-        {user && user.role === "bank" ? (
+        {user && user.type === "bank" ? (
           <>
             <div className="relative py-6">
               <Link
@@ -60,7 +60,7 @@ export const Header = () => {
                     : "hover:text-primaryCol transition-colors duration-150"
                 }  font-semibold`}
               >
-                Corporate Deal
+                Corporate Deals
               </Link>
               {pathname === "/dashboard" && (
                 <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />
@@ -76,7 +76,7 @@ export const Header = () => {
                     : "hover:text-primaryCol transition-colors duration-150"
                 }  font-semibold`}
               >
-                My Bids
+                My Bids 
               </Link>
               {pathname === "/my-bids" && (
                 <div className="absolute top-0 h-1.5 rounded-b-full w-full bg-primaryCol" />

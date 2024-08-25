@@ -27,6 +27,8 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
 
   const pathname = usePathname();
   const { user } = useAuth();
+
+  
   const {
     isLoading,
     data,
@@ -36,11 +38,10 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
   } = useQuery({
     queryKey: ["fetch-my-bids", page, limit, filter, search],
     queryFn: () =>
-      fetchCorporateBids({ page, limit, filter, search, userId: user._id }),
-    enabled: !!user,
+      fetchCorporateBids({ page, limit, filter, search, userId: user?.business?._id }),
   });
 
-  if (user && user.role !== "corporate") {
+  if (user && user.type !== "corporate") {
     redirect("/dashboard");
   }
 
@@ -56,6 +57,8 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
     router.push(`${pathname}?${queryString}`, { scroll: false });
   };
 
+    console.log("CorporateBidsPage -> data", data);
+    
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">
@@ -98,7 +101,7 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
                 )}
               </div>
             </div>
-            <BankTable data={data} isLoading={isLoading} isCorporate/>
+            <BankTable data={data} isLoading={isLoading} isCorporate={true}  isRisk={false} />
           </div>
         </div>
         <div className="w-[20vw] max-w-[300p x] sticky top-10 h-[80vh]">

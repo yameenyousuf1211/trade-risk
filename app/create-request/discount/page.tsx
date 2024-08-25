@@ -24,17 +24,15 @@ import { DisclaimerDialog } from "@/components/helpers";
 import useDiscountingStore, { getStateValues } from "@/store/discounting.store";
 import useStepStore from "@/store/lcsteps.store";
 import { bankCountries } from "@/utils/data";
-import { sendNotification } from "@/services/apis/notifications.api";
 import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
+import * as Yup from "yup";
 
 const CreateDiscountPage = () => {
   const { user } = useAuth();
 
-  const { register, setValue, reset, handleSubmit, watch } = useForm<
-    z.infer<typeof discountingSchema>
-  >({});
+  const { register, setValue, reset, handleSubmit, watch } = useForm({});
 
   const queryClient = useQueryClient();
 
@@ -74,16 +72,23 @@ const CreateDiscountPage = () => {
         if (key === "period") {
           setValue(
             "period.expectedDate",
-            value.expectedDate === true ? "yes" : "no"
+            value.expectedDate === true ? "yes" : "no",
           );
         }
         if (key === "amount") {
           setValue(key, value.price);
         }
         if (key === "extraInfo") {
-          const daysLeft = calculateDaysLeft(value.dats);
+          const daysLeft = calculateDaysLeft(value.days);
           setDays(daysLeft);
           setValue("extraInfo", value.other);
+        }
+        // Handle array of issuing banks
+        if (key === "issuingBanks" && Array.isArray(value)) {
+          value.forEach((bank, index) => {
+            setValue(`issuingBanks[${index}].country`, bank.country);
+            setValue(`issuingBanks[${index}].bank`, bank.bank);
+          });
         }
       });
     }
@@ -93,7 +98,7 @@ const CreateDiscountPage = () => {
 
   const [loader, setLoader] = useState(false);
 
-  const onSubmit: SubmitHandler<z.infer<typeof discountingSchema>> = async ({
+  const onSubmit: SubmitHandler<typeof discountingSchema> = async ({
     data,
     isDraft,
     isProceed = false,
@@ -105,28 +110,28 @@ const CreateDiscountPage = () => {
     submit();
     if (
       data.confirmingBank &&
-      data.issuingBank.country === data.confirmingBank.country
+      data.issuingBanks.some(
+        (bank: any) => bank.country === data.confirmingBank.country,
+      )
     )
       return toast.error(
-        "Confirming bank country cannot be the same as issuing bank country"
+        "Confirming bank country cannot be the same as issuing bank country",
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
-    const currentDate = new Date();
-    const futureDate = new Date(
-      currentDate.setDate(currentDate.getDate() + days)
-    );
+
     let extraInfoObj;
     if (
       data.paymentTerms &&
       data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
-      extraInfoObj = { dats: futureDate, other: data.extraInfo };
+      extraInfoObj = { days: days, other: data.extraInfo.otherValue };
     }
 
     let reqData;
     const baseData = {
+      issuingBanks: data.issuingBanks,
       type: "LC Discounting",
       transhipment: data.transhipment === "yes" ? true : false,
       amount: {
@@ -138,6 +143,8 @@ const CreateDiscountPage = () => {
       },
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
+
+    if (baseData.issuingBanks?.[0]._id) delete baseData.issuingBanks[0]._id;
 
     if (isDraft) {
       const {
@@ -154,7 +161,7 @@ const CreateDiscountPage = () => {
       reqData = {
         ...rest,
         ...baseData,
-        draft: "true",
+        draft: true,
       };
       setLoader(true);
       const { response, success } = discountingData?._id
@@ -167,8 +174,8 @@ const CreateDiscountPage = () => {
       if (!success) return toast.error(response);
       else {
         toast.success("LC saved as draft");
-        reset();
         router.push("/");
+        reset();
         setValues(getStateValues(useDiscountingStore.getInitialState()));
         queryClient.invalidateQueries({
           queryKey: ["fetch-lcs-drafts"],
@@ -193,18 +200,24 @@ const CreateDiscountPage = () => {
           endDate: lcEndDate,
         },
         expectedDiscountingDate: expectedDiscountingDate,
+        exporterInfo: {
+          ...data.exporterInfo,
+          bank: "Something",
+        },
       };
-      console.log(data, preparedData);
 
-      const validationResult = discountingSchema.safeParse(preparedData);
-      console.log(validationResult);
-      if (validationResult.success) {
-        const validatedData = validationResult.data;
+      try {
+        const validatedData = await discountingSchema.validate(preparedData, {
+          abortEarly: false,
+          stripUnknown: true,
+        });
+
         if (isProceed) {
           const { confirmingBank2, extraInfo, ...rest } = validatedData;
           reqData = {
             ...rest,
             ...baseData,
+            draft: false,
           };
           startLoading();
           const { response, success } = discountingData?._id
@@ -216,29 +229,22 @@ const CreateDiscountPage = () => {
           stopLoading();
           if (!success) return toast.error(response);
           else {
-            const notificationResp = await sendNotification({
-              role: "bank",
-              title: `New LC Discounting Request ${response.data._id}`,
-              body: `Ref no ${response.data.refId} from ${response.data.issuingBank.bank} by ${user?.name}`,
-            });
             setValues(getStateValues(useDiscountingStore.getInitialState()));
             toast.success("LC created successfully");
-            reset();
             router.push("/");
+            reset();
           }
         } else {
           let openDisclaimerBtn = document.getElementById("open-disclaimer");
-          // @ts-ignore
-          openDisclaimerBtn.click();
+          openDisclaimerBtn?.click();
         }
-      } else {
-        if (
-          validationResult.error &&
-          validationResult.error.errors.length > 0
-        ) {
-          validationResult.error.errors.forEach((error) => {
-            toast.error(`${error.message}`);
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          error.errors.forEach((errMessage) => {
+            toast.error(errMessage);
           });
+        } else {
+          console.error("Unexpected error during validation:", error);
         }
       }
     }
@@ -267,7 +273,7 @@ const CreateDiscountPage = () => {
 
   return (
     <CreateLCLayout isRisk={false}>
-      <form className="border border-borderCol py-4 px-3 w-full flex flex-col gap-y-5 mt-4 rounded-lg bg-white">
+      <form className="mt-4 flex w-full flex-col gap-y-5 rounded-lg border border-borderCol bg-white px-3 py-4">
         <Step1
           setStepCompleted={handleStepCompletion}
           register={register}
@@ -308,7 +314,7 @@ const CreateDiscountPage = () => {
           setStepCompleted={handleStepCompletion}
         />
 
-        <div className="flex items-start gap-x-4 h-full w-full relative">
+        <div className="relative flex h-full w-full items-start gap-x-4">
           <Step6
             watch={watch}
             register={register}
@@ -325,13 +331,13 @@ const CreateDiscountPage = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-x-4 w-full">
+        <div className="flex w-full items-center gap-x-4">
           <Button
             // onClick={handleSubmit(saveAsDraft)}
             onClick={handleSubmit((data) => onSubmit({ data, isDraft: true }))}
             type="button"
             variant="ghost"
-            className="!bg-[#F1F1F5] w-1/3"
+            className="w-1/3 !bg-[#F1F1F5]"
             disabled={loader}
           >
             {loader ? <Loader /> : "Save as draft"}
@@ -340,7 +346,7 @@ const CreateDiscountPage = () => {
             type="button"
             disabled={isLoading}
             size="lg"
-            className="bg-primaryCol hover:bg-primaryCol/90 text-white w-2/3"
+            className="w-2/3 bg-primaryCol text-white hover:bg-primaryCol/90"
             // onClick={handleSubmit(onSubmit)}
             onClick={handleSubmit((data) => onSubmit({ data, isDraft: false }))}
           >
@@ -353,7 +359,7 @@ const CreateDiscountPage = () => {
           setProceed={setProceed}
           // onAccept={handleSubmit(onSubmit)}
           onAccept={handleSubmit((data) =>
-            onSubmit({ data, isDraft: false, isProceed: true })
+            onSubmit({ data, isDraft: false, isProceed: true }),
           )}
         />
       </form>

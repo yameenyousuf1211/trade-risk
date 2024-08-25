@@ -17,14 +17,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
 import { cn } from "@/lib/utils";
 import { fetchSingleRisk } from "@/services/apis/risk.api";
-import { IRisk } from "@/types/type";
+import { IBids, IRisk } from "@/types/type";
 import { BgRadioInput, DDInput } from "../LCSteps/helpers";
 import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const LCInfo = ({
   label,
@@ -76,24 +77,29 @@ export const AddBid = ({
   isBank?: boolean;
   isRisk?: boolean;
 }) => {
-  console.log("🚀 ~ status:", status);
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
+  const [userBids,setUserBids] = useState<IBids[]>([]);
   const [confirmationPriceType, setConfirmationPriceType] = useState("");
   const { user } = useAuth();
   const buttonRef = useRef<HTMLButtonElement>(null); // console.log(id, "_______-id");
+  
+  console.log("🚀 ~ file: AddBid.tsx ~ line 116 ~ bidData ~ bidData", bidData);
+  
 
-  // Get LC
+
   const { data: lcData, isLoading } = useQuery({
     queryKey: [`single-lc`, id],
     queryFn: () => fetchSingleLc(id),
+    enabled: !isRisk,
   });
 
-  console.log("🚀 ~ lcData:", lcData);
+  console.log("🚀 ~ lcDataaaaaaa:", lcData);
   const { data: riskData } = useQuery<IRisk>({
     queryKey: [`single-risk`, id],
     queryFn: () => fetchSingleRisk(id),
+    enabled: isRisk,
   });
 
   const { mutateAsync } = useMutation({
@@ -101,8 +107,14 @@ export const AddBid = ({
     onSuccess: () => {
       console.log("onsuccess.... invalidating queries");
       queryClient.invalidateQueries({
+        
         queryKey: ["bid-status"],
-        // queryKey: [ "fetch-risks"],
+       
+      });
+      queryClient.invalidateQueries({
+        
+        queryKey: ["fetch-lcs"],
+       
       });
     },
   });
@@ -112,12 +124,10 @@ export const AddBid = ({
     register,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<z.infer<typeof addBidTypes>>({
-    resolver: zodResolver(addBidTypes),
+  } = useForm({
+    resolver: yupResolver(addBidTypes),
   });
-  const onSubmit: SubmitHandler<z.infer<typeof addBidTypes>> = async (
-    data: z.infer<typeof addBidTypes>
-  ) => {
+  const onSubmit: SubmitHandler<typeof addBidTypes> = async (data) => {
     if (isDiscount && !discountBaseRate)
       return toast.error("Please provide discount base rate");
     if (isDiscount && !discountMargin)
@@ -152,21 +162,9 @@ export const AddBid = ({
     if (!success) return toast.error(response);
     else {
       console.log(response?.data, "response?.data");
-      const notificationResp = await sendNotification({
-        role: "corporate",
-        userId: isRisk ? riskData?.createdBy : lcData?.createdBy,
-        title: `New ${isRisk ? riskData?.type : lcData?.type} Request ${
-          isRisk ? riskData?._id : lcData?._id
-        }`,
-        body: `Ref no ${isRisk ? riskData?.refId : lcData?.refId}  by ${
-          user?.name
-        }`,
-      });
-      // let closeBtn = document.getElementById("submit-button-close");
-      // // @ts-ignore
-      // closeBtn.click();
-      buttonRef?.current?.click();
-      toast.success("Bid added");
+    buttonRef?.current?.click();
+ 
+    toast.success("Bid added");
     }
   };
 
@@ -181,6 +179,20 @@ export const AddBid = ({
     advancePaymentBond +
     performanceBond +
     retentionMoneyBond;
+
+  const formatNumberWithCommas = (value: string | number) => {
+    if (value === undefined || value === null) {
+      return "";
+    }
+
+    value = value.toString();
+    const numberString = value.replace(/,/g, "");
+    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+  const userBidStatus = lcData?.bids?.find(bid => bid?.createdBy === user?._id)?.status;
+  const computedStatus = userBidStatus || triggerTitle ||lcData?.status;
+
+
 
   return (
     <Dialog>
@@ -227,55 +239,46 @@ export const AddBid = ({
         </DialogTrigger>
       ) : (
         <DialogTrigger
-          className={`${
-            status === "Pending"
-              ? "bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]  rounded-md w-full p-2 capitalize hover:opacity-85 border border-[#F2994A]"
-              : isNotification
-              ? "bg-[#2F3031] text-white hover:bg-[#2F3031] hover:text-white"
-              : lcData &&
-                (lcData?.status === "Expired" ||
-                  lcData?.status === "Accepted") &&
-                (status === "Add bid" || status === "Rejected")
-              ? "bg-[#1A1A26] text-white text-sm"
-              : status === "Rejected"
-              ? ` bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
-                  border && "border border-[#D20000]"
-                }`
-              : status === "Accepted"
-              ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
-                  border && "border border-[#29C084]"
-                }`
-              : status === "Expired"
-              ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
-                  border &&
-                  "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
-                }`
-              : status === "Add bid" && !isBank
-              ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
-              : status === "Add bid" && isBank
-              ? "bg-[#1A1A26] text-white text-sm"
-              : "px-3 mt-2 bg-[#1A1A26] hover:bg-[#1A1A26]/90 text-white"
-          } rounded-md w-full ${
-            isNotification ? "w-28" : ""
-          } p-2 capitalize hover:opacity-85 font-roboto`}
-          disabled={
-            (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
-            (status === "Add bid" || status === "Rejected")
-          }
-        >
-          {lcData &&
-          (lcData?.status === "Expired" || lcData?.status === "Accepted") &&
-          (status === "Add bid" || status === "Rejected")
-            ? "Not Applicable"
-            : triggerTitle || "Pending"}
-        </DialogTrigger>
+        className={`${
+          status === "Accepted"
+            ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
+                border && "border border-[#29C084]"
+              }`
+            : lcData?.status === "Accepted" || lcData?.status === "Expired"
+            ? "bg-[#1A1A26] text-white text-sm cursor-not-allowed"
+            : status === "Rejected"
+            ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
+                border && "border border-[#D20000]"
+              }`
+            : status === "Expired"
+            ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
+                border && "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
+              }`
+            : status === "Add bid" && !isBank
+            ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
+            : status === "Add Bid" && isBank
+            ? "bg-[#1A1A26] text-white text-sm"
+            : "px-3 mt-2 bg-[#F2994A] hover:bg-[#F2994A]/90 text-white opacity-80"
+        } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
+        disabled={
+          (lcData?.status === "Accepted" || lcData?.status === "Expired") &&
+          status !== "Accepted" || computedStatus === "Pending"
+        }
+      >
+        {status === "Accepted"
+          ? "Accepted"
+          : (lcData?.status === "Accepted" || lcData?.status === "Expired")
+          ? "Not Applicable"
+          : computedStatus || "Pending"}
+      </DialogTrigger>
+      
+
       )}
       <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">
             {(lcData?.type && lcData?.type + " Request") ||
-              "Risk Participation Request" +
-                ` (${isRisk ? riskData?.refId : lcData?.refId})`}
+              "Risk Participation Request"}
           </h2>
           <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>
             <X className="size-7" />
@@ -334,8 +337,9 @@ export const AddBid = ({
                       <LCInfo
                         label="Value of Transaction"
                         value={
-                          riskData?.riskParticipationTransaction?.amount.toString() ||
-                          "-"
+                          formatNumberWithCommas(
+                            riskData?.riskParticipationTransaction?.amount ?? 0
+                          ) || "-"
                         }
                       />
                       <LCInfo
@@ -361,34 +365,36 @@ export const AddBid = ({
                       <h2 className="text-xl font-semibold">LC Details</h2>
                       <LCInfo
                         label="LC Issuing Bank"
-                        value={riskData?.issuingBank?.bank || "-"}
+                        value={riskData?.issuingBanks[0]?.bank || "-"}
                       />
                       <LCInfo
                         label="LC Advising Bank"
                         value={riskData?.advisingBank?.bank || "-"}
                       />
-                      <LCInfo
+                      {/* <LCInfo
                         label="Confirming Bank"
                         value={riskData?.confirmingBank?.bank || "-"}
-                      />
-                      <LCInfo
+                      /> */}
+                      {/* <LCInfo
                         label="LC Discounted"
                         value={
                           riskData?.transhipment === true
                             ? "Allowed"
                             : "Not allowed"
                         }
-                      />
-                      <LCInfo
+                      /> */}
+                      {/* <LCInfo
                         label="Expected Discounting Date"
                         value={convertDateToCommaString(
                           riskData?.expectedDateDiscounting || ""
                         )}
-                      />
+                      /> */}
                       <LCInfo
                         label="Issuance/Expected Issuance Date"
                         value={convertDateToCommaString(
-                          (riskData?.startDate?riskData?.startDate:riskData?.period?.startDate) || ""
+                          (riskData?.startDate
+                            ? riskData?.startDate
+                            : riskData?.period?.startDate) || ""
                         )}
                         noBorder
                       />
@@ -476,11 +482,11 @@ export const AddBid = ({
                     <div className="px-4 bg-bg pb-5">
                       <LCInfo
                         label="LC Issuing Bank"
-                        value={lcData?.issuingBank?.bank || "-"}
+                        value={lcData?.issuingBanks?.[0]?.bank || "-"}
                       />
                       <LCInfo
                         label="Country of LC Issuing Bank"
-                        value={lcData?.issuingBank?.country || "-"}
+                        value={lcData?.issuingBanks?.[0]?.country || "-"}
                       />
                       <LCInfo
                         label="LC Applicant"
@@ -504,7 +510,11 @@ export const AddBid = ({
                       )}
                       <LCInfo
                         label="Payments Terms"
-                        value={lcData?.paymentTerms || "-"}
+                        value={
+                          lcData?.paymentTerms && lcData?.paymentTerms !== "Sight LC"
+                            ? `${lcData.paymentTerms} ${lcData.extraInfo?.days + " days" || ""} ${lcData.extraInfo?.other || ""}`
+                            : lcData?.paymentTerms || "-"
+                        }
                         noBorder
                       />
                       <div className=" bg-white border border-borderCol p-2 flex items-center justify-between w-full gap-x-2 rounded-lg">
@@ -539,13 +549,16 @@ export const AddBid = ({
                       <LCInfo
                         label="LC Issuance (Expected)"
                         value={
-                          (riskData?.startDate || riskData?.period?.startDate)
-                            ? convertDateToCommaString(
-                              (riskData?.startDate?riskData?.startDate:riskData?.period?.startDate)
-                              )
-                            : lcData?.createdAt
-                            ? convertDateToCommaString(lcData?.createdAt)
-                            : "-"
+                          // riskData?.startDate || riskData?.period?.startDate
+                          //   ? convertDateToCommaString(
+                          //       riskData?.startDate
+                          //         ? riskData?.startDate
+                          //         : riskData?.period?.startDate
+                          //     )
+                          //   : lcData?.createdAt
+                          //   ? convertDateToCommaString(lcData?.createdAt)
+                          //   : "-"
+                          convertDateToCommaString(lcData.period?.startDate)
                         }
                       />
                       <LCInfo
@@ -553,32 +566,20 @@ export const AddBid = ({
                         value={
                           lcData?.period?.endDate
                             ? convertDateToCommaString(lcData?.period?.endDate)
-                            : lcData?.otherBond?.lgExpiryDate
-                            ? convertDateToCommaString(
-                                lcData?.otherBond?.lgExpiryDate
-                              )
-                            : "-"
+                            :  "-"
                         }
                       />
                       <LCInfo
                         label="Confirmation Date (Expected)"
                         value={
-                          lcData?.period?.endDate
-                            ? convertDateToCommaString(lcData?.period?.endDate)
-                            : lcData?.otherBond?.expectedDate
-                            ? convertDateToCommaString(
-                                lcData?.otherBond?.expectedDate
-                              )
+                          lcData?.expectedConfirmationDate
+                            ? convertDateToCommaString(lcData?.expectedConfirmationDate)
                             : "-"
                         }
                       />
                       <LCInfo
                         label="Transhipment"
-                        value={
-                          lcData?.transhipment === true
-                            ? "Allowed"
-                            : "Not allowed"
-                        }
+                        value={lcData?.transhipment === true ? "Yes" : "No"}
                       />
                       <LCInfo
                         label="Port of Shipment"
@@ -590,6 +591,18 @@ export const AddBid = ({
                         noBorder
                       />
 
+                      <h2 className="text-xl font-semibold mt-3">
+                        Importer Info
+                      </h2>
+                      <LCInfo
+                        label="Applicant"
+                        value={lcData?.importerInfo?.applicantName || ""}
+                        noBorder
+                      />
+                      <LCInfo
+                        label="Country of Import"
+                        value={lcData?.importerInfo?.countryOfImport || ""}
+                      />
                       <h2 className="text-xl font-semibold mt-3">
                         Exporter Info
                       </h2>
@@ -611,113 +624,130 @@ export const AddBid = ({
 
           {/* Right Section */}
           <div className="w-full h-full flex flex-col justify-start px-5 overflow-y-auto max-h-[75vh]">
-            <p className="text-xl font-semibold pt-5">Deal ( kindly provide your best price below )</p>
+            <p className="text-xl font-semibold pt-5">{computedStatus == "Add bid" ? "Submit Your Bid" : "View Bids"}</p>
             {isInfo ? (
-              <>
-                {/* Bid info and status */}
-                <div className="flex flex-col gap-y-2 py-4 px-4 mt-3 border border-borderCol rounded-lg">
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para font-roboto">Bid Number</p>
-                    <p className="font-semibold text-lg">
-                      {bidData?._id?.substring(0, 6) || "100928"}
-                    </p>
-                  </div>
+    // This is where we filter the bids for the logged-in user
+    (() => {
+      // console.log("🚀 ~ file: AddBid.tsx ~ line 116 ~ user ~ user", user);
+      let userBids;
+      if(isCorporate){
+        userBids = lcData?.bids
+      }
+      else{
+        userBids = lcData?.bids?.filter(bid => bid?.bidBy?._id === user?.business?._id);
+      }
+      return (
+        <>
+          {userBids && userBids.length > 0 ? (
+            userBids.map((bid:IBids, index:number) => (
+              <div className="border-borderCol px-4 mt-3   py-4  border  rounded-lg" key={bid._id}>
+              <div
+              key={bid._id || index}
+              className="grid grid-cols-2 gap-y-3"
+            >
+              {/* Conditionally apply opacity to div based on status */}
+            
+              {/* Bid Number */}
+              <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                <p className="mb-1 text-sm text-para font-roboto">Bid Number</p>
+                <p className="text-lg font-semibold">
+                  {bid._id?.substring(0, 6) || "100928"}
+                </p>
+              </div>
+            
+              {/* Submitted by */}
+              <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                <p className="mb-1 text-sm text-para font-roboto">Submitted by</p>
+                <p className="text-lg font-semibold capitalize">
+                  {bid ? bid.bidBy.name : "Habib Bank Limited"}
+                </p>
+              </div>
+            
+              {/* Confirmation Rate */}
+              <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                <p className="mb-1 text-sm text-para font-roboto">Confirmation Rate</p>
+                <p className="text-lg font-semibold text-text">
+                  {bid ? bid.confirmationPrice : "1.75"}% {bid?.perAnnum ? "per annum" : "flat"}
+                </p>
+              </div>
+            
+              {/* Discounting Base Rate */}
+              <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                <p className="mb-1 text-sm text-para font-roboto">Discount Spread</p>
+                <p className="text-lg font-semibold">
+                  {bid ? (bid.discountBaseRate ? bid.discountBaseRate + "% per annum" : "Not Applicable") : "KIBOR + "}
+                </p>
+              </div>
+            
+              {/* Country */}
+              <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                <p className="mb-1 text-sm text-para font-roboto">Country</p>
+                <p className="text-lg font-semibold capitalize">
+                  {bid ? bid.bidBy.country : "Pakistan"}
+                </p>
+              </div>
 
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="font-semibold text-lg capitalize">
-                      {bidData ? bidData.bidBy?.[0] : "Habib Bank Limited"}
-                    </p>
-                    <p className="font-roboto text-sm text-para capitalize">
-                      {bidData ? bidData.bidBy?.[2] : "Pakistan"}
-                    </p>
-                  </div>
-
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para font-roboto">
-                      Bid Submitted
-                    </p>
-                    <p className="font-semibold text-lg capitalize">
-                      {bidData
-                        ? convertDateAndTimeToString(bidData.createdAt)
-                        : "Jan 9 2023, 23:59"}
-                    </p>
-                  </div>
-
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para font-roboto">Bid Expiry</p>
-                    <p className="font-semibold text-lg">
-                      {bidData
-                        ? convertDateAndTimeToString(bidData.bidValidity)
-                        : "Jan 9 2023, 23:59"}
-                    </p>
-                  </div>
-
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para font-roboto">
-                      Confirmation Rate
-                    </p>
-                    <p className="text-lg font-semibold text-text">
-                      {bidData ? bidData.confirmationPrice : "1.75"}% per annum
-                    </p>
-                  </div>
-
-                  <div className={status === "Expired" ? "opacity-50" : ""}>
-                    <p className="text-sm text-para font-roboto">
-                      Discounting Base Rate
-                    </p>
-                    <p className="font-semibold text-lg">
-                      {bidData
-                        ? !bidData.discountBaseRate && "Not Applicable"
-                        : "KIBOR + "}
-                      <span className="text-text">
-                        {bidData
-                          ? bidData.discountBaseRate
-                            ? bidData.discountBaseRate + "% per annum"
-                            : ""
-                          : ""}
-                        {!bidData && "2.22 % per annum"}
-                      </span>
-                    </p>
-                  </div>
-
-                  <Button
-                    className={`${
-                      status === "Accepted"
-                        ? "bg-[#29C08433] hover:bg-[#29C08433]"
-                        : status === "Rejected"
-                        ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
-                        : status === "Expired"
-                        ? "bg-[#97979733] hover:bg-[#97979733]"
-                        : status === "Submitted"
-                        ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
-                        : status === "Pending"
-                        ? "bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]  border border-[#F2994A]"
-                        : ""
-                    } mt-2 text-black`}
-                  >
-                    {status === "Accepted"
-                      ? "Bid Accepted"
-                      : status === "Rejected"
-                      ? "Bid Rejected"
-                      : status === "Expired"
-                      ? "Request Expired"
-                      : status === "Submitted"
-                      ? "Bid Submitted"
-                      : status}
-                  </Button>
+                <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                  <p className="text-sm text-para font-roboto">Confirmation Rate</p>
+                  <p className="text-lg font-semibold text-text">
+                    {bid ? bid.confirmationPrice : "1.75"}% {bid?.perAnnum ? 'per annum' : "flat"}
+                  </p>
                 </div>
 
-                {status === "Rejected" && !isCorporate && (
-                  <Button
-                    onClick={() => {
-                      setIsAddNewBid && setIsAddNewBid(true);
-                    }}
-                    className="bg-[#5625F2]  text-white hover:bg-[#5625F2] mt-5"
-                  >
-                    Submit A New Bid
-                  </Button>
-                )}
-              </>
+                <div className={bid.status === "Expired" ? "opacity-50" : ""}>
+                  <p className="text-sm text-para font-roboto">Discounting Base Rate</p>
+                  <p className="font-semibold text-lg">
+                    {bid ? (!bid.discountBaseRate && "Not Applicable") : "KIBOR + "}
+                    <span className="text-text">
+                      {bid ? (bid.discountBaseRate ? bid.discountBaseRate + "% per annum" : "") : ""}
+                      {!bid && "2.22 % per annum"}
+                    </span>
+                  </p>
+                </div>
+                <div className={bid.status === "Expired" ? "opacity-50" : ""}></div>
+              </div>
+              <Button
+                  className={`w-full ${
+                    bid.status === "Accepted"
+                      ? "bg-[#29C08433] hover:bg-[#29C08433]"
+                      : bid.status === "Rejected"
+                      ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
+                      : bid.status === "Expired"
+                      ? "bg-[#97979733] hover:bg-[#97979733]"
+                      : bid.status === "Pending"
+                      ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
+                      : ""
+                  } mt-2 text-black`}
+                >
+                  {bid.status === "Accepted"
+                    ? "Bid Accepted"
+                    : bid.status === "Rejected"
+                    ? "Bid Rejected"
+                    : bid.status === "Expired"
+                    ? "Request Expired"
+                    : bid.status === "Pending"
+                    ? "Bid Submitted"
+                    : bid.status}
+                </Button>
+              </div>
+            ))
+          ) : (
+            <p>No bids found for the logged-in user.</p>
+          )}
+
+          {/* Button for submitting a new bid if status is Rejected */}
+          {status === "Rejected" && !isCorporate && (
+            <Button
+              onClick={() => setIsAddNewBid(true)}
+              className="bg-[#5625F2] text-white hover:bg-[#5625F2] mt-5"
+            >
+              Submit A New Bid
+            </Button>
+          )}
+        </>
+      );
+    })()
+            
             ) : (
               // Add Bids
               <form
@@ -730,12 +760,14 @@ export const AddBid = ({
                       htmlFor="validity"
                       className="block font-semibold mb-2"
                     >
-                      Deals available until
+                      Bid Validity
                     </label>
                     <DatePicker
                       setValue={setValue}
                       key={lcData?._id}
-                      maxDate={lcData?.period?.endDate}
+                      maxDate={null}
+                      // maxDate={lcData?.period?.endDate}
+                      // isPast={false}
                     />
                   </div>
                   {errors.validity && (
@@ -753,7 +785,7 @@ export const AddBid = ({
                     {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
                   </label>
                   <input
-                    placeholder="Enter your pricing (%)"
+                    placeholder="Enter your pricing per annum (%)"
                     type="text"
                     inputMode="numeric"
                     className={cn(
@@ -831,7 +863,6 @@ export const AddBid = ({
                         name="confirmationPriceType"
                         value={"flat"}
                         onChange={(e) => {
-                          console.log(e.target.value);
                           setConfirmationPriceType(e.target.value);
                         }}
                         className="accent-primaryCol size-4"

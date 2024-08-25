@@ -21,12 +21,17 @@ interface ImporterInfo {
   countryOfImport: string;
 }
 
+interface ExtraInfo {
+  days: number;
+  other: "shipment" | "upas" | "acceptance" | "negotiation" | "invoice" | "sight" | "others";
+}
+
 type TransactionData = {
   participantRole: "exporter" | "importer";
   amount: string;
   paymentTerms: "Sight LC" | "Usance LC" | "Deferred LC" | "UPAS LC";
   currency: string;
-  issuingBank: Bank;
+  issuingBanks: Bank[];
   advisingBank: Bank;
   confirmingBank: Bank;
   lcPeriod: LcPeriod;
@@ -34,14 +39,7 @@ type TransactionData = {
   transhipment: "yes" | "no";
   importerInfo: ImporterInfo;
   productDescription: string;
-  extraInfo:
-    | "shipment"
-    | "upas"
-    | "acceptance"
-    | "negotiation"
-    | "invoice"
-    | "sight"
-    | "others";
+  extraInfo: ExtraInfo; // Updated to use ExtraInfo type
 };
 
 interface LcConfirmation extends TransactionData {
@@ -110,7 +108,7 @@ interface LCIssueance {
   _id: string;
   lgIssueAgainst: string;
   standardSAMA: string;
-  issuingBank: Bank;
+  issuingBanks: Bank[];
   amount: {
     price: string;
     margin: string;

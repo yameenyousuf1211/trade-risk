@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from "@/context/AuthProvider";
-import { LogOut } from "lucide-react";
+import { CircleCheckIcon, CircleX, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
@@ -20,7 +20,19 @@ export const LogoutBtn = () => {
     if (!success) return toast.error(response);
 
     setUser(undefined);
-    toast.success("Logged out successfully");
+    const toastId = toast.success(
+      <div className="flex items-center justify-between w-full">
+        <div className="flex items-center">
+          <CircleCheckIcon className="mr-2 size-5" />
+          <h1 className="text-[1rem]">You have logged out successfully!</h1>
+        </div>
+        <CircleX
+          className="ml-2 size-5 hover:cursor-pointer"
+          onClick={() => toast.dismiss(toastId)}
+        />
+      </div>
+    );
+
     localStorage.removeItem("accessToken");
     Cookies.remove("accessToken");
     router.push("/login");

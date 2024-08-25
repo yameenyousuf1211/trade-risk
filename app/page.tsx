@@ -30,12 +30,12 @@ const HomePage = ({ searchParams }: SearchParams) => {
     useQuery({
       queryKey: ["bid-status", page, limit, search, filter],
       queryFn: () =>
-        fetchLcs({ page, limit, search, filter, userId: user._id }),
-      enabled: !!user?._id,
+        fetchLcs({ page, limit, search, filter, userId: user?.business?._id, draft: false}),
+      enabled: !!user?.business?._id,
     });
-    console.log("fetching LCSSS",data)
-
-  if (user && user.role !== "corporate") {
+  // console.log("fetching LCSSS", data);
+  console.log(user?.business, "user");
+  if (user && user.type !== "corporate") {
     redirect("/dashboard");
   }
 
@@ -43,12 +43,10 @@ const HomePage = ({ searchParams }: SearchParams) => {
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">
         <div className="w-4/5 p-2 xl:p-4">
-          <h2 className="text-4xl font-semibold mb-5 capitalize">
-            Welcome, {user && user.name}
-          </h2>
+          <h2 className="text-4xl font-semibold mb-5 capitalize">Welcome</h2>
           {/* Charts */}
           <div className="flex xl:flex-row flex-col gap-x-3 gap-y-4 mb-4 w-[80vw] 2xl:w-full h-fit">
-            <ProgressCharts title="Total Requests" />
+            <ProgressCharts title="My Actions" />
             <LineCharts />
           </div>
           <RequestTable

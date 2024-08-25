@@ -35,10 +35,11 @@ const MyBidsPage = ({ searchParams }: SearchParams) => {
     queryFn: () => fetchMyBids({ page, limit, filter, search }),
   });
 
-  if (user && user.role !== "bank") {
+  if (user && user.type !== "bank") {
     redirect("/");
-  }
+  } 
 
+  console.log(data, "my-bids-data");
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">

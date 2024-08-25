@@ -23,7 +23,7 @@ export const columnHeaders = [
 
 export const bankColumnHeaders = [
   { name: "Deals Id", key: "refId" },
-  { name: "Swift Code", key: "createdBy.swiftCode" },
+  // { name: "Swift Code", key: "createdBy.swiftCode" },
   { name: "Deal Received", key: "lcPeriod.startDate" },
   { name: "Expires", key: "lcPeriod.endDate" },
   { name: "Product Type", key: "lcType" },

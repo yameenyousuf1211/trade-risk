@@ -36,7 +36,7 @@ export const onRegister = async (payload: IRegisterFields | any) => {
     return { success: true, response: response.data };
   } catch (error) {
     console.error(error);
-    return { success: false, response: (error as any).response.data.message };
+    return { success: false, response: (error as any).response?.data?.message };
   }
 };
 
@@ -62,6 +62,42 @@ export const logoutUser = async () => {
     return {
       success: true,
       response: data,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      response: error?.response?.data?.message || "Something went wrong",
+    };
+  }
+};
+
+export const phoneVerification = async (payload: string) => {
+  try {
+    const { data } = await api.post("/auth/phone-verification", {
+      phoneNo: payload,
+    });
+
+    return {
+      success: true,
+      response: data,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      response: error?.response?.data?.message || "Something went wrong",
+    };
+  }
+};
+
+export const emailVerification = async (payload: string) => {
+  try {
+    const { data } = await api.post("/auth/check-email", {
+      email: payload,
+    });
+
+    return {
+      success: true,
+      response: data?.data,
     };
   } catch (error: any) {
     return {

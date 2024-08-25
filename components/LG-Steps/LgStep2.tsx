@@ -4,6 +4,7 @@ import { LgStepsProps2 } from "@/types/lg";
 import { Input } from "../ui/input";
 import useStepStore from "@/store/lcsteps.store";
 import { APPLICANT_DETAILS } from "@/utils/constant/lg";
+import { LG } from "@/utils";
 
 const LgStep2: React.FC<LgStepsProps2> = ({
   register,
@@ -28,8 +29,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({
 
   const handleOnChange = (event: any) => {
     const value = event.target.value;
-    const filteredValue = value.replace(/[^0-9]/g, "");
-    setValue("applicantDetails.crNumber", !value ? 0 : parseInt(filteredValue));
+    setValue("applicantDetails.crNumber",value);
   };
 
   return (
@@ -46,7 +46,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({
         </p>
       </div>
 
-      <div className="flex items-center gap-3 border border-[#E2E2EA] bg-[#F5F7F9] pt-2 px-2 rounded-lg pb-2">
+      <div className="flex items-center gap-3 border border-[#E2E2EA] bg-[#F5F7F9] pt-2 px-2 rounded-lg pb-2 flex-wrap">
         <DDInput
           value={country}
           placeholder="Select Country"
@@ -55,18 +55,32 @@ const LgStep2: React.FC<LgStepsProps2> = ({
           data={data}
           setValue={setValue}
           flags={flags}
+          extStyle="flex-1"
         />
         <DDInput
           value={company}
           placeholder="Select"
           label="Company"
           id="applicantDetails.company"
-          data={["Company 1", "Company 2", "Company 3"]}
+          data={["Saudi Aramco", "Saudi Telecom Company", "Saudi National Bank","Maaden","Al Rajhi Bank","SABIC","Saudi Electricity Company","Saudi Arabian Airlines","Saudi Basic Industries Corporation","Saudi Arabian Mining Company","Saudi Arabian Oil Company","Saudi Arabian Monetary Authority","Saudi Arabian General Investment Authority","Saudi Arabian Military Industries","Saudi Arabian Public Investment Fund"]}
           setValue={setValue}
+          extStyle="flex-1"
         />
+
+        {/* {lgIssuance === LG.cashMargin && (
+          <DDInput
+            value={company}
+            placeholder="Select"
+            label="Bank Account"
+            id=""
+            data={["Company 1", "Company 2", "Company 3"]}
+            setValue={() => null}
+            extStyle="flex-1"
+          />
+        )} */}
         <label
           id="applicantDetails.crNumber"
-          className="border p-1 px-3 rounded-md w-full flex items-center justify-between  bg-white"
+          className="border p-1 px-3 rounded-md w-full flex items-center justify-between  bg-white flex-1"
         >
           <p className="w-full text-sm text-lightGray">CR Number</p>
           <Input
@@ -75,7 +89,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({
             register={register}
             type="text"
             name="applicantDetails.crNumber"
-            className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+            className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px] uppercase"
             placeholder="-"
           />
         </label>

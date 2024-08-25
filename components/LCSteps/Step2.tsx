@@ -43,17 +43,17 @@ export const Step2 = ({
   let amount = watch("amount");
   let currencyVal = watch("currency");
   let paymentTerms = watch("paymentTerms");
-  let extraInfo = watch("extraInfo");
+  let extraInfo = watch("extraInfo") || { days: 0, other: "" };
 
   const [currencyValue, setCurrencyValue] = useState<string | number>(
-    amount || ""
+    amount || "",
   );
   const [rawValue, setRawValue] = useState("");
   const [otherValue, setOtherValue] = useState("");
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
-    if (paymentTerms === "Sight LC") {
+    if (paymentTerms === "Usance LC") {
       setValue("extraInfo", undefined);
     }
   }, [paymentTerms]);
@@ -114,19 +114,26 @@ export const Step2 = ({
     } else removeStep(AMOUNT);
   }, [amount, paymentTerms]);
 
+  // useEffect(() => {
+  //   // Update extraInfo in the form state when `days` or `otherValue` changes
+  //   setValue("extraInfo", { days, other: otherValue });
+  // }, [days, otherValue]);
+
+  console.log("extraInfo", extraInfo);
+
   return (
     <div
       id="step2"
-      className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target"
+      className="scroll-target w-full rounded-lg border border-borderCol px-2 py-3"
     >
-      <div className="flex items-center gap-x-2 ml-3 mb-3">
-        <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
+      <div className="mb-3 ml-3 flex items-center gap-x-2">
+        <p className="center size-6 rounded-full bg-primaryCol text-sm font-semibold text-white">
           2
         </p>
-        <p className="font-semibold text-[16px] text-lightGray">Amount</p>
+        <p className="text-[16px] font-semibold text-lightGray">Amount</p>
       </div>
 
-      <div className="flex items-center gap-x-2 justify-between w-full mb-3 border border-borderCol py-2 px-3 rounded-md bg-[#F5F7F9]">
+      <div className="mb-3 flex w-full items-center justify-between gap-x-2 rounded-md border border-borderCol bg-[#F5F7F9] px-3 py-2">
         <div className="flex items-center gap-x-2">
           <Select
             onValueChange={(value) => {
@@ -159,13 +166,13 @@ export const Step2 = ({
             onChange={handleChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            className="border border-borderCol focus-visible:ring-0 focus-visible:ring-offset-0  flex h-10 w-full rounded-md  bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-10 w-full rounded-md border border-borderCol bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
           />
         </div>
 
-        <p className="font-semibold text-sm">
+        <p className="text-sm font-semibold">
           {rawValue && numberToText.convertToText(rawValue.toString())}{" "}
-          <span className="text-primaryCol uppercase">
+          <span className="uppercase text-primaryCol">
             {currencyVal
               ? currencyVal === "USD"
                 ? "US Dollars"
@@ -175,9 +182,9 @@ export const Step2 = ({
         </p>
       </div>
 
-      <div className="border border-borderCol px-2 py-3 rounded-md bg-[#F5F7F9]">
-        <h5 className="font-semibold text-sm ml-3">Payment Terms</h5>
-        <div className="flex items-center flex-wrap xl:flex-nowrap  gap-x-3 w-full mt-2">
+      <div className="rounded-md border border-borderCol bg-[#F5F7F9] px-2 py-3">
+        <h5 className="ml-3 text-sm font-semibold">Payment Terms</h5>
+        <div className="mt-2 flex w-full flex-wrap items-center gap-x-3 xl:flex-nowrap">
           <BgRadioInput
             id="payment-sight"
             label="Sight LC"
@@ -214,8 +221,8 @@ export const Step2 = ({
         {/* Days input */}
         {paymentTerms && paymentTerms !== "Sight LC" && (
           <>
-            <div className="flex items-center gap-x-2 my-3 ml-2">
-              <div className="border-b-2 border-black flex items-center">
+            <div className="my-3 ml-2 flex items-center gap-x-2">
+              <div className="flex items-center border-b-2 border-black">
                 <input
                   placeholder="enter days"
                   inputMode="numeric"
@@ -223,16 +230,16 @@ export const Step2 = ({
                   type="number"
                   max={3}
                   value={days}
-                  className="text-sm text-lightGray border-none focus-visible:ring-0 focus-visible:ring-offset-0 max-w-[150px] bg-[#F5F7F9] outline-none"
+                  className="max-w-[150px] border-none bg-[#F5F7F9] text-sm text-lightGray outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   onChange={(e: any) => {
                     if (e.target.value > 999) return;
-                    else setDays(e.target.value);
+                    else setDays(Number(e.target.value));
                   }}
                 />
                 <div className="flex items-center gap-x-1">
                   <button
                     type="button"
-                    className="rounded-sm border border-para size-6 center mb-2"
+                    className="center mb-2 size-6 rounded-sm border border-para"
                     onClick={() => {
                       if (days >= 999) return;
                       else setDays((prev: any) => Number(prev) + 1);
@@ -242,12 +249,12 @@ export const Step2 = ({
                   </button>
                   <button
                     type="button"
-                    className="rounded-sm border border-para size-6 center mb-2"
+                    className="center mb-2 size-6 rounded-sm border border-para"
                     onClick={() => {
                       if (days >= 999) return;
                       else
                         setDays((prev: any) =>
-                          Number(prev) > 1 ? Number(prev) - 1 : 1
+                          Number(prev) > 1 ? Number(prev) - 1 : 1,
                         );
                     }}
                   >
@@ -257,66 +264,67 @@ export const Step2 = ({
               </div>
               <p className="font-semibold">days from</p>
             </div>
-            <div className="flex items-center gap-x-3 justify-between">
+            <div className="flex items-center justify-between gap-x-3">
               <BgRadioInput
                 id="payment-shipment"
                 label="BL Date/Shipment Date"
-                name="extraInfo"
+                name="extraInfo.other"
                 value="shipment"
                 register={register}
-                checked={extraInfo === "shipment"}
+                checked={extraInfo.other === "shipment"}
               />
               <BgRadioInput
                 id="payment-acceptance"
                 label="Acceptance Date"
-                name="extraInfo"
+                name="extraInfo.other"
                 value="acceptance"
                 register={register}
-                checked={extraInfo === "acceptance"}
+                checked={extraInfo.other === "acceptance"}
               />
             </div>
-            <div className="flex items-center gap-x-3 justify-between">
+            <div className="flex items-center justify-between gap-x-3">
               <BgRadioInput
                 id="payment-negotiation"
                 label="Negotiation Date"
-                name="extraInfo"
+                name="extraInfo.other"
                 value="negotiation"
                 register={register}
-                checked={extraInfo === "negotiation"}
+                checked={extraInfo.other === "negotiation"}
               />
               <BgRadioInput
                 id="payment-invoice"
                 label="Invoice Date"
-                name="extraInfo"
+                name="extraInfo.other"
                 value="invoice"
                 register={register}
-                checked={extraInfo === "invoice"}
+                checked={extraInfo.other === "invoice"}
               />
               <BgRadioInput
                 id="payment-extra-sight"
                 label="Sight"
-                name="extraInfo"
+                name="extraInfo.other"
                 value="sight"
                 register={register}
-                checked={extraInfo === "sight"}
+                checked={extraInfo.other === "sight"}
               />
             </div>
             <div
-              className={`flex bg-white items-end gap-x-5 px-3 py-4 w-full rounded-md mb-2 border border-borderCol ${
-                extraInfo === "others" && "!bg-[#EEE9FE]"
+              className={`mb-2 flex w-full items-end gap-x-5 rounded-md border border-borderCol bg-white px-3 py-4 ${
+                extraInfo.other === "others" && "!bg-[#EEE9FE]"
               }`}
             >
               <label
                 htmlFor="payment-others"
-                className=" flex items-center gap-x-2 text-sm text-lightGray"
+                className="flex items-center gap-x-2 text-sm text-lightGray"
               >
                 <input
                   type="radio"
                   value="others"
-                  {...register("extraInfo")}
+                  {...register("extraInfo.other")}
                   id="payment-others"
-                  checked={extraInfo === "others"}
-                  className="accent-primaryCol size-4"
+                  checked={extraInfo.other === "others"}
+                  className="size-4 accent-primaryCol"
+                  // onChange={() => setOtherValue("others")}
                 />
                 Others
               </label>
@@ -324,9 +332,10 @@ export const Step2 = ({
                 type="text"
                 name="ds"
                 value={otherValue}
+                disabled={extraInfo.other !== "others"}
                 onChange={(e: any) => setOtherValue(e.target.value)}
-                className="text-sm bg-transparent !border-b-2 !border-b-neutral-300 rounded-none border-transparent focus-visible:ring-0 focus-visible:ring-offset-0 outline-none w-[80%]"
-                disabled={extraInfo !== "others"}
+                className="w-[80%] rounded-none !border-b-2 border-transparent !border-b-neutral-300 bg-transparent text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                // checked={extraInfo.other !== "others"}
               />
             </div>
           </>

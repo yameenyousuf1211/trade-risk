@@ -1,7 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { loginSchema } from "@/validation";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { FloatingInput } from "@/components/helpers/FloatingInput";
 import Link from "next/link";
@@ -10,15 +9,15 @@ import { onLogin } from "@/services/apis";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/context/AuthProvider";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { CircleCheckIcon, CircleX, Eye, EyeOff } from "lucide-react";
 import { registerGCMToken } from "@/services/apis/notifications.api";
 import {
   arrayBufferToBase64,
   urlBase64ToUint8Array,
 } from "@/utils/helper/service-worker";
+import { yupResolver } from "@hookform/resolvers/yup";
 export default function LoginPage() {
   const router = useRouter();
   const { setUser } = useAuth();
@@ -32,8 +31,8 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
+  } = useForm({
+    resolver: yupResolver(loginSchema),
   });
 
   const [notificationPermission, setNotificationPermission] = useState(
@@ -41,9 +40,8 @@ export default function LoginPage() {
   );
 
   const registerServiceWorker = async () => {
-    const register = await navigator.serviceWorker.register(
-      "/service-worker.js"
-    );
+    const register =
+      await navigator.serviceWorker.register("/service-worker.js");
     const registrationReady = await navigator.serviceWorker.ready;
     // console.log(registrationReady)
     const subscription = await register.pushManager.subscribe({
@@ -69,14 +67,14 @@ export default function LoginPage() {
         authToken,
         hashKey,
       });
-      console.log(gcmToken,"gcmtoken")
+      console.log(gcmToken, "gcmtoken");
     }
   };
 
-  const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (data) => {
+  const onSubmit: SubmitHandler<typeof loginSchema> = async (data) => {
     const { response, success } = await mutateAsync(data);
-    console.log(response);
-    
+    console.log(response, "pipipi");
+
     if (success) {
       const permission = await Notification.requestPermission();
       setNotificationPermission(permission);
@@ -85,9 +83,22 @@ export default function LoginPage() {
           await registerServiceWorker();
         }
       }
+
       setUser(response.data.user);
-      toast.success("Login successfully");
-      router.push(response.data.user.role === "corporate" ? "/" : "/dashboard");
+      const toastId = toast.success(
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center">
+            <CircleCheckIcon className="mr-2 size-5" />
+            <h1 className="text-[1rem]">You have logged in successfully!</h1>
+          </div>
+          <CircleX
+            className="ml-2 size-5 hover:cursor-pointer"
+            onClick={() => toast.dismiss(toastId)}
+          />
+        </div>
+      );
+      router.push(response.data.user.type === "corporate" ? "/" : "/dashboard");
+
     } else return toast.error(response as string);
   };
 

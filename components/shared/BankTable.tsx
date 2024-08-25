@@ -27,11 +27,22 @@ import { getCountries } from "../../services/apis/helpers.api";
 import { TableDialog } from "./TableDialog";
 import { useAuth } from "@/context/AuthProvider";
 
-const TableDataCell = ({ data }: { data: string | number }) => {
+const renderData = (data: string | number | undefined) => {
+  return data ? data : "-";
+};
+
+const getCenteredClass = (data: string | number | undefined) => {
+  return data === "-" ? "text-center w-full" : "text-start";
+};
+
+const TableDataCell = ({ data }: { data: string | number | undefined }) => {
+  const displayData = renderData(data);
   return (
     <TableCell className="px-1 py-1 max-w-[200px]">
-      <div className="capitalize truncate border border-borderCol rounded-md w-full p-2 py-2.5 text-center text-sm text-lightGray">
-        {data}
+      <div
+        className={`capitalize truncate border text-center border-borderCol rounded-md w-full p-2 py-2.5 text-sm text-lightGray`}
+      >
+        {displayData}
       </div>
     </TableCell>
   );
@@ -89,9 +100,9 @@ export const BankTable = ({
       filtered = filtered.filter(
         (item) =>
           (item as IBids)?.lcInfo?.[1]?.country?.toLowerCase() ===
-            selectedCountry.toLowerCase() ||
-          (item as IRisk)?.issuingBank?.country?.toLowerCase() ===
-            selectedCountry.toLowerCase()
+          selectedCountry.toLowerCase() ||
+          (item as IRisk)?.issuingBanks?.[0].country?.toLowerCase() ===
+          selectedCountry.toLowerCase()
       );
     }
 
@@ -117,7 +128,7 @@ export const BankTable = ({
       filtered = filtered.filter((item) =>
         (
           (item as IBids)?.bidBy?.[0] ||
-          (item as IRisk)?.issuingBank?.name ||
+          (item as IRisk)?.issuingBanks?.[0]?.bank ||
           ""
         )
           .toLowerCase()
@@ -135,7 +146,6 @@ export const BankTable = ({
       return country ? country.flag : undefined;
     }
   };
-
   const [sortedKey, setSortedKey] = useState<string>("");
 
   const handleSort = (key: string) => {
@@ -153,10 +163,10 @@ export const BankTable = ({
         case "Country of issuing bank":
           valueA =
             (a as IBids).lcInfo?.[1]?.country ||
-            (a as IRisk).issuingBank?.country;
+            (a as IRisk).issuingBanks?.[0].country;
           valueB =
             (b as IBids).lcInfo?.[1]?.country ||
-            (b as IRisk).issuingBank?.country;
+            (b as IRisk).issuingBanks?.[0].country;
           break;
         case "Confirmation Rate":
           valueA = (a as IBids).confirmationPrice || (a as IRisk).transhipment;
@@ -191,10 +201,12 @@ export const BankTable = ({
   const filteredHeaders =
     filter === "LC Confirmation"
       ? myBidsColumnHeaders.filter(
-          (header) => !["Discounting Rate", "Discount Margin"].includes(header)
-        )
+        (header) => !["Discounting Rate", "Discount Margin"].includes(header)
+      )
       : myBidsColumnHeaders;
 
+      console.log("Dataaaa CORP",data);
+      
   return (
     <div className="">
       <div className="flex items-center justify-between hide-scrollbar overflow-x-auto xl:gap-x-2 mb-2">
@@ -249,96 +261,108 @@ export const BankTable = ({
               <div className="w-full h-full center">{/* <Loader /> */}</div>
             ) : (
               filteredData &&
-              filteredData?.map((item: IBids | IRisk, index: number) => (
-                <TableRow key={index} className="border-none font-roboto">
-                  <TableDataCell data={convertDateToString(item?.createdAt)} />
-                  <TableCell className="px-1 py-1 max-w-[200px]">
-                    {" "}
-                    <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                      <p className="text-[16px] emoji-font">
-                        {allCountries &&
-                          getCountryFlagByName(
-                            (item as IBids)?.lcInfo?.[1]?.country ||
-                              (item as IRisk)?.issuingBank?.country ||
-                              (item as IRisk)?.risk[2]?.country
-                          )}
-                      </p>
-                      <div className="truncate text-lightGray capitalize">
-                        {(item as IBids)?.lcInfo?.[1]?.country ||
-                          (item as IRisk)?.issuingBank?.country ||
-                          (item as IRisk)?.risk[2]?.country}
-                      </div>
-                    </div>
-                  </TableCell>
-                  {isCorporate && (
+              filteredData?.map((item: IBids | IRisk, index: number) => {
+                console.log(item, "item123")
+                return (
+                  <TableRow key={index} className="border-none font-roboto">
+                    <TableDataCell data={convertDateToString(item?.createdAt)} />
                     <TableCell className="px-1 py-1 max-w-[200px]">
+                      {" "}
                       <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
-                        <p className="text-[16px]">
-                          {(item as IBids).bidBy &&
-                            allCountries &&
-                            getCountryFlagByName((item as any).bidBy?.[2])}
+                        <p className="text-[16px] emoji-font">
+                          {allCountries &&
+                            getCountryFlagByName(
+                              (item as IBids)?.lcInfo?.[1]?.country ||
+                              (item as IRisk)?.lc?.issuingBanks?.[0]?.country || "-"
+                            )}
+                          {/* // (item as IRisk)?.risk[2]?.country */}
                         </p>
-                        <div className="truncate text-lightGray capitalize">
-                          {(item as any).bidBy?.[0] || ""}
+                        <div
+                          className={`truncate text-lightGray capitalize ${getCenteredClass(
+                            (item as IBids)?.lcInfo?.[1]?.country ||
+                            (item as IRisk)?.lc?.issuingBanks?.[0]?.country || "-"
+                          )}`}
+                        >
+                          {(item as IBids)?.lcInfo?.[1]?.country ||
+                            (item as IRisk)?.lc?.issuingBanks?.[0]?.bank || "-"
+                          }
                         </div>
                       </div>
                     </TableCell>
-                  )}
-                  <TableDataCell
-                    data={
-                      ((item as IBids)?.confirmationPrice &&
-                        (item as IBids).confirmationPrice.toLocaleString() +
-                          ".00 %") ||
-                      "Not Applicable"
-                    }
-                  />
-                  {filter !== "LC Confirmation" && (
-                    <>
-                      <TableDataCell
-                        data={
-                          (item as IBids)?.discountBaseRate
-                            ? (item as IBids).discountBaseRate
-                            : "Not Applicable"
-                        }
-                      />
+                    {isCorporate && (
+                      <TableCell className="px-1 py-1 max-w-[200px]">
+                        <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
+                          <p className="text-[16px]">
+                            {(item as IBids).bidBy &&
+                              allCountries &&
+                              getCountryFlagByName((item as any).bidBy?.[2])}
+                          </p>
+                          <div className={`truncate text-lightGray capitalize ${getCenteredClass(
+                            (item as IBids)?.lcInfo?.[1]?.country ||
+                            (item as IRisk)?.lc?.confirmingBank?.country || "-"
+                          )}`}>
+                            <p>
+                              {(item as any).lc?.confirmingBank?.bank || "-"}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                    )}
+                    <TableDataCell
+                      data={
+                        renderData(
+                          (item as IBids)?.confirmationPrice &&
+                          (item as IBids).confirmationPrice.toLocaleString() +
+                          ".00 %" || ""
+                        )
+                      }
+                    />
+                    {filter !== "LC Confirmation" && (
+                      <>
+                        <TableDataCell
+                          data={renderData(
+                            (item as IBids)?.discountBaseRate
+                          )}
+                        />
 
-                      <TableDataCell
-                        data={
-                          (item as IBids)?.discountMargin
-                            ? (item as IBids).discountMargin?.toLocaleString() +
+                        <TableDataCell
+                          data={
+                            (item as IBids)?.discountMargin
+                              ? (item as IBids).discountMargin?.toLocaleString() +
                               ".00%"
-                            : "Not Applicable"
-                        }
-                      />
-                    </>
-                  )}
-                  <TableDataCell
-                    data={
-                      "USD " +
+                              : "Not Applicable"
+                          }
+                        />
+                      </>
+                    )}
+                    <TableDataCell
+                      data={renderData(
+                        "USD " +
                         ((item as IBids).confirmationPrice ||
                           (item as IRisk).riskParticipationTransaction
                             ?.amount) +
                         ".00" || ""
-                    }
-                  />
-                  <TableCell className="px-1 py-1 max-w-[200px]">
-                    <AddBid
-                      triggerTitle={item.status}
-                      status={item.status}
-                      isInfo={item.status !== "Add bid" && !isAddNewBid}
-                      setIsAddNewBid={setIsAddNewBid}
-                      isDiscount={
-                        ((item as IBids).bidType &&
-                          (item as IBids).bidType.includes("Discount")) ||
-                        false
-                      }
-                      border
-                      bidData={item}
-                      id={isCorporate ? item?.lc[0] : item?._id}
-                      isRisk={isRisk}
-                      isCorporate={isCorporate}
+                      )}
                     />
-                    {/* {(item as IBids).status !== "Pending" ? (
+                    <TableCell className="px-1 py-1 max-w-[200px]">
+                    {(item as IBids).status !== "Pending" ? (
+                      <AddBid
+                        triggerTitle={item.status}
+                        status={item.status}
+                        isInfo={item.status !== "Add bid" && !isAddNewBid}
+                        setIsAddNewBid={setIsAddNewBid}
+                        
+                        isDiscount={
+                          ((item as IBids).bidType &&
+                            (item as IBids).bidType.includes("Discount")) ||
+                          false
+                        }
+                        border
+                        bidData={item}
+                        id={item?.lc._id}
+                        isRisk={isRisk}
+                        isCorporate={isCorporate}
+                      />
                     ) : (
                       <Button
                         variant="ghost"
@@ -346,10 +370,11 @@ export const BankTable = ({
                       >
                         {item?.status}
                       </Button>
-                    )} */}
+                    )}
                   </TableCell>
-                </TableRow>
-              ))
+                  </TableRow>
+                )
+              })
             )}
           </TableBody>
         </Table>

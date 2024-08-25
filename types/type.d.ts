@@ -96,6 +96,7 @@ export interface IPagination {
   totalItems: number;
   totalPages: number;
 }
+
 export interface ApiResponse<T> {
   data: T[];
   pagination: Pagination;
@@ -103,7 +104,7 @@ export interface ApiResponse<T> {
 
 export interface IUser {
   _id?: string;
-  businessNature:string
+  businessNature: string;
   name?: string;
   email: string;
   role: string;
@@ -114,7 +115,7 @@ export interface IUser {
   password?: string;
   bank?: string;
   accountNumber?: number;
-  swiftCode?: string;
+  swiftCode?: string; // swiftCode is now optional
   accountHolderName?: string;
   accountCountry?: string;
   accountCity?: string;
@@ -156,10 +157,7 @@ export interface ILcs {
     name: string;
     accountCountry: string;
   }[];
-  issuingBank: {
-    bank: string;
-    country: string;
-  };
+  issuingBanks: Bank[]; // Changed to issuingBanks, an array of Bank objects
   extraInfo: {
     days: Date;
     other: string;
@@ -209,6 +207,7 @@ export interface ILcs {
 }
 
 export interface IBids {
+  issuingBanks: any;
   _id: string;
   status: string;
   bidType: string;
@@ -216,6 +215,7 @@ export interface IBids {
   discountBaseRate?: number;
   amount: number;
   validity?: Date;
+  bidValidity: Date;
   perAnnum?: boolean;
   bidBy: {
     _id?: string;
@@ -231,13 +231,13 @@ export interface IBids {
   };
   lcInfo: ILcInfo | any;
   confirmationPrice: string | number;
-  lc?: string[];
+  lc?: string[] 
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
-ILcInfo: {
+interface ILcInfo {
   country: string;
   bank: string;
 }
@@ -311,8 +311,9 @@ interface ShipmentPort {
 }
 
 export interface IRisk {
+  lc: any;
   refId?: string;
-  type?:string
+  type?: string;
   status: string;
   advisingBank: Bank;
   attachment: any[]; // Adjust the type as needed for attachments
@@ -329,7 +330,7 @@ export interface IRisk {
   importerInfo: ImporterInfo;
   isDeleted: boolean;
   isLcDiscounting: boolean;
-  issuingBank: Bank;
+  issuingBanks: Bank[];
   note: string;
   outrightSales: string;
   paymentTerms: string;
@@ -374,13 +375,12 @@ export interface INotifications {
   isRead: boolean;
 }
 
-
 export interface IAddRole {
   roleName: string;
 }
 
-interface IRole  {
-  _id:string
+interface IRole {
+  _id: string;
   name: string;
   creator: Schema.Types.ObjectId;
   changeRequest: boolean;

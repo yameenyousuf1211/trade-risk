@@ -5,6 +5,9 @@ import { Input } from "../ui/input";
 import { PhoneInput } from "../ui/phone-input";
 import useStepStore from "@/store/lcsteps.store";
 import { BENEFICIARY } from "@/utils/constant/lg";
+import { mapCountryToIsoCode } from "@/utils";
+import { useQuery } from "@tanstack/react-query";
+import { getCities } from "@/services/apis/helpers.api";
 
 const LgStep4: React.FC<LgStepsProps2> = ({
   register,
@@ -17,8 +20,9 @@ const LgStep4: React.FC<LgStepsProps2> = ({
 }) => {
   const beneficiaryCountry = watch("beneficiaryDetails.country");
   const beneficiaryName = watch("beneficiaryDetails.name");
-  console.log("🚀 ~ beneficiaryName:", beneficiaryName)
   const beneficiaryAddress = watch("beneficiaryDetails.address");
+  const beneficiaryCity = watch("beneficiaryDetails.city");
+
   const beneficiaryPhoneNumber = watch("beneficiaryDetails.phoneNumber");
   const { addStep, removeStep } = useStepStore();
 
@@ -37,7 +41,16 @@ const LgStep4: React.FC<LgStepsProps2> = ({
     beneficiaryAddress,
     beneficiaryPhoneNumber,
   ]);
+  const [isoCode, setIsoCode] = useState<string | null >("");
 
+  const {data:cities,isLoading} = useQuery({
+    queryKey: ["cities"],
+    queryFn: ()=>getCities(isoCode!),
+    enabled:isoCode?true:false
+  })
+
+  
+  
   return (
     <div
       id="lg-step4"
@@ -53,22 +66,15 @@ const LgStep4: React.FC<LgStepsProps2> = ({
       </div>
       <div className="border border-[#E2E2EA] bg-[#F5F7F9] p-2 rounded-lg">
         <div className="flex items-center gap-3 mb-2">
-          <DDInput
-            placeholder="Select Country"
-            label="Beneficiary Country"
-            id="beneficiaryDetails.country"
-            value={beneficiaryCountry}
-            data={data}
-            setValue={setValue}
-            flags={flags}
-          />
           <label
             id="beneficiaryDetails.address"
             className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
           >
             <p className="w-full text-sm text-lightGray">Beneficiary Name</p>
             <Input
-            onChange={(e) => setValue("beneficiaryDetails.name", e?.target?.value)}
+              onChange={(e) =>
+                setValue("beneficiaryDetails.name", e?.target?.value)
+              }
               register={register}
               name="beneficiaryDetails.name"
               type="text"
@@ -77,17 +83,42 @@ const LgStep4: React.FC<LgStepsProps2> = ({
             />
           </label>
         </div>
+        <div className="flex items-center gap-3 mb-2">
+          <DDInput
+            placeholder="Select Country"
+            label="Beneficiary Country"
+            id="beneficiaryDetails.country"
+            value={beneficiaryCountry}
+            data={data}
+            onSelectValue={(value) => {
+              setIsoCode(mapCountryToIsoCode(value.toLowerCase()))
+            }}
+            setValue={setValue}
+            flags={flags}
+          />
+          <DDInput
+            placeholder="Select"
+            label="Select City"
+            id="beneficiaryDetails.city"
+            value={beneficiaryCity}
+            setValue={setValue}
+            disabled={isLoading || !isoCode}
+            data={cities?.success && cities?.response.map((city:any)=>city.name)}
+          />
+        </div>
         <div className="flex items-center gap-3">
           <label
             id="beneficiaryDetails.address"
-            className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+            className="border p-1 flex-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
           >
-            <p className="w-full text-sm text-lightGray">Beneficiary Address</p>
+            <p className="w-full text-sm text-lightGray">Street Address</p>
             <Input
               register={register}
               name="beneficiaryDetails.address"
               type="text"
-              onChange={(e) => setValue("beneficiaryDetails.address", e?.target?.value)}
+              onChange={(e) =>
+                setValue("beneficiaryDetails.address", e?.target?.value)
+              }
               className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
               placeholder="Enter Text"
             />

@@ -1,166 +1,130 @@
-import { z } from "zod";
+import * as Yup from "yup";
 
-const loginSchema = z.object({
-  email: z
-    .string({
-      message: "*Email is required",
-      required_error: "Please enter a valid email address.",
-    })
-    .min(1, "*Email is required")
-    .email({ message: "Invalid email" }),
-  password: z
-    .string({ message: "*Password is required" })
+const loginSchema = Yup.object().shape({
+  email: Yup.string().required("*Email is required").email("Invalid email"),
+  password: Yup.string()
+    .required("*Password is required")
     .min(1, "*Password is required."),
 });
 
-const registerSchema = z.object({
-  email: z
-    .string({ message: "*Email is required" })
-    .email({ message: "*Invalid email" }),
-  password: z.string({ message: "*Password is required" }).min(6),
+const registerSchema = Yup.object().shape({
+  email: Yup.string().required("*Email is required").email("*Invalid email"),
+  password: Yup.string()
+    .required("*Password is required")
+    .min(6, "*Password must be at least 6 characters"),
 });
 
-const companyInfoSchema = z.object({
-  name: z
-    .string({ message: "*Company name is required" })
+const companyInfoSchema = Yup.object().shape({
+  name: Yup.string()
+    .required("*Company name is required")
     .min(1, "*Company name is required"),
-  email: z
-    .string({ message: "*Email is required" })
-    .min(1, "*Email is required")
+  email: Yup.string()
+    .required("*Email is required")
     .email("*Must be a valid email.")
     .trim(),
-  address: z
-    .string({ message: "*Address is required" })
+  country: Yup.string().required("*Select a country"),
+  crNumber: Yup.string().required("*CR Number is required"),
+  address: Yup.string()
+    .required("*Address is required")
     .min(1, "*Address is required"),
-  phone: z
-    .string({ message: "*Phone number is required" })
+  phone: Yup.string()
+    .required("*Phone number is required")
     .min(4, "*Phone number is required")
-    .max(15)
-    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-      message: "*Enter a valid number",
-    }),
-  bank: z
-    .string({ message: "*Bank field cannot be empty." })
+    .max(15),
+  bank: Yup.string()
+    .required("*Bank field cannot be empty.")
     .min(1, "*Bank field cannot be empty."),
-  swiftCode: z
-    .string({ message: "*Swift code is required" })
+  swiftCode: Yup.string()
+    .required("*Swift code is required")
     .min(8, "*Swift code must be at least 8 characters long.")
     .max(11, "*Swift code must be less than 11 characters."),
-  accountNumber: z
-    .string({ message: "*Account number is required" })
+  accountNumber: Yup.string()
+    .required("*Account number is required")
     .min(16, "*Account number must contain 16 digits")
     .max(16, "*Account number must contain 16 digits")
-    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-      message: "*Enter a valid number",
-    }),
-  accountHolderName: z
-    .string({ message: "*Account holder name is required" })
+    .matches(/^\d+(\.\d+)?$/, "*Enter a valid number"),
+  accountHolderName: Yup.string()
+    .required("*Account holder name is required")
     .min(1, "*Account holder name field cannot be empty."),
-  businessNature: z
-    .string({ message: "*Business nature field cannot be empty." })
+  businessNature: Yup.string()
+    .required("*Business nature field cannot be empty.")
     .min(1, "*Business nature field cannot be empty."),
-  constitution: z
-    .string({ message: "*Constitution field cannot be empty." })
+  constitution: Yup.string()
+    .required("*Constitution field cannot be empty.")
     .min(3, "*Constitution field cannot be empty."),
-  accountCountry: z
-    .string({ message: "*Account country is required" })
-    .nonempty("*Account country is required")
-    .min(1, "Account country field cannot be empty."),
-  accountCity: z
-    .string({ message: "*Account city field cannot be empty." })
+  accountCountry: Yup.string()
+    .required("*Account country is required")
+    .min(1, "*Account country field cannot be empty."),
+  accountCity: Yup.string()
+    .required("*Account city field cannot be empty.")
     .min(1, "*Account city field cannot be empty."),
-  businessType: z
-    .string({ message: "*Business type field cannot be empty." })
+  businessType: Yup.string()
+    .required("*Business type field cannot be empty.")
     .min(1, "*Business type field cannot be empty."),
 });
 
-const pointOfContractSchema = z.object({
-  pocEmail: z
-    .string({ message: "*POC Email is required" })
-    .min(1, "*POC Email is required")
+const pointOfContractSchema = Yup.object().shape({
+  pocEmail: Yup.string()
+    .required("*Company Email is required")
     .email("*Must be a valid email."),
-  pocPhone: z
-    .string({ message: "*POC phone is required" })
-    .min(4, "*POC Phone number is required")
-    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-      message: "*Enter a valid number",
-    }),
-  pocName: z
-    .string({ message: "*POC name is required" })
+  pocPhone: Yup.string()
+    .required("*POC phone is required")
+    .min(4, "*POC Phone number is required"),
+  pocName: Yup.string()
+    .required("*POC name is required")
     .min(1, "*Poc name field cannot be empty."),
-  poc: z
-    .string({ message: "*Poc field cannot be empty." })
-    .min(1, "*Poc field cannot be empty."),
-  pocDesignation: z
-    .string({ message: "*POC designation field cannot be empty." })
-    .min(1, "*Poc designation field cannot be empty."),
+  pocDesignation: Yup.string()
+    .required("*Designation field cannot be empty.")
+    .min(1, "*Designation field cannot be empty."),
 });
 
-const productsInfoSchema = z.object({
-  product: z
-    .string({ message: "*Add atleast 1 product." })
-    .min(1, "*Add atleast 1 product."),
-  annualSalary: z
-    .string({ message: "*Annual salary is required." })
-    .min(1, "*Annual salary is required.")
-    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-      message: "*Enter a valid number",
-    }),
-  annualValueExports: z
-    .string({ message: "*Annual value is required" })
-    .min(1, "*Annual value is required")
-    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-      message: "*Enter a valid number",
-    }),
-  annualValueImports: z
-    .string({ message: "*Annual value is required" })
-    .min(1, "*Annual value is required")
-    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-      message: "*Enter a valid number",
-    }),
+const productsInfoSchema = Yup.object().shape({
+  product: Yup.string()
+    .required("*Add at least 1 product.")
+    .min(1, "*Add at least 1 product."),
+  annualSalary: Yup.string()
+    .required("*Annual salary is required.")
+    .matches(/^\d+(\.\d+)?$/, "*Enter a valid number"),
+  annualValueExports: Yup.string()
+    .required("*Annual value is required")
+    .matches(/^\d+(\.\d+)?$/, "*Enter a valid number"),
+  annualValueImports: Yup.string()
+    .required("*Annual value is required")
+    .matches(/^\d+(\.\d+)?$/, "*Enter a valid number"),
 });
 
-const bankSchema = z.object({
-  role: z.string().default("bank"),
-  name: z
-    .string({ message: "*Bank name is required" })
-    .nonempty("*Bank name is required"),
-  email: z
-    .string({ message: "*Email is required" })
-    .min(1, "*Email is required")
+const bankSchema = Yup.object().shape({
+  type: Yup.string().default("bank"),
+  pocName: Yup.string()
+    .required("*Authorized Point of Contact Name is required")
+    .min(1, "*Authorized Point of Contact Name is required"),
+  email: Yup.string()
+    .required("*Email is required")
     .email("*Must be a valid email.")
-    .trim()
-    .nonempty("*Email is required"),
-  accountCountry: z
-    .string({ message: "*Select a country" })
-    .nonempty("*Select a country"),
-  // accountCity: z.string({ message: "*Select city" }).nonempty("*Select city"),
-  pocPhone: z
-    .string({ message: "*POC Phone number is required" })
-    .min(4, "*POC Phone number is required")
-    .refine((value) => /^\d+(\.\d+)?$/.test(value), {
-      message: "*Enter a valid number",
-    }),
-  address: z.string().nonempty("*Bank address is required"),
-  swiftCode: z
-    .string()
+    .trim(),
+  accountCountry: Yup.string().required("*Select a country"),
+  pocPhone: Yup.string()
+    .required("*POC Phone number is required")
+    .min(4, "*POC Phone number is required"),
+  address: Yup.string().required("*Bank address is required"),
+  bank: Yup.string(),
+  swiftCode: Yup.string()
     .min(8, "at least 8 characters long.")
     .max(11, "must be less than 11 characters."),
-  pocEmail: z
-    .string({ message: "*POC email is required" })
-    .min(1, "*POC Email is required")
-    .email("Must be a valid email.")
-    .trim()
-    .nonempty("*Email is required"),
-  confirmationLcs: z.boolean().default(false),
-  discountingLcs: z.boolean().default(false),
-  guaranteesCounterGuarantees: z.boolean().default(false),
-  discountingAvalizedBills: z.boolean().default(false),
-  avalizationExportBills: z.boolean().default(false),
-  riskParticipation: z.boolean().default(false),
+  pocEmail: Yup.string()
+    .required("*POC email is required")
+    .email("*Must be a valid email.")
+    .trim(),
+  confirmationLcs: Yup.boolean().default(false),
+  discountingLcs: Yup.boolean().default(false),
+  guaranteesCounterGuarantees: Yup.boolean().default(false),
+  discountingAvalizedBills: Yup.boolean().default(false),
+  avalizationExportBills: Yup.boolean().default(false),
+  riskParticipation: Yup.boolean().default(false),
 });
-const forgotPasswordSchema = z.object({
-  email: z.string().email(),
+
+const forgotPasswordSchema = Yup.object().shape({
+  email: Yup.string().email("Invalid email").required("Email is required"),
 });
 
 export {

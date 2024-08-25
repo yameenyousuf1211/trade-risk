@@ -3,7 +3,7 @@ import { create } from "zustand";
 
 type StateValues = Omit<UseDiscountingStore, "setValues">;
 
-const useConfirmationStore = create<UseDiscountingStore>((set, get) => ({
+const useDiscountingStore = create<UseDiscountingStore>((set, get) => ({
   _id: "",
   amount: "",
   currency: "",
@@ -12,10 +12,12 @@ const useConfirmationStore = create<UseDiscountingStore>((set, get) => ({
     bank: "",
     country: "",
   },
-  issuingBank: {
-    bank: "",
-    country: "",
-  },
+  issuingBanks: [
+    {
+      bank: "",
+      country: "",
+    },
+  ],
   lcPeriod: {
     startDate: undefined,
     endDate: undefined,
@@ -47,7 +49,10 @@ const useConfirmationStore = create<UseDiscountingStore>((set, get) => ({
     behalfOf: "",
     pricePerAnnum: "",
   },
-  extraInfo: "shipment",
+  extraInfo: {
+    days: 0,  // Default value for days
+    other: "shipment",  // Default value for other
+  },
   setValues: (values: Partial<LcDiscounting | null>) =>
     set((state) => ({ ...state, ...values })),
 }));
@@ -57,4 +62,4 @@ export const getStateValues = (state: UseDiscountingStore): StateValues => {
   return stateValues;
 };
 
-export default useConfirmationStore;
+export default useDiscountingStore;

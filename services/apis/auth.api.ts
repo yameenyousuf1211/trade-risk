@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 export const onLogin = async (payload: ILoginFields) => {
   try {
     const { data } = await api.post("/auth/login", payload);
+    console.log(payload,"PAYLOAD!")
 
     if (data.status === STATUS.UNPROCESSABLE_ENTITY)
       return { success: false, response: data.message };

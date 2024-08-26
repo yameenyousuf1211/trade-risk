@@ -906,7 +906,7 @@ export const AddBid = ({
                         {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
                       </label>
                       <p className="text-xs text-[#29C084]">
-                        Client's Expected Price:{" "}
+                        Client&apos;s Expected Price:{" "}
                         {lcData?.type === "LC Confirmation"
                           ? lcData?.confirmationInfo?.pricePerAnnum
                           : lcData?.discountingInfo?.pricePerAnnum}{" "}

@@ -156,10 +156,7 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
                                     </div>
                             </div>
                         </TableCell>
-
-
                     </TableRow>
-
                 </TableFooter>
             }
         </Table>

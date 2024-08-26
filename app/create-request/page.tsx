@@ -28,6 +28,7 @@ import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
 import * as Yup from "yup";
+import LgStep12 from "@/components/LG-Steps/LgStep12";
 
 const CreateRequestPage = () => {
   const { user } = useAuth();
@@ -119,7 +120,7 @@ const CreateRequestPage = () => {
       return toast.error("Product description cannot contain only digits");
     if (data.period?.startDate > data.period?.endDate)
       return toast.error("LC Issuance date cannot be greater than expiry date");
-
+    
 
     let extraInfoObj;
     if (
@@ -127,7 +128,7 @@ const CreateRequestPage = () => {
       data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
-      extraInfoObj = { days: days, other: data.extraInfo.otherValue };
+      extraInfoObj = { days: days, other: data.extraInfo.other };
     }
 
     let reqData;
@@ -167,7 +168,6 @@ const CreateRequestPage = () => {
           ...baseData,
           draft: "true",
         };
-        console.log(reqData,"REQDATA_______FOR CONFIRMATION")
 
         const { response, success } = confirmationData?._id
           ? await onUpdateLC({
@@ -212,7 +212,7 @@ const CreateRequestPage = () => {
           const validatedData = await confirmationSchema.validate(
             preparedData,
             {
-              abortEarly: false,
+              abortEarly: true,
               stripUnknown: true,
             }
           );
@@ -335,11 +335,20 @@ const CreateRequestPage = () => {
             setStepCompleted={handleStepCompletion}
             title="Confirmation Charges"
           />
+          <div className="min-w-[50%] flex flex-col gap-5">
           <Step7
             register={register}
             step={7}
             setStepCompleted={handleStepCompletion}
           />
+          <LgStep12
+          register={register}
+          setValue={setValue}
+          step={8}
+          setStepCompleted={handleStepCompletion}
+          watch={watch}
+          />
+          </div>
         </div>
         <div className="flex items-center gap-x-4 w-full">
           <Button

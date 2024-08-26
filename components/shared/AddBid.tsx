@@ -95,7 +95,6 @@ export const AddBid = ({
     enabled: !isRisk,
   });
 
-  console.log("🚀 ~ lcDataaaaaaa:", lcData);
   const { data: riskData } = useQuery<IRisk>({
     queryKey: [`single-risk`, id],
     queryFn: () => fetchSingleRisk(id),
@@ -107,18 +106,16 @@ export const AddBid = ({
     onSuccess: () => {
       console.log("onsuccess.... invalidating queries");
       queryClient.invalidateQueries({
-        
         queryKey: ["bid-status"],
-       
       });
       queryClient.invalidateQueries({
-        
         queryKey: ["fetch-lcs"],
-       
       });
     },
   });
 
+  console.log(lcData, "lcDataaaaaasdasdasd");
+  
   const {
     handleSubmit,
     register,
@@ -688,13 +685,6 @@ export const AddBid = ({
               </div>
 
                 <div className={bid.status === "Expired" ? "opacity-50" : ""}>
-                  <p className="text-sm text-para font-roboto">Confirmation Rate</p>
-                  <p className="text-lg font-semibold text-text">
-                    {bid ? bid.confirmationPrice : "1.75"}% {bid?.perAnnum ? 'per annum' : "flat"}
-                  </p>
-                </div>
-
-                <div className={bid.status === "Expired" ? "opacity-50" : ""}>
                   <p className="text-sm text-para font-roboto">Discounting Base Rate</p>
                   <p className="font-semibold text-lg">
                     {bid ? (!bid.discountBaseRate && "Not Applicable") : "KIBOR + "}
@@ -778,12 +768,15 @@ export const AddBid = ({
                 </div>
 
                 <div>
+                  <div className="flex items-center justify-between">
                   <label
                     htmlFor="confirmation"
                     className="block font-semibold mb-2"
                   >
                     {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
                   </label>
+                  <p className="text-xs text-[#29C084]">Client's Expected Price: {lcData?.type == "LC Confirmation" ?  lcData?.confirmationInfo?.pricePerAnnum : lcData?.discountingInfo?.pricePerAnnum} P.A</p>
+                  </div>
                   <input
                     placeholder="Enter your pricing per annum (%)"
                     type="text"

@@ -50,6 +50,7 @@ const useConfirmationStore = create<UseConfirmationStore>((set, get) => ({
     advisingBank: "",
   },
   extraInfo: {days: "",other:""},
+  lastDateOfReceivingBids:undefined,
   setValues: (values: Partial<LcConfirmation | null>) =>
     set((state) => ({ ...state, ...values })),
 }));

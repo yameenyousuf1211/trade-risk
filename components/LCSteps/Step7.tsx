@@ -90,7 +90,7 @@ export const Step7 = ({
   return (
     <div
       id="step7"
-      className="w-full border border-borderCol rounded-lg py-3 px-4 h-full scroll-tar get"
+      className="w-full border border-borderCol rounded-lg py-3 px-4 h-full scroll-target"
     >
       <div className="flex items-center gap-x-2 ml-2 mb-3">
         <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold text-sm">
@@ -104,10 +104,10 @@ export const Step7 = ({
         <span className="font-medium"> e.g Drafts / Invoice </span>{" "}
         (PDF,JPG,PNG,TIFF)
       </p>
-      <div className="bg-[#F5F7F9] p-1 mt-2 rounded-md">
+      <div className="bg-[#F5F7F9] p-1 mt-1 rounded-md">
         <label
           htmlFor="attachment-input"
-          className="cursor-pointer flex flex-col justify-center items-center border-4 border-borderCol border-dotted py-4 rounded-md bg-[#F5F7F9]"
+          className="cursor-pointer flex flex-col justify-center items-center border-[3px] border-borderCol border-dotted py-4 rounded-md bg-[#F5F7F9]"
         >
           <input
             id="attachment-input"
@@ -133,7 +133,7 @@ export const Step7 = ({
 
       {/* Display selected files */}
       {selectedFiles && (
-        <div className="flex flex-col gap-y-3 mt-5">
+        <div className="flex flex-col gap-y-3 ">
           {Array.from(selectedFiles).map((fileList, index) => (
             <FileCard
               key={fileList[0].name}

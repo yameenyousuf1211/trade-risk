@@ -66,14 +66,14 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   const lgDetails = watch("lgDetailsType");
   // const lgDetailsType = watch("lgDetailsType");
 
-  // const handleOnChange = (
-  //   event: React.ChangeEvent<HTMLInputElement>,
-  //   name: string
-  // ) => {
-  //   const value = event.target.value;
-  //   const filteredValue = value.replace(/[^0-9]/g, "");
-  //   setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
-  // };
+  const handleOnChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    name: string
+  ) => {
+    const value = event.target.value;
+    const filteredValue = value.replace(/[^0-9]/g, "");
+    setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
+  };
 
   // const formatNumberWithCommas = (value: string) => {
   //   value = value?.toString();
@@ -99,17 +99,8 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       key={`${name + listValue!}`}
     >
       {lgDetails !== "Choose any other type of LGs" ? (
-        <TableDataCell>
-          <div className="flex gap-2 items-center flex-wrap">
-            {/* <input
-              type="checkbox"
-              className="bg-none"
-              style={{
-                background:"white",
-                borderColor:"#5625F2"
-              }}
-              {...register(`${name}.Contract`)}
-            /> */}
+        <TableDataCell className="min-w-[250px]">
+          <div className="flex gap-2 items-center flex-wrap ">
             <div onClick={() => {
               setValue(`${name}.Contract`,!checkedValue)
             }} className="bg-white border-[#5625F2] border-2 rounded-[5px] flex items-center justify-center h-[22px] w-[22px] cursor-pointer">
@@ -117,7 +108,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
                 <Check size={18} style={{ color: "#5625F2" }} />
               ) : null}
             </div>
-            <p style={{  textAlign: "left" }}>{listValue}</p>
+            <p style={{  textAlign: "left" }} className="text-sm">{listValue}</p>
           </div>
         </TableDataCell>
       ) : (
@@ -158,7 +149,8 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
         <Input
           disabled={!checkedValue}
           value={cashMargin}
-          // inputMode="numeric"
+          // inputMode=""
+          className="min-w-[130px]"
           register={register}
           name={`${name}.cashMargin`}
           type="text"
@@ -207,7 +199,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
               }}
             >
               <SelectTrigger
-                className="bg-borderCol/80 max-w-24"
+                className="bg-borderCol/80 "
                 defaultValue={"Months"}
                 value={lgTenorType}
               >
@@ -232,6 +224,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
                 handleOnChange(e, `${name}.lgTenor.lgTenorValue`)
               }
               placeholder="No."
+              className="min-w-[60px]"
             />
           </TableCell>
           <TableCell>

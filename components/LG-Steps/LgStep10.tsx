@@ -8,15 +8,16 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step,set
   const expectedPrice = String(watch("expectedPrice.expectedPrice")) || "";
   const pricingPerAnnum = watch("expectedPrice.pricePerAnnum");
   const obj = watch("expectedPrice");
+
   const handleIncrement = () => {
     const currentValue = parseInt(pricingPerAnnum) || 0;
-    const newValue = (currentValue + 1).toFixed(2);
+    const newValue = (currentValue + 0.5).toFixed(2);
     setValue('expectedPrice.pricePerAnnum', parseInt(newValue) > 100 ? '100.00' : newValue);
   };
 
   const handleDecrement = () => {
     const currentValue = parseInt(pricingPerAnnum) || 0;
-    const newValue = (currentValue - 1).toFixed(2);
+    const newValue = (currentValue - 0.5).toFixed(2);
     setValue('expectedPrice.pricePerAnnum', parseInt(newValue) < 0 ? '0.00' : newValue);
   };
 
@@ -96,7 +97,6 @@ const LgStep10: React.FC<LgStepsProps10> = ({ register, watch, setValue,step,set
             <Button type="button" variant="ghost" className="bg-none border-none text-lg" onClick={handleIncrement}>
               +
             </Button>
-            <p className='text-black'>Per Annum</p>
           </div>
         </label>
       </div>

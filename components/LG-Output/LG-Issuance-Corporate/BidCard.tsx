@@ -125,7 +125,7 @@ export const BidCard = ({
             <p className="text-[#92929D] text-sm">Bid Number</p>
           </div>
           <div className="text-end">
-            <p className="font-semibold text-xl">{bidDetail.bidBy.country}</p>
+            <p className="font-semibold text-xl capitalize">{bidDetail.bidBy.country}</p>
             <p className="text-[#92929D] text-sm">Country</p>
           </div>
         </div>
@@ -163,7 +163,7 @@ export const BidCard = ({
                   <h4 className="text-sm">{bankBid.bidType}</h4>
                   <h4 className="text-center text-[11px] font-light text-[#A3A3A9]">
                     Bid Pricing{" "}
-                    <span className="font-normal text-black">
+                    <span className="font-semibold text-black">
                       {bankBid.price ? `${bankBid.price}%` : "-"}
                     </span>
                   </h4>

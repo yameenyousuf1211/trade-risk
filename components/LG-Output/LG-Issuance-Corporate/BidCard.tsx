@@ -63,6 +63,9 @@ export const BidCard = ({
     }) => respondBid(requestData, status),
     onSuccess: (data) => {
       console.log("API Response:", data);
+      queryClient.invalidateQueries({
+        queryKey: ["bid-status"],
+      });
       queryClient.invalidateQueries(["fetch-lcs"]);
     },
     onError: (error) => {

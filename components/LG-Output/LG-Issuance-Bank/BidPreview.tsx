@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { DatePicker } from "@/components/helpers";
 import { ConfirmationModal } from "../ConfirmationModal";
+import { formatAmount } from "@/utils";
 
 interface BidPreviewProps {
   onBack: () => void;
@@ -56,7 +57,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
 
       <div className="border border-[#E2E2EA] p-4 rounded">
         <div className="flex justify-between items-center mb-3">
-          <h3 className="font-bold">Bid Summary</h3>
+          <h3 className="font-semibold">Bid Summary</h3>
           <div className="flex space-x-6">
             {bidNumber && (
               <div className="text-center">
@@ -101,7 +102,8 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                     }`}
                   >
                     <p className="text-[14px] font-light">
-                      {lgType.type} - {lgType.amount}
+                      {lgType.type} - {lgType.currencyType}{" "}
+                      {formatAmount(lgType.amount)}
                     </p>
                     {(lgType.status === "Accepted" ||
                       lgType.status === "Rejected") && <p>{lgType.status}</p>}

@@ -17,12 +17,10 @@ export const PricingInput: React.FC<PricingInputProps> = ({
 }) => {
   const getClientExpectedPrice = () => {
     if (bankData.expectedPrice) {
-      return bankData.pricePerAnnum + " Per Annum";
+      return bankData.pricePerAnnum + "% Per Annum";
+    } else {
+      return "N/A";
     }
-else {
-  return "N/A";
-
-}
   };
 
   return (

@@ -42,21 +42,21 @@ export function convertDate(mongooseDate: Date): string {
   const date = new Date(mongooseDate);
 
   const dateOptions: Intl.DateTimeFormatOptions = {
-    year: 'numeric',   // 4-digit year
-    month: 'short',    // Short month (e.g., Jan, Feb, Mar)
-    day: 'numeric'     // Day of the month (1-31)
+    year: "numeric", // 4-digit year
+    month: "short", // Short month (e.g., Jan, Feb, Mar)
+    day: "numeric", // Day of the month (1-31)
   };
 
   // Define options for formatting the time
   const timeOptions: Intl.DateTimeFormatOptions = {
-    hour: '2-digit',   // 2-digit hour (e.g., 01, 14)
-    minute: '2-digit', // 2-digit minute (e.g., 05, 59)
-    hour12: false      // Use 24-hour format
+    hour: "2-digit", // 2-digit hour (e.g., 01, 14)
+    minute: "2-digit", // 2-digit minute (e.g., 05, 59)
+    hour12: false, // Use 24-hour format
   };
 
   // Format the date and time separately
-  const formattedDate = date.toLocaleDateString('en-US', dateOptions);
-  const formattedTime = date.toLocaleTimeString('en-US', timeOptions);
+  const formattedDate = date.toLocaleDateString("en-US", dateOptions);
+  const formattedTime = date.toLocaleTimeString("en-US", timeOptions);
 
   // Combine the formatted date and time into the desired format
   return `${formattedDate}, ${formattedTime}`;
@@ -317,151 +317,152 @@ export const mapCountryToIsoCode = (country: string) => {
     nigeria: "NG",
   };
   console.log(countryToIsoMap[country]);
-  
-  return countryToIsoMap[country] || null; 
+
+  return countryToIsoMap[country] || null;
 };
 
+// Function to remove unnecessary fields for draft updates
+export const removeUnnecessaryFieldsForLgCreate = (responseData: any) => {
+  // Remove unnecessary fields based on lgIssuance type
+  delete responseData?._id;
+  delete responseData.createdAt;
+  delete responseData.updatedAt;
+  delete responseData.__v;
+  delete responseData.status;
 
-  // Function to remove unnecessary fields for draft updates
-  export const removeUnnecessaryFieldsForLgCreate = (responseData: any) => {
-    // Remove unnecessary fields based on lgIssuance type
-    delete responseData?._id;
-    delete responseData.createdAt;
-    delete responseData.updatedAt;
-    delete responseData.__v;
-    delete responseData.status;
+  responseData.issuingBanks = responseData?.issuingBanks?.map((bank: Bank) => {
+    // @ts-ignore
+    delete bank._id;
+    return bank;
+  });
 
-    responseData.issuingBanks = responseData?.issuingBanks?.map((bank: Bank) => {
-      // @ts-ignore
-      delete bank._id;
-      return bank;
-    });
+  if (responseData.lgIssuance !== LG.cashMargin) {
+    delete responseData.typeOfLg;
+    delete responseData.physicalLgSwiftCode;
+    delete responseData?.lgStandardText;
 
-    if (responseData.lgIssuance !== LG.cashMargin) {
-      delete responseData.typeOfLg;
-      delete responseData.physicalLgSwiftCode;
-      delete responseData?.lgStandardText;
-      
-      if (
-        responseData.lgDetailsType != "Choose any other type of LGs"
-      ) {
-        delete responseData.otherBond;
-        delete responseData?.status;
-        [
-          "bidBond",
-          "advancePaymentBond",
-          "performanceBond",
-          "retentionMoneyBond",
-        ].forEach((element) => {
-          delete responseData[element]?._id;
+    if (responseData.lgDetailsType != "Choose any other type of LGs") {
+      delete responseData.otherBond;
+      delete responseData?.status;
+      [
+        "bidBond",
+        "advancePaymentBond",
+        "performanceBond",
+        "retentionMoneyBond",
+      ].forEach((element) => {
+        delete responseData[element]?._id;
 
-          if(responseData[element]?.Contract){
-            Boolean(responseData[element].Contact)
-          }
-
-          if (responseData[element]?.valueInPercentage)
-            responseData[element].valueInPercentage =
-              responseData[element].valueInPercentage?.toString();
-
-          if (responseData[element]?.lgTenor?.lgTenorValue)
-            responseData[element].lgTenor.lgTenorValue =
-              responseData[element].lgTenor.lgTenorValue?.toString();
-
-          if (!responseData[element]?.cashMargin) {
-          
-          } else {
-            responseData[element]["cashMargin"] = convertStringToNumber(
-              responseData[element]["cashMargin"]
-            ).toFixed()
-          }
-        });
-      } else {
-        delete responseData.bidBond;
-        delete responseData.advancePaymentBond;
-        delete responseData.performanceBond;
-        delete responseData.retentionMoneyBond;
-        delete responseData?.status;
-        delete responseData.otherBond?._id;
-        delete responseData?.otherBond?.checked;
-
-        if (responseData.otherBond?.valueInPercentage)
-          responseData.otherBond.valueInPercentage =
-            responseData.otherBond.valueInPercentage?.toString();
-
-        if (responseData.otherBond?.lgTenor?.lgTenorValue)
-          responseData.otherBond.lgTenor.lgTenorValue =
-            responseData.otherBond.lgTenor.lgTenorValue?.toString();
-
-        if (responseData?.otherBond?.cashMargin) {
-          responseData.otherBond.cashMargin = convertStringToNumber(
-            responseData?.otherBond?.cashMargin
-          )?.toFixed();
-          responseData.otherBond.lgDetailAmount = convertStringToNumber(
-            responseData.otherBond.cashMargin
-          )?.toFixed();
+        if (responseData[element]?.Contract) {
+          Boolean(responseData[element].Contact);
         }
-      }
+
+        if (responseData[element]?.valueInPercentage)
+          responseData[element].valueInPercentage =
+            responseData[element].valueInPercentage?.toString();
+
+        if (responseData[element]?.lgTenor?.lgTenorValue)
+          responseData[element].lgTenor.lgTenorValue =
+            responseData[element].lgTenor.lgTenorValue?.toString();
+
+        if (!responseData[element]?.cashMargin) {
+        } else {
+          responseData[element]["cashMargin"] = convertStringToNumber(
+            responseData[element]["cashMargin"]
+          ).toFixed();
+        }
+      });
     } else {
       delete responseData.bidBond;
       delete responseData.advancePaymentBond;
       delete responseData.performanceBond;
       delete responseData.retentionMoneyBond;
-      delete responseData?.otherBond?._id;
-      responseData["lgDetailsType"] = "Choose any other type of LGs";
-      responseData.otherBond["lgDetailAmount"] = convertStringToNumber(
-        responseData.otherBond["lgDetailAmount"]
-      );
-      responseData.otherBond["cashMargin"] = convertStringToNumber(
-        responseData.otherBond["cashMargin"]
-      )?.toFixed()
+      delete responseData?.status;
+      delete responseData.otherBond?._id;
+      delete responseData?.otherBond?.checked;
 
-      if (responseData.otherBond?.lgTenor?.lgTenorValue) {
+      if (responseData.otherBond?.valueInPercentage)
+        responseData.otherBond.valueInPercentage =
+          responseData.otherBond.valueInPercentage?.toString();
+
+      if (responseData.otherBond?.lgTenor?.lgTenorValue)
         responseData.otherBond.lgTenor.lgTenorValue =
-          responseData.otherBond?.lgTenor?.lgTenorValue?.toString();
+          responseData.otherBond.lgTenor.lgTenorValue?.toString();
+
+      if (responseData?.otherBond?.cashMargin) {
+        responseData.otherBond.cashMargin = convertStringToNumber(
+          responseData?.otherBond?.cashMargin
+        )?.toFixed();
+        responseData.otherBond.lgDetailAmount = convertStringToNumber(
+          responseData.otherBond.cashMargin
+        )?.toFixed();
       }
     }
-    if (
-      !responseData?.expectedPrice?.expectedPrice ||
-      responseData?.expectedPrice?.expectedPrice === "false"
-    )
-      delete responseData?.expectedPrice?.pricePerAnnum;
-    if (responseData?.applicantDetails?.crNumber)
-      responseData.applicantDetails.crNumber =
-        responseData.applicantDetails.crNumber?.toString();
-  };
-  
-  export const bondRequiredFields = (responseData: any): boolean => {
-    if (responseData.lgDetailsType !== "Choose any other type of LGs") {
-      return (
-        responseData.bidBond?.Contract ||
-        responseData.advancePaymentBond?.Contract ||
-        responseData.performanceBond?.Contract ||
-        responseData.retentionMoneyBond?.Contract
-      ) || false;
+  } else {
+    delete responseData.bidBond;
+    delete responseData.advancePaymentBond;
+    delete responseData.performanceBond;
+    delete responseData.retentionMoneyBond;
+    delete responseData?.otherBond?._id;
+    responseData["lgDetailsType"] = "Choose any other type of LGs";
+    responseData.otherBond["lgDetailAmount"] = convertStringToNumber(
+      responseData.otherBond["lgDetailAmount"]
+    );
+    responseData.otherBond["cashMargin"] = convertStringToNumber(
+      responseData.otherBond["cashMargin"]
+    )?.toFixed();
+
+    if (responseData.otherBond?.lgTenor?.lgTenorValue) {
+      responseData.otherBond.lgTenor.lgTenorValue =
+        responseData.otherBond?.lgTenor?.lgTenorValue?.toString();
     }
+  }
+  if (
+    !responseData?.expectedPrice?.expectedPrice ||
+    responseData?.expectedPrice?.expectedPrice === "false"
+  )
+    delete responseData?.expectedPrice?.pricePerAnnum;
+  if (responseData?.applicantDetails?.crNumber)
+    responseData.applicantDetails.crNumber =
+      responseData.applicantDetails.crNumber?.toString();
+};
 
-    return true;
+export const bondRequiredFields = (responseData: any): boolean => {
+  if (responseData.lgDetailsType !== "Choose any other type of LGs") {
+    return (
+      responseData.bidBond?.Contract ||
+      responseData.advancePaymentBond?.Contract ||
+      responseData.performanceBond?.Contract ||
+      responseData.retentionMoneyBond?.Contract ||
+      false
+    );
+  }
+
+  return true;
+};
+
+export const convertStringValueToDate = (responseData: any) => {
+  const convertDateFields = (obj: any, fields: string[]) => {
+    fields.forEach((field) => {
+      if (obj && obj[field]) {
+        obj[field] = new Date(obj[field]);
+      }
+    });
   };
 
-export  const convertStringValueToDate = (responseData: any) => {
-    const convertDateFields = (obj: any, fields: string[]) => {
-      fields.forEach((field) => {
-        if (obj && obj[field]) {
-          obj[field] = new Date(obj[field]);
-        }
-      });
-    };
-  
-    // Convert date fields for responseData itself
-    convertDateFields(responseData, ['lastDateOfReceivingBids']);
-  
-    // Convert date fields for various bond types
-    const bondFields = ['expectedDate', 'lgExpiryDate'];
-    convertDateFields(responseData.bidBond, bondFields);
-    convertDateFields(responseData.advancePaymentBond, bondFields);
-    convertDateFields(responseData.performanceBond, bondFields);
-    convertDateFields(responseData.retentionMoneyBond, bondFields);
-    convertDateFields(responseData.otherBond, bondFields);
-    
-    // Add any additional bond objects here if needed
-  };
+  // Convert date fields for responseData itself
+  convertDateFields(responseData, ["lastDateOfReceivingBids"]);
+
+  // Convert date fields for various bond types
+  const bondFields = ["expectedDate", "lgExpiryDate"];
+  convertDateFields(responseData.bidBond, bondFields);
+  convertDateFields(responseData.advancePaymentBond, bondFields);
+  convertDateFields(responseData.performanceBond, bondFields);
+  convertDateFields(responseData.retentionMoneyBond, bondFields);
+  convertDateFields(responseData.otherBond, bondFields);
+
+  // Add any additional bond objects here if needed
+};
+
+export const formatAmount = (amount: number | string) => {
+  return Number(amount).toLocaleString("en-US");
+};

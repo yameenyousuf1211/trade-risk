@@ -6,7 +6,7 @@ import { BankSelection } from "./BankSelection";
 import { LgTypeSelection } from "./LgTypeSelection";
 import { PricingInput } from "./PricingInput";
 import { BidPreview } from "./BidPreview";
-import { convertDateToCommaString } from "@/utils";
+import { convertDateToCommaString, formatAmount } from "@/utils";
 import { submitLgBid } from "@/services/apis/lg.apis";
 import { useAuth } from "@/context/AuthProvider";
 
@@ -33,30 +33,39 @@ const LGInfo = ({
   );
 };
 
-const groupBidsByBank = (bids: any[], issuingBanks: any[]) => {
+const groupBidsByBank = (
+  bids: any[],
+  issuingBanks: any[],
+  bondTypes: any[]
+) => {
   return bids.reduce((acc: any, bid: any) => {
+    console.log(bid, "bidType");
     const bankData = issuingBanks.find((bank: any) => bank.bank === bid.bank);
+    const bondData = bondTypes.find((bond: any) => bond.type === bid.bidType);
+
     if (!acc[bid.bank]) {
       acc[bid.bank] = {
         name: bid.bank,
-        country: bankData?.country || "Unknown", // Use the matched country from issuingBanks
+        country: bankData?.country || "Unknown",
         lgTypes: [],
       };
     }
 
-    // Check if the lgType already exists for the bank
-    const existingLgType = acc[bid.bank].lgTypes.find(
+    const existingLgType = acc?.lgTypes?.find(
       (lgType: any) => lgType.type === bid.bidType
     );
-
+    console.log(existingLgType, "existingLgType");
     if (existingLgType) {
-      // If lgType already exists, update the price
       existingLgType.price = bid.confirmationPrice;
+      existingLgType.currency =
+        bondData?.value?.currencyType || existingLgType.currency;
+      existingLgType.amount =
+        bondData?.value?.cashMargin || existingLgType.amount;
     } else {
-      // If lgType doesn't exist, add it
       acc[bid.bank].lgTypes.push({
         type: bid.bidType,
-        amount: bid.amount || "-", // Placeholder, replace with actual amount if available
+        currencyType: bondData?.value?.currencyType || "-",
+        amount: bondData?.value?.cashMargin || "-",
         price: bid.price,
         status: bid.status || "Pending",
       });
@@ -96,11 +105,13 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     { type: "Retention Money Bond", value: data.retentionMoneyBond },
   ];
 
+  const availableBondTypes = bondTypes.filter((bond) => bond.value?.Contract);
+
   useEffect(() => {
     if (data.issuingBanks.length > 0) {
       setSelectedBank(data.issuingBanks[0].bank);
     }
-    setSelectedLgType(bondTypes[0].type);
+    setSelectedLgType(availableBondTypes[0].type);
   }, []);
 
   useEffect(() => {
@@ -111,10 +122,10 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     const userBids = data.bids.find((bid: any) => bid.createdBy === user._id);
     setUserBid(userBids);
     if (userBids) {
-      // If there's a pending bid created by the logged-in user, group the bids
       const groupedBidsWithBankData = groupBidsByBank(
         userBids.bids,
-        data.issuingBanks
+        data.issuingBanks,
+        bondTypes
       );
       setGroupedBids(Object.values(groupedBidsWithBankData)); // Convert to array for rendering
       setShowPreview(true);
@@ -147,7 +158,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     }
   }, [data.bids, data.issuingBanks, user._id]);
 
-  const allBondsFilled = bondTypes.every((bond) =>
+  const allBondsFilled = availableBondTypes.every((bond) =>
     Object.values(bondPrices).some((prices) => prices[bond.type])
   );
 
@@ -175,7 +186,8 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
       );
       const groupedBidsWithBankData = groupBidsByBank(
         newBids,
-        data.issuingBanks
+        data.issuingBanks,
+        bondTypes
       );
       setGroupedBids(Object.values(groupedBidsWithBankData)); // Convert to array for rendering
 
@@ -193,14 +205,14 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
 
       mutation.mutate(requestData);
     } else {
-      if (pricingValue) {
-        const currentIndex = bondTypes.findIndex(
-          (bond) => bond.type === selectedLgType
-        );
-        const nextIndex = (currentIndex + 1) % bondTypes.length;
-        setSelectedLgType(bondTypes[nextIndex].type);
-        setPricingValue("");
-      }
+      const currentIndex = availableBondTypes.findIndex(
+        (bond) => bond.type === selectedLgType
+      );
+      const nextIndex = (currentIndex + 1) % availableBondTypes.length;
+
+      // Move to the next bond type regardless of whether a price was entered
+      setSelectedLgType(availableBondTypes[nextIndex].type);
+      setPricingValue("");
     }
   };
 
@@ -218,10 +230,10 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     setSelectedBank(
       data.issuingBanks.length > 0 ? data.issuingBanks[0].bank : undefined
     );
-    setSelectedLgType(bondTypes[0].type);
+    setSelectedLgType(availableBondTypes[0].type);
   };
 
-  const selectedBond = bondTypes.find(
+  const selectedBond = availableBondTypes.find(
     (bond) => bond.type === selectedLgType
   )?.value;
 
@@ -249,7 +261,8 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           <h3 className="text-[#92929D] text-base font-light">
             Total LG Amount Requested{" "}
             <span className="text-[20px] text-[#1A1A26] font-semibold">
-              USD 30000
+              {data.totalContractCurrency}{" "}
+              {formatAmount(data.totalLgAmount || data.totalContractValue)}
             </span>
           </h3>
         </div>
@@ -262,7 +275,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           />
           <LGInfo label="Purpose of LG" value={data.purpose || null} />
 
-          <h2 className="my-2 text-2xl font-semibold text-[#1A1A26]">
+          <h2 className="my-2 text-xl font-semibold text-[#1A1A26]">
             Beneficiary Details
           </h2>
 
@@ -290,10 +303,10 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
       {!showPreview ? (
         <div className="flex-1 p-3 pb-6 pr-4">
           <div className="flex items-center justify-between">
-            <h5 className="font-bold">Submit your bid</h5>
+            <h5 className="font-semibold">Submit your bid</h5>
             <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
               <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
-              <h5 className="text-[0.95rem] font-semibold">{user.name}</h5>
+              <h5 className="text-[0.95rem] font-normal">{user.name}</h5>
             </div>
           </div>
           <div className="mt-2 rounded-md border border-[#E2E2EA] p-2">
@@ -304,7 +317,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
             />
 
             <div className="mt-2 rounded-md border border-[#E2E2EA] px-2 py-1">
-              <h3 className="mb-1 font-bold">Select LG Type</h3>
+              <h3 className="mb-1 font-semibold">Select LG Type</h3>
 
               <LgTypeSelection
                 selectedLgType={selectedLgType}
@@ -316,32 +329,28 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
 
               {selectedBond && (
                 <>
-                  <h3 className="mb-1 font-bold mt-4">LG Details</h3>
+                  <h3 className="mb-1 font-semibold mt-4">LG Details</h3>
                   <LGInfo
-                    label="Contract"
-                    value={selectedBond?.Contract || null}
+                    label="Amount"
+                    value={
+                      `${selectedBond?.currencyType} ${formatAmount(
+                        selectedBond?.cashMargin
+                      )}` || null
+                    }
                   />
                   <LGInfo
-                    label="Currency Type"
-                    value={selectedBond?.currencyType || null}
-                  />
-                  <LGInfo
-                    label="Expected Date"
+                    label="Expected Date of Issuance"
                     value={
                       selectedBond.expectedDate
-                        ? new Date(
-                            selectedBond.expectedDate
-                          ).toLocaleDateString()
+                        ? convertDateToCommaString(selectedBond.expectedDate)
                         : null
                     }
                   />
                   <LGInfo
-                    label="LG Expiry Date"
+                    label="Expiry Date"
                     value={
                       selectedBond.lgExpiryDate
-                        ? new Date(
-                            selectedBond.lgExpiryDate
-                          ).toLocaleDateString()
+                        ? convertDateToCommaString(selectedBond.lgExpiryDate)
                         : null
                     }
                   />
@@ -372,7 +381,6 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                   ? "bg-[#44C894] text-white"
                   : "bg-[#D3D3D3] text-[#ADADAD]"
               }`}
-              disabled={!pricingValue && !allBondsFilled}
             >
               {allBondsFilled ? "Preview" : pricingValue ? "Next" : "Skip"}
             </Button>

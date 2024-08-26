@@ -164,7 +164,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                   >
                     Send for Approval to Authorizer
                   </Button>
-                  <Button variant="outline">Save as Draft</Button>
+                  {/* <Button variant="outline">Save as Draft</Button> */}
                 </>
               ) : (
                 <>

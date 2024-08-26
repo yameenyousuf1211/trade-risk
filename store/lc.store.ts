@@ -24,7 +24,7 @@ const useConfirmationStore = create<UseConfirmationStore>((set, get) => ({
   lcPeriod: {
     startDate: undefined,
     endDate: undefined,
-    expectedDate: false,
+    expectedDate: undefined,
   },
   participantRole: "exporter",
   shipmentPort: {

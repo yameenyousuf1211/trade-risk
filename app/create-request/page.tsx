@@ -69,9 +69,11 @@ const CreateRequestPage = () => {
           setValue(key, value === true ? "yes" : "no");
         }
         if (key === "period") {
+          console.log(value, "value");
+          
           setValue(
             "period.expectedDate",
-            value.expectedDate === true ? "yes" : "no"
+            value.expectedDate !== undefined && value.expectedDate !== null ? (value.expectedDate ? "yes" : "no") : ""
           );
         }
         if (key === "amount") {
@@ -135,13 +137,17 @@ const CreateRequestPage = () => {
     const baseData = {
       issuingBanks: data.issuingBanks, // Handle the array of issuing banks
       type: "LC Confirmation",
-      transhipment: data.transhipment === "yes" ? true : false,
+      ...(data.transhipment !== undefined && data.transhipment !== null
+        ? { transhipment: data.transhipment === "yes" }
+        : {}),
       amount: {
         price: `${data.amount}.00`,
       },
       period: {
         ...data.period,
-        expectedDate: data.period?.expectedDate === "yes" ? true : false,
+        ...(data.period?.expectedDate !== undefined && data.period?.expectedDate !== null
+          ? { expectedDate: data.period.expectedDate === "yes" }
+          : {}),
       },
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };

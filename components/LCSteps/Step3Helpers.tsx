@@ -165,6 +165,8 @@ export const Period = ({
     updateValue("period.endDate", date);
   };
 
+  console.log(lcPeriodType,"TYPEEEEEEEEE");
+  
   useEffect(() => {
     if (lcPeriodType === "yes") {
       setStartDate(new Date());

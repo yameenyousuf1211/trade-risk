@@ -1,6 +1,7 @@
 import React from "react";
 import { BgRadioInputLG } from "../helper";
 import { AssignedValues } from "../../../types/LGBankTypes";
+import { formatAmount } from "@/utils/helper/helper";
 
 interface LgTypeSelectionProps {
   selectedLgType: string;
@@ -28,7 +29,15 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
     <div id="lg_type_selection">
       {lgTypes.map((lgType, key) => {
         const bondValue = lgType?.value;
-        const label = `${lgType?.type} - ${bondValue?.currencyType} ${bondValue?.cashMargin}`;
+
+        // Check if the bond's Contract exists and is truthy
+        if (!bondValue?.Contract) {
+          return null; // Skip rendering this bond type if Contract is falsy
+        }
+
+        const label = `${lgType?.type} - ${
+          bondValue?.currencyType
+        } ${formatAmount(bondValue?.cashMargin)}`;
         const enteredPrice = bondPrices[selectedBank]?.[lgType.type];
         const isLocked = Object.values(bondPrices).some(
           (prices) => prices[lgType.type] && prices !== bondPrices[selectedBank]
@@ -38,6 +47,7 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
           <BgRadioInputLG
             key={key}
             id={`lg_type_${lgType.type}`}
+            extraClass="py-4"
             label={label}
             value={lgType.type}
             checked={lgType.type === selectedLgType}

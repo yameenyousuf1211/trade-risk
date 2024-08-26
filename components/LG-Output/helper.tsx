@@ -11,6 +11,7 @@ export const BgRadioInputLG = ({
   onChange,
   disabled = false,
   bgchecked = false,
+  extraClass,
 }: {
   id: string;
   label: string;
@@ -22,6 +23,7 @@ export const BgRadioInputLG = ({
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
   bgchecked?: boolean;
+  extraClass?: string;
 }) => {
   return (
     <label
@@ -30,7 +32,7 @@ export const BgRadioInputLG = ({
         checked && bgchecked
           ? "bg-[#EEE9FE]"
           : "border border-borderCol bg-white"
-      } rounded-sm flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
+      } rounded-sm flex items-center gap-x-3 mb-2 text-lightGray text-sm ${extraClass}`}
     >
       <input
         type="radio"
@@ -48,7 +50,9 @@ export const BgRadioInputLG = ({
         }`}
       >
         <span className="font-light text-xs">{label}</span>
-        {sublabel && <span className="text-[#797979] text-xs font-light">{sublabel}</span>}
+        {sublabel && (
+          <span className="text-[#797979] text-xs font-light">{sublabel}</span>
+        )}
         {sidesublabel && (
           <div className="flex">
             <Check className="text-green-300" />

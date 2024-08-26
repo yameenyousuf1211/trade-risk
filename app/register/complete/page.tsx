@@ -22,10 +22,10 @@ const RegisterCompletepage = () => {
           </h1>
         </div>
         <div className="flex flex-col items-center gap-y-4 mt-10">
-          <h2 className="text-2xl text-[#1A1A26] font-semibold text-center">
+          <h2 className="text-[24px] text-[#1A1A26] font-semibold text-center !font-poppins">
             Information Submitted!
           </h2>
-          <p className="text-sm  font-bold max-w-lg text-center text-[#5625F2]">
+          <p className="text-sm  font-medium max-w-lg text-center text-[#5625F2] !font-poppins">
             Thank you for adding your information. We will verify your
             information and a sales agent will contact you soon to conclude your
             onboarding.
@@ -34,7 +34,7 @@ const RegisterCompletepage = () => {
           <Link href="/login">
             <Button
               size="lg"
-              className="px-8 py-5 bg-[#C0C0C0] hover:bg-[#c0c0c0c4] rounded-lg text-black"
+              className="px-8 py-5 bg-[#C0C0C0] hover:bg-[#c0c0c0c4] rounded-lg text-black mt-5"
             >
               Learn more about us
             </Button>

@@ -121,8 +121,7 @@ export const Step2 = ({
   //   setValue("extraInfo", { days, other: otherValue });
   // }, [days, otherValue]);
 
-  console.log("extraInfo", extraInfo.days);
-  console.log("extraInfo", extraInfo.other);
+
   
   return (
     <div
@@ -257,7 +256,7 @@ export const Step2 = ({
                       if (days >= 999) return;
                       else
                         setDays((prev: any) =>
-                          Number(prev) > 1 ? Number(prev) - 1 : 1,
+                          Number(prev) > 1 ? Number(prev) - 1 : 1
                         );
                     }}
                   >

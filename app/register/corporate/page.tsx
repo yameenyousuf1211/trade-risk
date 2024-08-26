@@ -68,6 +68,7 @@ const CompanyInfoPage = () => {
   } = useForm({
     resolver: yupResolver(companyInfoSchema),
     mode: "all",
+
   });
   // console.log("🚀 ~ CompanyInfoPage ~ getValues:", getValues())
 

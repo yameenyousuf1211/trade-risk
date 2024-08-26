@@ -54,7 +54,7 @@ const InputComponent = React.forwardRef<
   HTMLInputElement,
   InputProps & { isOnBoarding?: boolean }
 >(({ className, value, onChange, isOnBoarding = false, ...props }, ref) => (
-  <div className={`mx-1 flex-1  ${isOnBoarding ? "mt-1 w-full !px-2" : ""}`}>
+  <div className={`mx-1 flex-1  ${isOnBoarding ? "mt-1 w-full !px- 2" : ""}`}>
     <input
       placeholder={isOnBoarding ? "Phone number" : "Enter Number"}
       value={(value as string)?.replace(/^\+/, "")} // Remove "+" sign in the input

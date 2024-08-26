@@ -6,13 +6,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Paperclip, X } from "lucide-react";
 import useRegisterStore from "@/store/register.store";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { pointOfContractSchema } from "@/validation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { phoneVerification } from "@/services/apis";
 import { toast } from "sonner";
+import FileUploadService from "@/services/apis/fileUpload.api";
 
 const PointContactPage = () => {
   const router = useRouter();
@@ -36,6 +37,48 @@ const PointContactPage = () => {
   const [allowSubmit, setAllowSubmit] = useState(false);
   const [pdfFile, setPdfFile] = useState<File | undefined>(undefined);
   const [pdfError, setPdfError] = useState(false);
+  const [uploadedFileURL, setUploadedFileURL] = useState("");
+  const [fileName, setFileName] = useState("");
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showProgressBar, setShowProgressBar] = useState(false);
+
+  const handleFileUpload = (file: File) => {
+    setPdfFile(file);
+    setUploadProgress(0);
+
+    FileUploadService.upload(
+      file,
+      (url, fileName) => {
+        console.log("File uploaded successfully:", url);
+        setUploadedFileURL(url);
+        setFileName(fileName);
+        setUploadProgress(100);
+      },
+      (error) => {
+        console.error("File upload failed:", error);
+        toast.error("File upload failed");
+        setUploadProgress(0);
+      },
+      (progressBar, progress) => {
+        console.log("Upload progress:", progress);
+        setUploadProgress(progress);
+        setShowProgressBar(progressBar);
+      },
+    );
+  };
+
+  const handleFileRemovel = (fileName: string) => {
+    FileUploadService.delete(
+      fileName,
+      () => {
+        console.log(`${fileName} has been deleted`);
+      },
+      (error) => {
+        console.error(error);
+      },
+    );
+  };
 
   useEffect(() => {
     if (contactData) {
@@ -74,8 +117,11 @@ const PointContactPage = () => {
 
     setValues(data);
 
-    localStorage.setItem("contactData", JSON.stringify(data));
-    router.push("/register/corporate/current-banking");
+    const updatedData = { ...data, pocAuthorizationLetter: uploadedFileURL };
+    console.log(updatedData);
+
+    // localStorage.setItem("contactData", JSON.stringify(updatedData));
+    // router.push("/register/corporate/current-banking");
   };
 
   const [phoneInput, setPhoneInput] = useState<string>("");
@@ -166,26 +212,50 @@ const PointContactPage = () => {
           >
             <div className="flex items-center gap-x-1">
               <Paperclip className="size-4 text-gray-500" />
-              <p className="text-sm">Upload authorization letter</p>
+              <p className="text-sm">
+                {isUploading
+                  ? `Uploading... ${uploadProgress}%`
+                  : "Upload authorization letter"}
+              </p>
             </div>
             <p className="center relative gap-x-1 text-sm text-[#92929D]">
               {pdfFile && (
                 <div
                   className="center z-20 size-4 rounded-full bg-red-500 text-[12px] text-white"
-                  onClick={() => setPdfFile(undefined)}
+                  onClick={(e) => {
+                    if (fileName) {
+                      handleFileRemovel(fileName);
+                    }
+                    setShowProgressBar(false);
+                    setPdfFile(undefined);
+                    setUploadedFileURL("");
+                    setUploadProgress(0);
+                  }}
                 >
                   <X className="size-3" />
                 </div>
               )}
               {pdfFile ? pdfFile.name.substring(0, 20) : "Select PDF file"}
             </p>
+            {showProgressBar && (
+              <div
+                className="absolute bottom-0 left-0 h-0.5 rounded-md bg-primaryCol transition-all duration-300 ease-out"
+                style={{ width: `${uploadProgress}%` }}
+              />
+            )}
           </label>
           <input
             type="file"
             id="pdf-file"
             accept=".pdf"
             className="hidden"
-            onChange={(e) => setPdfFile(e.target.files?.[0])}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                handleFileUpload(file);
+              }
+              e.target.value = "";
+            }}
           />
           {(Object.keys(errors).length > 0 || pdfError) && !pdfFile && (
             <span className="absolute mt-1 text-[11px] text-red-500">

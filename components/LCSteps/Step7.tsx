@@ -6,17 +6,18 @@ import { formatFileSize } from "@/utils";
 import { UseFormRegister } from "react-hook-form";
 import useStepStore from "@/store/lcsteps.store";
 import { ATTACHMENTS } from "@/utils/constant/lg";
+import FileUploadService from "@/services/apis/fileUpload.api";
 
 const FileCard = ({
   file,
   onRemoveFile,
 }: {
-  file: FileList;
+  file: File;
   onRemoveFile: (name: string) => void;
 }) => {
   return (
-    <div className="flex items-center justify-between gap-x-2 border border-borderCol p-2 rounded-lg">
-      <div className="flex items-center gap-x-2 w-full">
+    <div className="flex items-center justify-between gap-x-2 rounded-lg border border-borderCol p-2">
+      <div className="flex w-full items-center gap-x-2">
         <Button type="button" className="bg-red-200 p-1 hover:bg-red-300">
           <Image
             src="/images/pdf.png"
@@ -27,15 +28,15 @@ const FileCard = ({
           />
         </Button>
         <div>
-          <p className="text-lightGray text-sm">{file[0]?.name}</p>
+          <p className="text-sm text-lightGray">{file?.name}</p>
           <p className="text-[12px] text-para">
-            {file[0]?.type.split("/")[1].toUpperCase()},{" "}
-            {formatFileSize(file[0]?.size)}
+            {file?.type.split("/")[1].toUpperCase()},{" "}
+            {formatFileSize(file?.size)}
           </p>
         </div>
       </div>
 
-      <Button variant="ghost" onClick={() => onRemoveFile(file[0]?.name)}>
+      <Button variant="ghost" onClick={() => onRemoveFile(file?.name)}>
         <X className="text-lightGray" />
       </Button>
     </div>
@@ -51,7 +52,16 @@ export const Step7 = ({
   step: number;
   setStepCompleted: any;
 }) => {
-  const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [showProgressBar, setShowProgressBar] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadFilesUrl, setUploadFilesUrl] = useState<string[]>([]);
+
+  // Storing the names of files here when we upload them to the server,
+  // in order to identify them or potentially delete them later.
+  const [uploadFilesName, setUploadFilesName] = useState<string[]>([]);
+
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
@@ -63,60 +73,100 @@ export const Step7 = ({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const newFiles = Array.from(files).filter((file) => {
-        return !selectedFiles?.some((fileList) =>
-          Array.from(fileList).some((f) => f.name === file.name)
+      const newFiles = Array.from(files);
+
+      // Upload files to the server
+      newFiles.forEach((file) => {
+        FileUploadService.upload(
+          file,
+          (url, fileName) => {
+            setUploadFilesUrl((prevFiles) => [...prevFiles, url]);
+            setUploadFilesName((prevFiles) => [...prevFiles, fileName]);
+          },
+          (error) => {
+            setUploadError(error.message);
+          },
+          (progressBar, progress) => {
+            setShowProgressBar(progressBar);
+            setProgress(progress);
+          },
         );
       });
-      setSelectedFiles((prevFiles: any) => [...(prevFiles ?? []), newFiles]);
+
+      setSelectedFiles((prevFiles) => {
+        const updatedFiles = [...prevFiles, ...newFiles];
+        return updatedFiles.slice(0, 3);
+      });
     }
   };
 
   const handleRemoveFile = (name: string) => {
-    const filterFiles = selectedFiles?.filter((file) => file[0]?.name !== name);
-    setSelectedFiles(filterFiles as FileList[]);
+    uploadFilesUrl.forEach((urlName, index) => {
+      if (urlName.includes(name) && uploadFilesName.includes(name)) {
+        const fileName = String(
+          uploadFilesName.find((file) => file.includes(name)),
+        );
+
+        console.log("Deleting file:", fileName);
+
+        // FileUploadService.delete(
+        //   fileName,
+        //   () => {
+        //     console.log(`${fileName} has been deleted`);
+        //   },
+        //   (error) => {
+        //     console.error(error);
+        //   },
+        // );
+        uploadFilesUrl.splice(index, 1);
+      }
+    });
+
+    setSelectedFiles((prevFiles) =>
+      prevFiles.filter((file) => file.name !== name),
+    );
   };
 
   useEffect(() => {
-    if (selectedFiles) {
-      selectedFiles.forEach((fileList, index) => {
-        Array.from(fileList).forEach((file, subIndex) => {
-          // register(`attachments[${index}][${subIndex}]`);
-        });
-      });
-    }
-  }, [selectedFiles]);
+    selectedFiles.forEach((_, index) => {
+      // register(`attachments[${index}]`);
+    });
+  }, [selectedFiles, register]);
 
   return (
     <div
       id="step7"
-      className="w-full border border-borderCol rounded-lg py-3 px-4 h-full scroll-tar get"
+      className="scroll-tar get h-full w-full rounded-lg border border-borderCol px-4 py-3"
     >
-      <div className="flex items-center gap-x-2 ml-2 mb-3">
-        <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold text-sm">
+      <div className="mb-3 ml-2 flex items-center gap-x-2">
+        <p className="center size-6 rounded-full bg-primaryCol text-sm font-semibold text-white">
           {step}
         </p>
-        <p className="font-semibold text-[16px] text-lightGray">Attachments</p>
+        <p className="text-[16px] font-semibold text-lightGray">Attachments</p>
       </div>
 
-      <p className="font-semibold ml-3 text-sm">
+      <p className="ml-3 text-sm font-semibold">
         Add Documents:{" "}
         <span className="font-medium"> e.g Drafts / Invoice </span>{" "}
         (PDF,JPG,PNG,TIFF)
       </p>
-      <div className="bg-[#F5F7F9] p-1 mt-2 rounded-md">
+      <div className="mt-2 rounded-md bg-[#F5F7F9] p-1">
         <label
           htmlFor="attachment-input"
-          className="cursor-pointer flex flex-col justify-center items-center border-4 border-borderCol border-dotted py-4 rounded-md bg-[#F5F7F9]"
+          className="flex cursor-pointer flex-col items-center justify-center rounded-md border-4 border-dotted border-borderCol bg-[#F5F7F9] py-4"
         >
           <input
             id="attachment-input"
             type="file"
-            onChange={handleFileChange}
+            onChange={(e) => {
+              handleFileChange;
+              e.target.value = "";
+            }}
             multiple
             style={{ display: "none" }}
+            disabled={selectedFiles.length >= 3}
           />
-          <div className="size-12 bg-white center rounded-full shadow-sm">
+          <div className="center size-12 rounded-full bg-white shadow-sm">
             <Image
               src="/images/attachment.svg"
               alt="att"
@@ -124,20 +174,23 @@ export const Step7 = ({
               height={27}
             />
           </div>
-          <p className="text-lg font-semibold text-lightGray mt-4">
+          <p className="mt-4 text-lg font-semibold text-lightGray">
             Drag your files here
           </p>
           <p className="text-lightGray">or click to select from your device</p>
+          <p className="mt-2 text-sm text-para">
+            {selectedFiles.length}/3 files selected
+          </p>
         </label>
       </div>
 
       {/* Display selected files */}
-      {selectedFiles && (
-        <div className="flex flex-col gap-y-3 mt-5">
-          {Array.from(selectedFiles).map((fileList, index) => (
+      {selectedFiles.length > 0 && (
+        <div className="mt-5 flex flex-col gap-y-3">
+          {selectedFiles.map((file) => (
             <FileCard
-              key={fileList[0].name}
-              file={fileList}
+              key={file.name}
+              file={file}
               onRemoveFile={handleRemoveFile}
             />
           ))}

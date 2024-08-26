@@ -45,6 +45,7 @@ export const Step2 = ({
   let paymentTerms = watch("paymentTerms");
   let extraInfo = watch("extraInfo") || { days: 0, other: "" };
 
+  
   const [currencyValue, setCurrencyValue] = useState<string | number>(
     amount || "",
   );
@@ -98,12 +99,13 @@ export const Step2 = ({
 
   useEffect(() => {
     if (amount) {
-      const digitsOnly = amount?.toString().replace(/\D/g, "");
+      const digitsOnly = amount?.toString().replace(/\D/g, ""); // Remove non-digit characters
       if (digitsOnly) {
-        const formattedValue = parseInt(digitsOnly).toLocaleString();
-        setCurrencyValue(formattedValue);
-        setRawValue(amount);
-        setValue("amount", amount.toString());
+        const formattedValue = parseInt(digitsOnly).toLocaleString() + ".00"; // Format with commas and add ".00"
+        setCurrencyValue(formattedValue); // Set formatted value with ".00"
+        setRawValue(amount); // Set raw value without formatting
+        
+        setValue("amount", amount.toString()); // Set the raw amount in the form state
       }
     }
   }, [amount]);
@@ -119,9 +121,7 @@ export const Step2 = ({
   //   setValue("extraInfo", { days, other: otherValue });
   // }, [days, otherValue]);
 
-  console.log("extraInfo", extraInfo);
 
-  console.log("extraInfo", extraInfo);
   
   return (
     <div

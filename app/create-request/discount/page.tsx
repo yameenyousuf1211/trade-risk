@@ -28,6 +28,7 @@ import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
 import * as Yup from "yup";
+import LgStep12 from "@/components/LG-Steps/LgStep12";
 
 const CreateDiscountPage = () => {
   const { user } = useAuth();
@@ -125,7 +126,7 @@ const CreateDiscountPage = () => {
       data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
-      extraInfoObj = { days: days, other: data.extraInfo.otherValue };
+      extraInfoObj = { days: days, other: data.extraInfo.other };
     }
 
     let reqData;
@@ -323,13 +324,22 @@ const CreateDiscountPage = () => {
             setValue={setValue}
             setStepCompleted={handleStepCompletion}
           />
+          <div className="min-w-[50%] flex flex-col gap-5">
           <Step7
             register={register}
             step={7}
             setStepCompleted={handleStepCompletion}
           />
+            <LgStep12
+          register={register}
+          setValue={setValue}
+          step={8}
+          setStepCompleted={handleStepCompletion}
+          watch={watch}
+          />
+          </div>
         </div>
-
+      
         {/* Action Buttons */}
         <div className="flex w-full items-center gap-x-4">
           <Button

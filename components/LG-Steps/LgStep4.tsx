@@ -44,12 +44,11 @@ const LgStep4: React.FC<LgStepsProps2> = ({
   const [isoCode, setIsoCode] = useState<string | null >("");
 
   const {data:cities,isLoading} = useQuery({
-    queryKey: ["cities"],
+    queryKey: ["cities",isoCode],
     queryFn: ()=>getCities(isoCode!),
-    enabled:isoCode?true:false
+    enabled:!!isoCode
   })
 
-  
   
   return (
     <div
@@ -103,8 +102,12 @@ const LgStep4: React.FC<LgStepsProps2> = ({
             value={beneficiaryCity}
             setValue={setValue}
             disabled={isLoading || !isoCode}
-            data={cities?.success && cities?.response.map((city:any)=>city.name)}
-          />
+            data={
+              cities?.success 
+                ? Array.from(new Set(cities.response.map((city: any) => city.name)))
+                : []
+            }
+            />
         </div>
         <div className="flex items-center gap-3">
           <label

@@ -35,7 +35,7 @@ export const ValidatingCalendar = ({
 }: {
   initialDate: Date | undefined;
   onChange: (date: Date) => void;
-  onClose: any;
+  onClose: () => void;
   isPast?: boolean;
   maxDate?: Date | string | undefined;
   startDate?: Date | string;
@@ -64,7 +64,7 @@ export const ValidatingCalendar = ({
     }
     setSelectedDate(date);
     onChange(date);
-    onClose();
+    onClose(); 
   };
 
   return (
@@ -164,6 +164,8 @@ export const Period = ({
   
 };
 
+  console.log(lcPeriodType,"TYPEEEEEEEEE");
+  
   useEffect(() => {
     if (lcPeriodType === "yes") {
       setStartDate(new Date());

@@ -31,6 +31,7 @@ import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
 import * as Yup from "yup";
+import LgStep12 from "@/components/LG-Steps/LgStep12";
 
 const ConfirmationPage = () => {
   const { user } = useAuth();
@@ -214,7 +215,7 @@ const ConfirmationPage = () => {
         const validatedData = await confirmationDiscountSchema.validate(
           preparedData,
           {
-            abortEarly: false,
+            abortEarly: true,
             stripUnknown: true,
           }
         );
@@ -348,7 +349,13 @@ const ConfirmationPage = () => {
           step={8}
           setStepCompleted={handleStepCompletion}
         />
-
+   <LgStep12
+          register={register}
+          setValue={setValue}
+          step={9}
+          setStepCompleted={handleStepCompletion}
+          watch={watch}
+          />
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
           <Button

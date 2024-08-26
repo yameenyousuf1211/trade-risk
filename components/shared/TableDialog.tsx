@@ -38,7 +38,7 @@ export const BidCard = ({
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      // queryClient.invalidateQueries({ queryKey: ["bid-status"] });
+      queryClient.invalidateQueries({ queryKey: ["bid-status"] });
       // queryClient.invalidateQueries({
       //   queryKey: ["bid-status"],
       // });
@@ -78,7 +78,9 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Confirmation Rate</p>
           <p className="text-lg font-semibold text-text">
-            {data.confirmationPrice}% {data?.perAnnum && "per annum"}
+            {data?.confirmationPrice} %
+            {data.bidType === "LC Confirmation" && !data.perAnnum ? " Flat" : null}
+            {data?.perAnnum && " per annum"}
           </p>
         </div>
         {data?.discountMargin && (
@@ -92,11 +94,11 @@ export const BidCard = ({
           </div>
         )}
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="mb-1 text-sm text-para">Country</p>
-          <p className="text-lg font-semibold">{data.bidBy.country}</p>
+          <p className="mb-1 text-sm text-para ">Country</p>
+          <p className="text-lg font-semibold capitalize">{data.bidBy.country}</p>
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="mb-1 text-sm text-para">Bid Recieved</p>
+          <p className="mb-1 text-sm text-para">Bid Received</p>
           <p className="text-lg font-semibold">{convertDate(data.createdAt)}</p>
         </div>
 
@@ -138,8 +140,7 @@ export const BidCard = ({
 
       {data.status !== "Pending" && (
         <Button
-          className={`${
-            data.status === "Accepted"
+          className={`${data.status === "Accepted"
               ? "bg-[#29C08433] hover:bg-[#29C08433]"
               : data.status === "Rejected"
                 ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
@@ -148,7 +149,7 @@ export const BidCard = ({
                   : data.status === "Submitted"
                     ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
                     : ""
-          } mt-2 w-full cursor-default text-black`}
+            } mt-2 w-full cursor-default text-black`}
         >
           {data.status === "Accepted"
             ? "Bid Accepted"
@@ -176,9 +177,8 @@ const LCInfo = ({
 }) => {
   return (
     <div
-      className={`flex items-start justify-between py-2 ${
-        !noBorder && "border-b border-b-borderCol"
-      }`}
+      className={`flex items-start justify-between py-2 ${!noBorder && "border-b border-b-borderCol"
+        }`}
     >
       <p className="font-roboto text-sm font-normal text-para">{label}</p>
       <p className="max-w-[60%] text-right text-sm font-semibold capitalize">
@@ -247,15 +247,13 @@ export const TableDialog = ({
   return (
     <Dialog>
       <DialogTrigger
-        className={`${
-          isViewAll
+        className={`${isViewAll
             ? "font-roboto text-sm font-light text-primaryCol underline"
-            : `center w-full rounded-md border px-1 py-2 ${
-                buttonTitle === "Accept" || buttonTitle === "Reject"
-                  ? "bg-[#2F3031] px-7 text-white"
-                  : null
-              } `
-        }`}
+            : `center w-full rounded-md border px-1 py-2 ${buttonTitle === "Accept" || buttonTitle === "Reject"
+              ? "bg-[#2F3031] px-7 text-white"
+              : null
+            } `
+          }`}
       >
         {isViewAll ? (
           <p>View all</p>
@@ -519,8 +517,8 @@ export const TableDialog = ({
                       label="Payments Terms"
                       value={
                         lcData?.paymentTerms &&
-                        lcData?.paymentTerms !== "Sight LC"
-                          ? `${lcData.paymentTerms} ${lcData.extraInfo?.days + " days" || ""} ${lcData.extraInfo?.other || ""}`
+                          lcData?.paymentTerms !== "Sight LC"
+                          ? `${lcData.paymentTerms} ${lcData.extraInfo?.days + " days" || ""} at ${lcData.extraInfo?.other || ""}`
                           : lcData?.paymentTerms || "-"
                       }
                       noBorder
@@ -551,8 +549,8 @@ export const TableDialog = ({
                       value={
                         lcData?.expectedConfirmationDate
                           ? convertDateToCommaString(
-                              lcData?.expectedConfirmationDate,
-                            )
+                            lcData?.expectedConfirmationDate,
+                          )
                           : "-"
                       }
                     />
@@ -626,22 +624,22 @@ export const TableDialog = ({
               <div className="mt-5 flex max-h-[65vh] flex-col gap-y-4 overflow-y-auto overflow-x-hidden">
                 {isBank
                   ? userBids &&
-                    userBids?.length > 0 &&
-                    userBids?.map((data: any) => (
-                      <BidCard
-                        isRisk={isRisk}
-                        data={data}
-                        key={data._id}
-                        isBank
-                      />
-                    ))
+                  userBids?.length > 0 &&
+                  userBids?.map((data: any) => (
+                    <BidCard
+                      isRisk={isRisk}
+                      data={data}
+                      key={data._id}
+                      isBank
+                    />
+                  ))
                   : bids &&
-                    bids.length > 0 &&
-                    bids
-                      .reverse()
-                      .map((data: any) => (
-                        <BidCard data={data} key={data._id} isRisk={isRisk} />
-                      ))}
+                  bids.length > 0 &&
+                  bids
+                    // .reverse()
+                    .map((data: any) => (
+                      <BidCard data={data} key={data._id} isRisk={isRisk} />
+                    ))}
               </div>
             </div>
           </div>

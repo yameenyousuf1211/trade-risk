@@ -13,7 +13,7 @@ const LgStep12: React.FC<LgStepsProps10> = ({
   step,
   setStepCompleted,
 }) => {
-  const lgIssuance = watch("lgIssuance");
+  const lgIssuance = watch("lgIssuance") || LG.reIssuanceInAnotherCountry;
   const lastDateOfReceivingBids = watch("lastDateOfReceivingBids");
 
   console.log("🚀 ~ lastDateOfReceivingBidsss", lastDateOfReceivingBids);

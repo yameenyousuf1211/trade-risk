@@ -13,12 +13,18 @@ export const DatePicker = ({
   name,
   value,
   disabled,
+  isPast
 }: {
   value: Date;
   setValue: any;
   maxDate: Date | string | any;
   name: string;
-  disabled?: boolean;
+  disabled?: {
+    before?: Date | undefined;
+    after?: Date | undefined;
+  };
+  isPast?: boolean;
+  
 }) => {
   const [date, setDate] = useState<Date | undefined>(value);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -48,6 +54,7 @@ export const DatePicker = ({
       </PopoverTrigger>
       <PopoverContent className="p-0">
         <ValidatingCalendar
+        disabled={disabled}
           initialDate={date}
           maxDate={maxDate}
           onChange={(newDate) => {

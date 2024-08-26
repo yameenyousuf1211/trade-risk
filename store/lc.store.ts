@@ -24,7 +24,7 @@ const useConfirmationStore = create<UseConfirmationStore>((set, get) => ({
   lcPeriod: {
     startDate: undefined,
     endDate: undefined,
-    expectedDate: false,
+    expectedDate: undefined,
   },
   participantRole: "exporter",
   shipmentPort: {
@@ -50,6 +50,7 @@ const useConfirmationStore = create<UseConfirmationStore>((set, get) => ({
     advisingBank: "",
   },
   extraInfo: {days: "",other:""},
+  lastDateOfReceivingBids:undefined,
   setValues: (values: Partial<LcConfirmation | null>) =>
     set((state) => ({ ...state, ...values })),
 }));

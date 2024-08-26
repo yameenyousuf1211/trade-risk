@@ -90,7 +90,7 @@ export const generalLcSchema = Yup.object().shape({
           : schema.notRequired();
         })
         .max(999, "Days must be less than or equal to 999"),
-      other: Yup.mixed()
+      other: Yup.string()
         // .oneOf(
         //   [
         //     "shipment",
@@ -109,6 +109,7 @@ export const generalLcSchema = Yup.object().shape({
         ? schema.required("Extra info is required")
         : schema.notRequired();
     }),
+    lastDateOfReceivingBids: Yup.date().required("Select last date of receiving bids"),
 });
 
 export const confirmationSchema = generalLcSchema.concat(

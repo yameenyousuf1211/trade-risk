@@ -351,7 +351,6 @@ export const BankTable = ({
                         status={item.status}
                         isInfo={item.status !== "Add bid" && !isAddNewBid}
                         setIsAddNewBid={setIsAddNewBid}
-                        
                         isDiscount={
                           ((item as IBids).bidType &&
                             (item as IBids).bidType.includes("Discount")) ||

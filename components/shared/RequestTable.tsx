@@ -346,7 +346,7 @@ export const RequestTable = ({
                     <TableDataCell
                       data={
                         item.type == "LG Issuance"
-                          ? getTotal(item)
+                          ?  + getTotal(item).toLocaleString() + ".00"
                           : item?.amount
                             ? `${
                                 item?.currency
@@ -454,7 +454,7 @@ export const RequestTable = ({
                     <TableDataCell
                       data={
                         item.type == "LG Issuance"
-                          ? "USD " + getTotal(item)
+                          ? "USD " + getTotal(item).toLocaleString() + ".00"
                           : item?.amount
                             ? `${
                                 item?.currency

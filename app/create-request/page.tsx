@@ -28,6 +28,7 @@ import { calculateDaysLeft } from "@/utils";
 import useCountries from "@/hooks/useCountries";
 import { useAuth } from "@/context/AuthProvider";
 import * as Yup from "yup";
+import LgStep12 from "@/components/LG-Steps/LgStep12";
 
 const CreateRequestPage = () => {
   const { user } = useAuth();
@@ -68,9 +69,11 @@ const CreateRequestPage = () => {
           setValue(key, value === true ? "yes" : "no");
         }
         if (key === "period") {
+          console.log(value, "value");
+          
           setValue(
             "period.expectedDate",
-            value.expectedDate === true ? "yes" : "no"
+            value.expectedDate !== undefined && value.expectedDate !== null ? (value.expectedDate ? "yes" : "no") : ""
           );
         }
         if (key === "amount") {
@@ -119,7 +122,7 @@ const CreateRequestPage = () => {
       return toast.error("Product description cannot contain only digits");
     if (data.period?.startDate > data.period?.endDate)
       return toast.error("LC Issuance date cannot be greater than expiry date");
-
+    
 
     let extraInfoObj;
     if (
@@ -127,20 +130,24 @@ const CreateRequestPage = () => {
       data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
-      extraInfoObj = { days: days, other: data.extraInfo.otherValue };
+      extraInfoObj = { days: days, other: data.extraInfo.other };
     }
 
     let reqData;
     const baseData = {
       issuingBanks: data.issuingBanks, // Handle the array of issuing banks
       type: "LC Confirmation",
-      transhipment: data.transhipment === "yes" ? true : false,
+      ...(data.transhipment !== undefined && data.transhipment !== null
+        ? { transhipment: data.transhipment === "yes" }
+        : {}),
       amount: {
         price: `${data.amount}.00`,
       },
       period: {
         ...data.period,
-        expectedDate: data.period?.expectedDate === "yes" ? true : false,
+        ...(data.period?.expectedDate !== undefined && data.period?.expectedDate !== null
+          ? { expectedDate: data.period.expectedDate === "yes" }
+          : {}),
       },
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
@@ -167,7 +174,6 @@ const CreateRequestPage = () => {
           ...baseData,
           draft: "true",
         };
-        console.log(reqData,"REQDATA_______FOR CONFIRMATION")
 
         const { response, success } = confirmationData?._id
           ? await onUpdateLC({
@@ -212,7 +218,7 @@ const CreateRequestPage = () => {
           const validatedData = await confirmationSchema.validate(
             preparedData,
             {
-              abortEarly: false,
+              abortEarly: true,
               stripUnknown: true,
             }
           );
@@ -335,11 +341,20 @@ const CreateRequestPage = () => {
             setStepCompleted={handleStepCompletion}
             title="Confirmation Charges"
           />
+          <div className="min-w-[50%] flex flex-col gap-5">
           <Step7
             register={register}
             step={7}
             setStepCompleted={handleStepCompletion}
           />
+          <LgStep12
+          register={register}
+          setValue={setValue}
+          step={8}
+          setStepCompleted={handleStepCompletion}
+          watch={watch}
+          />
+          </div>
         </div>
         <div className="flex items-center gap-x-4 w-full">
           <Button

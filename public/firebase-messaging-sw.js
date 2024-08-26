@@ -19,13 +19,13 @@ firebase.initializeApp(firebaseConfig);
 // Retrieve firebase messaging
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage((payload) => {
-  const notificationTitle = payload.notification.title;
-  console.log(payload, "PAYLOAD");
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: payload.notification.image,
-  };
+// messaging.onForegroundgroundMessage((payload) => {
+//   const notificationTitle = payload.notification.title;
+//   console.log(payload, "PAYLOAD");
+//   const notificationOptions = {
+//     body: payload.notification.body,
+//     // icon: payload.notification.image,
+//   };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
+//   self.registration.showNotification(notificationTitle, notificationOptions);
+// });

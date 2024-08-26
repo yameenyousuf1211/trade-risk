@@ -115,7 +115,7 @@ export const AddBid = ({
   });
 
   console.log(lcData, "lcDataaaaaasdasdasd");
-  
+
   const {
     handleSubmit,
     register,
@@ -666,7 +666,6 @@ export const AddBid = ({
                             >
                               {/* Conditionally apply opacity to div based on status */}
 
-
                               {/* Bid Number */}
                               <div
                                 className={
@@ -830,7 +829,6 @@ export const AddBid = ({
                 <form
                   onSubmit={handleSubmit(onSubmit)}
                   className="flex flex-col gap-y-4 py-4 px-4 mt-5 border border-borderCol rounded-lg"
-
                 >
                   <div>
                     <div>
@@ -893,33 +891,36 @@ export const AddBid = ({
                         }
                       }}
                     />
-
                   </div>
                   {errors.validity && (
                     <span className="text-red-500 text-[12px]">
                       {errors.validity.message}
                     </span>
                   )}
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="confirmation"
-                    className="block font-semibold mb-2"
-                  >
-                    {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
-                  </label>
-                  <p className="text-xs text-[#29C084]">Client's Expected Price: {lcData?.type == "LC Confirmation" ?  lcData?.confirmationInfo?.pricePerAnnum : lcData?.discountingInfo?.pricePerAnnum} P.A</p>
-                  </div>
-                  <input
-                    placeholder="Enter your pricing per annum (%)"
-                    type="text"
-                    inputMode="numeric"
-                    className={cn(
-                      "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-
-                    )}
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <label
+                        htmlFor="confirmation"
+                        className="block font-semibold mb-2"
+                      >
+                        {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
+                      </label>
+                      <p className="text-xs text-[#29C084]">
+                        Client's Expected Price:{" "}
+                        {lcData?.type === "LC Confirmation"
+                          ? lcData?.confirmationInfo?.pricePerAnnum
+                          : lcData?.discountingInfo?.pricePerAnnum}{" "}
+                        P.A
+                      </p>
+                    </div>
+                    <input
+                      placeholder="Enter your pricing per annum (%)"
+                      type="text"
+                      inputMode="numeric"
+                      className={cn(
+                        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      )}
+                    />
                   </div>
                   {isDiscount && (
                     <div className="flex gap-3">

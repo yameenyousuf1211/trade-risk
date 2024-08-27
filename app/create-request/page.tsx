@@ -67,7 +67,7 @@ const CreateRequestPage = () => {
         }
         if (key === "transhipment") {
           const transhipmentValue =
-            value === null ? null : value === true ? "yes" : "no";
+            value === true ? "yes" : value === false ? "no" : null;
           setValue(key, transhipmentValue);
         }
         if (key === "period") {
@@ -143,11 +143,11 @@ const CreateRequestPage = () => {
       issuingBanks: data.issuingBanks, // Handle the array of issuing banks
       type: "LC Confirmation",
       transhipment:
-        data.transhipment === null
-          ? null
-          : data.transhipment === "yes"
+        data.transhipment === "yes"
           ? true
-          : false,
+          : data.transhipment === "no"
+          ? false
+          : null,
       amount: {
         price: `${data.amount}.00`,
       },

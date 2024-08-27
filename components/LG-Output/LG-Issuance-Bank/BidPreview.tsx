@@ -14,6 +14,7 @@ interface BidPreviewProps {
   bidNumber?: string;
   bidValidityDate?: string;
   handleNewBid: () => void;
+  allBondsFilled: any;
 }
 
 export const BidPreview: React.FC<BidPreviewProps> = ({
@@ -25,6 +26,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
   bidNumber,
   bidValidityDate,
   handleNewBid,
+  allBondsFilled,
 }) => {
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [selectedBidValidity, setSelectedBidValidity] =
@@ -43,7 +45,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
   return (
     <div className="px-4 flex-1">
       <h2 className="text-xl font-semibold mb-4 gap-1 flex items-center">
-        {userBidStatus.label === "Add Bid" ? (
+        {allBondsFilled ? (
           <>
             <Button variant="ghost" onClick={onBack} className="mr-1 p-1">
               <ChevronLeft className="h-6 w-6" />

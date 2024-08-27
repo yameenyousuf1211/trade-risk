@@ -42,19 +42,12 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
 
   return (
     <div className="px-4 flex-1">
-      <h2 className="text-xl font-semibold mb-4 gap-1 flex items-center">
-        {userBidStatus.label === "Add Bid" ? (
-          <>
+      <h3 className="text-xl font-semibold mb-4 gap-1 flex items-center">
             <Button variant="ghost" onClick={onBack} className="mr-1 p-1">
               <ChevronLeft className="h-6 w-6" />
             </Button>
             Preview Before Final Submission
-          </>
-        ) : (
-          <>Your Bid</>
-        )}
-      </h2>
-
+      </h3>
       <div className="border border-[#E2E2EA] p-4 rounded">
         <div className="flex justify-between items-center mb-3">
           <h3 className="font-semibold">Bid Summary</h3>

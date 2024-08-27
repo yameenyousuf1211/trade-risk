@@ -66,23 +66,28 @@ const CreateRequestPage = () => {
           }
         }
         if (key === "transhipment") {
-          setValue(key, value === true ? "yes" : "no");
+          const transhipmentValue =
+            value === null ? null : value === true ? "yes" : "no";
+          setValue(key, transhipmentValue);
         }
         if (key === "period") {
-          console.log(value, "value");
-          
-          setValue(
-            "period.expectedDate",
-            value.expectedDate !== undefined && value.expectedDate !== null ? (value.expectedDate ? "yes" : "no") : ""
-          );
+          const expectedDateValue =
+            value.expectedDate === true
+              ? "yes"
+              : value.expectedDate === false
+              ? "no"
+              : null;
+          setValue("period.expectedDate", expectedDateValue);
         }
         if (key === "amount") {
           setValue(key, value.price);
         }
         if (key === "extraInfo") {
-          const daysLeft = calculateDaysLeft(value.days);
-          setDays(daysLeft);
-          setValue("extraInfo", value.other);
+          // const daysLeft = calculateDaysLeft(value?.days);
+          // console.log(daysLeft, "daysLeft");
+          setDays(value?.days);
+          setValue("extraInfo.days", value.days);
+          setValue("extraInfo.other", value?.other);
         }
         // Handle array of issuing banks
         if (key === "issuingBanks" && Array.isArray(value)) {
@@ -107,6 +112,7 @@ const CreateRequestPage = () => {
     data: any;
     isProceed?: boolean;
   }) => {
+    console.log(data.period, "data");
     submit();
     delete data.createdBy;
     if (
@@ -122,7 +128,6 @@ const CreateRequestPage = () => {
       return toast.error("Product description cannot contain only digits");
     if (data.period?.startDate > data.period?.endDate)
       return toast.error("LC Issuance date cannot be greater than expiry date");
-    
 
     let extraInfoObj;
     if (
@@ -137,23 +142,27 @@ const CreateRequestPage = () => {
     const baseData = {
       issuingBanks: data.issuingBanks, // Handle the array of issuing banks
       type: "LC Confirmation",
-      ...(data.transhipment !== undefined && data.transhipment !== null
-        ? { transhipment: data.transhipment === "yes" }
-        : {}),
+      transhipment:
+        data.transhipment === null
+          ? null
+          : data.transhipment === "yes"
+          ? true
+          : false,
       amount: {
         price: `${data.amount}.00`,
       },
       period: {
         ...data.period,
-        ...(data.period?.expectedDate !== undefined && data.period?.expectedDate !== null
-          ? { expectedDate: data.period.expectedDate === "yes" }
-          : {}),
+        expectedDate:
+          data.period?.expectedDate === "yes"
+            ? true
+            : data.period?.expectedDate === "no"
+            ? false
+            : null,
       },
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
-
-    if(baseData?.issuingBanks?.[0]?._id) delete baseData.issuingBanks[0]._id
-    
+    if (baseData?.issuingBanks?.[0]?._id) delete baseData.issuingBanks[0]._id;
     try {
       setLoader(true); // Start the loader
       startLoading(); // Start the general loading state
@@ -166,15 +175,15 @@ const CreateRequestPage = () => {
           status,
           createdAt,
           updatedAt,
-          extraInfo,
           ...rest
         } = data;
         reqData = {
           ...rest,
+          ...(extraInfoObj && { extraInfo: extraInfoObj }),
           ...baseData,
           draft: "true",
         };
-
+        console.log(reqData, "REQDATA_______FOR CONFIRMATION");
         const { response, success } = confirmationData?._id
           ? await onUpdateLC({
               payload: reqData,
@@ -229,7 +238,7 @@ const CreateRequestPage = () => {
               ...baseData,
               draft: false,
             };
-           
+
             const { response, success } = confirmationData?._id
               ? await onUpdateLC({
                   payload: reqData,
@@ -342,18 +351,18 @@ const CreateRequestPage = () => {
             title="Confirmation Charges"
           />
           <div className="min-w-[50%] flex flex-col gap-5">
-          <Step7
-            register={register}
-            step={7}
-            setStepCompleted={handleStepCompletion}
-          />
-          <LgStep12
-          register={register}
-          setValue={setValue}
-          step={8}
-          setStepCompleted={handleStepCompletion}
-          watch={watch}
-          />
+            <Step7
+              register={register}
+              step={7}
+              setStepCompleted={handleStepCompletion}
+            />
+            <LgStep12
+              register={register}
+              setValue={setValue}
+              step={8}
+              setStepCompleted={handleStepCompletion}
+              watch={watch}
+            />
           </div>
         </div>
         <div className="flex items-center gap-x-4 w-full">

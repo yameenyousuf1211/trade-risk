@@ -82,7 +82,6 @@ export const AddBid = ({
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
-  const [userBids, setUserBids] = useState<IBids[]>([]);
   const [confirmationPriceType, setConfirmationPriceType] = useState("");
   const { user } = useAuth();
   const buttonRef = useRef<HTMLButtonElement>(null); // console.log(id, "_______-id");
@@ -186,9 +185,17 @@ export const AddBid = ({
     const numberString = value.replace(/,/g, "");
     return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
-  const userBidStatus = lcData?.bids?.find(
-    (bid) => bid?.createdBy === user?._id
-  )?.status;
+  const userBids = lcData?.bids?.filter((bid) => bid?.createdBy === user?._id);
+
+  let userBidStatus = null;
+  if (userBids?.length > 0) {
+    if (userBids.some((bid) => bid.status === "Pending")) {
+      userBidStatus = "Pending";
+    } else {
+      userBidStatus = userBids[0].status;
+    }
+  }
+
   const computedStatus = userBidStatus || triggerTitle || lcData?.status;
 
   return (
@@ -841,9 +848,9 @@ export const AddBid = ({
                       <DatePicker
                         setValue={setValue}
                         key={lcData?._id}
-                        maxDate={null}
-                        // maxDate={lcData?.period?.endDate}
-                        // isPast={false}
+                        // maxDate={null}
+                        maxDate={lcData?.period?.endDate}
+                        isPast={false}
                       />
                     </div>
                     {errors.validity && (

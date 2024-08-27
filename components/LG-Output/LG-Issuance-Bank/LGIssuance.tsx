@@ -382,7 +382,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                   : "bg-[#D3D3D3] text-[#ADADAD]"
               }`}
             >
-              {allBondsFilled ? "Preview" : pricingValue ? "Next" : "Skip"}
+              {allBondsFilled ? "Preview Bid" : pricingValue ? "Next" : "Skip"}
             </Button>
           </div>
         </div>

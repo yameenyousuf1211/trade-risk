@@ -69,7 +69,7 @@ const CreateDiscountPage = () => {
         }
         if (key === "transhipment") {
           const transhipmentValue =
-            value === null ? null : value === true ? "yes" : "no";
+            value === true ? "yes" : value === false ? "no" : null;
           setValue(key, transhipmentValue);
         }
         if (key === "period") {
@@ -141,11 +141,11 @@ const CreateDiscountPage = () => {
       issuingBanks: data.issuingBanks,
       type: "LC Discounting",
       transhipment:
-        data.transhipment === null
-          ? null
-          : data.transhipment === "yes"
+        data.transhipment === "yes"
           ? true
-          : false,
+          : data.transhipment === "no"
+          ? false
+          : null,
       amount: {
         price: `${data.amount}.00`,
       },
@@ -341,21 +341,21 @@ const CreateDiscountPage = () => {
             setStepCompleted={handleStepCompletion}
           />
           <div className="min-w-[50%] flex flex-col gap-5">
-          <Step7
-            register={register}
-            step={7}
-            setStepCompleted={handleStepCompletion}
-          />
+            <Step7
+              register={register}
+              step={7}
+              setStepCompleted={handleStepCompletion}
+            />
             <LgStep12
-          register={register}
-          setValue={setValue}
-          step={8}
-          setStepCompleted={handleStepCompletion}
-          watch={watch}
-          />
+              register={register}
+              setValue={setValue}
+              step={8}
+              setStepCompleted={handleStepCompletion}
+              watch={watch}
+            />
           </div>
         </div>
-      
+
         {/* Action Buttons */}
         <div className="flex w-full items-center gap-x-4">
           <Button

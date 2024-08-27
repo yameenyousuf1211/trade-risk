@@ -72,7 +72,7 @@ const ConfirmationPage = () => {
         }
         if (key === "transhipment") {
           const transhipmentValue =
-            value === null ? null : value === true ? "yes" : "no";
+            value === true ? "yes" : value === false ? "no" : null;
           setValue(key, transhipmentValue);
         }
         if (key === "period") {
@@ -147,11 +147,11 @@ const ConfirmationPage = () => {
       issuingBanks: issueBankChange,
       type: "LC Confirmation & Discounting",
       transhipment:
-        data.transhipment === null
-          ? null
-          : data.transhipment === "yes"
+        data.transhipment === "yes"
           ? true
-          : false,
+          : data.transhipment === "no"
+          ? false
+          : null,
       amount: {
         price: `${data.amount}.00`,
       },
@@ -364,13 +364,13 @@ const ConfirmationPage = () => {
           step={8}
           setStepCompleted={handleStepCompletion}
         />
-   <LgStep12
+        <LgStep12
           register={register}
           setValue={setValue}
           step={9}
           setStepCompleted={handleStepCompletion}
           watch={watch}
-          />
+        />
         {/* Action Buttons */}
         <div className="flex items-center gap-x-4 w-full">
           <Button

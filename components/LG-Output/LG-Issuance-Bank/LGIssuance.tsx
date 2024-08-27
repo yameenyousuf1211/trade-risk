@@ -411,6 +411,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           }
           bidNumber={userBid ? userBid._id.substring(0, 6) : undefined}
           handleNewBid={handleNewBid}
+          allBondsFilled={allBondsFilled}
         />
       )}
     </div>

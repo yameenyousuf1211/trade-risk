@@ -9,6 +9,7 @@ import { BidPreview } from "./BidPreview";
 import { convertDateToCommaString, formatAmount } from "@/utils";
 import { submitLgBid } from "@/services/apis/lg.apis";
 import { useAuth } from "@/context/AuthProvider";
+import { getLgBondTotal } from "../helper";
 
 const LGInfo = ({
   label,
@@ -121,17 +122,27 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   useEffect(() => {
     const userBids = data.bids.find((bid: any) => bid.createdBy === user._id);
     setUserBid(userBids);
+
     if (userBids) {
       const groupedBidsWithBankData = groupBidsByBank(
         userBids.bids,
         data.issuingBanks,
         bondTypes
       );
-      setGroupedBids(Object.values(groupedBidsWithBankData)); // Convert to array for rendering
+      setGroupedBids(Object.values(groupedBidsWithBankData));
       setShowPreview(true);
     }
 
-    if (userBids) {
+    const anotherBankBidAccepted = data.bids.some(
+      (bid: any) => bid.status === "Accepted" && bid.createdBy !== user._id
+    );
+
+    if (anotherBankBidAccepted) {
+      setUserBidStatus({
+        label: "Another Bank Bid Accepted",
+        status: "Not Accepted",
+      });
+    } else if (userBids) {
       if (userBids.status === "Pending") {
         setUserBidStatus({
           label: `Bid Submitted on ${convertDateToCommaString(
@@ -141,7 +152,8 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
         });
       } else if (userBids.status === "Accepted") {
         setUserBidStatus({
-          label: "Another Bank Bid Accepted",
+          label:
+            "The Above rates against each guarantee and bank have been accepted and a swift message has been generated and sent to your bank.",
           status: "Accepted",
         });
       } else if (userBids.status === "Rejected") {
@@ -261,8 +273,9 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           <h3 className="text-[#92929D] text-base font-light">
             Total LG Amount Requested{" "}
             <span className="text-[20px] text-[#1A1A26] font-semibold">
-              {data.totalContractCurrency}{" "}
-              {formatAmount(data.totalLgAmount || data.totalContractValue)}
+              {data.totalContractCurrency || "USD"}{" "}
+              {/* {formatAmount(data.totalLgAmount || data.totalContractValue)} */}
+              {formatAmount(getLgBondTotal(data))}
             </span>
           </h3>
         </div>

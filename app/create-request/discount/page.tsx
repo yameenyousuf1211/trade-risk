@@ -68,21 +68,28 @@ const CreateDiscountPage = () => {
           }
         }
         if (key === "transhipment") {
-          setValue(key, value === true ? "yes" : "no");
+          const transhipmentValue =
+            value === null ? null : value === true ? "yes" : "no";
+          setValue(key, transhipmentValue);
         }
         if (key === "period") {
-          setValue(
-            "period.expectedDate",
-            value.expectedDate === true ? "yes" : "no",
-          );
+          const expectedDateValue =
+            value.expectedDate === true
+              ? "yes"
+              : value.expectedDate === false
+              ? "no"
+              : null;
+          setValue("period.expectedDate", expectedDateValue);
         }
         if (key === "amount") {
           setValue(key, value.price);
         }
         if (key === "extraInfo") {
-          const daysLeft = calculateDaysLeft(value.days);
-          setDays(daysLeft);
-          setValue("extraInfo", value.other);
+          // const daysLeft = calculateDaysLeft(value?.days);
+          // console.log(daysLeft, "daysLeft");
+          setDays(value?.days);
+          setValue("extraInfo.days", value.days);
+          setValue("extraInfo.other", value?.other);
         }
         // Handle array of issuing banks
         if (key === "issuingBanks" && Array.isArray(value)) {
@@ -112,11 +119,11 @@ const CreateDiscountPage = () => {
     if (
       data.confirmingBank &&
       data.issuingBanks.some(
-        (bank: any) => bank.country === data.confirmingBank.country,
+        (bank: any) => bank.country === data.confirmingBank.country
       )
     )
       return toast.error(
-        "Confirming bank country cannot be the same as issuing bank country",
+        "Confirming bank country cannot be the same as issuing bank country"
       );
     if (/^\d+$/.test(data.productDescription))
       return toast.error("Product description cannot contain only digits");
@@ -133,13 +140,23 @@ const CreateDiscountPage = () => {
     const baseData = {
       issuingBanks: data.issuingBanks,
       type: "LC Discounting",
-      transhipment: data.transhipment === "yes" ? true : false,
+      transhipment:
+        data.transhipment === null
+          ? null
+          : data.transhipment === "yes"
+          ? true
+          : false,
       amount: {
         price: `${data.amount}.00`,
       },
       period: {
         ...data.period,
-        expectedDate: data.period?.expectedDate === "yes" ? true : false,
+        expectedDate:
+          data.period?.expectedDate === "yes"
+            ? true
+            : data.period?.expectedDate === "no"
+            ? false
+            : null,
       },
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
@@ -207,7 +224,6 @@ const CreateDiscountPage = () => {
       };
 
       try {
-        
         const validatedData = await discountingSchema.validate(preparedData, {
           abortEarly: false,
           stripUnknown: true,
@@ -369,7 +385,7 @@ const CreateDiscountPage = () => {
           setProceed={setProceed}
           // onAccept={handleSubmit(onSubmit)}
           onAccept={handleSubmit((data) =>
-            onSubmit({ data, isDraft: false, isProceed: true }),
+            onSubmit({ data, isDraft: false, isProceed: true })
           )}
         />
       </form>

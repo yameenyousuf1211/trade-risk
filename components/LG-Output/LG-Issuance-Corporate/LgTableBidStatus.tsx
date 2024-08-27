@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/dialog";
 import { Eye, ListFilter, X } from "lucide-react";
 import { useState } from "react";
-import { BgRadioInputLG } from "../helper";
+import { BgRadioInputLG, getLgBondTotal } from "../helper";
 import { BidsSort } from "@/components/helpers";
 import { BidCard } from "./BidCard";
 import { convertDateToCommaString, formatAmount } from "@/utils";
@@ -90,7 +90,9 @@ export const LGTableBidStatus = ({
     { label: "Preference", value: data.priceQuotes },
     {
       label: "Expected",
-      value: `${data.expectedPrice?.pricePerAnnum + "%" || "-"} per annum`,
+      value: data.expectedPrice?.expectedPrice
+        ? `${data.expectedPrice.pricePerAnnum}% per annum`
+        : "-",
     },
   ];
 
@@ -132,8 +134,9 @@ export const LGTableBidStatus = ({
             <h1 className="text-[#92929D] text-2xl">
               LG Amount:{" "}
               <span className="font-semibold text-black">
-                {data.totalContractCurrency}{" "}
-                {formatAmount(data.totalLgAmount || data.totalContractValue)}
+                {data.totalContractCurrency || "USD"}{" "}
+                {/* {formatAmount(data.totalLgAmount || data.totalContractValue)} */}
+                {formatAmount(getLgBondTotal(data))}
               </span>
             </h1>
             <h5 className="text-sm text-[#696974] font-light">

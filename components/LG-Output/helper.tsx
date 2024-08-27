@@ -88,3 +88,18 @@ export const LGInfo = ({
     </div>
   );
 };
+
+export const getLgBondTotal = (item: any) => {
+  const otherBond = item?.otherBond?.cashMargin ?? 0;
+  const bidBond = item?.bidBond?.cashMargin ?? 0;
+  const advancePaymentBond = item?.advancePaymentBond?.cashMargin ?? 0;
+  const performanceBond = item?.performanceBond?.cashMargin ?? 0;
+  const retentionMoneyBond = item?.retentionMoneyBond?.cashMargin ?? 0;
+  const total =
+    otherBond +
+    bidBond +
+    advancePaymentBond +
+    performanceBond +
+    retentionMoneyBond;
+  return total;
+};

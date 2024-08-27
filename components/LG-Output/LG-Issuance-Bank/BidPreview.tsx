@@ -105,8 +105,21 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                       {lgType.type} - {lgType.currencyType}{" "}
                       {formatAmount(lgType.amount)}
                     </p>
-                    {(lgType.status === "Accepted" ||
-                      lgType.status === "Rejected") && <p>{lgType.status}</p>}
+                    {userBidStatus === "Accepted" &&
+                    lgType.status === "Accepted" ? (
+                      <div className="flex gap-2 justify-end items-center">
+                        <h6 className="text-[0.65rem] bg-[#29C084] p-1 text-white">
+                          Accepted
+                        </h6>
+                      </div>
+                    ) : userBidStatus === "Accepted" &&
+                      lgType.status === "Rejected" ? (
+                      <div className="flex gap-2 justify-end items-center">
+                        <h6 className="text-[0.7rem] bg-[#F1F1F5]  p-1">
+                          Rejected
+                        </h6>
+                      </div>
+                    ) : null}
                   </div>
                   <p className="text-[#5625F2] font-bold text-lg">
                     {`${lgType.price}% `}
@@ -137,7 +150,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
           )}
 
         <div className="flex flex-col gap-2">
-          {["Pending", "Accepted", "Rejected", "Expired"].includes(
+          {["Pending", "Not Accepted", "Rejected", "Expired"].includes(
             userBidStatus.status
           ) ? (
             <div
@@ -148,8 +161,16 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                   ? "bg-[#FAB4B4]"
                   : userBidStatus.status === "Expired"
                   ? "bg-[#F6F6F6]"
+                  : userBidStatus.status === "Not Accepted"
+                  ? "bg-[#FFE6E6]"
                   : ""
               }`}
+            >
+              {userBidStatus.label}
+            </div>
+          ) : userBidStatus.status === "Accepted" ? (
+            <div
+              className={`text-base text-[#A5A5A5] font-normal text-black py-1 rounded-md text-left justify-start`}
             >
               {userBidStatus.label}
             </div>

@@ -5,7 +5,11 @@ import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { AddBid } from "./AddBid";
-import { fetchAllLcs, fetchLcs, getBankLcStatus } from "@/services/apis/lcs.api";
+import {
+  fetchAllLcs,
+  fetchLcs,
+  getBankLcStatus,
+} from "@/services/apis/lcs.api";
 import { ApiResponse, IBids, ILcs, IRisk } from "@/types/type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatLeftDate, formatLeftDays } from "@/utils";
@@ -56,12 +60,27 @@ const SliderCard = ({
     if (!success) return toast.error(response as string);
     else return toast.success(`Bid ${status}`);
   };
-  
+  const otherBond = lcData?.otherBond?.cashMargin ?? 0;
+  const bidBond = lcData?.bidBond?.cashMargin ?? 0;
+  const advancePaymentBond = lcData?.advancePaymentBond?.cashMargin ?? 0;
+  const performanceBond = lcData?.performanceBond?.cashMargin ?? 0;
+  const retentionMoneyBond = lcData?.retentionMoneyBond?.cashMargin ?? 0;
+  const total =
+    otherBond +
+    bidBond +
+    advancePaymentBond +
+    performanceBond +
+    retentionMoneyBond;
+
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
       <p className="uppercase">
-        {lcData.currency || "USD"}{" "}
-        {info.confirmationPrice?.toLocaleString() + ".00" || "00"}
+        {lcData?.type === "LG Issuance"
+          ? lcData?.totalContractCurrency || lcData?.currency || "USD"
+          : lcData?.currency || "USD"}{" "}
+        {lcData?.type === "LG Issuance"
+          ? total?.toLocaleString() + ".00"
+          : info.confirmationPrice?.toLocaleString() + ".00" || "00"}
       </p>
       <p className="font-roboto text-para font-medium mt-1">
         {info.bidBy?.name || ""}
@@ -121,7 +140,7 @@ const RequestCard = ({
     advancePaymentBond +
     performanceBond +
     retentionMoneyBond;
-
+  console.log(total, "RequestCard");
   return (
     <>
       {isBank && riskType !== "myRisk" ? (
@@ -209,12 +228,14 @@ const RequestCard = ({
               </span>
             </p>
             <h3 className="text-xl font-semibold uppercase">
-              {data.currency || "USD"}{" "}
-              {(data as ILcs)?.amount
+              {data?.totalContractCurrency || data.currency || "USD"}{" "}
+              {(data as ILcs)?.type === "LG Issuance"
+                ? total?.toLocaleString() + ".00"
+                : (data as ILcs)?.amount
                 ? (data as ILcs).amount?.price?.toLocaleString() + ".00"
                 : (
                     data as IRisk
-                  ).riskParticipationTransaction?.amount?.toLocaleString() +
+                  )?.riskParticipationTransaction?.amount?.toLocaleString() +
                   ".00"}
             </h3>
             <div className="flex items-center justify-between gap-x-2">
@@ -275,7 +296,7 @@ export const Sidebar = ({
       queryFn: () => fetchLcs({ userId: user?.business?._id }),
       enabled: !!user?._id,
     });
-
+  console.log(data, "Need");
   const {
     data: allLcs,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
@@ -284,7 +305,7 @@ export const Sidebar = ({
       queryFn: () => fetchAllLcs({ limit: 20 }),
       enabled: !!user?._id,
     });
-
+  console.log(data, "Nested");
   const {
     data: allRisk,
   }: { data: ApiResponse<IRisk> | undefined; error: any; isLoading: boolean } =
@@ -435,7 +456,11 @@ export const Sidebar = ({
       stopLoading();
     } else {
       startLoading();
-      const { data } = await fetchLcs({ userId: user?.business?._id, limit: 1000,draft: false});
+      const { data } = await fetchLcs({
+        userId: user?.business?._id,
+        limit: 1000,
+        draft: false,
+      });
       if (data.length > 0) {
         isCSV && generateCSV(data);
         isPDF && generatePDF(data);

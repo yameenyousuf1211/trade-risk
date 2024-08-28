@@ -78,9 +78,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Confirmation Rate</p>
           <p className="text-lg font-semibold text-text">
-            {data?.confirmationPrice} %
-            {data.bidType === "LC Confirmation" && !data.perAnnum ? " Flat" : null}
-            {data?.perAnnum && " per annum"}
+            {data?.confirmationPrice}%
           </p>
         </div>
         {data?.discountMargin && (
@@ -95,7 +93,9 @@ export const BidCard = ({
         )}
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para ">Country</p>
-          <p className="text-lg font-semibold capitalize">{data.bidBy.country}</p>
+          <p className="text-lg font-semibold capitalize">
+            {data.bidBy.country}
+          </p>
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Bid Received</p>
@@ -140,26 +140,27 @@ export const BidCard = ({
 
       {data.status !== "Pending" && (
         <Button
-          className={`${data.status === "Accepted"
+          className={`${
+            data.status === "Accepted"
               ? "bg-[#29C08433] hover:bg-[#29C08433]"
               : data.status === "Rejected"
-                ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
-                : data.status === "Expired"
-                  ? "bg-[#97979733] hover:bg-[#97979733]"
-                  : data.status === "Submitted"
-                    ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
-                    : ""
-            } mt-2 w-full cursor-default text-black`}
+              ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
+              : data.status === "Expired"
+              ? "bg-[#97979733] hover:bg-[#97979733]"
+              : data.status === "Submitted"
+              ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
+              : ""
+          } mt-2 w-full cursor-default text-black`}
         >
           {data.status === "Accepted"
             ? "Bid Accepted"
             : data.status === "Rejected"
-              ? "Bid Rejected"
-              : data.status === "Expired"
-                ? "Request Expired"
-                : data.status === "Submitted"
-                  ? "Bid Submitted"
-                  : ""}
+            ? "Bid Rejected"
+            : data.status === "Expired"
+            ? "Request Expired"
+            : data.status === "Submitted"
+            ? "Bid Submitted"
+            : ""}
         </Button>
       )}
     </div>
@@ -177,8 +178,9 @@ const LCInfo = ({
 }) => {
   return (
     <div
-      className={`flex items-start justify-between py-2 ${!noBorder && "border-b border-b-borderCol"
-        }`}
+      className={`flex items-start justify-between py-2 ${
+        !noBorder && "border-b border-b-borderCol"
+      }`}
     >
       <p className="font-roboto text-sm font-normal text-para">{label}</p>
       <p className="max-w-[60%] text-right text-sm font-semibold capitalize">
@@ -247,13 +249,15 @@ export const TableDialog = ({
   return (
     <Dialog>
       <DialogTrigger
-        className={`${isViewAll
+        className={`${
+          isViewAll
             ? "font-roboto text-sm font-light text-primaryCol underline"
-            : `center w-full rounded-md border px-1 py-2 ${buttonTitle === "Accept" || buttonTitle === "Reject"
-              ? "bg-[#2F3031] px-7 text-white"
-              : null
-            } `
-          }`}
+            : `center w-full rounded-md border px-1 py-2 ${
+                buttonTitle === "Accept" || buttonTitle === "Reject"
+                  ? "bg-[#2F3031] px-7 text-white"
+                  : null
+              } `
+        }`}
       >
         {isViewAll ? (
           <p>View all</p>
@@ -272,10 +276,9 @@ export const TableDialog = ({
             <X className="size-7" />
           </DialogClose>
         </div>
-        {
-          lcData?.type==='LG Issuance' ? (
-            <LGIssuanceDialog data={lcData}/>
-          ) : (
+        {lcData?.type === "LG Issuance" ? (
+          <LGIssuanceDialog data={lcData} />
+        ) : (
           <div className="relative mt-0 flex h-full items-start justify-between overflow-y-hidden">
             {/* Left Section */}
             {isRisk ? (
@@ -322,7 +325,7 @@ export const TableDialog = ({
                     label="Value of Transaction"
                     value={
                       formatNumberWithCommas(
-                        riskData?.riskParticipationTransaction?.amount,
+                        riskData?.riskParticipationTransaction?.amount
                       ) + ".00" || ""
                     }
                   />
@@ -369,7 +372,7 @@ export const TableDialog = ({
                     <LCInfo
                       label="Expected Discounting Date"
                       value={convertDateToCommaString(
-                        riskData?.expectedDateDiscounting || "",
+                        riskData?.expectedDateDiscounting || ""
                       )}
                     />
                     <LCInfo
@@ -377,14 +380,14 @@ export const TableDialog = ({
                       value={convertDateToCommaString(
                         (riskData?.startDate
                           ? riskData?.startDate
-                          : riskData?.period?.startDate) || "",
+                          : riskData?.period?.startDate) || ""
                       )}
                       noBorder
                     />
                     <LCInfo
                       label="Date of Expiry"
                       value={convertDateToCommaString(
-                        riskData?.expiryDate || "",
+                        riskData?.expiryDate || ""
                       )}
                       noBorder
                     />
@@ -467,7 +470,7 @@ export const TableDialog = ({
                       <span className="font-normal text-para">LC Amount:</span>{" "}
                       USD{" "}
                       {Number(
-                        lcData && lcData.amount ? lcData?.amount?.price : total,
+                        lcData && lcData.amount ? lcData?.amount?.price : total
                       ).toLocaleString() + ".00"}
                     </h2>
                     <p className="font-roboto text-sm text-para">
@@ -517,8 +520,10 @@ export const TableDialog = ({
                       label="Payments Terms"
                       value={
                         lcData?.paymentTerms &&
-                          lcData?.paymentTerms !== "Sight LC"
-                          ? `${lcData.paymentTerms} ${lcData.extraInfo?.days + " days" || ""} at ${lcData.extraInfo?.other || ""}`
+                        lcData?.paymentTerms !== "Sight LC"
+                          ? `${lcData.paymentTerms} ${
+                              lcData.extraInfo?.days + " days" || ""
+                            } at ${lcData.extraInfo?.other || ""}`
                           : lcData?.paymentTerms || "-"
                       }
                       noBorder
@@ -549,8 +554,8 @@ export const TableDialog = ({
                       value={
                         lcData?.expectedConfirmationDate
                           ? convertDateToCommaString(
-                            lcData?.expectedConfirmationDate,
-                          )
+                              lcData?.expectedConfirmationDate
+                            )
                           : "-"
                       }
                     />
@@ -609,7 +614,9 @@ export const TableDialog = ({
                   <p className="rounded-xl bg-primaryCol px-3 py-1 text-lg font-semibold text-white">
                     {isBank ? userBids?.length : bids?.length}
                   </p>
-                  <p className="text-xl font-semibold">{isBank ? 'View Bids' : "Bids received"}</p>
+                  <p className="text-xl font-semibold">
+                    {isBank ? "View Bids" : "Bids received"}
+                  </p>
                 </div>
 
                 {/* <div className="flex items-center gap-x-4">
@@ -624,28 +631,26 @@ export const TableDialog = ({
               <div className="mt-5 flex max-h-[65vh] flex-col gap-y-4 overflow-y-auto overflow-x-hidden">
                 {isBank
                   ? userBids &&
-                  userBids?.length > 0 &&
-                  userBids?.map((data: any) => (
-                    <BidCard
-                      isRisk={isRisk}
-                      data={data}
-                      key={data._id}
-                      isBank
-                    />
-                  ))
+                    userBids?.length > 0 &&
+                    userBids?.map((data: any) => (
+                      <BidCard
+                        isRisk={isRisk}
+                        data={data}
+                        key={data._id}
+                        isBank
+                      />
+                    ))
                   : bids &&
-                  bids.length > 0 &&
-                  bids
-                    // .reverse()
-                    .map((data: any) => (
-                      <BidCard data={data} key={data._id} isRisk={isRisk} />
-                    ))}
+                    bids.length > 0 &&
+                    bids
+                      // .reverse()
+                      .map((data: any) => (
+                        <BidCard data={data} key={data._id} isRisk={isRisk} />
+                      ))}
               </div>
             </div>
           </div>
-
-          )
-        }
+        )}
       </DialogContent>
     </Dialog>
   );

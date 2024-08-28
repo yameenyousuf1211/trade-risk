@@ -100,9 +100,9 @@ export const BankTable = ({
       filtered = filtered.filter(
         (item) =>
           (item as IBids)?.lcInfo?.[1]?.country?.toLowerCase() ===
-          selectedCountry.toLowerCase() ||
+            selectedCountry.toLowerCase() ||
           (item as IRisk)?.issuingBanks?.[0].country?.toLowerCase() ===
-          selectedCountry.toLowerCase()
+            selectedCountry.toLowerCase()
       );
     }
 
@@ -201,12 +201,12 @@ export const BankTable = ({
   const filteredHeaders =
     filter === "LC Confirmation"
       ? myBidsColumnHeaders.filter(
-        (header) => !["Discounting Rate", "Discount Margin"].includes(header)
-      )
+          (header) => !["Discounting Rate", "Discount Margin"].includes(header)
+        )
       : myBidsColumnHeaders;
 
-      console.log("Dataaaa CORP",data);
-      
+  console.log("Dataaaa CORP", data);
+
   return (
     <div className="">
       <div className="flex items-center justify-between hide-scrollbar overflow-x-auto xl:gap-x-2 mb-2">
@@ -262,10 +262,12 @@ export const BankTable = ({
             ) : (
               filteredData &&
               filteredData?.map((item: IBids | IRisk, index: number) => {
-                console.log(item, "item123")
+                console.log(item, "item123");
                 return (
                   <TableRow key={index} className="border-none font-roboto">
-                    <TableDataCell data={convertDateToString(item?.createdAt)} />
+                    <TableDataCell
+                      data={convertDateToString(item?.createdAt)}
+                    />
                     <TableCell className="px-1 py-1 max-w-[200px]">
                       {" "}
                       <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
@@ -273,19 +275,22 @@ export const BankTable = ({
                           {allCountries &&
                             getCountryFlagByName(
                               (item as IBids)?.lcInfo?.[1]?.country ||
-                              (item as IRisk)?.lc?.issuingBanks?.[0]?.country || "-"
+                                (item as IRisk)?.lc?.issuingBanks?.[0]
+                                  ?.country ||
+                                "-"
                             )}
                           {/* // (item as IRisk)?.risk[2]?.country */}
                         </p>
                         <div
                           className={`truncate text-lightGray capitalize ${getCenteredClass(
                             (item as IBids)?.lcInfo?.[1]?.country ||
-                            (item as IRisk)?.lc?.issuingBanks?.[0]?.country || "-"
+                              (item as IRisk)?.lc?.issuingBanks?.[0]?.country ||
+                              "-"
                           )}`}
                         >
                           {(item as IBids)?.lcInfo?.[1]?.country ||
-                            (item as IRisk)?.lc?.issuingBanks?.[0]?.bank || "-"
-                          }
+                            (item as IRisk)?.lc?.issuingBanks?.[0]?.bank ||
+                            "-"}
                         </div>
                       </div>
                     </TableCell>
@@ -297,10 +302,13 @@ export const BankTable = ({
                               allCountries &&
                               getCountryFlagByName((item as any).bidBy?.[2])}
                           </p>
-                          <div className={`truncate text-lightGray capitalize ${getCenteredClass(
-                            (item as IBids)?.lcInfo?.[1]?.country ||
-                            (item as IRisk)?.lc?.confirmingBank?.country || "-"
-                          )}`}>
+                          <div
+                            className={`truncate text-lightGray capitalize ${getCenteredClass(
+                              (item as IBids)?.lcInfo?.[1]?.country ||
+                                (item as IRisk)?.lc?.confirmingBank?.country ||
+                                "-"
+                            )}`}
+                          >
                             <p>
                               {(item as any).lc?.confirmingBank?.bank || "-"}
                             </p>
@@ -309,27 +317,25 @@ export const BankTable = ({
                       </TableCell>
                     )}
                     <TableDataCell
-                      data={
-                        renderData(
-                          (item as IBids)?.confirmationPrice &&
+                      data={renderData(
+                        ((item as IBids)?.confirmationPrice &&
                           (item as IBids).confirmationPrice.toLocaleString() +
-                          ".00 %" || ""
-                        )
-                      }
+                            ".00 %") ||
+                          ""
+                      )}
                     />
                     {filter !== "LC Confirmation" && (
                       <>
                         <TableDataCell
-                          data={renderData(
-                            (item as IBids)?.discountBaseRate
-                          )}
+                          data={renderData((item as IBids)?.discountBaseRate)}
                         />
 
                         <TableDataCell
                           data={
                             (item as IBids)?.discountMargin
-                              ? (item as IBids).discountMargin?.toLocaleString() +
-                              ".00%"
+                              ? (
+                                  item as IBids
+                                ).discountMargin?.toLocaleString() + ".00%"
                               : "Not Applicable"
                           }
                         />
@@ -338,41 +344,42 @@ export const BankTable = ({
                     <TableDataCell
                       data={renderData(
                         "USD " +
-                        ((item as IBids).confirmationPrice ||
-                          (item as IRisk).riskParticipationTransaction
-                            ?.amount) +
-                        ".00" || ""
+                          ((item as IBids).confirmationPrice ||
+                            (item as IRisk).riskParticipationTransaction
+                              ?.amount) +
+                          ".00" || ""
                       )}
                     />
                     <TableCell className="px-1 py-1 max-w-[200px]">
-                    {(item as IBids).status !== "Pending" ? (
-                      <AddBid
-                        triggerTitle={item.status}
-                        status={item.status}
-                        isInfo={item.status !== "Add bid" && !isAddNewBid}
-                        setIsAddNewBid={setIsAddNewBid}
-                        isDiscount={
-                          ((item as IBids).bidType &&
-                            (item as IBids).bidType.includes("Discount")) ||
-                          false
-                        }
-                        border
-                        bidData={item}
-                        id={item?.lc._id}
-                        isRisk={isRisk}
-                        isCorporate={isCorporate}
-                      />
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        className="bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]  rounded-md w-full p-2 capitalize hover:opacity-85 border border-[#F2994A]"
-                      >
-                        {item?.status}
-                      </Button>
-                    )}
-                  </TableCell>
+                      {(item as IBids).status !== "Pending" ? (
+                        <AddBid
+                          triggerTitle={item.status}
+                          status={item.status}
+                          isInfo={item.status !== "Add bid" && !isAddNewBid}
+                          setIsAddNewBid={setIsAddNewBid}
+                          isAddNewBid={isAddNewBid}
+                          isDiscount={
+                            ((item as IBids).bidType &&
+                              (item as IBids).bidType.includes("Discount")) ||
+                            false
+                          }
+                          border
+                          bidData={item}
+                          id={item?.lc._id}
+                          isRisk={isRisk}
+                          isCorporate={isCorporate}
+                        />
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          className="bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A]  rounded-md w-full p-2 capitalize hover:opacity-85 border border-[#F2994A]"
+                        >
+                          {item?.status}
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
-                )
+                );
               })
             )}
           </TableBody>

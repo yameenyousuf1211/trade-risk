@@ -39,9 +39,6 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
           bondValue?.currencyType
         } ${formatAmount(bondValue?.cashMargin)}`;
         const enteredPrice = bondPrices[selectedBank]?.[lgType.type];
-        const isLocked = Object.values(bondPrices).some(
-          (prices) => prices[lgType.type] && prices !== bondPrices[selectedBank]
-        );
 
         return (
           <BgRadioInputLG
@@ -54,7 +51,6 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
             onChange={(event) => setSelectedLgType(event.target.value)}
             bgchecked={lgType.type === selectedLgType}
             sidesublabel={enteredPrice ? enteredPrice : null} // Show entered price if available
-            disabled={isLocked && !enteredPrice} // Lock the bond type if it’s filled for another bank
           />
         );
       })}

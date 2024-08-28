@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import {
   Select,
@@ -22,9 +22,10 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   watch,
   name,
   listValue,
-  currency
+  currency,
 }) => {
-  const checkedValue = watch(`${name}.Contract`,false);
+  const [displayPercentage, setDisplayPercentage] = useState("");
+  const checkedValue = watch(`${name}.Contract`, false);
   const expectedDate = watch(`${name}.expectedDate`);
   const lgExpiryDate = watch(`${name}.lgExpiryDate`);
   const cashMargin = watch(`${name}.cashMargin`);
@@ -37,20 +38,19 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   // console.log("🚀 ~ checkedValuecheckedValue:", checkedValue);
   const currencyOptions = useMemo(
     () =>
-        currency?.response.map((curr: string, idx: number) => (
-            <SelectItem key={`${curr}-${idx + 1}`} value={curr}>
-                {curr}
-            </SelectItem>
-        )),
+      currency?.response.map((curr: string, idx: number) => (
+        <SelectItem key={`${curr}-${idx + 1}`} value={curr}>
+          {curr}
+        </SelectItem>
+      )),
     [currency]
-);
+  );
 
   // useEffect(() => {
   //   if (cashMargin && !cashMargin?.toString()?.includes(".00")) {
   //     setValue(`${name}.cashMargin`, cashMargin + ".00");
   //   }} , [cashMargin]);
 
-    
   const { data } = useLcIssuance();
   useEffect(() => {
     //@ts-ignore
@@ -60,9 +60,6 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     }
   }, [data]);
 
-  
-
-  
   const lgDetails = watch("lgDetailsType");
   // const lgDetailsType = watch("lgDetailsType");
 
@@ -91,7 +88,18 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   //   }
   // };
 
-  
+  const handlePercentageBlur = () => {
+    if (valueInPercentage) {
+      setDisplayPercentage(`${valueInPercentage}%`);
+    } else {
+      setDisplayPercentage("");
+    }
+  };
+
+  const handlePercentageFocus = () => {
+    setDisplayPercentage(valueInPercentage?.toString() || "");
+  };
+
   return (
     <TableRow
       className={`mt-5 ${checkedValue ? "bg-white" : "bg-[#F5F7F9]"}`}
@@ -101,14 +109,19 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       {lgDetails !== "Choose any other type of LGs" ? (
         <TableDataCell className="min-w-[250px]">
           <div className="flex gap-2 items-center flex-wrap ">
-            <div onClick={() => {
-              setValue(`${name}.Contract`,!checkedValue)
-            }} className="bg-white border-[#5625F2] border-2 rounded-[5px] flex items-center justify-center h-[22px] w-[22px] cursor-pointer">
+            <div
+              onClick={() => {
+                setValue(`${name}.Contract`, !checkedValue);
+              }}
+              className="bg-white border-[#5625F2] border-2 rounded-[5px] flex items-center justify-center h-[22px] w-[22px] cursor-pointer"
+            >
               {checkedValue ? (
                 <Check size={18} style={{ color: "#5625F2" }} />
               ) : null}
             </div>
-            <p style={{  textAlign: "left" }} className="text-sm">{listValue}</p>
+            <p style={{ textAlign: "left" }} className="text-sm">
+              {listValue}
+            </p>
           </div>
         </TableDataCell>
       ) : (
@@ -140,7 +153,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           }}
         >
           <SelectTrigger className="bg-borderCol/80" defaultValue={"USD"}>
-            <SelectValue  placeholder={"USD"}/>
+            <SelectValue placeholder={"USD"} />
           </SelectTrigger>
           <SelectContent>{currencyOptions}</SelectContent>
         </Select>
@@ -159,11 +172,13 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <Input
-          disabled={!checkedValue}
           register={register}
-          value={valueInPercentage}
+          disabled={!checkedValue}
+          value={displayPercentage || valueInPercentage}
           name={`${name}.valueInPercentage`}
           onChange={(e) => handleOnChange(e, `${name}.valueInPercentage`)}
+          onBlur={handlePercentageBlur}
+          onFocus={handlePercentageFocus}
           placeholder="%"
           className="placeholder:text-end"
         />
@@ -181,7 +196,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <DatePicker
-            value={lgExpiryDate}
+          value={lgExpiryDate}
           maxDate={
             new Date(new Date().setFullYear(new Date().getFullYear() + 1))
           }
@@ -190,49 +205,45 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           disabled={!checkedValue}
         />
       </TableCell>
-        <>
-          <TableCell className="flex gap-2">
-            <Select
-              disabled={!checkedValue}
-              onValueChange={(value) => {
-                setValue(`${name}.lgTenor.lgTenorType`, value);
-              }}
+      <>
+        <TableCell className="flex gap-2">
+          <Select
+            disabled={!checkedValue}
+            onValueChange={(value) => {
+              setValue(`${name}.lgTenor.lgTenorType`, value);
+            }}
+          >
+            <SelectTrigger
+              className="bg-borderCol/80 "
+              defaultValue={"Months"}
+              value={lgTenorType}
             >
-              <SelectTrigger
-                className="bg-borderCol/80 "
-                defaultValue={"Months"}
-                value={lgTenorType}
-              >
-                <SelectValue placeholder="Months" />
-              </SelectTrigger>
-              <SelectContent>
-                {["Months", "Years", "Days"].map(
-                  (time: string, idx: number) => (
-                    <SelectItem key={`${time}-${idx}`} value={time}>
-                      {time}
-                    </SelectItem>
-                  )
-                )}
-              </SelectContent>
-            </Select>
-            <Input
-              disabled={!checkedValue}
-              register={register}
-              value={lgTenorValue}
-              name={`${name}.lgTenor.lgTenorValue`}
-              onChange={(e) =>
-                handleOnChange(e, `${name}.lgTenor.lgTenorValue`)
-              }
-              placeholder="No."
-              className="min-w-[60px]"
-            />
-          </TableCell>
-          <TableCell>
-            <div className="flex justify-center items-center">
-              <Link size={20} />
-            </div>
-          </TableCell>
-        </>
+              <SelectValue placeholder="Months" />
+            </SelectTrigger>
+            <SelectContent>
+              {["Days", "Months", "Years"].map((time: string, idx: number) => (
+                <SelectItem key={`${time}-${idx}`} value={time}>
+                  {time}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Input
+            disabled={!checkedValue}
+            register={register}
+            value={lgTenorValue}
+            name={`${name}.lgTenor.lgTenorValue`}
+            onChange={(e) => handleOnChange(e, `${name}.lgTenor.lgTenorValue`)}
+            placeholder="No."
+            className="min-w-[60px]"
+          />
+        </TableCell>
+        <TableCell>
+          <div className="flex justify-center items-center">
+            <Link size={20} />
+          </div>
+        </TableCell>
+      </>
     </TableRow>
   );
 };

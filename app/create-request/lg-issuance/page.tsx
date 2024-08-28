@@ -24,7 +24,11 @@ import { createLg, updateLg } from "@/services/apis/lg.apis";
 import useLcIssuance from "@/store/issueance.store";
 import useStepStore from "@/store/lcsteps.store";
 import { LgDetails } from "@/types/lg";
-import { convertStringValueToDate, LG, removeUnnecessaryFieldsForLgCreate } from "@/utils";
+import {
+  convertStringValueToDate,
+  LG,
+  removeUnnecessaryFieldsForLgCreate,
+} from "@/utils";
 import { bankCountries } from "@/utils/data";
 import { lgValidator } from "@/validation/lg.validation";
 import { Loader2 } from "lucide-react";
@@ -101,15 +105,14 @@ export default function LgIssuance() {
           setValue("physicalLgCountry", value);
         }
 
-        if(key == "otherBond"){
+        if (key == "otherBond") {
           setValue("otherBond.Contract", true);
         }
-
 
         if (key == "expectedPrice") {
           if (value.expectedPrice) {
             setValue("expectedPrice.expectedPrice", value.expectedPrice);
-          } 
+          }
 
           setValue("expectedPrice.pricePerAnnum", value.pricePerAnnum);
         }
@@ -118,7 +121,6 @@ export default function LgIssuance() {
   }, [storeData.data]);
 
   const onSubmit = async (data: LgDetails) => {
-
     // Prepare data for submission
     console.log("🚀 ~ onSubmit ~ data", data.data.draft);
 
@@ -132,15 +134,11 @@ export default function LgIssuance() {
 
     console.log("🚀 ~ onSubmit ~ responseData", responseData.draft);
 
-
-
     if (responseData.draft) {
       handleDraftSubmission(responseData);
-    }
-    else {
+    } else {
       handleFinalSubmission(responseData);
     }
-
 
     // delete responseData.test;
 
@@ -180,11 +178,7 @@ export default function LgIssuance() {
     } else {
       // Create new draft
       const { response, success } = await createLg(responseData);
-      handleResponse(
-        success,
-        response,
-        "LG saved as a draft"
-      );
+      handleResponse(success, response, "LG saved as a draft");
     }
 
     setLoader(false);
@@ -192,15 +186,35 @@ export default function LgIssuance() {
 
   // Function to handle final submissions
   const handleFinalSubmission = async (responseData: any) => {
+    const setBondDefaults = (bond: any) => {
+      if (bond.Contract === true) {
+        if (!bond.currencyType) {
+          bond.currencyType = "USD";
+        }
+        if (bond.lgTenor && !bond.lgTenor.lgTenorType) {
+          bond.lgTenor.lgTenorType = "Months";
+        }
+      }
+    };
 
-    // console.log("🚀 ~ before handleFinalSubmission ~ responseData lastDateOfReceivingBids:", responseData.lastDateOfReceivingBids);
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData SubmittingBIDBONDBEFORE:", responseData?.bidBond?.Contract);
+    if (responseData.bidBond) {
+      setBondDefaults(responseData.bidBond);
+    }
+    if (responseData.advancePaymentBond) {
+      setBondDefaults(responseData.advancePaymentBond);
+    }
+    if (responseData.performanceBond) {
+      setBondDefaults(responseData.performanceBond);
+    }
+    if (responseData.retentionMoneyBond) {
+      setBondDefaults(responseData.retentionMoneyBond);
+    }
 
     removeUnnecessaryFieldsForLgCreate(responseData);
     removeUnnecessaryFields(responseData);
     // const validate = bondRequiredFields(responseData)
     // if(!validate) return toast.error("Please Select at least one Bond");
-    convertStringValueToDate(responseData)
+    convertStringValueToDate(responseData);
     // console.log("🚀 ~ handleFinalSubmission ~ responseData SubmittingBIDBOND:", responseData?.bidBond?.Contract);
     // console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond DATE:", responseData?.advancePaymentBond?.Contract);
     // console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond DATE:", responseData?.performanceBond?.Contract)
@@ -221,7 +235,10 @@ export default function LgIssuance() {
       );
       setIsLoading(false);
     } catch (validationError) {
-      console.log("🚀 ~ handleFinalSubmission ~ validationError", validationError);
+      console.log(
+        "🚀 ~ handleFinalSubmission ~ validationError",
+        validationError
+      );
       if (validationError instanceof Yup.ValidationError) {
         handleValidationErrors(validationError);
       } else {
@@ -238,10 +255,7 @@ export default function LgIssuance() {
     delete responseData.__v;
     delete responseData.refId;
     delete responseData.createdBy;
-
   };
-
-
 
   // Function to handle API responses
   const handleResponse = async (
@@ -267,7 +281,7 @@ export default function LgIssuance() {
       const fullErrorMessage = error.errors[0]; // Assume errors[0] contains the full error message
 
       // Extract the relevant part of the error message
-      const relevantErrorMessage = fullErrorMessage.split('\n')[0].trim(); // Get the first line and trim any extra spaces
+      const relevantErrorMessage = fullErrorMessage.split("\n")[0].trim(); // Get the first line and trim any extra spaces
 
       // Display the relevant error message
       toast.error(`Validation Error: ${relevantErrorMessage}`);
@@ -275,7 +289,6 @@ export default function LgIssuance() {
       toast.error("An unexpected error occurred.");
     }
   };
-
 
   const handleStepCompletion = (index: number, status: boolean) => {
     setStepStatus(index, status);
@@ -449,7 +462,7 @@ export default function LgIssuance() {
             type="button"
             variant="ghost"
             className="!bg-[#F1F1F5] w-1/3"
-          // disabled={loader}
+            // disabled={loader}
           >
             {loader ? <Loader2 className="animate-spin" /> : "Save as draft"}
           </Button>

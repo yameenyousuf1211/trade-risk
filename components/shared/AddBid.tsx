@@ -9,7 +9,11 @@ import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker, Loader } from "../helpers";
 import Image from "next/image";
-import { convertDateAndTimeToString, convertDateToCommaString } from "@/utils";
+import {
+  convertDate,
+  convertDateAndTimeToString,
+  convertDateToCommaString,
+} from "@/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { addBidTypes } from "@/validation/bids.validation";
@@ -61,6 +65,7 @@ export const AddBid = ({
   border,
   id,
   setIsAddNewBid,
+  isAddNewBid = false,
   isCorporate,
   isBank,
   bidData,
@@ -109,6 +114,9 @@ export const AddBid = ({
       });
       queryClient.invalidateQueries({
         queryKey: ["fetch-lcs"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["single-lc"],
       });
     },
   });
@@ -196,7 +204,7 @@ export const AddBid = ({
     }
   }
 
-  const computedStatus = userBidStatus || triggerTitle || lcData?.status;
+  const computedStatus = userBidStatus || lcData?.status || triggerTitle;
 
   return (
     <Dialog>
@@ -645,7 +653,9 @@ export const AddBid = ({
             {/* Right Section */}
             <div className="w-full h-full flex flex-col justify-start px-5 overflow-y-auto max-h-[75vh]">
               <p className="text-xl font-semibold pt-5">
-                {computedStatus == "Add bid" ? "Submit Your Bid" : "View Bids"}
+                {computedStatus == "Add bid" || !isInfo
+                  ? "Submit Your Bid"
+                  : "View Bids"}
               </p>
               {isInfo ? (
                 // This is where we filter the bids for the logged-in user
@@ -717,22 +727,6 @@ export const AddBid = ({
                               </div>
 
                               {/* Discounting Base Rate */}
-                              <div
-                                className={
-                                  bid.status === "Expired" ? "opacity-50" : ""
-                                }
-                              >
-                                <p className="mb-1 text-sm text-para font-roboto">
-                                  Discount Spread
-                                </p>
-                                <p className="text-lg font-semibold">
-                                  {bid
-                                    ? bid.discountBaseRate
-                                      ? bid.discountBaseRate + "% per annum"
-                                      : "Not Applicable"
-                                    : "KIBOR + "}
-                                </p>
-                              </div>
 
                               {/* Country */}
                               <div
@@ -753,35 +747,23 @@ export const AddBid = ({
                                   bid.status === "Expired" ? "opacity-50" : ""
                                 }
                               >
-                                <p className="text-sm text-para font-roboto">
-                                  Confirmation Rate
+                                <p className="mb-1 text-sm text-para font-roboto">
+                                  Bid Received
                                 </p>
-                                <p className="text-lg font-semibold text-text">
-                                  {bid ? bid.confirmationPrice : "1.75"}%{" "}
-                                  {bid?.perAnnum ? "per annum" : "flat"}
+                                <p className="text-lg font-semibold">
+                                  {convertDate(bid.createdAt)}
                                 </p>
                               </div>
-
                               <div
                                 className={
                                   bid.status === "Expired" ? "opacity-50" : ""
                                 }
                               >
-                                <p className="text-sm text-para font-roboto">
-                                  Discounting Base Rate
+                                <p className="mb-1 text-sm text-para font-roboto">
+                                  Bid Expiry
                                 </p>
                                 <p className="font-semibold text-lg">
-                                  {bid
-                                    ? !bid.discountBaseRate && "Not Applicable"
-                                    : "KIBOR + "}
-                                  <span className="text-text">
-                                    {bid
-                                      ? bid.discountBaseRate
-                                        ? bid.discountBaseRate + "% per annum"
-                                        : ""
-                                      : ""}
-                                    {!bid && "2.22 % per annum"}
-                                  </span>
+                                  {convertDate(bid.bidValidity)}
                                 </p>
                               </div>
                               <div
@@ -861,12 +843,21 @@ export const AddBid = ({
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="confirmation"
-                      className="block font-semibold mb-2"
-                    >
-                      {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label
+                        htmlFor="confirmation"
+                        className="block font-semibold mb-2"
+                      >
+                        {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
+                      </label>
+                      <p className="text-xs text-[#29C084]">
+                        Client&apos;s Expected Price:{" "}
+                        {lcData?.type === "LC Confirmation"
+                          ? lcData?.confirmationInfo?.pricePerAnnum
+                          : lcData?.discountingInfo?.pricePerAnnum}{" "}
+                        P.A
+                      </p>
+                    </div>
                     <input
                       placeholder="Enter your pricing per annum (%)"
                       type="text"
@@ -904,31 +895,6 @@ export const AddBid = ({
                       {errors.validity.message}
                     </span>
                   )}
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <label
-                        htmlFor="confirmation"
-                        className="block font-semibold mb-2"
-                      >
-                        {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
-                      </label>
-                      <p className="text-xs text-[#29C084]">
-                        Client&apos;s Expected Price:{" "}
-                        {lcData?.type === "LC Confirmation"
-                          ? lcData?.confirmationInfo?.pricePerAnnum
-                          : lcData?.discountingInfo?.pricePerAnnum}{" "}
-                        P.A
-                      </p>
-                    </div>
-                    <input
-                      placeholder="Enter your pricing per annum (%)"
-                      type="text"
-                      inputMode="numeric"
-                      className={cn(
-                        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      )}
-                    />
-                  </div>
                   {isDiscount && (
                     <div className="flex gap-3">
                       {/* <BgRadioInput

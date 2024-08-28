@@ -34,7 +34,6 @@ export const DisclaimerDialog = ({
     }, 1000);
     const handleScroll = () => {
       console.log("Scrolling...");
-      // console.log(ref.current.scrollTop + ref.current.clientHeight);
       console.log(ref.current?.scrollHeight, "sc");
       if (
         ref.current &&
@@ -101,23 +100,23 @@ export const DisclaimerDialog = ({
             intrinsically linked to the precision of data entry and appropriate
             utilization by end-users. It is imperative that users assume full
             responsibility for inputting correct, comprehensive, and up-to-date
-            information. The software's algorithms and decision-making processes
-            are only as reliable as the data they are fed, emphasizing the
-            critical role of user diligence in maintaining the integrity of the
-            system.
+            information. The software&apos;s algorithms and decision-making
+            processes are only as reliable as the data they are fed, emphasizing
+            the critical role of user diligence in maintaining the integrity of
+            the system.
           </p>
           <p>
-            3. <strong>Bid Acceptance Mechanism:</strong> The software's
+            3. <strong>Bid Acceptance Mechanism:</strong> The software&apos;s
             sophisticated bid acceptance functionality has been meticulously
             engineered to significantly enhance efficiency in the complex Letter
             of Credit request process. However, it is crucial to understand that
             bid acceptance decisions should not be made solely based on the
-            software's recommendations. These decisions must be grounded in a
-            thorough, multi-faceted evaluation, strictly adhering to the
-            organization's established internal procedures, relevant regulatory
-            guidelines, and industry best practices. The software serves as a
-            powerful tool to inform decision-making, not to replace human
-            judgment and expertise.
+            software&apos;s recommendations. These decisions must be grounded in
+            a thorough, multi-faceted evaluation, strictly adhering to the
+            organization&apos;s established internal procedures, relevant
+            regulatory guidelines, and industry best practices. The software
+            serves as a powerful tool to inform decision-making, not to replace
+            human judgment and expertise.
           </p>
           <p>
             4. <strong>Robust Security and Privacy Measures:</strong> We have
@@ -172,11 +171,11 @@ export const DisclaimerDialog = ({
             8. <strong>Data Retention and Archiving:</strong> The software
             incorporates advanced data retention and archiving capabilities to
             support audit trails and historical analysis. Users should be aware
-            of and comply with their organization's data retention policies and
-            relevant regulatory requirements regarding the storage and deletion
-            of transaction records and related data. While the software provides
-            tools for data management, ultimate responsibility for data
-            governance lies with the user's organization.
+            of and comply with their organization&apos;s data retention policies
+            and relevant regulatory requirements regarding the storage and
+            deletion of transaction records and related data. While the software
+            provides tools for data management, ultimate responsibility for data
+            governance lies with the user&apos;s organization.
           </p>
           <p>
             9. <strong>Training and Support:</strong> To maximize the benefits
@@ -186,8 +185,8 @@ export const DisclaimerDialog = ({
             but also best practices in export management and Letter of Credit
             processes. Our dedicated support team is available to address
             queries, provide guidance, and resolve issues promptly, ensuring a
-            smooth user experience and optimal utilization of the software's
-            capabilities.
+            smooth user experience and optimal utilization of the
+            software&apos;s capabilities.
           </p>
           <p>
             10. <strong>Limitation of Liability:</strong> While we strive for
@@ -229,7 +228,7 @@ export const DisclaimerDialog = ({
             understanding and compliance with these terms are crucial for
             maintaining the integrity, security, and effectiveness of our export
             management ecosystem. We are confident that this software will
-            significantly contribute to your organization's efficiency and
+            significantly contribute to your organization&apos;s efficiency and
             success in navigating the complexities of international trade and
             Letter of Credit transactions.
           </p>

@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { DatePicker } from "@/components/helpers";
 import { ConfirmationModal } from "../ConfirmationModal";
 import { formatAmount } from "@/utils";
+import { formatFirstLetterOfWord } from "../helper";
 
 interface BidPreviewProps {
   onBack: () => void;
@@ -87,8 +88,10 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
               className="p-3 border border-[#E2E2EA] mb-2 rounded-md"
             >
               <h4 className="mb-2 text-base">
-                <span className="text-[#5625F2]">{bankDetails.name}</span>,{" "}
-                {bankDetails.country}
+                <span className="text-[#5625F2]">
+                  {formatFirstLetterOfWord(bankDetails.name)}
+                </span>
+                , {formatFirstLetterOfWord(bankDetails.country)}
               </h4>
               {bankDetails.lgTypes.map((lgType: any) => (
                 <div
@@ -107,14 +110,14 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                       {lgType.type} - {lgType.currencyType}{" "}
                       {formatAmount(lgType.amount)}
                     </p>
-                    {userBidStatus === "Accepted" &&
+                    {userBidStatus.status === "Accepted" &&
                     lgType.status === "Accepted" ? (
                       <div className="flex gap-2 justify-end items-center">
                         <h6 className="text-[0.65rem] bg-[#29C084] p-1 text-white">
                           Accepted
                         </h6>
                       </div>
-                    ) : userBidStatus === "Accepted" &&
+                    ) : userBidStatus.status === "Accepted" &&
                       lgType.status === "Rejected" ? (
                       <div className="flex gap-2 justify-end items-center">
                         <h6 className="text-[0.7rem] bg-[#F1F1F5]  p-1">

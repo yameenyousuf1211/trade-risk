@@ -170,9 +170,12 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     }
   }, [data.bids, data.issuingBanks, user._id]);
 
-  const allBondsFilled = availableBondTypes.every((bond) =>
-    Object.values(bondPrices).some((prices) => prices[bond.type])
-  );
+  const selectedBond = availableBondTypes.find(
+    (bond) => bond.type === selectedLgType
+  )?.value;
+
+  const isSelectedLgTypeFilled =
+    selectedBank && bondPrices[selectedBank]?.[selectedLgType];
 
   const handleSubmitOrNext = (bidValidity: string) => {
     if (!selectedLgType || !selectedBank) return;
@@ -187,45 +190,61 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
       }));
     }
 
-    if (allBondsFilled) {
-      const newBids = Object.entries(bondPrices).flatMap(([bank, bonds]) =>
-        Object.entries(bonds).map(([bondType, price]) => ({
-          bank,
-          bidType: bondType,
-          price: parseFloat(price || "0"),
-          perAnnum: true,
-        }))
-      );
-      const groupedBidsWithBankData = groupBidsByBank(
-        newBids,
-        data.issuingBanks,
-        bondTypes
-      );
-      setGroupedBids(Object.values(groupedBidsWithBankData)); // Convert to array for rendering
+    const selectedTypeLgFilled = bondPrices[selectedBank]?.[selectedLgType];
 
-      const requestData = {
-        bidType: "LG Issuance",
-        bidValidity: bidValidity,
-        lc: data._id,
-        bids: [...data.bids, ...newBids],
-      };
+    const newBids = Object.entries(bondPrices).flatMap(([bank, bonds]) =>
+      Object.entries(bonds).map(([bondType, price]) => ({
+        bank,
+        bidType: bondType,
+        price: parseFloat(price || "0"),
+        perAnnum: true,
+      }))
+    );
 
-      if (!showPreview) {
-        setShowPreview(true);
-        return;
-      }
+    const groupedBidsWithBankData = groupBidsByBank(
+      newBids,
+      data.issuingBanks,
+      bondTypes
+    );
+    setGroupedBids(Object.values(groupedBidsWithBankData));
 
-      mutation.mutate(requestData);
-    } else {
+    const requestData = {
+      bidType: "LG Issuance",
+      bidValidity: bidValidity,
+      lc: data._id,
+      bids: [...data.bids, ...newBids],
+    };
+
+    if (!showPreview && selectedTypeLgFilled) {
+      setShowPreview(true);
+      return;
+    }
+
+    if (!selectedTypeLgFilled) {
       const currentIndex = availableBondTypes.findIndex(
         (bond) => bond.type === selectedLgType
       );
-      const nextIndex = (currentIndex + 1) % availableBondTypes.length;
-
-      // Move to the next bond type regardless of whether a price was entered
-      setSelectedLgType(availableBondTypes[nextIndex].type);
+      let nextIndex = (currentIndex + 1) % availableBondTypes.length;
+      while (nextIndex !== currentIndex) {
+        const nextBondType = availableBondTypes[nextIndex].type;
+        if (!bondPrices[selectedBank]?.[nextBondType]) {
+          setSelectedLgType(nextBondType);
+          setPricingValue("");
+          return;
+        }
+        nextIndex = (nextIndex + 1) % availableBondTypes.length;
+      }
+      const currentBankIndex = data.issuingBanks.findIndex(
+        (bank) => bank.bank === selectedBank
+      );
+      const nextBankIndex = (currentBankIndex + 1) % data.issuingBanks.length;
+      setSelectedBank(data.issuingBanks[nextBankIndex].bank);
+      setSelectedLgType(availableBondTypes[0].type);
       setPricingValue("");
+      return;
     }
+
+    mutation.mutate(requestData);
   };
 
   const handleBack = () => {
@@ -244,10 +263,6 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     );
     setSelectedLgType(availableBondTypes[0].type);
   };
-
-  const selectedBond = availableBondTypes.find(
-    (bond) => bond.type === selectedLgType
-  )?.value;
 
   return (
     <div className="mt-0 flex w-full h-full items-start justify-between overflow-y-scroll">
@@ -390,12 +405,16 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
               onClick={() => handleSubmitOrNext(data.lastDateOfReceivingBids)}
               type="submit"
               className={`mt-4 h-12 w-full ${
-                pricingValue || allBondsFilled
+                pricingValue
                   ? "bg-[#44C894] text-white"
                   : "bg-[#D3D3D3] text-[#ADADAD]"
               }`}
             >
-              {allBondsFilled ? "Preview" : pricingValue ? "Next" : "Skip"}
+              {isSelectedLgTypeFilled
+                ? "Preview Bid"
+                : pricingValue
+                ? "Next"
+                : "Skip"}
             </Button>
           </div>
         </div>
@@ -404,14 +423,16 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           onBack={handleBack}
           bidValidity={data.lastDateOfReceivingBids}
           handleSubmit={handleSubmitOrNext}
-          bids={groupedBids} // Pass the grouped bids as an array
+          bids={groupedBids}
           userBidStatus={userBidStatus}
           bidValidityDate={
             userBid ? convertDateToCommaString(userBid.bidValidity) : undefined
           }
           bidNumber={userBid ? userBid._id.substring(0, 6) : undefined}
           handleNewBid={handleNewBid}
-          allBondsFilled={allBondsFilled}
+          allBondsFilled={Object.values(bondPrices).some((bank) =>
+            Object.values(bank).every((price) => price !== null && price !== "")
+          )}
         />
       )}
     </div>

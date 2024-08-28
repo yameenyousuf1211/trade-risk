@@ -1,4 +1,4 @@
-import { BgRadioInputLG } from "../helper";
+import { BgRadioInputLG, formatFirstLetterOfWord } from "../helper";
 import { Bank, BankData } from "../../../types/LGBankTypes";
 
 interface BankSelectionProps {
@@ -12,7 +12,7 @@ export const BankSelection: React.FC<BankSelectionProps> = ({
   selectedBank,
   setSelectedBank,
 }) => {
-  console.log(bankData,"bankData")
+  console.log(bankData, "bankData");
   return (
     <div className="bg-[#F5F7F9] px-2 py-1 border border-[#E2E2EA] rounded-md">
       <h3 className="mb-1">Bids for the following banks are requested</h3>
@@ -21,8 +21,8 @@ export const BankSelection: React.FC<BankSelectionProps> = ({
           <BgRadioInputLG
             key={index}
             id={`bank_${bank._id}`}
-            label={bank.bank}
-            sublabel={bank.country}
+            label={formatFirstLetterOfWord(bank.bank)}
+            sublabel={formatFirstLetterOfWord(bank.country)}
             value={bank.bank}
             checked={selectedBank === bank.bank}
             name="bank"

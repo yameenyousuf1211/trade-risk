@@ -45,9 +45,8 @@ export const Step2 = ({
   let paymentTerms = watch("paymentTerms");
   let extraInfo = watch("extraInfo") || { days: 0, other: "" };
 
-  
   const [currencyValue, setCurrencyValue] = useState<string | number>(
-    amount || "",
+    amount || ""
   );
   const [rawValue, setRawValue] = useState("");
   const [otherValue, setOtherValue] = useState("");
@@ -101,10 +100,10 @@ export const Step2 = ({
     if (amount) {
       const digitsOnly = amount?.toString().replace(/\D/g, ""); // Remove non-digit characters
       if (digitsOnly) {
-        const formattedValue = parseInt(digitsOnly).toLocaleString() + ".00"; // Format with commas and add ".00"
+        const formattedValue = parseInt(digitsOnly).toLocaleString(); // Format with commas and add ".00"
         setCurrencyValue(formattedValue); // Set formatted value with ".00"
         setRawValue(amount); // Set raw value without formatting
-        
+
         setValue("amount", amount.toString()); // Set the raw amount in the form state
       }
     }
@@ -121,8 +120,6 @@ export const Step2 = ({
   //   setValue("extraInfo", { days, other: otherValue });
   // }, [days, otherValue]);
 
-
-  
   return (
     <div
       id="step2"
@@ -235,7 +232,10 @@ export const Step2 = ({
                   className="max-w-[150px] border-none bg-[#F5F7F9] text-sm text-lightGray outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   onChange={(e: any) => {
                     if (e.target.value > 999) return;
-                    else setDays(Number(e.target.value));
+                    else {
+                      setValue("extraInfo.other", e.target.value);
+                      setDays(Number(e.target.value));
+                    }
                   }}
                 />
                 <div className="flex items-center gap-x-1">
@@ -244,7 +244,11 @@ export const Step2 = ({
                     className="center mb-2 size-6 rounded-sm border border-para"
                     onClick={() => {
                       if (days >= 999) return;
-                      else setDays((prev: any) => Number(prev) + 1);
+                      else {
+                        const newDays = Number(days) + 1;
+                        setDays(newDays);
+                        setValue("extraInfo.days", newDays);
+                      }
                     }}
                   >
                     +
@@ -254,10 +258,11 @@ export const Step2 = ({
                     className="center mb-2 size-6 rounded-sm border border-para"
                     onClick={() => {
                       if (days >= 999) return;
-                      else
-                        setDays((prev: any) =>
-                          Number(prev) > 1 ? Number(prev) - 1 : 1
-                        );
+                      else {
+                        const newDays = Number(days) > 1 ? Number(days) - 1 : 1;
+                        setDays(newDays);
+                        setValue("extraInfo.days", newDays);
+                      }
                     }}
                   >
                     -

@@ -491,7 +491,7 @@ export const TableDialog = ({
                       label="LC Issuing Bank"
                       value={
                         (lcData &&
-                          lcData?.issuingBank?.length > 0 &&
+                          lcData?.issuingBanks?.length > 0 &&
                           lcData?.issuingBanks[0]?.bank) ||
                         ""
                       }

@@ -84,7 +84,7 @@ export const RequestTable = ({
 
   const getCountryFlagByName = (countryName: string): string | undefined => {
     const country = allCountries.find(
-      (c: Country) => c.name.toLowerCase() === countryName?.toLowerCase(),
+      (c: Country) => c.name.toLowerCase() === countryName?.toLowerCase()
     );
     return country ? country.flag : undefined;
   };
@@ -277,11 +277,11 @@ export const RequestTable = ({
                         item?.period?.startDate
                           ? convertDateToString(item?.period?.startDate)
                           : item?.startDate
-                            ? convertDateToString((item as IRisk)?.startDate)
-                            : (item as IRisk)?.createdAt &&
-                              convertDateToString(
-                                new Date((item as IRisk)?.createdAt),
-                              )
+                          ? convertDateToString((item as IRisk)?.startDate)
+                          : (item as IRisk)?.createdAt &&
+                            convertDateToString(
+                              new Date((item as IRisk)?.createdAt)
+                            )
                       }
                     />
                     <TableDataCell
@@ -289,12 +289,12 @@ export const RequestTable = ({
                         item?.period?.endDate
                           ? convertDateToString(item?.period?.endDate)
                           : item?.expiryDate
-                            ? convertDateToString((item as IRisk)?.lastDateOfReceivingBids)
-                            : item?.lastDateOfReceivingBids
-                              ? convertDateToString(
-                                  item?.lastDateOfReceivingBids
-                                )
-                              : "-"
+                          ? convertDateToString(
+                              (item as IRisk)?.lastDateOfReceivingBids
+                            )
+                          : item?.lastDateOfReceivingBids
+                          ? convertDateToString(item?.lastDateOfReceivingBids)
+                          : "-"
                       }
                     />
                     <TableDataCell
@@ -308,11 +308,15 @@ export const RequestTable = ({
                         <p className="emoji-font text-[16px]">
                           {item.issuingBanks?.[0]?.country &&
                             allCountries &&
-                            getCountryFlagByName(item.issuingBanks?.[0]?.country)}
+                            getCountryFlagByName(
+                              item.issuingBanks?.[0]?.country
+                            )}
                         </p>
                         <div
                           className={`truncate capitalize text-lightGray ${
-                            item.issuingBanks?.[0]?.bank ? "" : "flex w-full justify-center"
+                            item.issuingBanks?.[0]?.bank
+                              ? ""
+                              : "flex w-full justify-center"
                           }`}
                         >
                           {item.issuingBanks?.[0]?.bank || "-"}
@@ -346,24 +350,24 @@ export const RequestTable = ({
                     <TableDataCell
                       data={
                         item.type == "LG Issuance"
-                          ?  + getTotal(item).toLocaleString() + ".00"
+                          ? +getTotal(item) + ".00"
                           : item?.amount
-                            ? `${
-                                item?.currency
-                                  ? item.currency.toUpperCase()
-                                  : "USD"
-                              } ` +
-                              item?.amount?.price?.toLocaleString() +
-                              ".00"
-                            : `${
-                                item?.currency
-                                  ? item.currency.toUpperCase()
-                                  : "USD"
-                              } ` +
-                              (
-                                item as IRisk
-                              )?.riskParticipationTransaction?.amount?.toLocaleString() +
-                              ".00"
+                          ? `${
+                              item?.currency
+                                ? item.currency.toUpperCase()
+                                : "USD"
+                            } ` +
+                            item?.amount?.price?.toLocaleString() +
+                            ".00"
+                          : `${
+                              item?.currency
+                                ? item.currency.toUpperCase()
+                                : "USD"
+                            } ` +
+                            (
+                              item as IRisk
+                            )?.riskParticipationTransaction?.amount?.toLocaleString() +
+                            ".00"
                       }
                     />
                     <TableCell className="max-w-[200px] px-1 py-1">
@@ -399,7 +403,7 @@ export const RequestTable = ({
                           ? convertDateToString(item?.period?.startDate)
                           : (item as IRisk)?.createdAt &&
                             convertDateToString(
-                              new Date((item as IRisk)?.createdAt),
+                              new Date((item as IRisk)?.createdAt)
                             )
                       }
                     />
@@ -408,9 +412,9 @@ export const RequestTable = ({
                         (item as ILcs)?.period
                           ? convertDateToString(item?.period?.endDate)
                           : (item as ILcs)?.lastDateOfReceivingBids
-                            ? convertDateToString(item?.lastDateOfReceivingBids)
-                            : (item as IRisk)?.expiryDate &&
-                              convertDateToString((item as IRisk)?.expiryDate)
+                          ? convertDateToString(item?.lastDateOfReceivingBids)
+                          : (item as IRisk)?.expiryDate &&
+                            convertDateToString((item as IRisk)?.expiryDate)
                       }
                     />
                     <TableDataCell
@@ -424,11 +428,15 @@ export const RequestTable = ({
                         <p className="emoji-font text-[16px]">
                           {item.issuingBanks?.[0]?.country &&
                             allCountries &&
-                            getCountryFlagByName(item.issuingBanks?.[0]?.country)}
+                            getCountryFlagByName(
+                              item.issuingBanks?.[0]?.country
+                            )}
                         </p>
                         <div
                           className={`truncate capitalize text-lightGray ${
-                            item.issuingBanks?.[0]?.bank ? "" : "flex w-full justify-center"
+                            item.issuingBanks?.[0]?.bank
+                              ? ""
+                              : "flex w-full justify-center"
                           }`}
                         >
                           {item.issuingBanks?.[0]?.bank || "-"}
@@ -454,24 +462,24 @@ export const RequestTable = ({
                     <TableDataCell
                       data={
                         item.type == "LG Issuance"
-                          ? "USD " + getTotal(item).toLocaleString() + ".00"
+                          ? "USD " + getTotal(item) + ".00"
                           : item?.amount
-                            ? `${
-                                item?.currency
-                                  ? item.currency.toUpperCase()
-                                  : "USD"
-                              } ` +
-                              item?.amount?.price?.toLocaleString() +
-                              ".00"
-                            : `${
-                                item?.currency
-                                  ? item.currency.toUpperCase()
-                                  : "USD"
-                              } ` +
-                              (
-                                item as IRisk
-                              )?.riskParticipationTransaction?.amount?.toLocaleString() +
-                              ".00"
+                          ? `${
+                              item?.currency
+                                ? item.currency.toUpperCase()
+                                : "USD"
+                            } ` +
+                            item?.amount?.price?.toLocaleString() +
+                            ".00"
+                          : `${
+                              item?.currency
+                                ? item.currency.toUpperCase()
+                                : "USD"
+                            } ` +
+                            (
+                              item as IRisk
+                            )?.riskParticipationTransaction?.amount?.toLocaleString() +
+                            ".00"
                       }
                     />
 
@@ -486,18 +494,15 @@ export const RequestTable = ({
                       </Button>
                     </TableCell>
                     <TableCell className="max-w-[200px] px-1 py-1">
-                      {
-                        item.type == "LG Issuance" ? ( 
-                          <LGTableBidStatus data={item}/>
-                        ) : (
-
-                          <TableDialog
-                            lcId={item._id}
-                            bids={item.bids}
-                            isRisk={isRisk}
-                          />
-                        )
-                      }
+                      {item.type == "LG Issuance" ? (
+                        <LGTableBidStatus data={item} />
+                      ) : (
+                        <TableDialog
+                          lcId={item._id}
+                          bids={item.bids}
+                          isRisk={isRisk}
+                        />
+                      )}
                     </TableCell>
                   </TableRow>
                 ))

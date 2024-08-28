@@ -106,6 +106,7 @@ const LgStep5: React.FC<LgStepsProps5> = ({
             lgDetailsType ===
             "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)"
           }
+          extraClassName="h-[60px]"
         />
         <BgRadioInput
           id="lgDetails2"
@@ -114,6 +115,7 @@ const LgStep5: React.FC<LgStepsProps5> = ({
           value="Choose any other type of LGs"
           register={register}
           checked={lgDetailsType === "Choose any other type of LGs"}
+          extraClassName="h-[60px]"
         />
       </div>
       <LgStep5Helper

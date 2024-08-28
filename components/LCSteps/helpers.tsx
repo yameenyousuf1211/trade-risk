@@ -28,7 +28,7 @@ export const DDInput = ({
   flags,
   type,
   onSelectValue,
-  extStyle = ""
+  extStyle = "",
 }: {
   id: string;
   label: string;
@@ -48,8 +48,9 @@ export const DDInput = ({
   return (
     <label
       id={id}
-      className={`${type !== "baseRate" && "border"
-        } text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white ${extStyle}`}
+      className={`${
+        type !== "baseRate" && "border"
+      } text-sm border-borderCol p-1 px-3 rounded-md w-full flex items-center justify-between bg-white ${extStyle}`}
     >
       {type !== "baseRate" && <p className="text-lightGray">{label}</p>}
       <Popover open={ddOpen} onOpenChange={setDdOpen} modal={true}>
@@ -58,30 +59,32 @@ export const DDInput = ({
             variant="outline"
             role="combobox"
             aria-expanded={ddOpen}
-            className={`capitalize w-fit border-none justify-between font-normal text-sm ${value ? "text-black" : "text-gray-500"
-              }`}
+            className={`capitalize w-fit border-none justify-between font-normal text-sm ${
+              value ? "text-black" : "text-gray-500"
+            }`}
             disabled={disabled}
           >
             {ddVal
               ? data?.find(
-                (country: string) =>
-                  country.toLowerCase() === ddVal.toLowerCase()
-              )
+                  (country: string) =>
+                    country.toLowerCase() === ddVal.toLowerCase()
+                )
               : value
-                ? value
-                : placeholder}
+              ? value
+              : placeholder}
             <ChevronDown
-              className={`${type === "baseRate"
+              className={`${
+                type === "baseRate"
                   ? "ml-6"
                   : type === "styles"
-                    ? "ml-6"
-                    : "ml-2"
-                } h-4 w-4 shrink-0 opacity-50`}
+                  ? "ml-6"
+                  : "ml-2"
+              } h-4 w-4 shrink-0 opacity-50`}
             />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-fit p-0">
-          <Command >
+          <Command>
             <CommandInput placeholder={placeholder} />
             <CommandEmpty>No country found.</CommandEmpty>
             <CommandGroup className="max-h-[300px] overflow-y-auto">
@@ -133,7 +136,8 @@ export const BgRadioInput = ({
   register,
   onChange,
   defaultChecked,
-  disabled = false
+  disabled = false,
+  extraClassName,
 }: {
   id: string;
   label: string;
@@ -143,12 +147,16 @@ export const BgRadioInput = ({
   defaultChecked?: boolean;
   disabled?: boolean;
   register?: any;
+  extraClassName?: string;
 }) => {
   return (
     <label
       htmlFor={id}
-      className={`px-3 py-4 w-full transition-colors duration-100 ${checked ? "bg-[#EEE9FE]" : "border border-borderCol bg-white"
-        } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm  ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}
+      className={`px-3 py-4 w-full transition-colors duration-100 ${
+        checked ? "bg-[#EEE9FE]" : "border border-borderCol bg-white"
+      } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm  ${
+        disabled ? "cursor-not-allowed" : "cursor-pointer"
+      } ${extraClassName}`}
     >
       <input
         type="radio"

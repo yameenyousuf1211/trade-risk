@@ -46,7 +46,7 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
           {...props}
         />
       );
-    },
+    }
   );
 PhoneInput.displayName = "PhoneInput";
 
@@ -69,11 +69,11 @@ const InputComponent = React.forwardRef<
         });
       }}
       className={cn(
-        "rounded-lg border border-[#E2E2EA]",
+        "rounded-lg border border-[#E2E2EA] mt-1",
         isOnBoarding
           ? "w-full h-[40px] px-2  py-1 text-sm placeholder:px-2 placeholder:text-sm"
           : "p-2", // Conditional styling based on isOnBoarding
-        className,
+        className
       )}
       {...props}
       ref={ref}
@@ -99,7 +99,7 @@ const CountrySelect = ({
     (country: RPNInput.Country) => {
       onChange(country);
     },
-    [onChange],
+    [onChange]
   );
 
   return (
@@ -112,12 +112,14 @@ const CountrySelect = ({
             "flex gap-4",
             isOnBoarding
               ? "my-1 w-[99px] h-[40px] gap-0 !rounded-[8px] rounded-none !border border-[#E2E2EA] p-0 py-1"
-              : "p-2",
+              : "p-2"
           )}
           disabled={disabled}
         >
           <span
-            className={`flex items-center ${isOnBoarding ? "mx-1 text-xs" : ""}`}
+            className={`flex items-center ${
+              isOnBoarding ? "mx-1 text-xs" : ""
+            }`}
           >
             {(value && `+${RPNInput.getCountryCallingCode(value)}`) || "+1"}
           </span>
@@ -125,7 +127,7 @@ const CountrySelect = ({
             className={cn(
               "h-4 w-4 opacity-50",
               disabled ? "hidden" : "opacity-100",
-              isOnBoarding ? "mr-1 h-3 w-3" : "-mr-2",
+              isOnBoarding ? "mr-1 h-3 w-3" : "-mr-2"
             )}
           />
         </Button>
@@ -159,7 +161,7 @@ const CountrySelect = ({
                     <CheckIcon
                       className={cn(
                         "ml-auto h-4 w-4",
-                        option.value === value ? "opacity-100" : "opacity-0",
+                        option.value === value ? "opacity-100" : "opacity-0"
                       )}
                     />
                   </CommandItem>

@@ -55,9 +55,9 @@ export const BgRadioInputLG = ({
         )}
         {sidesublabel && (
           <div className="flex">
-            <Check className="text-green-300" />
+            <Check className="text-green-300" size={20} />
             <span className="text-[#29C084] text-sm ml-1">
-              Your Price: {sidesublabel}% P.A
+              Your Price: {sidesublabel} P.A
             </span>
           </div>
         )}
@@ -102,4 +102,42 @@ export const getLgBondTotal = (item: any) => {
     performanceBond +
     retentionMoneyBond;
   return total;
+};
+
+export const formatFirstLetterOfWord = (name: string) => {
+  const segmenter = new Intl.Segmenter("en", { granularity: "word" });
+  const segments = Array.from(segmenter.segment(name));
+
+  let insideParentheses = false;
+  let result = "";
+
+  for (let i = 0; i < segments.length; i++) {
+    const { segment } = segments[i];
+    const trimmedSegment = segment.trim();
+
+    // Check for opening and closing parentheses
+    if (trimmedSegment === "(") {
+      insideParentheses = true;
+      result += "(";
+    } else if (trimmedSegment === ")") {
+      insideParentheses = false;
+      result += ")";
+    } else if (trimmedSegment === "") {
+      // Preserve spaces
+      result += segment;
+    } else if (insideParentheses) {
+      // Capitalize everything inside parentheses
+      result += segment.toUpperCase();
+    } else {
+      // Original logic for words outside parentheses
+      const lowerWord = trimmedSegment.toLowerCase();
+      if (["al", "of", "and", "in", "for"].includes(lowerWord)) {
+        result += lowerWord;
+      } else {
+        result += lowerWord.charAt(0).toUpperCase() + lowerWord.slice(1);
+      }
+    }
+  }
+
+  return result;
 };

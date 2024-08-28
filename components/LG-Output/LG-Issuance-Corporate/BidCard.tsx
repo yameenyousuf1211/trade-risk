@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Check, X } from "lucide-react";
-import { BgRadioInputLG } from "../helper";
+import { BgRadioInputLG, formatFirstLetterOfWord } from "../helper";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "../ConfirmationModal";
 import {
@@ -20,10 +20,23 @@ export const BidCard = ({
 }) => {
   const queryClient = useQueryClient();
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-  const [selectedBank, setSelectedBank] = useState<string | null>(
-    issuingBanks?.[0]?.bank || null
-  );
   const [localBids, setLocalBids] = useState(bidDetail.bids);
+  const [filteredIssuingBanks, setFilteredIssuingBanks] =
+    useState(issuingBanks);
+  const [selectedBank, setSelectedBank] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Filter out banks without any bonds
+    const banksWithBonds = issuingBanks.filter((bank: any) =>
+      localBids.some((bid: any) => bid.bank === bank.bank)
+    );
+    setFilteredIssuingBanks(banksWithBonds);
+
+    // Set the first bank with bonds as selected
+    if (banksWithBonds.length > 0) {
+      setSelectedBank(banksWithBonds[0].bank);
+    }
+  }, [issuingBanks]);
 
   const handleBankSelection = (bankName: string) => {
     setSelectedBank(bankName);
@@ -35,15 +48,26 @@ export const BidCard = ({
       | "retentionBond"
       | "performanceBond"
       | "advancePaymentBond",
-    status: "Accepted" | "Rejected"
+    status: "Accepted" | "Rejected",
+    bank: string
   ) => {
-    setLocalBids((prevBids) =>
-      prevBids.map((bankBid: any) =>
-        bankBid.bank === selectedBank && bankBid.bidType === bondType
-          ? { ...bankBid, status }
-          : bankBid
-      )
-    );
+    setLocalBids((prevBids) => {
+      const updatedBids = prevBids.map((bankBid: any) => {
+        if (bankBid.bank === bank && bankBid.bidType === bondType) {
+          return { ...bankBid, status };
+        }
+        // If the status is "Accepted", reject the same bond type in other banks
+        if (
+          status === "Accepted" &&
+          bankBid.bidType === bondType &&
+          bankBid.bank !== bank
+        ) {
+          return { ...bankBid, status: "Rejected" };
+        }
+        return bankBid;
+      });
+      return updatedBids;
+    });
   };
 
   const allBondsResponded = localBids
@@ -92,8 +116,8 @@ export const BidCard = ({
   };
 
   const handleReset = () => {
-    setSelectedBank(issuingBanks?.[0]?.bank || null); // Reset to the first bank
     setLocalBids(bidDetail.bids);
+    setSelectedBank(filteredIssuingBanks[0]?.bank || null);
   };
 
   return (
@@ -125,7 +149,9 @@ export const BidCard = ({
             <p className="text-[#92929D] text-sm">Bid Number</p>
           </div>
           <div className="text-end">
-            <p className="font-semibold text-xl">{bidDetail.bidBy.country}</p>
+            <p className="font-semibold text-xl">
+              {formatFirstLetterOfWord(bidDetail.bidBy.country)}
+            </p>
             <p className="text-[#92929D] text-sm">Country</p>
           </div>
         </div>
@@ -137,19 +163,21 @@ export const BidCard = ({
         >
           <h3 className="col-span-3">Select Issuing Bank</h3>
 
-          {issuingBanks?.map((bank: { bank: string; country: string }) => (
-            <BgRadioInputLG
-              key={bank.bank}
-              id={bank._id}
-              label={bank.bank}
-              sublabel={bank.country}
-              name={bank.bank}
-              value={bank.bank}
-              checked={selectedBank === bank.bank}
-              bgchecked={selectedBank === bank.bank}
-              onChange={() => handleBankSelection(bank.bank)}
-            />
-          ))}
+          {filteredIssuingBanks.map(
+            (bank: { bank: string; country: string }) => (
+              <BgRadioInputLG
+                key={bank.bank}
+                id={bank._id}
+                label={bank.bank}
+                sublabel={bank.country}
+                name={bank.bank}
+                value={bank.bank}
+                checked={selectedBank === bank.bank}
+                bgchecked={selectedBank === bank.bank}
+                onChange={() => handleBankSelection(bank.bank)}
+              />
+            )
+          )}
         </div>
       </div>
 
@@ -157,13 +185,13 @@ export const BidCard = ({
         <div className="px-5 py-5">
           {localBids
             .filter((bankBid: any) => bankBid.bank === selectedBank)
-            .map((bankBid: any) => (
-              <div key={bankBid._id}>
-                <div className="grid grid-cols-3 justify-center py-2">
+            .map((bankBid: any, index: number, array: any[]) => (
+              <div key={bankBid._id} className="mr-5">
+                <div className="grid grid-cols-3 justify-center py-2 items-center">
                   <h4 className="text-sm">{bankBid.bidType}</h4>
-                  <h4 className="text-center text-[11px] font-light text-[#A3A3A9]">
+                  <h4 className="text-center text-sm font-normal text-[#A3A3A9]">
                     Bid Pricing{" "}
-                    <span className="font-normal text-black">
+                    <span className="font-semibold text-black ml-1">
                       {bankBid.price ? `${bankBid.price}%` : "-"}
                     </span>
                   </h4>
@@ -175,13 +203,14 @@ export const BidCard = ({
                     </div>
                   ) : bankBid.status === "Rejected" ? (
                     <div className="flex gap-2 justify-end items-center">
-                      <h6 className="text-[0.7rem] bg-[#F1F1F5]  p-1">
+                      <h6 className="text-[0.7rem] bg-[#F1F1F5] p-1">
                         Rejected
                       </h6>
                     </div>
                   ) : (
                     <div className="flex gap-2 justify-end">
                       <Check
+                        size={20}
                         className={`bg-[#29C084] hover:cursor-pointer`}
                         onClick={() =>
                           handleBondStatusChange(
@@ -190,11 +219,13 @@ export const BidCard = ({
                               | "retentionBond"
                               | "performanceBond"
                               | "advancePaymentBond",
-                            "Accepted"
+                            "Accepted",
+                            selectedBank
                           )
                         }
                       />
                       <X
+                        size={20}
                         className={`bg-[#F1F1F5] hover:cursor-pointer`}
                         onClick={() =>
                           handleBondStatusChange(
@@ -203,13 +234,19 @@ export const BidCard = ({
                               | "retentionBond"
                               | "performanceBond"
                               | "advancePaymentBond",
-                            "Rejected"
+                            "Rejected",
+                            selectedBank
                           )
                         }
                       />
                     </div>
                   )}
                 </div>
+                {index !== array.length - 1 && (
+                  <div className="flex justify-center my-1">
+                    <div className="w-[99%] border-b border-black"></div>
+                  </div>
+                )}
               </div>
             ))}
         </div>

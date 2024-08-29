@@ -187,19 +187,18 @@ export default function LgIssuance() {
   // Function to handle final submissions
   const handleFinalSubmission = async (responseData: any) => {
     const setBondDefaults = (bond: any) => {
-      if (bond.Contract === true) {
-        if (!bond.currencyType) {
-          bond.currencyType = "USD";
-        }
-        if (bond.lgTenor && !bond.lgTenor.lgTenorType) {
-          bond.lgTenor.lgTenorType = "Months";
+      if (bond?.Contract) {
+        bond.currencyType = bond.currencyType ?? "USD";
+        if (bond.lgTenor) {
+          bond.lgTenor.lgTenorType = bond.lgTenor.lgTenorType ?? "Months";
+        } else {
+          bond.lgTenor = { lgTenorType: "Months" };
         }
       }
     };
 
-    if (!responseData.totalContractCurrency) {
-      responseData.totalContractCurrency = "USD";
-    }
+    responseData.totalContractCurrency =
+      responseData.totalContractCurrency ?? "USD";
 
     if (responseData.bidBond) {
       setBondDefaults(responseData.bidBond);

@@ -1,7 +1,11 @@
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { format, isValid } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -13,7 +17,8 @@ export const DatePicker = ({
   name,
   value,
   disabled,
-  isPast
+  isPast,
+  isLg,
 }: {
   value: Date;
   setValue: any;
@@ -24,7 +29,7 @@ export const DatePicker = ({
     after?: Date | undefined;
   };
   isPast?: boolean;
-  
+  isLg?: boolean;
 }) => {
   const [date, setDate] = useState<Date | undefined>(value);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -44,21 +49,42 @@ export const DatePicker = ({
           variant={"outline"}
           className={cn(
             "w-full justify-between text-left font-normal",
-            !date && "text-muted-foreground flex items-center justify-between w-full"
+            !date &&
+              "text-muted-foreground flex items-center justify-between w-full"
           )}
           id="validity"
         >
-          {date && isValid(date) ? format(date, "PPP") : <span>DD/MM/YYYY</span>}
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          {isLg ? (
+            <span className="flex items-center justify-between w-full">
+              <span>Select Date</span>
+              <span className="flex items-center space-x-2">
+                <span>
+                  {date && isValid(date)
+                    ? format(date, "dd/MM/yyyy")
+                    : "DD/MM/YYYY"}
+                </span>
+                <CalendarIcon className="h-4 w-4" />
+              </span>
+            </span>
+          ) : (
+            <span>
+              {date && isValid(date) ? format(date, "PPP") : "DD/MM/YYYY"}
+              <CalendarIcon className="h-4 w-4" />
+            </span>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
         <ValidatingCalendar
-        disabled={disabled}
+          disabled={disabled}
           initialDate={date}
           maxDate={maxDate}
           onChange={(newDate) => {
             setDate(newDate);
+            if (isLg) {
+              setValue(newDate);
+              return;
+            }
             if (name) {
               setValue(name, newDate);
             } else if (newDate) {

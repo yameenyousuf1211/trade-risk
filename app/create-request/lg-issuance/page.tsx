@@ -197,6 +197,10 @@ export default function LgIssuance() {
       }
     };
 
+    if (!responseData.totalContractCurrency) {
+      responseData.totalContractCurrency = "USD";
+    }
+
     if (responseData.bidBond) {
       setBondDefaults(responseData.bidBond);
     }
@@ -226,8 +230,9 @@ export default function LgIssuance() {
         abortEarly: true,
         stripUnknown: true,
       });
-
-      const { response, success } = await createLg(responseData);
+      const { response, success } = storeData?.data?._id
+        ? await updateLg(responseData, storeData?.data?._id)
+        : await createLg(responseData);
       handleResponse(
         success,
         response,

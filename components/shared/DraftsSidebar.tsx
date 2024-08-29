@@ -69,7 +69,6 @@ const DraftCard = ({
     }
   };
 
-
   const otherBond = draft?.otherBond?.cashMargin ?? 0;
   const bidBond = draft?.bidBond?.cashMargin ?? 0;
   const advancePaymentBond = draft?.advancePaymentBond?.cashMargin ?? 0;
@@ -103,8 +102,9 @@ const DraftCard = ({
       <div className="flex items-center w-full justify-between gap-x-1 mt-2">
         <p className="text-[16px] font-semibold uppercase">
           {draft.currency || "USD"}{" "}
-          {((draft?.amount ? draft.amount?.price?.toLocaleString(): total?.toLocaleString()) || "00") +
-            ".00"}
+          {((draft?.amount
+            ? draft.amount?.price?.toLocaleString()
+            : total?.toLocaleString()) || "00") + ".00"}
         </p>
         <Button
           className="!py-0 font-roboto h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"
@@ -141,7 +141,7 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
 
   const filteredData =
     data &&
-    data.data?.length >0&&
+    data.data?.length > 0 &&
     data.data?.filter((draft) => {
       if (isConfirmation) {
         return draft.type === "LC Confirmation";
@@ -149,8 +149,9 @@ export const DraftsSidebar = ({ isRisk }: { isRisk: boolean }) => {
         return draft.type === "LC Discounting";
       } else if (isConfirmationDiscounting) {
         return draft.type === "LC Confirmation & Discounting";
-      } 
-      else {
+      } else if (isLCIssuance) {
+        return draft.type === "LG Issuance";
+      } else {
         return true;
       }
     });

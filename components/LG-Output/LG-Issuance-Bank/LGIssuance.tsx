@@ -9,7 +9,7 @@ import { BidPreview } from "./BidPreview";
 import { convertDateToCommaString, formatAmount } from "@/utils";
 import { submitLgBid } from "@/services/apis/lg.apis";
 import { useAuth } from "@/context/AuthProvider";
-import { getLgBondTotal } from "../helper";
+import { getLgBondTotal, sortBanksAlphabetically } from "../helper";
 
 const LGInfo = ({
   label,
@@ -40,7 +40,6 @@ const groupBidsByBank = (
   bondTypes: any[]
 ) => {
   return bids.reduce((acc: any, bid: any) => {
-    console.log(bid, "bidType");
     const bankData = issuingBanks.find((bank: any) => bank.bank === bid.bank);
     const bondData = bondTypes.find((bond: any) => bond.type === bid.bidType);
 
@@ -52,10 +51,10 @@ const groupBidsByBank = (
       };
     }
 
-    const existingLgType = acc?.lgTypes?.find(
+    const existingLgType = acc[bid.bank].lgTypes.find(
       (lgType: any) => lgType.type === bid.bidType
     );
-    console.log(existingLgType, "existingLgType");
+
     if (existingLgType) {
       existingLgType.price = bid.confirmationPrice;
       existingLgType.currency =
@@ -81,13 +80,14 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   const [selectedLgType, setSelectedLgType] = useState<string>("Bid Bond");
   const [selectedBank, setSelectedBank] = useState<string | undefined>();
   const [groupedBids, setGroupedBids] = useState<any>({});
-  const [userBidStatus, setUserBidStatus] = useState<null>({});
+  const [userBidStatus, setUserBidStatus] = useState<any>({});
   const [userBid, setUserBid] = useState();
   const [pricingValue, setPricingValue] = useState<string>("");
   const [bondPrices, setBondPrices] = useState<{
     [bank: string]: { [bondType: string]: string | null };
   }>({});
   const [showPreview, setShowPreview] = useState(false);
+  const [sortedIssuingBanks, setSortedIssuingBanks] = useState<any[]>([]);
 
   const queryClient = useQueryClient();
 
@@ -109,11 +109,13 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   const availableBondTypes = bondTypes.filter((bond) => bond.value?.Contract);
 
   useEffect(() => {
-    if (data.issuingBanks.length > 0) {
-      setSelectedBank(data.issuingBanks[0].bank);
+    const sorted = sortBanksAlphabetically(data.issuingBanks);
+    setSortedIssuingBanks(sorted);
+    if (sorted.length > 0) {
+      setSelectedBank(sorted[0].bank);
     }
     setSelectedLgType(availableBondTypes[0].type);
-  }, []);
+  }, [data.issuingBanks]);
 
   useEffect(() => {
     setPricingValue(bondPrices[selectedBank]?.[selectedLgType] || "");
@@ -126,7 +128,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     if (userBids) {
       const groupedBidsWithBankData = groupBidsByBank(
         userBids.bids,
-        data.issuingBanks,
+        sortedIssuingBanks,
         bondTypes
       );
       setGroupedBids(Object.values(groupedBidsWithBankData));
@@ -161,27 +163,39 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           label: "Bid Rejected",
           status: "Rejected",
         });
-      } else if (new Date(userBids.expiryDate) < new Date()) {
+      } else if (new Date(userBids.bidValidity) < new Date()) {
         setUserBidStatus({
           label: "Bid Expired",
           status: "Expired",
         });
       }
     }
-  }, [data.bids, data.issuingBanks, user._id]);
+  }, [data.bids, sortedIssuingBanks, user._id]);
 
   const selectedBond = availableBondTypes.find(
     (bond) => bond.type === selectedLgType
   )?.value;
 
-  const isSelectedLgTypeFilled =
-    selectedBank && bondPrices[selectedBank]?.[selectedLgType];
+  const isLastBank = (bank: string) => {
+    if (sortedIssuingBanks.length === 0) return false;
+    return bank === sortedIssuingBanks[sortedIssuingBanks.length - 1].bank;
+  };
 
-  const handleSubmitOrNext = (bidValidity: string) => {
+  const isLastBond = (bondType: string) => {
+    return bondType === availableBondTypes[availableBondTypes.length - 1].type;
+  };
+
+  const anyPricingFilled = () => {
+    return Object.values(bondPrices).some((bank) =>
+      Object.values(bank).some((price) => price !== null && price !== "")
+    );
+  };
+
+  const handleSubmitOrNext = async (bidValidity: string) => {
     if (!selectedLgType || !selectedBank) return;
 
     if (pricingValue) {
-      setBondPrices((prev) => ({
+      await setBondPrices((prev) => ({
         ...prev,
         [selectedBank!]: {
           ...prev[selectedBank!],
@@ -190,61 +204,64 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
       }));
     }
 
-    const selectedTypeLgFilled = bondPrices[selectedBank]?.[selectedLgType];
-
-    const newBids = Object.entries(bondPrices).flatMap(([bank, bonds]) =>
-      Object.entries(bonds).map(([bondType, price]) => ({
-        bank,
-        bidType: bondType,
-        price: parseFloat(price || "0"),
-        perAnnum: true,
-      }))
+    const currentBankIndex = sortedIssuingBanks.findIndex(
+      (bank) => bank.bank === selectedBank
+    );
+    const currentBondIndex = availableBondTypes.findIndex(
+      (bond) => bond.type === selectedLgType
     );
 
-    const groupedBidsWithBankData = groupBidsByBank(
-      newBids,
-      data.issuingBanks,
-      bondTypes
-    );
-    setGroupedBids(Object.values(groupedBidsWithBankData));
+    if (
+      isLastBank(selectedBank!) &&
+      isLastBond(selectedLgType) &&
+      anyPricingFilled()
+    ) {
+      const newBids = Object.entries(bondPrices).flatMap(([bank, bonds]) =>
+        Object.entries(bonds).map(([bondType, price]) => ({
+          bank,
+          bidType: bondType,
+          price: parseFloat(price || "0"),
+          perAnnum: true,
+        }))
+      );
 
-    const requestData = {
-      bidType: "LG Issuance",
-      bidValidity: bidValidity,
-      lc: data._id,
-      bids: [...data.bids, ...newBids],
-    };
+      const groupedBidsWithBankData = await groupBidsByBank(
+        newBids,
+        sortedIssuingBanks,
+        bondTypes
+      );
+      setGroupedBids(Object.values(groupedBidsWithBankData));
 
-    if (!showPreview && selectedTypeLgFilled) {
+      const requestData = {
+        bidType: "LG Issuance",
+        bidValidity: bidValidity,
+        lc: data._id,
+        bids: newBids,
+      };
+
+      if (!showPreview) {
+        setShowPreview(true);
+        return;
+      }
+
+      mutation.mutate(requestData);
       setShowPreview(true);
       return;
     }
 
-    if (!selectedTypeLgFilled) {
-      const currentIndex = availableBondTypes.findIndex(
-        (bond) => bond.type === selectedLgType
-      );
-      let nextIndex = (currentIndex + 1) % availableBondTypes.length;
-      while (nextIndex !== currentIndex) {
-        const nextBondType = availableBondTypes[nextIndex].type;
-        if (!bondPrices[selectedBank]?.[nextBondType]) {
-          setSelectedLgType(nextBondType);
-          setPricingValue("");
-          return;
-        }
-        nextIndex = (nextIndex + 1) % availableBondTypes.length;
+    if (isLastBond(selectedLgType)) {
+      if (sortedIssuingBanks.length > 0) {
+        const nextBankIndex =
+          (currentBankIndex + 1) % sortedIssuingBanks.length;
+        setSelectedBank(sortedIssuingBanks[nextBankIndex].bank);
+        setSelectedLgType(availableBondTypes[0].type);
       }
-      const currentBankIndex = data.issuingBanks.findIndex(
-        (bank) => bank.bank === selectedBank
-      );
-      const nextBankIndex = (currentBankIndex + 1) % data.issuingBanks.length;
-      setSelectedBank(data.issuingBanks[nextBankIndex].bank);
-      setSelectedLgType(availableBondTypes[0].type);
-      setPricingValue("");
-      return;
+    } else {
+      const nextBondIndex = (currentBondIndex + 1) % availableBondTypes.length;
+      setSelectedLgType(availableBondTypes[nextBondIndex].type);
     }
 
-    mutation.mutate(requestData);
+    setPricingValue("");
   };
 
   const handleBack = () => {
@@ -259,7 +276,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     setPricingValue("");
     setBondPrices({});
     setSelectedBank(
-      data.issuingBanks.length > 0 ? data.issuingBanks[0].bank : undefined
+      sortedIssuingBanks.length > 0 ? sortedIssuingBanks[0].bank : undefined
     );
     setSelectedLgType(availableBondTypes[0].type);
   };
@@ -289,7 +306,6 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
             Total LG Amount Requested{" "}
             <span className="text-[20px] text-[#1A1A26] font-semibold">
               {data.totalContractCurrency || "USD"}{" "}
-              {/* {formatAmount(data.totalLgAmount || data.totalContractValue)} */}
               {formatAmount(getLgBondTotal(data))}
             </span>
           </h3>
@@ -339,7 +355,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           </div>
           <div className="mt-2 rounded-md border border-[#E2E2EA] p-2">
             <BankSelection
-              bankData={data.issuingBanks}
+              bankData={sortedIssuingBanks}
               selectedBank={selectedBank}
               setSelectedBank={setSelectedBank}
             />
@@ -410,7 +426,10 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                   : "bg-[#D3D3D3] text-[#ADADAD]"
               }`}
             >
-              {isSelectedLgTypeFilled
+              {selectedBank &&
+              isLastBank(selectedBank) &&
+              isLastBond(selectedLgType) &&
+              anyPricingFilled()
                 ? "Preview Bid"
                 : pricingValue
                 ? "Next"

@@ -81,22 +81,26 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
           </div>
         </div>
 
-        <div className="overflow-y-auto h-64 pr-1 mb-2">
+        <div className="overflow-y-auto h-full pr-1 mb-2 flex-1">
           {Object.entries(bids).map(([bankName, bankDetails]: any) => (
             <div
               key={bankName}
               className="p-3 border border-[#E2E2EA] mb-2 rounded-md"
             >
-              <h4 className="mb-2 text-base">
+              <h4 className="mb-2 text-lg">
                 <span className="text-[#5625F2]">
                   {formatFirstLetterOfWord(bankDetails.name)}
                 </span>
                 , {formatFirstLetterOfWord(bankDetails.country)}
               </h4>
-              {bankDetails.lgTypes.map((lgType: any) => (
+              {bankDetails.lgTypes.map((lgType: any, index: number) => (
                 <div
                   key={lgType.type}
-                  className="border-b-2 border-[#E2E2EA] pb-2 mb-2"
+                  className={`pb-2 mb-2 ${
+                    index !== bankDetails.lgTypes.length - 1
+                      ? "border-b-2 border-[#E2E2EA]"
+                      : ""
+                  }`}
                 >
                   <div
                     className={`flex-row ${

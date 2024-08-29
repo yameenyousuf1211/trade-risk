@@ -89,7 +89,8 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
   ];
   const { stepStatus, isSubmitted } = useStepStore();
 
-  const stepCompleted = (step: string) => stepStatus?.find((e) => e === step) ? true: false;
+  const stepCompleted = (step: string) =>
+    stepStatus?.find((e) => e === step) ? true : false;
 
   const { user } = useAuth();
   const pathname = usePathname();

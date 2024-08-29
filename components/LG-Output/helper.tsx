@@ -141,3 +141,7 @@ export const formatFirstLetterOfWord = (name: string) => {
 
   return result;
 };
+
+export const sortBanksAlphabetically = (banks) => {
+  return [...banks].sort((a, b) => a.bank.localeCompare(b.bank));
+};

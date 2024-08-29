@@ -78,7 +78,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Confirmation Rate</p>
           <p className="text-lg font-semibold text-text">
-            {data?.confirmationPrice}%
+            {data?.confirmationPrice}% per annum
           </p>
         </div>
         {data?.discountMargin && (
@@ -267,7 +267,7 @@ export const TableDialog = ({
           <Eye className="size-5" />
         )}
       </DialogTrigger>
-      <DialogContent className="h-full !max-h-[95vh] w-full max-w-4xl !p-0 flex flex-col">
+      <DialogContent className="h-full !max-h-[95vh] w-full max-w-6xl !p-0 flex flex-col">
         <div className="flex max-h-20 items-center justify-between border-b border-b-borderCol !py-5 px-7">
           <h2 className="text-lg font-semibold">
             {(lcData && lcData?.type) || "Risk Participation Request"}

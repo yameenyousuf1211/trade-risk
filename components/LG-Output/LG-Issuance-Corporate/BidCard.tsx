@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Check, X } from "lucide-react";
-import { BgRadioInputLG, formatFirstLetterOfWord } from "../helper";
+import { BgRadioInputLG, formatFirstLetterOfWord, sortBanksAlphabetically } from "../helper";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "../ConfirmationModal";
 import {
@@ -30,13 +30,15 @@ export const BidCard = ({
     const banksWithBonds = issuingBanks.filter((bank: any) =>
       localBids.some((bid: any) => bid.bank === bank.bank)
     );
-    setFilteredIssuingBanks(banksWithBonds);
+    // Sort the filtered banks alphabetically
+    const sortedBanks = sortBanksAlphabetically(banksWithBonds);
+    setFilteredIssuingBanks(sortedBanks);
 
     // Set the first bank with bonds as selected
-    if (banksWithBonds.length > 0) {
-      setSelectedBank(banksWithBonds[0].bank);
+    if (sortedBanks.length > 0) {
+      setSelectedBank(sortedBanks[0].bank);
     }
-  }, [issuingBanks]);
+  }, [issuingBanks, localBids]);
 
   const handleBankSelection = (bankName: string) => {
     setSelectedBank(bankName);

@@ -88,13 +88,14 @@ export const LGTableBidStatus = ({
     { label: "Purpose of LG", value: data.purpose },
     { label: "Remarks", value: data.remarks },
     { label: "Preference", value: data.priceQuotes },
-    {
-      label: "Expected",
-      value: data.expectedPrice?.expectedPrice
-        ? `${data.expectedPrice.pricePerAnnum}% per annum`
-        : "-",
-    },
   ];
+
+  if (data.expectedPrice?.expectedPrice) {
+    otherDetails.push({
+      label: "Expected",
+      value: `${data.expectedPrice.pricePerAnnum}% per annum`,
+    });
+  }
 
   return (
     <Dialog>
@@ -117,7 +118,7 @@ export const LGTableBidStatus = ({
           <Eye className="size-5" />
         )}
       </DialogTrigger>
-      <DialogContent className="w-full max-w-5xl !p-0 !max-h-[95vh] h-full grid grid-cols-2 gap-0 justify-start">
+      <DialogContent className="w-full max-w-6xl !p-0 !max-h-[95vh] h-full grid grid-cols-2 gap-0 justify-start">
         <div className="col-span-2 flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">LG Re-Issuance Request</h2>
           <DialogClose>

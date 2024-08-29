@@ -23,6 +23,8 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   name,
   listValue,
   currency,
+  onPercentageChange,
+  onBondCheck,
 }) => {
   const [displayPercentage, setDisplayPercentage] = useState("");
   const checkedValue = watch(`${name}.Contract`, false);
@@ -100,6 +102,19 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     setDisplayPercentage(valueInPercentage?.toString() || "");
   };
 
+  const handlePercentageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newValue = parseInt(event.target.value) || 0;
+    onPercentageChange(name, newValue);
+  };
+
+  const handleBondCheck = (isChecked: boolean) => {
+    setValue(`${name}.percentage`, "");
+    setValue(`${name}.Contract`, isChecked);
+    onBondCheck(name, isChecked);
+  };
+
   return (
     <TableRow
       className={`mt-5 ${checkedValue ? "bg-white" : "bg-[#F5F7F9]"}`}
@@ -110,9 +125,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
         <TableDataCell className="min-w-[250px]">
           <div className="flex gap-2 items-center flex-wrap ">
             <div
-              onClick={() => {
-                setValue(`${name}.Contract`, !checkedValue);
-              }}
+              onClick={() => handleBondCheck(!checkedValue)}
               className="bg-white border-[#5625F2] border-2 rounded-[5px] flex items-center justify-center h-[22px] w-[22px] cursor-pointer"
             >
               {checkedValue ? (
@@ -176,7 +189,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           disabled={!checkedValue}
           value={displayPercentage || valueInPercentage}
           name={`${name}.valueInPercentage`}
-          onChange={(e) => handleOnChange(e, `${name}.valueInPercentage`)}
+          onChange={handlePercentageChange}
           onBlur={handlePercentageBlur}
           onFocus={handlePercentageFocus}
           placeholder="%"

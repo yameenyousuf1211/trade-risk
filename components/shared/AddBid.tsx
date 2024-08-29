@@ -286,7 +286,7 @@ export const AddBid = ({
             : computedStatus || "Pending"}
         </DialogTrigger>
       )}
-      <DialogContent className="w-full max-w-4xl p-0 !max-h-[85vh] h-full">
+      <DialogContent className="w-full max-w-6xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <h2 className="text-lg font-semibold">
             {(lcData?.type && lcData?.type + " Request") ||
@@ -721,8 +721,8 @@ export const AddBid = ({
                                   Confirmation Rate
                                 </p>
                                 <p className="text-lg font-semibold text-text">
-                                  {bid ? bid.confirmationPrice : "1.75"}%{" "}
-                                  {bid?.perAnnum ? "per annum" : "flat"}
+                                  {bid ? bid.confirmationPrice : "1.75"}% per
+                                  annum
                                 </p>
                               </div>
 

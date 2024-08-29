@@ -36,6 +36,13 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
     staleTime: 10 * 60 * 5000,
   });
 
+  const [percentages, setPercentages] = useState({
+    bidBond: 0,
+    advancePaymentBond: 0,
+    retentionMoneyBond: 0,
+    performanceBond: 0,
+  });
+
   const bondTypes = [
     { name: "bidBond", listValue: "Bid Bond" },
     { name: "advancePaymentBond", listValue: "Advance Payment Bond" },
@@ -70,6 +77,46 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
     value = value?.toString();
     const numberString = value.replace(/,/g, ""); // Remove existing commas
     return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const calculateTotalPercentage = () => {
+    return bondTypes.reduce((sum, { name }) => {
+      const isChecked = watch(`${name}.Contract`);
+      return isChecked
+        ? sum + (percentages[name as keyof typeof percentages] || 0)
+        : sum;
+    }, 0);
+  };
+
+  const handlePercentageChange = (bondName: string, newValue: number) => {
+    const totalPercentage = calculateTotalPercentage();
+    const currentValue = percentages[bondName as keyof typeof percentages];
+    const difference = newValue - currentValue;
+
+    if (totalPercentage + difference <= 100) {
+      setPercentages((prev) => ({
+        ...prev,
+        [bondName]: newValue,
+      }));
+      setValue(`${bondName}.valueInPercentage`, newValue);
+    } else {
+      const availablePercentage = 100 - (totalPercentage - currentValue);
+      setPercentages((prev) => ({
+        ...prev,
+        [bondName]: availablePercentage,
+      }));
+      setValue(`${bondName}.valueInPercentage`, availablePercentage);
+    }
+  };
+
+  const handleBondCheck = (bondName: string, isChecked: boolean) => {
+    if (!isChecked) {
+      setPercentages((prev) => ({
+        ...prev,
+        [bondName]: 0,
+      }));
+      setValue(`${bondName}.valueInPercentage`, 0);
+    }
   };
 
   useEffect(() => {
@@ -124,6 +171,11 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
                 name={bondType.name}
                 listValue={bondType.listValue}
                 currency={currency}
+                onPercentageChange={handlePercentageChange}
+                onBondCheck={handleBondCheck}
+                currentPercentage={
+                  percentages[bondType.name as keyof typeof percentages]
+                }
               />
             </React.Fragment>
           ))}
@@ -136,6 +188,8 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
             name="otherBond"
             listValue="Other Bond"
             currency={currency}
+            onPercentageChange={handlePercentageChange}
+            currentPercentage={0}
           />
         )}
       </TableBody>

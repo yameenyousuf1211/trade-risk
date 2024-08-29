@@ -40,20 +40,24 @@ export default function LoginPageComponent() {
   });
 
   const [notificationPermission, setNotificationPermission] = useState(
-    typeof window !== "undefined" ? Notification.permission : "",
+    typeof window !== "undefined" ? Notification.permission : ""
   );
 
   const [fcmToken, setFcmToken] = useState<string>("");
 
   // REGISTERING NOTIFICATIONS SERVICE
   useEffect(() => {
-    if (typeof window !== "undefined" && navigator && "serviceWorker" in navigator) {
+    if (
+      typeof window !== "undefined" &&
+      navigator &&
+      "serviceWorker" in navigator
+    ) {
       navigator.serviceWorker
         .register("/firebase-messaging-sw.js")
         .then((registration) => {
           console.log(
             "Service Worker registered with scope:",
-            registration.scope,
+            registration.scope
           );
         })
         .catch((error) => {
@@ -91,7 +95,7 @@ export default function LoginPageComponent() {
   const onSubmit: SubmitHandler<typeof loginSchema> = async (data) => {
     const { response, success } = await mutateAsync({
       ...data,
-      fcmToken: fcmToken,
+      fcmToken: fcmToken.length > 0 ? fcmToken : "lklkklklk",
     });
 
     if (success) {
@@ -112,7 +116,7 @@ export default function LoginPageComponent() {
             className="ml-2 size-5 hover:cursor-pointer"
             onClick={() => toast.dismiss(toastId)}
           />
-        </div>,
+        </div>
       );
       router.push(response.data.user.type === "corporate" ? "/" : "/dashboard");
     } else return toast.error(response as string);

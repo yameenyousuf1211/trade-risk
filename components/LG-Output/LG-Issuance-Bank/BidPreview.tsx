@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { DatePicker } from "@/components/helpers";
@@ -30,14 +30,17 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
   allBondsFilled,
 }) => {
   const [isApproved, setIsApproved] = useState<boolean>(false);
-  const [selectedBidValidity, setSelectedBidValidity] =
-    useState<string>(bidValidity);
+  const [selectedBidValidity, setSelectedBidValidity] = useState<string>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleConfirmSubmit = () => {
     handleSubmit(selectedBidValidity);
     setIsModalOpen(false);
   };
+
+  useEffect(() => {
+    console.log(selectedBidValidity);
+  }, [selectedBidValidity]);
 
   const handleSendBackToCreator = () => {
     setIsApproved(false);
@@ -154,7 +157,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
               placeholder="Select Date"
               value={selectedBidValidity}
               setValue={setSelectedBidValidity}
-              isPast={true}
+              isLg={true}
             />
           )}
 

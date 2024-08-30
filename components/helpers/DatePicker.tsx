@@ -54,24 +54,12 @@ export const DatePicker = ({
           )}
           id="validity"
         >
-          {isLg ? (
-            <span className="flex items-center justify-between w-full">
-              <span>Select Date</span>
-              <span className="flex items-center space-x-2">
-                <span>
-                  {date && isValid(date)
-                    ? format(date, "dd/MM/yyyy")
-                    : "DD/MM/YYYY"}
-                </span>
-                <CalendarIcon className="h-4 w-4" />
-              </span>
-            </span>
+          {date && isValid(date) ? (
+            format(date, "PPP")
           ) : (
-            <span>
-              {date && isValid(date) ? format(date, "PPP") : "DD/MM/YYYY"}
-              <CalendarIcon className="h-4 w-4" />
-            </span>
+            <span>DD/MM/YYYY</span>
           )}
+          <CalendarIcon className="mr-2 h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">

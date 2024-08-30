@@ -174,8 +174,8 @@ export const BidCard = ({
               <BgRadioInputLG
                 key={bank.bank}
                 id={bank._id}
-                label={bank.bank}
-                sublabel={bank.country}
+                label={formatFirstLetterOfWord(bank.bank)}
+                sublabel={formatFirstLetterOfWord(bank.country)}
                 name={bank.bank}
                 value={bank.bank}
                 checked={selectedBank === bank.bank}

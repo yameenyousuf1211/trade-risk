@@ -534,7 +534,7 @@ export const AddBid = ({
                             lcData?.paymentTerms !== "Sight LC"
                               ? `${lcData.paymentTerms} ${
                                   lcData.extraInfo?.days + " days" || ""
-                                } ${lcData.extraInfo?.other || ""}`
+                                } at ${lcData.extraInfo?.other || ""}`
                               : lcData?.paymentTerms || "-"
                           }
                           noBorder

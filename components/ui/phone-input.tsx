@@ -70,7 +70,7 @@ export function getPhoneData(phone: string): PhoneData {
 }
 
 export function PhoneInput({
-  value: valueProp,
+  value: valueProp = "",
   defaultCountry = "US",
   className,
   id,
@@ -79,31 +79,38 @@ export function PhoneInput({
   ...rest
 }: PhoneInputProps) {
   const asYouType = new AsYouType();
-
   const inputRef = React.useRef<HTMLInputElement>(null);
 
+  // Initialize state with useStateHistory hook
   const [value, handlers, history] = useStateHistory(valueProp);
-
-  if (value && value.length > 0) {
-    defaultCountry =
-      parsePhoneNumberFromString(value)?.getPossibleCountries()[0] ||
-      defaultCountry;
-  }
 
   const [openCommand, setOpenCommand] = React.useState(false);
   const [countryCode, setCountryCode] =
     React.useState<CountryCode>(defaultCountry);
 
+  // Set the selected country based on countryCode
   const selectedCountry = countries.find(
     (country) => country.iso2 === countryCode
   );
 
-  const initializeDefaultValue = () => {
-    if (value) {
-      return value;
+  // Initialize the input value correctly
+  React.useEffect(() => {
+    if (valueProp) {
+      const parsedNumber = parsePhoneNumberFromString(valueProp);
+      if (parsedNumber) {
+        setCountryCode(parsedNumber.country || defaultCountry);
+        handlers.set(valueProp); // Sync state with valueProp
+      }
     }
+  }, [valueProp, defaultCountry]);
 
-    return `+${selectedCountry?.phone_code}`;
+  // Handle when a user selects a different country
+  const handleCountryChange = (newCountryCode: CountryCode) => {
+    setCountryCode(newCountryCode);
+    handlers.set(""); // Reset the input value to empty
+    if (onChange) {
+      onChange(""); // Call onChange with an empty value
+    }
   };
 
   const handleOnInput = (event: React.FormEvent<HTMLInputElement>) => {
@@ -117,7 +124,6 @@ export function PhoneInput({
     const formattedValue = asYouType.input(inputValue);
     const number = asYouType.getNumber();
     setCountryCode(number?.country || defaultCountry);
-    event.currentTarget.value = formattedValue;
     handlers.set(formattedValue);
 
     if (onChange) {
@@ -130,13 +136,11 @@ export function PhoneInput({
     asYouType.reset();
 
     const clipboardData = event.clipboardData;
-
     if (clipboardData) {
       const pastedData = clipboardData.getData("text/plain");
       const formattedValue = asYouType.input(pastedData);
       const number = asYouType.getNumber();
       setCountryCode(number?.country || defaultCountry);
-      event.currentTarget.value = formattedValue;
       handlers.set(formattedValue);
 
       if (onChange) {
@@ -198,7 +202,7 @@ export function PhoneInput({
                         key={country.iso3}
                         value={`${country.name} (+${country.phone_code})`}
                         onSelect={() => {
-                          setCountryCode(country.iso2 as CountryCode);
+                          handleCountryChange(country.iso2 as CountryCode);
                           setOpenCommand(false);
                         }}
                       >
@@ -237,7 +241,7 @@ export function PhoneInput({
         name="phone"
         id={id}
         placeholder="Phone"
-        defaultValue={initializeDefaultValue()}
+        value={value} // Use the value state directly
         onInput={handleOnInput}
         onPaste={handleOnPaste}
         onKeyDown={handleKeyDown}

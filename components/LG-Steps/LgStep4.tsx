@@ -51,6 +51,12 @@ const LgStep4: React.FC<LgStepsProps2> = ({
     enabled: !!isoCode,
   });
 
+  const handlePhoneNumberChange = (value: string) => {
+    const sanitizedValue = value.replace(/\s+/g, ""); // Remove spaces, keep the plus sign
+    console.log("Sanitized Value:", sanitizedValue);
+    setValue("beneficiaryDetails.phoneNumber", sanitizedValue);
+  };
+
   return (
     <div
       id="lg-step4"
@@ -135,13 +141,9 @@ const LgStep4: React.FC<LgStepsProps2> = ({
           >
             <p className=" text-sm w-32 text-lightGray">Phone Number</p>
             <PhoneInput
-              value={"+923042878005"}
+              value={beneficiaryPhoneNumber}
               name="beneficiaryDetails.phoneNumber"
-              className=""
-              onChange={(value) => {
-                console.log(value, "phoenNux");
-                setValue("beneficiaryDetails.phoneNumber", value);
-              }}
+              onChange={handlePhoneNumberChange}
             />
           </label>
         </div>

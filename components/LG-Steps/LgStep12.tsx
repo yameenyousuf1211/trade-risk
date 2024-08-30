@@ -17,7 +17,10 @@ const LgStep12: React.FC<LgStepsProps10> = ({
   const lastDateOfReceivingBids = watch("lastDateOfReceivingBids");
 
   console.log("🚀 ~ lastDateOfReceivingBidsss", lastDateOfReceivingBids);
-  console.log("🚀 ~ lastDateOfReceivingBidsss", new Date(lastDateOfReceivingBids));
+  console.log(
+    "🚀 ~ lastDateOfReceivingBidsss",
+    new Date(lastDateOfReceivingBids)
+  );
   return (
     <div
       id={`lg-step${step}`}
@@ -45,6 +48,7 @@ const LgStep12: React.FC<LgStepsProps10> = ({
               new Date(new Date().setFullYear(new Date().getFullYear() + 1))
             }
             setValue={setValue}
+            extraClassName="border-0"
             // value={lastDateOfReceivingBids}
             value={new Date(lastDateOfReceivingBids)}
             name={`lastDateOfReceivingBids`}

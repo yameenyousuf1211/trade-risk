@@ -8,6 +8,7 @@ import { BENEFICIARY } from "@/utils/constant/lg";
 import { mapCountryToIsoCode } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
 import { getCities } from "@/services/apis/helpers.api";
+import { useStateHistory } from "../ui/use-state-history";
 
 const LgStep4: React.FC<LgStepsProps2> = ({
   register,
@@ -24,6 +25,7 @@ const LgStep4: React.FC<LgStepsProps2> = ({
   const beneficiaryCity = watch("beneficiaryDetails.city");
 
   const beneficiaryPhoneNumber = watch("beneficiaryDetails.phoneNumber");
+  console.log(beneficiaryPhoneNumber, "beneficiaryPhoneNumber");
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
@@ -133,10 +135,11 @@ const LgStep4: React.FC<LgStepsProps2> = ({
           >
             <p className=" text-sm w-32 text-lightGray">Phone Number</p>
             <PhoneInput
-              value={beneficiaryPhoneNumber}
+              value={"+923042878005"}
               name="beneficiaryDetails.phoneNumber"
               className=""
               onChange={(value) => {
+                console.log(value, "phoenNux");
                 setValue("beneficiaryDetails.phoneNumber", value);
               }}
             />

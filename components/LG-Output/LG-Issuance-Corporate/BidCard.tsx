@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { Check, X } from "lucide-react";
-import { BgRadioInputLG, formatFirstLetterOfWord, sortBanksAlphabetically } from "../helper";
+import {
+  BgRadioInputLG,
+  formatFirstLetterOfWord,
+  sortBanksAlphabetically,
+} from "../helper";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "../ConfirmationModal";
 import {
@@ -26,15 +30,12 @@ export const BidCard = ({
   const [selectedBank, setSelectedBank] = useState<string | null>(null);
 
   useEffect(() => {
-    // Filter out banks without any bonds
     const banksWithBonds = issuingBanks.filter((bank: any) =>
       localBids.some((bid: any) => bid.bank === bank.bank)
     );
-    // Sort the filtered banks alphabetically
     const sortedBanks = sortBanksAlphabetically(banksWithBonds);
     setFilteredIssuingBanks(sortedBanks);
 
-    // Set the first bank with bonds as selected
     if (sortedBanks.length > 0) {
       setSelectedBank(sortedBanks[0].bank);
     }
@@ -58,7 +59,6 @@ export const BidCard = ({
         if (bankBid.bank === bank && bankBid.bidType === bondType) {
           return { ...bankBid, status };
         }
-        // If the status is "Accepted", reject the same bond type in other banks
         if (
           status === "Accepted" &&
           bankBid.bidType === bondType &&
@@ -72,12 +72,16 @@ export const BidCard = ({
     });
   };
 
-  const allBondsResponded = localBids
+  // Disable buttons if not all bonds have a status
+  const disableActionButtons = localBids
     .filter((bankBid: any) => bankBid.bank === selectedBank)
-    .every(
-      (bankBid: any) =>
-        bankBid.status === "Accepted" || bankBid.status === "Rejected"
-    );
+    .some((bankBid: any) => bankBid.status === undefined);
+
+  // Check if all bonds have a status across all banks
+  const allBondsHaveStatus = localBids.every(
+    (bankBid: any) =>
+      bankBid.status === "Accepted" || bankBid.status === "Rejected"
+  );
 
   const mutation = useMutation({
     mutationFn: ({
@@ -213,8 +217,13 @@ export const BidCard = ({
                     <div className="flex gap-2 justify-end">
                       <Check
                         size={20}
-                        className={`bg-[#29C084] hover:cursor-pointer`}
+                        className={`${
+                          disableActionButtons
+                            ? "bg-[#F1F1F5] cursor-not-allowed"
+                            : "bg-[#29C084] hover:cursor-pointer"
+                        }`}
                         onClick={() =>
+                          !disableActionButtons &&
                           handleBondStatusChange(
                             bankBid.bidType as
                               | "bidBond"
@@ -228,8 +237,13 @@ export const BidCard = ({
                       />
                       <X
                         size={20}
-                        className={`bg-[#F1F1F5] hover:cursor-pointer`}
+                        className={`${
+                          disableActionButtons
+                            ? "bg-[#F1F1F5] cursor-not-allowed"
+                            : "bg-[#F1F1F5] hover:cursor-pointer"
+                        }`}
                         onClick={() =>
+                          !disableActionButtons &&
                           handleBondStatusChange(
                             bankBid.bidType as
                               | "bidBond"
@@ -272,7 +286,7 @@ export const BidCard = ({
           <Button
             onClick={handleSubmit}
             className="bg-[#29C084] hover:bg-[#29C084]"
-            disabled={!allBondsResponded} // Disable if not all bonds are responded to
+            disabled={!allBondsHaveStatus} // Disable if not all bonds have a status
           >
             Submit
           </Button>

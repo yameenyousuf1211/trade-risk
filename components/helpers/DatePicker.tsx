@@ -19,6 +19,7 @@ export const DatePicker = ({
   disabled,
   isPast,
   isLg,
+  extraClassName,
 }: {
   value: Date;
   setValue: any;
@@ -30,6 +31,7 @@ export const DatePicker = ({
   };
   isPast?: boolean;
   isLg?: boolean;
+  extraClassName?: string;
 }) => {
   const [date, setDate] = useState<Date | undefined>(value);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -50,7 +52,8 @@ export const DatePicker = ({
           className={cn(
             "w-full justify-between text-left font-normal",
             !date &&
-              "text-muted-foreground flex items-center justify-between w-full"
+              "text-muted-foreground flex items-center justify-between w-full",
+            extraClassName // Apply extraClassName here
           )}
           id="validity"
         >

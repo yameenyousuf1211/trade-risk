@@ -139,10 +139,16 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
       (bid: any) => bid.status === "Accepted" && bid.createdBy !== user._id
     );
 
-    if (anotherBankBidAccepted) {
+    if (userBids && anotherBankBidAccepted) {
       setUserBidStatus({
         label: "Another Bank Bid Accepted",
         status: "Not Accepted",
+      });
+      setShowPreview(true);
+    } else if (!userBids && anotherBankBidAccepted) {
+      setUserBidStatus({
+        label: "Bid Not Applicable",
+        status: "Not Applicable",
       });
     } else if (userBids) {
       if (userBids.status === "Pending") {
@@ -346,96 +352,110 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
 
       {!showPreview ? (
         <div className="flex-1 p-3 pb-6 pr-4">
-          <div className="flex items-center justify-between">
-            <h5 className="font-semibold">Submit your bid</h5>
-            <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
-              <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
-              <h5 className="text-[0.95rem] font-normal">{user.name}</h5>
+          {userBidStatus.status === "Not Applicable" ? (
+            <div className="text-center text-lg font-semibold mt-[30%] text-[#696974]">
+              {userBidStatus.label}
             </div>
-          </div>
-          <div className="mt-2 rounded-md border border-[#E2E2EA] p-2">
-            <BankSelection
-              bankData={sortedIssuingBanks}
-              selectedBank={selectedBank}
-              setSelectedBank={setSelectedBank}
-            />
+          ) : (
+            <div>
+              <div className="flex items-center justify-between">
+                <h5 className="font-semibold">Submit your bid</h5>
+                <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
+                  <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
+                  <h5 className="text-[0.95rem] font-normal">{user.name}</h5>
+                </div>
+              </div>
+              <div className="mt-2 rounded-md border border-[#E2E2EA] p-2">
+                <BankSelection
+                  bankData={sortedIssuingBanks}
+                  selectedBank={selectedBank}
+                  setSelectedBank={setSelectedBank}
+                />
 
-            <div className="mt-2 rounded-md border border-[#E2E2EA] px-2 py-1">
-              <h3 className="mb-1 font-semibold">Select LG Type</h3>
+                <div className="mt-2 rounded-md border border-[#E2E2EA] px-2 py-1">
+                  <h3 className="mb-1 font-semibold">Select LG Type</h3>
 
-              <LgTypeSelection
-                selectedLgType={selectedLgType}
-                setSelectedLgType={setSelectedLgType}
-                data={data}
-                bondPrices={bondPrices}
-                selectedBank={selectedBank}
-              />
+                  <LgTypeSelection
+                    selectedLgType={selectedLgType}
+                    setSelectedLgType={setSelectedLgType}
+                    data={data}
+                    bondPrices={bondPrices}
+                    selectedBank={selectedBank}
+                  />
 
-              {selectedBond && (
-                <>
-                  <h3 className="mb-1 font-semibold mt-4">LG Details</h3>
-                  <LGInfo
-                    label="Amount"
-                    value={
-                      `${selectedBond?.currencyType} ${formatAmount(
-                        selectedBond?.cashMargin
-                      )}` || null
-                    }
-                  />
-                  <LGInfo
-                    label="Expected Date of Issuance"
-                    value={
-                      selectedBond.expectedDate
-                        ? convertDateToCommaString(selectedBond.expectedDate)
-                        : null
-                    }
-                  />
-                  <LGInfo
-                    label="Expiry Date"
-                    value={
-                      selectedBond.lgExpiryDate
-                        ? convertDateToCommaString(selectedBond.lgExpiryDate)
-                        : null
-                    }
-                  />
-                  <LGInfo
-                    label="LG Tenor"
-                    value={
-                      selectedBond.lgTenor
-                        ? `${selectedBond.lgTenor.lgTenorValue} ${selectedBond.lgTenor.lgTenorType}`
-                        : null
-                    }
-                  />
-                </>
-              )}
+                  {selectedBond && (
+                    <>
+                      <h3 className="mb-1 font-semibold mt-4">LG Details</h3>
+                      <LGInfo
+                        label="Amount"
+                        value={
+                          `${selectedBond?.currencyType} ${formatAmount(
+                            selectedBond?.cashMargin
+                          )}` || null
+                        }
+                      />
+                      <LGInfo
+                        label="Expected Date of Issuance"
+                        value={
+                          selectedBond.expectedDate
+                            ? convertDateToCommaString(
+                                selectedBond.expectedDate
+                              )
+                            : null
+                        }
+                      />
+                      <LGInfo
+                        label="Expiry Date"
+                        value={
+                          selectedBond.lgExpiryDate
+                            ? convertDateToCommaString(
+                                selectedBond.lgExpiryDate
+                              )
+                            : null
+                        }
+                      />
+                      <LGInfo
+                        label="LG Tenor"
+                        value={
+                          selectedBond.lgTenor
+                            ? `${selectedBond.lgTenor.lgTenorValue} ${selectedBond.lgTenor.lgTenorType}`
+                            : null
+                        }
+                      />
+                    </>
+                  )}
 
-              <PricingInput
-                pricingValue={pricingValue}
-                setPricingValue={setPricingValue}
-                selectedBank={selectedBank}
-                bankData={data.expectedPrice}
-              />
+                  <PricingInput
+                    pricingValue={pricingValue}
+                    setPricingValue={setPricingValue}
+                    selectedBank={selectedBank}
+                    bankData={data.expectedPrice}
+                  />
+                </div>
+
+                <Button
+                  onClick={() =>
+                    handleSubmitOrNext(data.lastDateOfReceivingBids)
+                  }
+                  type="submit"
+                  className={`mt-4 h-12 w-full ${
+                    pricingValue
+                      ? "bg-[#44C894] text-white"
+                      : "bg-[#D3D3D3] text-[#ADADAD]"
+                  }`}
+                >
+                  {selectedBank &&
+                  isLastBank(selectedBank) &&
+                  isLastBond(selectedLgType) &&
+                  anyPricingFilled()
+                    ? "Preview Bid"
+                    : pricingValue
+                    ? "Next"
+                    : "Skip"}
+                </Button>
+              </div>
             </div>
-
-            <Button
-              onClick={() => handleSubmitOrNext(data.lastDateOfReceivingBids)}
-              type="submit"
-              className={`mt-4 h-12 w-full ${
-                pricingValue
-                  ? "bg-[#44C894] text-white"
-                  : "bg-[#D3D3D3] text-[#ADADAD]"
-              }`}
-            >
-              {selectedBank &&
-              isLastBank(selectedBank) &&
-              isLastBond(selectedLgType) &&
-              anyPricingFilled()
-                ? "Preview Bid"
-                : pricingValue
-                ? "Next"
-                : "Skip"}
-            </Button>
-          </div>
+          )}
         </div>
       ) : (
         <BidPreview

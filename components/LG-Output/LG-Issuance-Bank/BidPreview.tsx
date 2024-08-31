@@ -5,10 +5,10 @@ import { DatePicker } from "@/components/helpers";
 import { ConfirmationModal } from "../ConfirmationModal";
 import { formatAmount } from "@/utils";
 import { formatFirstLetterOfWord } from "../helper";
+import { useAuth } from "@/context/AuthProvider";
 
 interface BidPreviewProps {
   onBack: () => void;
-  bidValidity: string;
   handleSubmit: (bidValidity: string) => void;
   bids: any[];
   userBidStatus: any;
@@ -16,11 +16,11 @@ interface BidPreviewProps {
   bidValidityDate?: string;
   handleNewBid: () => void;
   allBondsFilled: any;
+  otherBond: any; // Add this prop to pass otherBond details
 }
 
 export const BidPreview: React.FC<BidPreviewProps> = ({
   onBack,
-  bidValidity,
   handleSubmit,
   bids,
   userBidStatus,
@@ -28,19 +28,17 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
   bidValidityDate,
   handleNewBid,
   allBondsFilled,
+  otherBond, // Add this prop to pass otherBond details
 }) => {
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [selectedBidValidity, setSelectedBidValidity] = useState<string>();
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleConfirmSubmit = () => {
     handleSubmit(selectedBidValidity);
     setIsModalOpen(false);
   };
-
-  useEffect(() => {
-    console.log(selectedBidValidity);
-  }, [selectedBidValidity]);
 
   const handleSendBackToCreator = () => {
     setIsApproved(false);
@@ -83,6 +81,16 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                 </p>
               </div>
             )}
+            {userBidStatus.status !== "Pending" &&
+              userBidStatus.status !== "Accepted" &&
+              userBidStatus.status !== "Rejected" &&
+              userBidStatus.status !== "Expired" &&
+              isApproved && (
+                <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
+                  <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
+                  <h5 className="text-[0.95rem] font-normal">{user.name}</h5>
+                </div>
+              )}
           </div>
         </div>
 
@@ -116,8 +124,13 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                     }`}
                   >
                     <p className="text-[14px] font-light">
-                      {lgType.type} - {lgType.currencyType}{" "}
-                      {formatAmount(lgType.amount)}
+                      {otherBond?.Contract === "true"
+                        ? `${otherBond.name} - ${
+                            lgType.currencyType
+                          } ${formatAmount(lgType.amount)}`
+                        : `${lgType.type} - ${
+                            lgType.currencyType
+                          } ${formatAmount(lgType.amount)}`}
                     </p>
                     {userBidStatus.status === "Accepted" &&
                     lgType.status === "Accepted" ? (

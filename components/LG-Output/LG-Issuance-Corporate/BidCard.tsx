@@ -7,11 +7,7 @@ import {
 } from "../helper";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "../ConfirmationModal";
-import {
-  useMutation,
-  QueryClient,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { respondBid } from "@/services/apis/lg.apis";
 import { convertDateToCommaString } from "@/utils";
 
@@ -19,10 +15,12 @@ export const BidCard = ({
   bidDetail,
   issuingBanks,
   overallStatus,
+  otherBond,
 }: {
   bidDetail: any;
   overallStatus: boolean;
   issuingBanks: any;
+  otherBond: any;
 }) => {
   const queryClient = useQueryClient();
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
@@ -196,73 +194,141 @@ export const BidCard = ({
             .filter((bankBid: any) => bankBid.bank === selectedBank)
             .map((bankBid: any, index: number, array: any[]) => (
               <div key={bankBid._id} className="mr-5">
-                <div className="grid grid-cols-3 justify-center py-2 items-center">
-                  <h4 className="text-sm">{bankBid.bidType}</h4>
-                  <h4 className="text-center text-sm font-normal text-[#A3A3A9]">
-                    Bid Pricing{" "}
-                    <span className="font-semibold text-black ml-1">
-                      {bankBid.price ? `${bankBid.price}%` : "-"}
-                    </span>
-                  </h4>
-                  {bankBid.status === "Accepted" ? (
+                {otherBond?.Contract ? (
+                  <div className="flex justify-between items-center py-2">
+                    <div className="flex flex-col">
+                      <h4 className="text-sm font-medium">{otherBond.name}</h4>
+                      <h4 className="text-sm font-normal text-[#A3A3A9] mt-2">
+                        Bid Pricing{" "}
+                        <span className="font-semibold text-black ml-1">
+                          {bankBid.price ? `${bankBid.price}%` : "-"}
+                        </span>
+                      </h4>
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      {bankBid.status === "Accepted" ? (
+                        <h6 className="text-[0.65rem] bg-[#29C084] p-1 text-white">
+                          Accepted
+                        </h6>
+                      ) : bankBid.status === "Rejected" ? (
+                        <h6 className="text-[0.7rem] bg-[#F1F1F5] p-1">
+                          Rejected
+                        </h6>
+                      ) : overallStatus !== "Accepted" ? (
+                        <div className="flex gap-2">
+                          <Check
+                            size={20}
+                            className={`${
+                              disableActionButtons
+                                ? "bg-[#F1F1F5] cursor-not-allowed"
+                                : "bg-[#29C084] hover:cursor-pointer"
+                            }`}
+                            onClick={() =>
+                              !disableActionButtons &&
+                              handleBondStatusChange(
+                                bankBid.bidType as
+                                  | "bidBond"
+                                  | "retentionBond"
+                                  | "performanceBond"
+                                  | "advancePaymentBond"
+                                  | "otherBond",
+                                "Accepted",
+                                selectedBank
+                              )
+                            }
+                          />
+                          <X
+                            size={20}
+                            className={`${
+                              disableActionButtons
+                                ? "bg-[#F1F1F5] cursor-not-allowed"
+                                : "bg-[#F1F1F5] hover:cursor-pointer"
+                            }`}
+                            onClick={() =>
+                              !disableActionButtons &&
+                              handleBondStatusChange(
+                                bankBid.bidType as
+                                  | "bidBond"
+                                  | "retentionBond"
+                                  | "performanceBond"
+                                  | "advancePaymentBond"
+                                  | "otherBond",
+                                "Rejected",
+                                selectedBank
+                              )
+                            }
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 justify-center py-2 items-center">
+                    <h4 className="text-sm">{bankBid.bidType}</h4>
+                    <h4 className="text-center text-sm font-normal text-[#A3A3A9]">
+                      Bid Pricing{" "}
+                      <span className="font-semibold text-black ml-1">
+                        {bankBid.price ? `${bankBid.price}%` : "-"}
+                      </span>
+                    </h4>
                     <div className="flex gap-2 justify-end items-center">
-                      <h6 className="text-[0.65rem] bg-[#29C084] p-1 text-white">
-                        Accepted
-                      </h6>
+                      {bankBid.status === "Accepted" ? (
+                        <h6 className="text-[0.65rem] bg-[#29C084] p-1 text-white">
+                          Accepted
+                        </h6>
+                      ) : bankBid.status === "Rejected" ? (
+                        <h6 className="text-[0.7rem] bg-[#F1F1F5] p-1">
+                          Rejected
+                        </h6>
+                      ) : overallStatus !== "Accepted" ? (
+                        <div className="flex gap-2">
+                          <Check
+                            size={20}
+                            className={`${
+                              disableActionButtons
+                                ? "bg-[#F1F1F5] cursor-not-allowed"
+                                : "bg-[#29C084] hover:cursor-pointer"
+                            }`}
+                            onClick={() =>
+                              !disableActionButtons &&
+                              handleBondStatusChange(
+                                bankBid.bidType as
+                                  | "bidBond"
+                                  | "retentionBond"
+                                  | "performanceBond"
+                                  | "advancePaymentBond"
+                                  | "otherBond",
+                                "Accepted",
+                                selectedBank
+                              )
+                            }
+                          />
+                          <X
+                            size={20}
+                            className={`${
+                              disableActionButtons
+                                ? "bg-[#F1F1F5] cursor-not-allowed"
+                                : "bg-[#F1F1F5] hover:cursor-pointer"
+                            }`}
+                            onClick={() =>
+                              !disableActionButtons &&
+                              handleBondStatusChange(
+                                bankBid.bidType as
+                                  | "bidBond"
+                                  | "retentionBond"
+                                  | "performanceBond"
+                                  | "advancePaymentBond"
+                                  | "otherBond",
+                                "Rejected",
+                                selectedBank
+                              )
+                            }
+                          />
+                        </div>
+                      ) : null}
                     </div>
-                  ) : bankBid.status === "Rejected" ? (
-                    <div className="flex gap-2 justify-end items-center">
-                      <h6 className="text-[0.7rem] bg-[#F1F1F5] p-1">
-                        Rejected
-                      </h6>
-                    </div>
-                  ) : overallStatus !== "Accepted" ? (
-                    <div className="flex gap-2 justify-end">
-                      <Check
-                        size={20}
-                        className={`${
-                          disableActionButtons
-                            ? "bg-[#F1F1F5] cursor-not-allowed"
-                            : "bg-[#29C084] hover:cursor-pointer"
-                        }`}
-                        onClick={() =>
-                          !disableActionButtons &&
-                          handleBondStatusChange(
-                            bankBid.bidType as
-                              | "bidBond"
-                              | "retentionBond"
-                              | "performanceBond"
-                              | "advancePaymentBond"
-                              | "otherBond",
-                            "Accepted",
-                            selectedBank
-                          )
-                        }
-                      />
-                      <X
-                        size={20}
-                        className={`${
-                          disableActionButtons
-                            ? "bg-[#F1F1F5] cursor-not-allowed"
-                            : "bg-[#F1F1F5] hover:cursor-pointer"
-                        }`}
-                        onClick={() =>
-                          !disableActionButtons &&
-                          handleBondStatusChange(
-                            bankBid.bidType as
-                              | "bidBond"
-                              | "retentionBond"
-                              | "performanceBond"
-                              | "advancePaymentBond"
-                              | "otherBond",
-                            "Rejected",
-                            selectedBank
-                          )
-                        }
-                      />
-                    </div>
-                  ) : null}
-                </div>
+                  </div>
+                )}
                 {index !== array.length - 1 && (
                   <div className="flex justify-center my-1">
                     <div className="w-[99%] border-b border-black"></div>

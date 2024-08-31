@@ -37,9 +37,7 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
     <DashboardLayout>
       <div className="flex w-full px-2 2xl:px-10">
         <div className="w-4/5 p-2 xl:p-4">
-          <h2 className="mb-5 text-4xl font-semibold capitalize">
-            Welcome, {user && user.name}
-          </h2>
+          <h2 className="mb-5 text-4xl font-semibold capitalize">Welcome</h2>
           {/* Charts */}
           <div className="mb-4 flex h-fit flex-col gap-x-3 gap-y-4 xl:flex-row">
             <ProgressCharts title="Transactions Overview" isBank />

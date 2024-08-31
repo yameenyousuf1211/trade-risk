@@ -57,7 +57,7 @@ export const LGTableBidStatus = ({
       setSelectedValue("performanceBond");
     } else if (data.advancePaymentBond?.Contract) {
       setSelectedValue("advancePaymentBond");
-    } else if (data.otherBond?.Contract === "true") {
+    } else if (data.otherBond?.Contract) {
       setSelectedValue("otherBond");
     }
   }, [data]);
@@ -244,7 +244,7 @@ export const LGTableBidStatus = ({
                   onChange={handleChange}
                 />
               )}
-              {data.otherBond?.Contract === "true" && (
+              {data.otherBond?.Contract && (
                 <BgRadioInputLG
                   id="5"
                   label={data.otherBond.name}
@@ -306,6 +306,7 @@ export const LGTableBidStatus = ({
               bidDetail={bidDetail}
               overallStatus={data.overallStatus}
               issuingBanks={memoizedIssuingBanks}
+              otherBond={data.otherBond}
             />
           ))}
         </div>

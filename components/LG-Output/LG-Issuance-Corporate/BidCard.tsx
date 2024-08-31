@@ -18,8 +18,10 @@ import { convertDateToCommaString } from "@/utils";
 export const BidCard = ({
   bidDetail,
   issuingBanks,
+  overallStatus,
 }: {
   bidDetail: any;
+  overallStatus: boolean;
   issuingBanks: any;
 }) => {
   const queryClient = useQueryClient();
@@ -213,7 +215,7 @@ export const BidCard = ({
                         Rejected
                       </h6>
                     </div>
-                  ) : (
+                  ) : overallStatus !== "Accepted" ? (
                     <div className="flex gap-2 justify-end">
                       <Check
                         size={20}
@@ -256,7 +258,7 @@ export const BidCard = ({
                         }
                       />
                     </div>
-                  )}
+                  ) : null}
                 </div>
                 {index !== array.length - 1 && (
                   <div className="flex justify-center my-1">

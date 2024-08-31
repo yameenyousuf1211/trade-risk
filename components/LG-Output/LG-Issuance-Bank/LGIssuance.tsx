@@ -204,25 +204,18 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     );
   };
 
+  const updateBondPrices = (newValue: string) => {
+    setBondPrices((prev) => ({
+      ...prev,
+      [selectedBank!]: {
+        ...prev[selectedBank!],
+        [selectedLgType]: newValue || null,
+      },
+    }));
+  };
+
   const handleSubmitOrNext = async (bidValidity: string) => {
     if (!selectedLgType || !selectedBank) return;
-
-    if (pricingValue) {
-      await setBondPrices((prev) => ({
-        ...prev,
-        [selectedBank!]: {
-          ...prev[selectedBank!],
-          [selectedLgType]: pricingValue || null,
-        },
-      }));
-    }
-
-    const currentBankIndex = sortedIssuingBanks.findIndex(
-      (bank) => bank.bank === selectedBank
-    );
-    const currentBondIndex = availableBondTypes.findIndex(
-      (bond) => bond.type === selectedLgType
-    );
 
     if (
       isLastBank(selectedBank!) &&
@@ -251,16 +244,24 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
         lc: data._id,
         bids: newBids,
       };
-
       if (!showPreview) {
         setShowPreview(true);
         return;
       }
+      console.log(requestData, "requestData");
+      return;
 
       mutation.mutate(requestData);
       setShowPreview(true);
       return;
     }
+
+    const currentBankIndex = sortedIssuingBanks.findIndex(
+      (bank) => bank.bank === selectedBank
+    );
+    const currentBondIndex = availableBondTypes.findIndex(
+      (bond) => bond.type === selectedLgType
+    );
 
     if (isLastBond(selectedLgType)) {
       if (sortedIssuingBanks.length > 0) {
@@ -435,6 +436,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                   <PricingInput
                     pricingValue={pricingValue}
                     setPricingValue={setPricingValue}
+                    updateBondPrices={updateBondPrices} // Pass the update function
                     selectedBank={selectedBank}
                     bankData={data.expectedPrice}
                   />
@@ -446,7 +448,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                   }
                   type="submit"
                   className={`mt-4 h-12 w-full ${
-                    pricingValue
+                    pricingValue && parseFloat(pricingValue) > 0
                       ? "bg-[#44C894] text-white"
                       : "bg-[#D3D3D3] text-[#ADADAD]"
                   }`}
@@ -456,7 +458,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                   isLastBond(selectedLgType) &&
                   anyPricingFilled()
                     ? "Preview Bid"
-                    : pricingValue
+                    : pricingValue && parseFloat(pricingValue) > 0
                     ? "Next"
                     : "Skip"}
                 </Button>

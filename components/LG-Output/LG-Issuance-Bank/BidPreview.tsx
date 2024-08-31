@@ -51,9 +51,11 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
       <h2 className="text-xl font-semibold mb-4 gap-1 flex items-center">
         {allBondsFilled ? (
           <>
-            <Button variant="ghost" onClick={onBack} className="mr-1 p-1">
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
+            {!isApproved && (
+              <Button variant="ghost" onClick={onBack} className="mr-1 p-1">
+                <ChevronLeft className="h-6 w-6" />
+              </Button>
+            )}
             Preview Before Final Submission
           </>
         ) : (

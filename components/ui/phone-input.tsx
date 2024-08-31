@@ -106,10 +106,17 @@ export function PhoneInput({
 
   // Handle when a user selects a different country
   const handleCountryChange = (newCountryCode: CountryCode) => {
-    setCountryCode(newCountryCode);
-    handlers.set(""); // Reset the input value to empty
-    if (onChange) {
-      onChange(""); // Call onChange with an empty value
+    const selectedCountry = countries.find(
+      (country) => country.iso2 === newCountryCode
+    );
+    if (selectedCountry) {
+      const newPhoneNumber = `+${selectedCountry.phone_code}`;
+      setCountryCode(newCountryCode);
+      handlers.set(newPhoneNumber); // Set the input value with the new country code
+
+      if (onChange) {
+        onChange(newPhoneNumber); // Call onChange with the new phone number
+      }
     }
   };
 

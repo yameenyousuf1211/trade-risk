@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BankData } from "../../../types/LGBankTypes";
 
 interface PricingInputProps {
   pricingValue: string;
   setPricingValue: (value: string) => void;
+  updateBondPrices: (value: string) => void;
   selectedBank?: string | undefined;
   bankData?: BankData;
   clientExpectedPrice?: string;
@@ -12,31 +13,63 @@ interface PricingInputProps {
 export const PricingInput: React.FC<PricingInputProps> = ({
   pricingValue,
   setPricingValue,
+  updateBondPrices,
   selectedBank,
   bankData,
   clientExpectedPrice,
 }) => {
+  const [internalValue, setInternalValue] = useState<string>(pricingValue);
+
+  useEffect(() => {
+    setInternalValue(pricingValue);
+  }, [pricingValue]);
+
   const getClientExpectedPrice = () => {
     if (bankData?.expectedPrice) {
       return (
         "Client's Expected Price: " + bankData.pricePerAnnum + "% Per Annum"
       );
-    } else {
-      return;
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let newValue = e.target.value.replace(/[^\d.]/g, "");
-    if (newValue !== "" && !isNaN(parseFloat(newValue))) {
-      newValue = Math.min(parseFloat(newValue), 100).toString();
+    let newValue = e.target.value.replace(/[^0-9.]/g, "");
+    const decimalMatch = newValue.match(/^\d*(\.\d{0,2})?$/);
+
+    if (decimalMatch) {
+      if (parseFloat(newValue) > 100) {
+        newValue = "100";
+      }
+      setInternalValue(newValue);
+      setPricingValue(newValue);
+      updateBondPrices(newValue);
     }
-    setPricingValue(newValue);
   };
 
   const handleBlur = () => {
-    if (pricingValue !== "" && !isNaN(parseFloat(pricingValue))) {
-      setPricingValue(`${pricingValue}%`);
+    let newValue = internalValue;
+
+    if (newValue === "" || isNaN(parseFloat(newValue))) {
+      return;
+    }
+
+    if (parseFloat(newValue) > 100) {
+      newValue = "100";
+    }
+
+    if (!newValue.includes("%")) {
+      newValue = `${newValue}%`;
+    }
+
+    setInternalValue(newValue);
+    setPricingValue(newValue);
+    updateBondPrices(newValue);
+  };
+
+  const handleFocus = () => {
+    if (internalValue.endsWith("%")) {
+      const newValue = internalValue.slice(0, -1);
+      setInternalValue(newValue);
     }
   };
 
@@ -51,9 +84,10 @@ export const PricingInput: React.FC<PricingInputProps> = ({
           type="text"
           className="w-full p-1 pr-2 outline-none"
           placeholder="Enter your pricing (%)"
-          value={pricingValue}
+          value={internalValue}
           onChange={handleChange}
           onBlur={handleBlur}
+          onFocus={handleFocus}
         />
         <h6 className="w-4/12 text-end text-sm text-gray-600">Per Annum</h6>
       </div>

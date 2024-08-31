@@ -124,7 +124,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                     }`}
                   >
                     <p className="text-[14px] font-light">
-                      {otherBond?.Contract === "true"
+                      {otherBond?.Contract
                         ? `${otherBond.name} - ${
                             lgType.currencyType
                           } ${formatAmount(lgType.amount)}`
@@ -167,6 +167,8 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
           userBidStatus.status !== "Accepted" &&
           userBidStatus.status !== "Rejected" &&
           userBidStatus.status !== "Expired" &&
+          userBidStatus.status !== "Not Accepted" &&
+          userBidStatus.status !== "Not Applicable" &&
           !isApproved && (
             <DatePicker
               placeholder="Select Date"

@@ -121,6 +121,7 @@ const ConfirmationPage = () => {
     data: any;
     isProceed?: boolean;
   }) => {
+    delete data.lcPeriod;
     submit();
     if (
       data.confirmingBank &&
@@ -169,7 +170,7 @@ const ConfirmationPage = () => {
     try {
       setLoader(true); // Start the loader
       startLoading(); // Start the general loading state
-
+      if (baseData.issuingBanks?.[0]._id) delete baseData.issuingBanks[0]._id;
       if (isDraft) {
         const {
           confirmingBank2,
@@ -187,6 +188,7 @@ const ConfirmationPage = () => {
           ...baseData,
           draft: true,
         };
+        reqData.currency = reqData.currency ?? "USD";
         const { response, success } = confirmationData?._id
           ? await onUpdateLC({
               payload: reqData,
@@ -227,7 +229,7 @@ const ConfirmationPage = () => {
           },
           expectedConfirmationDate,
         };
-
+        preparedData.currency = preparedData.currency ?? "USD";
         const validatedData = await confirmationDiscountSchema.validate(
           preparedData,
           {

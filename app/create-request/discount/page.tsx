@@ -115,6 +115,7 @@ const CreateDiscountPage = () => {
     data: any;
     isProceed?: boolean;
   }) => {
+    delete data.lcPeriod;
     submit();
     if (
       data.confirmingBank &&
@@ -162,7 +163,6 @@ const CreateDiscountPage = () => {
     };
 
     if (baseData.issuingBanks?.[0]._id) delete baseData.issuingBanks[0]._id;
-
     if (isDraft) {
       const {
         confirmingBank2,
@@ -180,6 +180,7 @@ const CreateDiscountPage = () => {
         ...baseData,
         draft: true,
       };
+      reqData.currency = reqData.currency ?? "USD";
       setLoader(true);
       const { response, success } = discountingData?._id
         ? await onUpdateLC({
@@ -222,7 +223,7 @@ const CreateDiscountPage = () => {
           bank: "Something",
         },
       };
-
+      preparedData.currency = preparedData.currency ?? "USD";
       try {
         const validatedData = await discountingSchema.validate(preparedData, {
           abortEarly: false,

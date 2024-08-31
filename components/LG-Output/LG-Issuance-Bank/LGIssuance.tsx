@@ -379,7 +379,9 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                 />
 
                 <div className="mt-2 rounded-md border border-[#E2E2EA] px-2 py-1">
-                  <h3 className="mb-1 font-semibold">Select LG Type</h3>
+                  {!data.otherBond.Contract && (
+                    <h3 className="mb-1 font-semibold">Select LG Type</h3>
+                  )}
 
                   <LgTypeSelection
                     selectedLgType={selectedLgType}
@@ -392,6 +394,12 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                   {selectedBond && (
                     <>
                       <h3 className="mb-1 font-semibold mt-4">LG Details</h3>
+                      {data.otherBond.Contract && (
+                        <LGInfo
+                          label="LG Type"
+                          value={data.otherBond.name || "-"}
+                        />
+                      )}
                       <LGInfo
                         label="Amount"
                         value={
@@ -467,7 +475,6 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
       ) : (
         <BidPreview
           onBack={handleBack}
-          bidValidity={data.lastDateOfReceivingBids}
           handleSubmit={handleSubmitOrNext}
           bids={groupedBids}
           userBidStatus={userBidStatus}
@@ -479,6 +486,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           allBondsFilled={Object.values(bondPrices).some((bank) =>
             Object.values(bank).every((price) => price !== null && price !== "")
           )}
+          otherBond={data.otherBond}
         />
       )}
     </div>

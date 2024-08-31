@@ -31,10 +31,18 @@ import { getBanks } from "@/services/apis/helpers.api";
 import { bankCountries } from "@/utils/data";
 import { cn } from "@/utils";
 
-const CheckBoxInput = ({ label, id }: { label: string; id: string }) => {
+const CheckBoxInput = ({
+  label,
+  id,
+  register,
+}: {
+  label: string;
+  id: string;
+  register: any;
+}) => {
   return (
     <div className="my-2 flex items-center space-x-2 font-roboto">
-      <input type="checkbox" id={id} />
+      <input type="checkbox" id={id} {...register(id)} />
       <label htmlFor={id} className="text-sm leading-none text-[#44444F]">
         {label}
       </label>
@@ -66,13 +74,13 @@ const BankRegisterPage = () => {
       return toast.error("Please view and sign the agreement first");
 
     const reqData = {
-      name: data?.pocName,
+      name: data?.bank,
       email: data?.email,
       type: "bank",
       role: "admin",
       fcmTokens: ["adflskjdfklsdjfkldsj"],
       businessData: {
-        name: data?.pocName,
+        name: data?.bank,
         pocName: data?.pocName,
         email: data?.email,
         type: data?.type,
@@ -150,7 +158,7 @@ const BankRegisterPage = () => {
                       ? countryNames?.find(
                           (country) =>
                             country.toLowerCase() ===
-                            accountCountry.toLowerCase(),
+                            accountCountry.toLowerCase()
                         )
                       : "Bank Country"}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -172,7 +180,7 @@ const BankRegisterPage = () => {
                               setValue("accountCountry", currentValue, {
                                 shouldValidate: true,
                               });
-                              setValue('bank','')
+                              setValue("bank", "");
                             }}
                           >
                             <Check
@@ -181,7 +189,7 @@ const BankRegisterPage = () => {
                                 country.toLowerCase() ===
                                   accountCountry?.toLowerCase()
                                   ? "opacity-100"
-                                  : "opacity-0",
+                                  : "opacity-0"
                               )}
                             />
                             {country}
@@ -212,7 +220,7 @@ const BankRegisterPage = () => {
                     {bankVal
                       ? banks?.response.find(
                           (bank: string) =>
-                            bank.toLowerCase() === bankVal.toLowerCase(),
+                            bank.toLowerCase() === bankVal.toLowerCase()
                         )
                       : "Bank Name"}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -365,24 +373,33 @@ const BankRegisterPage = () => {
           <div className="grid grid-cols-1 gap-x-2 gap-y-1 rounded-lg border border-borderCol bg-[#F5F7F9] p-2 sm:grid-cols-2">
             <CheckBoxInput
               label="Confirmation of LCs"
-              id="confirmation-of-lcs"
+              id="confirmationLcs"
+              register={register}
             />
-            <CheckBoxInput label="Discounting of LCs" id="discounting-of-lcs" />
+            <CheckBoxInput
+              label="Discounting of LCs"
+              id="discountingLcs"
+              register={register}
+            />
             <CheckBoxInput
               label="Guarantees and counter guarantees"
-              id="guarantees"
+              id="guaranteesCounterGuarantees"
+              register={register}
             />
             <CheckBoxInput
               label="Avalization of Export Bills"
-              id="avalization-export"
+              id="avalizationExportBills"
+              register={register}
             />
             <CheckBoxInput
               label="Avalization & Discounting of Avalized Bills"
-              id="avalization"
+              id="discountingAvalizedBills"
+              register={register}
             />
             <CheckBoxInput
               label="Risk Participation (bank to bank)"
-              id="risk-participation"
+              id="riskParticipation"
+              register={register}
             />
           </div>
 

@@ -23,6 +23,7 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
     { type: "Advance Payment Bond", value: data.advancePaymentBond },
     { type: "Performance Bond", value: data.performanceBond },
     { type: "Retention Money Bond", value: data.retentionMoneyBond },
+    { type: "Other Bond", value: data.otherBond },
   ];
 
   return (
@@ -35,9 +36,16 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
           return null; // Skip rendering this bond type if Contract is falsy
         }
 
-        const label = `${lgType?.type} - ${
-          bondValue?.currencyType
-        } ${formatAmount(bondValue?.cashMargin)}`;
+        let label;
+        if (lgType.type === "Other Bond") {
+          label = `${bondValue.name || "Other Bond"} - ${
+            bondValue?.currencyType
+          } ${formatAmount(bondValue?.cashMargin)}`;
+        } else {
+          label = `${lgType.type} - ${bondValue?.currencyType} ${formatAmount(
+            bondValue?.cashMargin
+          )}`;
+        }
 
         const enteredPrice = bondPrices[selectedBank]?.[lgType.type]
           ? bondPrices[selectedBank]?.[lgType.type]?.endsWith("%")

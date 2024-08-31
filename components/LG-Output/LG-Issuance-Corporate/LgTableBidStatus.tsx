@@ -5,7 +5,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Eye, ListFilter, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BgRadioInputLG, getLgBondTotal } from "../helper";
 import { BidsSort } from "@/components/helpers";
 import { BidCard } from "./BidCard";
@@ -45,9 +45,22 @@ export const LGTableBidStatus = ({
   isViewAll?: boolean;
   data: any;
 }) => {
-  const [selectedValue, setSelectedValue] = useState<string | number>(
-    "bidBond"
-  );
+  const [selectedValue, setSelectedValue] = useState<string | number>("");
+
+  useEffect(() => {
+    // Set initial selectedValue based on available bonds
+    if (data.bidBond?.Contract) {
+      setSelectedValue("bidBond");
+    } else if (data.retentionMoneyBond?.Contract) {
+      setSelectedValue("retentionMoneyBond");
+    } else if (data.performanceBond?.Contract) {
+      setSelectedValue("performanceBond");
+    } else if (data.advancePaymentBond?.Contract) {
+      setSelectedValue("advancePaymentBond");
+    } else if (data.otherBond?.Contract === "true") {
+      setSelectedValue("otherBond");
+    }
+  }, [data]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedValue(event.target.value);
@@ -228,6 +241,17 @@ export const LGTableBidStatus = ({
                   value="advancePaymentBond"
                   checked={selectedValue === "advancePaymentBond"}
                   bgchecked={selectedValue === "advancePaymentBond"}
+                  onChange={handleChange}
+                />
+              )}
+              {data.otherBond?.Contract === "true" && (
+                <BgRadioInputLG
+                  id="5"
+                  label={data.otherBond.name}
+                  name="lgdetails"
+                  value="otherBond"
+                  checked={selectedValue === "otherBond"}
+                  bgchecked={selectedValue === "otherBond"}
                   onChange={handleChange}
                 />
               )}

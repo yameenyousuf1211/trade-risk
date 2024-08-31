@@ -212,6 +212,9 @@ export default function LgIssuance() {
     if (responseData.retentionMoneyBond) {
       setBondDefaults(responseData.retentionMoneyBond);
     }
+    if (responseData.otherBond) {
+      setBondDefaults(responseData.otherBond);
+    }
 
     removeUnnecessaryFieldsForLgCreate(responseData);
     removeUnnecessaryFields(responseData);

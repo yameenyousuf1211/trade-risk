@@ -304,7 +304,7 @@ export const LGTableBidStatus = ({
             <BidCard
               key={bidDetail._id}
               bidDetail={bidDetail}
-              overallStatus={data.overallStatus}
+              overallStatus={data.status}
               issuingBanks={memoizedIssuingBanks}
               otherBond={data.otherBond}
             />

@@ -52,7 +52,8 @@ export const BidCard = ({
       | "bidBond"
       | "retentionBond"
       | "performanceBond"
-      | "advancePaymentBond",
+      | "advancePaymentBond"
+      | "otherBond",
     status: "Accepted" | "Rejected",
     bank: string
   ) => {
@@ -231,7 +232,8 @@ export const BidCard = ({
                               | "bidBond"
                               | "retentionBond"
                               | "performanceBond"
-                              | "advancePaymentBond",
+                              | "advancePaymentBond"
+                              | "otherBond",
                             "Accepted",
                             selectedBank
                           )
@@ -251,7 +253,8 @@ export const BidCard = ({
                               | "bidBond"
                               | "retentionBond"
                               | "performanceBond"
-                              | "advancePaymentBond",
+                              | "advancePaymentBond"
+                              | "otherBond",
                             "Rejected",
                             selectedBank
                           )

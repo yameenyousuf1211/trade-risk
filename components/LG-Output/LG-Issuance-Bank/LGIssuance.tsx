@@ -104,6 +104,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     { type: "Advance Payment Bond", value: data.advancePaymentBond },
     { type: "Performance Bond", value: data.performanceBond },
     { type: "Retention Money Bond", value: data.retentionMoneyBond },
+    { type: "Other Bond", value: data.otherBond },
   ];
 
   const availableBondTypes = bondTypes.filter((bond) => bond.value?.Contract);
@@ -248,9 +249,6 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
         setShowPreview(true);
         return;
       }
-      console.log(requestData, "requestData");
-      return;
-
       mutation.mutate(requestData);
       setShowPreview(true);
       return;

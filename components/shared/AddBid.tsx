@@ -204,7 +204,8 @@ export const AddBid = ({
     }
   }
 
-  const computedStatus = userBidStatus || lcData?.status || triggerTitle;
+  const computedStatus =
+    userBidStatus || status || lcData?.status || triggerTitle;
 
   return (
     <Dialog>

@@ -38,7 +38,12 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
         const label = `${lgType?.type} - ${
           bondValue?.currencyType
         } ${formatAmount(bondValue?.cashMargin)}`;
-        const enteredPrice = bondPrices[selectedBank]?.[lgType.type];
+
+        const enteredPrice = bondPrices[selectedBank]?.[lgType.type]
+          ? bondPrices[selectedBank]?.[lgType.type]?.endsWith("%")
+            ? bondPrices[selectedBank]?.[lgType.type]
+            : `${bondPrices[selectedBank]?.[lgType.type]}%`
+          : null;
 
         return (
           <BgRadioInputLG

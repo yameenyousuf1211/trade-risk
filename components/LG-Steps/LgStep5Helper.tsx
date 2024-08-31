@@ -41,6 +41,7 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
     advancePaymentBond: 0,
     retentionMoneyBond: 0,
     performanceBond: 0,
+    otherBond: 0,
   });
 
   const bondTypes = [

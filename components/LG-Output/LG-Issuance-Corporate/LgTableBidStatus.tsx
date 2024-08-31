@@ -5,7 +5,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Eye, ListFilter, X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { BgRadioInputLG, getLgBondTotal } from "../helper";
 import { BidsSort } from "@/components/helpers";
 import { BidCard } from "./BidCard";
@@ -96,6 +96,13 @@ export const LGTableBidStatus = ({
       value: `${data.expectedPrice.pricePerAnnum}% per annum`,
     });
   }
+  const memoizedIssuingBanks = useMemo(
+    () => data.issuingBanks,
+    [data.issuingBanks]
+  );
+  const sortedBids = data.bids.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
 
   return (
     <Dialog>
@@ -269,11 +276,11 @@ export const LGTableBidStatus = ({
             </div>
           </div>
 
-          {data.bids.map((bidDetail: any, key: any) => (
+          {sortedBids.map((bidDetail: any, key: any) => (
             <BidCard
-              key={key}
+              key={bidDetail._id}
               bidDetail={bidDetail}
-              issuingBanks={data.issuingBanks}
+              issuingBanks={memoizedIssuingBanks}
             />
           ))}
         </div>

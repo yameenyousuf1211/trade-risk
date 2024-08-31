@@ -122,12 +122,19 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   }, [selectedLgType, selectedBank, bondPrices]);
 
   useEffect(() => {
-    const userBids = data.bids.find((bid: any) => bid.createdBy === user._id);
-    setUserBid(userBids);
+    const userBids = data.bids
+      .filter((bid: any) => bid.createdBy === user._id)
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
 
-    if (userBids) {
+    const mostRecentBid = userBids[0];
+    setUserBid(mostRecentBid);
+
+    if (mostRecentBid) {
       const groupedBidsWithBankData = groupBidsByBank(
-        userBids.bids,
+        mostRecentBid.bids,
         sortedIssuingBanks,
         bondTypes
       );
@@ -139,37 +146,37 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
       (bid: any) => bid.status === "Accepted" && bid.createdBy !== user._id
     );
 
-    if (userBids && anotherBankBidAccepted) {
+    if (mostRecentBid && anotherBankBidAccepted) {
       setUserBidStatus({
         label: "Another Bank Bid Accepted",
         status: "Not Accepted",
       });
       setShowPreview(true);
-    } else if (!userBids && anotherBankBidAccepted) {
+    } else if (!mostRecentBid && anotherBankBidAccepted) {
       setUserBidStatus({
         label: "Bid Not Applicable",
         status: "Not Applicable",
       });
-    } else if (userBids) {
-      if (userBids.status === "Pending") {
+    } else if (mostRecentBid) {
+      if (mostRecentBid.status === "Pending") {
         setUserBidStatus({
           label: `Bid Submitted on ${convertDateToCommaString(
-            userBids.createdAt
+            mostRecentBid.createdAt
           )}`,
           status: "Pending",
         });
-      } else if (userBids.status === "Accepted") {
+      } else if (mostRecentBid.status === "Accepted") {
         setUserBidStatus({
           label:
             "The Above rates against each guarantee and bank have been accepted and a swift message has been generated and sent to your bank.",
           status: "Accepted",
         });
-      } else if (userBids.status === "Rejected") {
+      } else if (mostRecentBid.status === "Rejected") {
         setUserBidStatus({
           label: "Bid Rejected",
           status: "Rejected",
         });
-      } else if (new Date(userBids.bidValidity) < new Date()) {
+      } else if (new Date(mostRecentBid.bidValidity) < new Date()) {
         setUserBidStatus({
           label: "Bid Expired",
           status: "Expired",

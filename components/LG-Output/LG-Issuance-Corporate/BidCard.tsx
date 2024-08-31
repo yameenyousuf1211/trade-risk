@@ -36,7 +36,7 @@ export const BidCard = ({
     const sortedBanks = sortBanksAlphabetically(banksWithBonds);
     setFilteredIssuingBanks(sortedBanks);
 
-    if (sortedBanks.length > 0) {
+    if (sortedBanks.length > 0 && selectedBank === null) {
       setSelectedBank(sortedBanks[0].bank);
     }
   }, [issuingBanks, localBids]);
@@ -170,13 +170,13 @@ export const BidCard = ({
           <h3 className="col-span-3">Select Issuing Bank</h3>
 
           {filteredIssuingBanks.map(
-            (bank: { bank: string; country: string }) => (
+            (bank: { bank: string; country: string; _id: string }) => (
               <BgRadioInputLG
-                key={bank.bank}
-                id={bank._id}
+                key={bank._id}
+                id={`${bidDetail._id}-${bank._id}`}
                 label={formatFirstLetterOfWord(bank.bank)}
                 sublabel={formatFirstLetterOfWord(bank.country)}
-                name={bank.bank}
+                name={`bank-${bidDetail._id}`}
                 value={bank.bank}
                 checked={selectedBank === bank.bank}
                 bgchecked={selectedBank === bank.bank}

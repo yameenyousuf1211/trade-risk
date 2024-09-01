@@ -349,27 +349,26 @@ export const RequestTable = ({
                     />
                     <TableDataCell
                       data={
-                        item.type == "LG Issuance"
-                          ? +getTotal(item) + ".00"
+                        item.type === "LG Issuance"
+                          ? `${item.totalContractCurrency || "USD"} ${getTotal(
+                              item
+                            ).toLocaleString()}.00`
                           : item?.amount
                           ? `${
                               item?.currency
                                 ? item.currency.toUpperCase()
                                 : "USD"
-                            } ` +
-                            item?.amount?.price?.toLocaleString() +
-                            ".00"
+                            } ${item?.amount?.price?.toLocaleString()}.00`
                           : `${
                               item?.currency
                                 ? item.currency.toUpperCase()
                                 : "USD"
-                            } ` +
-                            (
+                            } ${(
                               item as IRisk
-                            )?.riskParticipationTransaction?.amount?.toLocaleString() +
-                            ".00"
+                            )?.riskParticipationTransaction?.amount?.toLocaleString()}.00`
                       }
                     />
+
                     <TableCell className="max-w-[200px] px-1 py-1">
                       <TableBidStatus
                         id={item._id}

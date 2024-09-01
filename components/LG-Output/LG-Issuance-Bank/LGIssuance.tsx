@@ -379,7 +379,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                 />
 
                 <div className="mt-2 rounded-md border border-[#E2E2EA] px-2 py-1">
-                  {!data.otherBond.Contract && (
+                  {!data.otherBond?.Contract && (
                     <h3 className="mb-1 font-semibold">Select LG Type</h3>
                   )}
 
@@ -394,7 +394,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                   {selectedBond && (
                     <>
                       <h3 className="mb-1 font-semibold mt-4">LG Details</h3>
-                      {data.otherBond.Contract && (
+                      {data.otherBond?.Contract && (
                         <LGInfo
                           label="LG Type"
                           value={data.otherBond.name || "-"}
@@ -456,7 +456,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                   className={`mt-4 h-12 w-full ${
                     pricingValue && parseFloat(pricingValue) > 0
                       ? "bg-[#44C894] text-white"
-                      : "bg-[#D3D3D3] text-[#ADADAD]"
+                      : "bg-[#F1F1F5] text-black"
                   }`}
                 >
                   {selectedBank &&

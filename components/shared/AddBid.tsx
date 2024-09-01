@@ -603,6 +603,10 @@ export const AddBid = ({
                               ? convertDateToCommaString(
                                   lcData?.expectedConfirmationDate
                                 )
+                              : lcData?.expectedDiscountingDate
+                              ? convertDateToCommaString(
+                                  lcData?.expectedDiscountingDate
+                                )
                               : "-"
                           }
                         />

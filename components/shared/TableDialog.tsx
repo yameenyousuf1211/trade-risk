@@ -556,6 +556,10 @@ export const TableDialog = ({
                           ? convertDateToCommaString(
                               lcData?.expectedConfirmationDate
                             )
+                          : lcData?.expectedDiscountingDate
+                          ? convertDateToCommaString(
+                              lcData?.expectedDiscountingDate
+                            )
                           : "-"
                       }
                     />

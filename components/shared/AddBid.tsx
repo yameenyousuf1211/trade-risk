@@ -597,6 +597,16 @@ export const AddBid = ({
                           }
                         />
                         <LCInfo
+                          label="Last date for receiving Bids"
+                          value={
+                            lcData?.lastDateOfReceivingBids
+                              ? convertDateToCommaString(
+                                  lcData?.lastDateOfReceivingBids
+                                )
+                              : "-"
+                          }
+                        />
+                        <LCInfo
                           label="Confirmation Date (Expected)"
                           value={
                             lcData?.expectedConfirmationDate

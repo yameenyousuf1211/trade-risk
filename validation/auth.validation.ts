@@ -35,7 +35,7 @@ const companyInfoSchema = Yup.object().shape({
     .required("*Bank field cannot be empty.")
     .min(1, "*Bank field cannot be empty."),
   swiftCode: Yup.string()
-    .required("*Swift code is required")
+    .nullable()
     .min(8, "*Swift code must be at least 8 characters long.")
     .max(11, "*Swift code must be less than 11 characters."),
   accountNumber: Yup.string()

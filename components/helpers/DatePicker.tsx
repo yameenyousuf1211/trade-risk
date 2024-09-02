@@ -19,12 +19,18 @@ export const DatePicker = ({
   disabled,
   isPast,
   isLg,
+  startDate,
+  endDate,
   extraClassName,
+  leftText = true,
 }: {
   value: Date;
   setValue: any;
   maxDate: Date | string | any;
   name: string;
+  startDate?: Date;
+  leftText?: boolean;
+  endDate?: Date;
   disabled?: {
     before?: Date | undefined;
     after?: Date | undefined;
@@ -50,25 +56,32 @@ export const DatePicker = ({
           disabled={disabled}
           variant={"outline"}
           className={cn(
-            "w-full justify-between text-left font-normal",
-            !date &&
-              "text-muted-foreground flex items-center justify-between w-full",
+            "w-full justify-between text-left font-normal flex items-center",
+            !date && "text-muted-foreground",
             extraClassName // Apply extraClassName here
           )}
           id="validity"
         >
-          {date && isValid(date) ? (
-            format(date, "PPP")
-          ) : (
-            <span>DD/MM/YYYY</span>
-          )}
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          {leftText && <span className="flex-grow">Select Date</span>}
+          <span className="flex items-center">
+            {date && isValid(date) ? (
+              format(date, "PPP")
+            ) : (
+              <span className="text-[#B5B5BE]">DD/MM/YYYY</span>
+            )}
+            <CalendarIcon
+              className="ml-2 h-3.5 w-3.5 mb-0.5"
+              color={date && isValid(date) ? "black" : "#B5B5BE"}
+            />
+          </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
         <ValidatingCalendar
           disabled={disabled}
           initialDate={date}
+          startDate={startDate}
+          endDate={endDate}
           maxDate={maxDate}
           onChange={(newDate) => {
             setDate(newDate);

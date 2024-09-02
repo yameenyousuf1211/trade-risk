@@ -46,16 +46,28 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
 
   return (
     <div className="px-4 flex-1">
-      <h2 className="text-xl font-semibold mb-4 gap-1 flex items-center">
+      <h2 className="text-xl font-semibold mb-4 gap-1 flex items-center justify-between">
         {allBondsFilled ? (
-          <>
-            {!isApproved && (
-              <Button variant="ghost" onClick={onBack} className="mr-1 p-1">
-                <ChevronLeft className="h-6 w-6" />
-              </Button>
-            )}
-            Preview Before Final Submission
-          </>
+          <div className="flex justify-between items-center w-full">
+            <div className="flex items-center">
+              {!isApproved && (
+                <Button variant="ghost" onClick={onBack} className="mr-1 p-1">
+                  <ChevronLeft className="h-6 w-6" />
+                </Button>
+              )}
+              <span>Preview Before Final Submission</span>
+            </div>
+            {userBidStatus.status !== "Pending" &&
+              userBidStatus.status !== "Accepted" &&
+              userBidStatus.status !== "Rejected" &&
+              userBidStatus.status !== "Expired" &&
+              isApproved && (
+                <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
+                  <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
+                  <h5 className="text-[0.95rem] font-normal">{user.name}</h5>
+                </div>
+              )}
+          </div>
         ) : (
           <>Your Bid</>
         )}
@@ -73,24 +85,21 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                 </p>
               </div>
             )}
-            {bidValidityDate && (
+            {(bidValidityDate || (isApproved && selectedBidValidity)) && (
               <div className="text-center">
-                <p className="text-base font-normal">{bidValidityDate}</p>
+                <p className="text-base font-normal">
+                  {bidValidityDate ||
+                    new Date(selectedBidValidity).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                    })}
+                </p>
                 <p className="text-base text-[#A1A1A8] font-light">
                   Bid Validity
                 </p>
               </div>
             )}
-            {userBidStatus.status !== "Pending" &&
-              userBidStatus.status !== "Accepted" &&
-              userBidStatus.status !== "Rejected" &&
-              userBidStatus.status !== "Expired" &&
-              isApproved && (
-                <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
-                  <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
-                  <h5 className="text-[0.95rem] font-normal">{user.name}</h5>
-                </div>
-              )}
           </div>
         </div>
 

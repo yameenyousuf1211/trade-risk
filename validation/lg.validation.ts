@@ -3,28 +3,29 @@ import * as Yup from "yup";
 
 const bondSchema = Yup.object().shape({
   Contract: Yup.boolean().default(false),
-  currencyType: Yup.string()
-    .min(1, "Currency Type is required")
-    .default("USD"),
-  cashMargin: Yup.number()
-    .when("Contract", {
-      is: true,
-      then: (schema) => schema.required("Must enter LG Amount"),
-      otherwise: (schema) => schema.notRequired(),
-    }),
-  valueInPercentage: Yup.number().when("Contract", {
+  currencyType: Yup.string().min(1, "Currency Type is required").default("USD"),
+  cashMargin: Yup.number().when("Contract", {
     is: true,
-    then: (schema) => schema.required("Value In Percentage is required"),
+    then: (schema) => schema.required("Must enter LG Amount"),
     otherwise: (schema) => schema.notRequired(),
-  })
-  .nullable(),
+  }),
+  valueInPercentage: Yup.number()
+    .nullable() // Allows null values
+    .notRequired(), // Makes the field not required regardless of the condition
+
+  // valueInPercentage: Yup.number()
+  //   .when("Contract", {
+  //     is: true,
+  //     then: (schema) => schema.required("Value In Percentage is required"),
+  //     otherwise: (schema) => schema.notRequired(),
+  //   })
+  //   .nullable(),
   // .typeError("valueInPercenta Percentage should be a number")
-  expectedDate: Yup.date()
-    .when("Contract", {
-      is: true,
-      then: (schema) => schema.min(2).required("Expected Date is required"),
-      otherwise: (schema) => schema.notRequired(),
-    }),
+  expectedDate: Yup.date().when("Contract", {
+    is: true,
+    then: (schema) => schema.min(2).required("Expected Date is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   lgExpiryDate: Yup.date().when("Contract", {
     is: true,
     then: (schema) => schema.required("LG Expiry Date is required"),
@@ -41,26 +42,26 @@ const bondSchema = Yup.object().shape({
   draft: Yup.string().nullable(),
 });
 
-  // // SuperRefine equivalent
-  // .test("contract-logic", "", function (input) {
-  //   if (input.Contract === true) {
-  //     // Add any conditional validations here
-  //     // For example, uncommenting the lines below would make these fields required when Contract is true
-  //     // if (!input.expectedDate) {
-  //     //   return this.createError({
-  //     //     path: 'expectedDate',
-  //     //     message: "Expected Date is required",
-  //     //   });
-  //     // }
-  //     // if (!input.lgExpiryDate) {
-  //     //   return this.createError({
-  //     //     path: 'lgExpiryDate',
-  //     //     message: "LG Expiry Date is required",
-  //     //   });
-  //     // }
-  //   }
-  //   return true;
-  // });
+// // SuperRefine equivalent
+// .test("contract-logic", "", function (input) {
+//   if (input.Contract === true) {
+//     // Add any conditional validations here
+//     // For example, uncommenting the lines below would make these fields required when Contract is true
+//     // if (!input.expectedDate) {
+//     //   return this.createError({
+//     //     path: 'expectedDate',
+//     //     message: "Expected Date is required",
+//     //   });
+//     // }
+//     // if (!input.lgExpiryDate) {
+//     //   return this.createError({
+//     //     path: 'lgExpiryDate',
+//     //     message: "LG Expiry Date is required",
+//     //   });
+//     // }
+//   }
+//   return true;
+// });
 
 // Define the main schema with all fields and refinements
 export const lgValidator = Yup.object()
@@ -76,19 +77,18 @@ export const lgValidator = Yup.object()
       .required(),
     beneficiaryDetails: Yup.object()
       .shape({
-        name: Yup.string()
-          .required("Beneficiary Name is Required"),
-        country: Yup.string()
-          .required("Beneficiary Country is Required"),
+        name: Yup.string().required("Beneficiary Name is Required"),
+        country: Yup.string().required("Beneficiary Country is Required"),
         address: Yup.string().required("Beneficiary Address is Required"),
         phone: Yup.string().nullable(),
         city: Yup.string().nullable(),
       })
       .required(),
     lgDetailsType: Yup.string()
-      .default("Choose any other type of LGs").required(),
-    bidBond: bondSchema.when('lgDetailsType' ,{
-      is:"Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
+      .default("Choose any other type of LGs")
+      .required(),
+    bidBond: bondSchema.when("lgDetailsType", {
+      is: "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
       then: (schema) => schema.required("Bid Bond is required"),
       otherwise: (schema) => schema.notRequired(),
     }),
@@ -106,8 +106,8 @@ export const lgValidator = Yup.object()
             .min(1, "Issuing Bank Country is required")
             .required("Issuing Bank Country is required"),
           swiftCode: Yup.string()
-            .min(1, "Issuing Bank Swift Code is required")
-            .required("Issuing Bank Swift Code is required"),
+            .nullable()
+            .min(1, "Issuing Bank Swift Code is required"),
         })
       )
       .min(1, "At least one issuing bank is required")
@@ -135,52 +135,61 @@ export const lgValidator = Yup.object()
     // physicalLgBank: Yup.string().nullable(),
     // physicalLgCountry: Yup.string().nullable(),
     // physicalLgSwiftCode: Yup.string().nullable(),
-    lastDateOfReceivingBids: Yup.date().required("Last Date of Receiving Bids is required"),
-    totalContractValue: Yup.string().when('lgDetailsType' ,{
-      is:"Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
+    lastDateOfReceivingBids: Yup.date().required(
+      "Last Date of Receiving Bids is required"
+    ),
+    totalContractValue: Yup.string().when("lgDetailsType", {
+      is: "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
       then: (schema) => schema.required("Total Contract Value is required"),
       otherwise: (schema) => schema.notRequired().optional().nullable(),
-    }),    
-    totalContractCurrency: Yup.string().when('lgDetailsType' ,{
-      is:"Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
+    }),
+    totalContractCurrency: Yup.string().when("lgDetailsType", {
+      is: "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
       then: (schema) => schema.required("Total Contract Currency is required"),
       otherwise: (schema) => schema.notRequired().optional().nullable(),
     }),
   })
   .test(
-    'at-least-one-bond',
-    'At least one of the bond fields must be provided.',
+    "at-least-one-bond",
+    "At least one of the bond fields must be provided.",
     function (value) {
-      const { lgDetailsType, bidBond, advancePaymentBond, performanceBond, retentionMoneyBond } = value;
-  
-      if (lgDetailsType === 'Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)') {
+      const {
+        lgDetailsType,
+        bidBond,
+        advancePaymentBond,
+        performanceBond,
+        retentionMoneyBond,
+      } = value;
+
+      if (
+        lgDetailsType ===
+        "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)"
+      ) {
         // Check if at least one bond has Contract set to true
         const isContractTrueInAnyBond =
           (bidBond && bidBond.Contract) ||
           (advancePaymentBond && advancePaymentBond.Contract) ||
           (performanceBond && performanceBond.Contract) ||
           (retentionMoneyBond && retentionMoneyBond.Contract);
-  
+
         if (!isContractTrueInAnyBond) {
           return this.createError({
-            path: 'lgDetailsType',
-            message: 'At least one of the provided bonds must have Contract set to true.',
+            path: "lgDetailsType",
+            message:
+              "At least one of the provided bonds must have Contract set to true.",
           });
         }
       }
-      
-      if(lgDetailsType === 'Choose any other type of LGs'){
-        if(!value.otherBond.Contract){
+
+      if (lgDetailsType === "Choose any other type of LGs") {
+        if (!value.otherBond.Contract) {
           return this.createError({
-          path: 'lgDetailsType',
-          message: "Please select at least one LG type"
-          })
+            path: "lgDetailsType",
+            message: "Please select at least one LG type",
+          });
+        }
       }
-    }
-   
+
       return true; // Validation passes
     }
   );
-  
-  
-

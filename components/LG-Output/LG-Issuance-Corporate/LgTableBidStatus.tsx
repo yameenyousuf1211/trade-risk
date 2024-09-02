@@ -77,7 +77,7 @@ export const LGTableBidStatus = ({
       label: "Amount",
       value: formatAmount(data[selectedValue]?.cashMargin) || "-",
     },
-    {
+    data[selectedValue]?.valueInPercentage !== undefined && {
       label: "% of the contract",
       value: `${data[selectedValue]?.valueInPercentage}%`,
     },
@@ -95,13 +95,17 @@ export const LGTableBidStatus = ({
         data[selectedValue]?.lgTenor?.lgTenorType || ""
       }`,
     },
-  ];
+  ].filter(Boolean);
 
   const otherDetails = [
+    {
+      label: "Total Contract Value",
+      value: `${data.totalContractCurrency} ${data.totalContractValue}`,
+    },
     { label: "Purpose of LG", value: data.purpose },
-    { label: "Remarks", value: data.remarks },
+    data.remarks && { label: "Remarks", value: data.remarks },
     { label: "Preference", value: data.priceQuotes },
-  ];
+  ].filter(Boolean); // Filter out any `false` or `undefined` items
 
   if (data.expectedPrice?.expectedPrice) {
     otherDetails.push({

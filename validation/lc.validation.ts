@@ -284,8 +284,6 @@ export const lcIssuanceSchema = Yup.object().shape({
     .required(),
   instrument: Yup.mixed().oneOf(["yes", "no"], "Select Instrument").required(),
   benificiaryBankName: Yup.string().nullable(),
-  remarks: Yup.string()
-    .min(1, "Remarks are required")
-    .required("Remarks are required"),
+  remarks: Yup.string().nullable().min(1, "Remarks are required"),
   priceType: Yup.string().required("Select Price Type"),
 });

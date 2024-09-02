@@ -42,7 +42,6 @@ const LgStep12: React.FC<LgStepsProps10> = ({
           id="expectedDate"
           className="border p-1 px-2 rounded-md w-[100%] flex items-center justify-between bg-white"
         >
-          <p className="w-full text-sm text-lightGray">Select Date</p>
           <DatePicker
             maxDate={
               new Date(new Date().setFullYear(new Date().getFullYear() + 1))

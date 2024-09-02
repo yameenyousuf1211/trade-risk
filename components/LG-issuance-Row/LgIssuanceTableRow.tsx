@@ -202,6 +202,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
             new Date(new Date().setFullYear(new Date().getFullYear() + 1))
           }
           value={expectedDate}
+          leftText={false}
           name={`${name}.expectedDate`}
           setValue={setValue}
           disabled={!checkedValue}
@@ -210,6 +211,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       <TableCell>
         <DatePicker
           value={lgExpiryDate}
+          leftText={false}
           maxDate={
             new Date(new Date().setFullYear(new Date().getFullYear() + 1))
           }

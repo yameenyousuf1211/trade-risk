@@ -137,32 +137,29 @@ export const BidCard = ({
           </>
         )}
       </div>
-
-      {data.status !== "Pending" && (
-        <Button
-          className={`${
-            data.status === "Accepted"
-              ? "bg-[#29C08433] hover:bg-[#29C08433]"
-              : data.status === "Rejected"
-              ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
-              : data.status === "Expired"
-              ? "bg-[#97979733] hover:bg-[#97979733]"
-              : data.status === "Submitted"
-              ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
-              : ""
-          } mt-2 w-full cursor-default text-black`}
-        >
-          {data.status === "Accepted"
-            ? "Bid Accepted"
+      <Button
+        className={`${
+          data.status === "Accepted"
+            ? "bg-[#29C08433] hover:bg-[#29C08433]"
             : data.status === "Rejected"
-            ? "Bid Rejected"
+            ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
             : data.status === "Expired"
-            ? "Request Expired"
-            : data.status === "Submitted"
-            ? "Bid Submitted"
-            : ""}
-        </Button>
-      )}
+            ? "bg-[#97979733] hover:bg-[#97979733]"
+            : data.status === "Pending"
+            ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
+            : ""
+        } mt-2 w-full cursor-default text-black`}
+      >
+        {data.status === "Accepted"
+          ? "Bid Accepted"
+          : data.status === "Rejected"
+          ? "Bid Rejected"
+          : data.status === "Expired"
+          ? "Request Expired"
+          : data.status === "Pending"
+          ? `Bid Submitted on ${convertDateToCommaString(data.createdAt)}`
+          : ""}
+      </Button>
     </div>
   );
 };
@@ -547,6 +544,13 @@ export const TableDialog = ({
                         lcData &&
                         lcData.period &&
                         convertDateToCommaString(lcData.period?.endDate)
+                      }
+                    />
+                    <LCInfo
+                      label="Last date for receiving Bids"
+                      value={
+                        lcData &&
+                        convertDateToCommaString(lcData.lastDateOfReceivingBids)
                       }
                     />
                     <LCInfo

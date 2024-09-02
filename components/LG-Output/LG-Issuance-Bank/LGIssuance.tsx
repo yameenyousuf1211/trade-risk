@@ -324,6 +324,12 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
         </div>
         <div className="ml-7 mr-1 mt-2">
           <LGInfo
+            label="Total Contract Value"
+            value={
+              `${data.totalContractCurrency} ${data.totalContractValue}` || null
+            }
+          />
+          <LGInfo
             label="Request Expiry Date"
             value={
               convertDateToCommaString(data.lastDateOfReceivingBids) || null

@@ -201,7 +201,9 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
 
   const anyPricingFilled = () => {
     return Object.values(bondPrices).some((bank) =>
-      Object.values(bank).some((price) => price !== null && price !== "")
+      Object.values(bank).some(
+        (price) => price !== null && price !== "" && price !== "0%"
+      )
     );
   };
 
@@ -223,35 +225,41 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
       isLastBond(selectedLgType) &&
       anyPricingFilled()
     ) {
+      // Filter out bonds with a price of "0%" before creating newBids
       const newBids = Object.entries(bondPrices).flatMap(([bank, bonds]) =>
-        Object.entries(bonds).map(([bondType, price]) => ({
-          bank,
-          bidType: bondType,
-          price: parseFloat(price || "0"),
-          perAnnum: true,
-        }))
+        Object.entries(bonds)
+          .filter(([bondType, price]) => parseFloat(price.replace("%", "")) > 0) // Exclude 0% pricing
+          .map(([bondType, price]) => ({
+            bank,
+            bidType: bondType,
+            price: parseFloat(price.replace("%", "")),
+            perAnnum: true,
+          }))
       );
 
-      const groupedBidsWithBankData = await groupBidsByBank(
-        newBids,
-        sortedIssuingBanks,
-        bondTypes
-      );
-      setGroupedBids(Object.values(groupedBidsWithBankData));
+      // Proceed only if there are valid bids
+      if (newBids.length > 0) {
+        const groupedBidsWithBankData = await groupBidsByBank(
+          newBids,
+          sortedIssuingBanks,
+          bondTypes
+        );
+        setGroupedBids(Object.values(groupedBidsWithBankData));
 
-      const requestData = {
-        bidType: "LG Issuance",
-        bidValidity: bidValidity,
-        lc: data._id,
-        bids: newBids,
-      };
-      if (!showPreview) {
+        const requestData = {
+          bidType: "LG Issuance",
+          bidValidity: bidValidity,
+          lc: data._id,
+          bids: newBids,
+        };
+        if (!showPreview) {
+          setShowPreview(true);
+          return;
+        }
+        mutation.mutate(requestData);
         setShowPreview(true);
         return;
       }
-      mutation.mutate(requestData);
-      setShowPreview(true);
-      return;
     }
 
     const currentBankIndex = sortedIssuingBanks.findIndex(

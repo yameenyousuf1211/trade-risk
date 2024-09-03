@@ -108,9 +108,7 @@ const bankSchema = Yup.object().shape({
     .min(4, "*POC Phone number is required"),
   address: Yup.string().required("*Bank address is required"),
   bank: Yup.string(),
-  swiftCode: Yup.string()
-    .min(8, "at least 8 characters long.")
-    .max(11, "must be less than 11 characters."),
+  swiftCode: Yup.string().notRequired(),
   pocEmail: Yup.string()
     .required("*POC email is required")
     .email("*Must be a valid email.")

@@ -34,7 +34,7 @@ export const BidCard = ({
   isRisk?: boolean;
 }) => {
   const queryClient = useQueryClient();
-
+  const { user } = useAuth();
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
@@ -137,29 +137,30 @@ export const BidCard = ({
           </>
         )}
       </div>
-      <Button
-        className={`${
-          data.status === "Accepted"
-            ? "bg-[#29C08433] hover:bg-[#29C08433]"
+      {(data.status !== "Pending" ||
+        (data.status === "Pending" && data.createdBy === user?._id)) && (
+        <Button
+          className={`${
+            data.status === "Accepted"
+              ? "bg-[#29C08433] hover:bg-[#29C08433]"
+              : data.status === "Rejected"
+              ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
+              : data.status === "Expired"
+              ? "bg-[#97979733] hover:bg-[#97979733]"
+              : "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
+          } mt-2 w-full cursor-default text-black`}
+        >
+          {data.status === "Accepted"
+            ? "Bid Accepted"
             : data.status === "Rejected"
-            ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
+            ? "Bid Rejected"
             : data.status === "Expired"
-            ? "bg-[#97979733] hover:bg-[#97979733]"
+            ? "Request Expired"
             : data.status === "Pending"
-            ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
-            : ""
-        } mt-2 w-full cursor-default text-black`}
-      >
-        {data.status === "Accepted"
-          ? "Bid Accepted"
-          : data.status === "Rejected"
-          ? "Bid Rejected"
-          : data.status === "Expired"
-          ? "Request Expired"
-          : data.status === "Pending"
-          ? `Bid Submitted on ${convertDateToCommaString(data.createdAt)}`
-          : ""}
-      </Button>
+            ? `Bid Submitted on ${convertDateToCommaString(data.createdAt)}`
+            : ""}
+        </Button>
+      )}
     </div>
   );
 };

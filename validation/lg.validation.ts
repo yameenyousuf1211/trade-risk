@@ -105,9 +105,7 @@ export const lgValidator = Yup.object()
           country: Yup.string()
             .min(1, "Issuing Bank Country is required")
             .required("Issuing Bank Country is required"),
-          swiftCode: Yup.string()
-            .nullable()
-            .min(1, "Issuing Bank Swift Code is required"),
+          swiftCode: Yup.string().notRequired(),
         })
       )
       .min(1, "At least one issuing bank is required")

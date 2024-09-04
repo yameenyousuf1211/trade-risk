@@ -29,15 +29,12 @@ export const Step4 = ({
   let isImporter = watch("participantRole") === "importer";
   let importerCountry = watch("importerInfo.countryOfImport");
   let applicantName = watch("importerInfo.applicantName");
+  console.log(importerCountry, applicantName);
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
     if (isImporter) {
       setValue("importerInfo.applicantName", user ? user.name : "");
-      setValue("exporterInfo.countryOfExport", "");
-      setValue("exporterInfo.beneficiaryCountry", "");
-      setValue("exporterInfo.beneficiaryName", "");
-      setValue("exporterInfo.bank", "");
     } else {
       setValue("importerInfo.applicantName", "");
       setValue("importerInfo.countryOfImport", "");

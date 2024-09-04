@@ -69,16 +69,13 @@ export const BidCard = ({
           </p>
         </div>
 
-        {data?.discountMargin && (
-          <div className={data.status === "Expired" ? "opacity-50" : ""}>
-            <p className="text-sm text-para mb-1">Discount Spread</p>
-            <p className="text-lg font-semibold ">
-              {data.discountMargin
-                ? data.discountMargin + "%"
-                : "Not Applicable"}
-            </p>
-          </div>
-        )}
+        {data?.discountMargin !== undefined &&
+          data?.discountMargin !== null && (
+            <div className={data.status === "Expired" ? "opacity-50" : ""}>
+              <p className="mb-1 text-sm text-para">Discount Spread</p>
+              <p className="text-lg font-semibold">{data.discountMargin}%</p>
+            </div>
+          )}
 
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Recieved</p>

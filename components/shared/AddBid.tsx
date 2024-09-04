@@ -684,10 +684,16 @@ export const AddBid = ({
                       (bid) => bid?.bidBy?._id === user?.business?._id
                     );
                   }
+                  const sortedBids = userBids?.sort(
+                    (a, b) =>
+                      new Date(b.createdAt).getTime() -
+                      new Date(a.createdAt).getTime()
+                  );
+
                   return (
                     <>
-                      {userBids && userBids.length > 0 ? (
-                        userBids.map((bid: IBids, index: number) => (
+                      {sortedBids && sortedBids.length > 0 ? (
+                        sortedBids.map((bid: IBids, index: number) => (
                           <div
                             className="border-borderCol px-4 mt-3   py-4  border  rounded-lg"
                             key={bid._id}

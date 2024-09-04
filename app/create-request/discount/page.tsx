@@ -178,8 +178,9 @@ const CreateDiscountPage = () => {
       reqData = {
         ...rest,
         ...baseData,
-        draft: true,
+        draft: "true",
       };
+      console.log(reqData, "reqData Discounting");
       reqData.currency = reqData.currency ?? "USD";
       setLoader(true);
       const { response, success } = discountingData?._id

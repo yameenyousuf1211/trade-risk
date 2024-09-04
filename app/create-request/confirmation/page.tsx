@@ -186,8 +186,9 @@ const ConfirmationPage = () => {
         reqData = {
           ...rest,
           ...baseData,
-          draft: true,
+          draft: "true",
         };
+        console.log(reqData, "reqData Confirmation and Discounting");
         reqData.currency = reqData.currency ?? "USD";
         const { response, success } = confirmationData?._id
           ? await onUpdateLC({

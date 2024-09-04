@@ -244,6 +244,13 @@ export const TableDialog = ({
     return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
+  const sortedBids = (bidsArray: IBids[]) => {
+    return bidsArray.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  };
+
   return (
     <Dialog>
       <DialogTrigger
@@ -515,11 +522,11 @@ export const TableDialog = ({
                       />
                     )}
                     <LCInfo
-                      label="Payments Terms"
+                      label="Payment Terms"
                       value={
                         lcData?.paymentTerms &&
                         lcData?.paymentTerms !== "Sight LC"
-                          ? `${lcData.paymentTerms} ${
+                          ? `${lcData.paymentTerms} for ${
                               lcData.extraInfo?.days + " days" || ""
                             } at ${lcData.extraInfo?.other || ""}`
                           : lcData?.paymentTerms || "-"
@@ -640,8 +647,8 @@ export const TableDialog = ({
               <div className="mt-5 flex max-h-[65vh] flex-col gap-y-4 overflow-y-auto overflow-x-hidden">
                 {isBank
                   ? userBids &&
-                    userBids?.length > 0 &&
-                    userBids?.map((data: any) => (
+                    userBids.length > 0 &&
+                    sortedBids(userBids)?.map((data: IBids) => (
                       <BidCard
                         isRisk={isRisk}
                         data={data}
@@ -651,11 +658,9 @@ export const TableDialog = ({
                     ))
                   : bids &&
                     bids.length > 0 &&
-                    bids
-                      // .reverse()
-                      .map((data: any) => (
-                        <BidCard data={data} key={data._id} isRisk={isRisk} />
-                      ))}
+                    sortedBids(bids)?.map((data: IBids) => (
+                      <BidCard data={data} key={data._id} isRisk={isRisk} />
+                    ))}
               </div>
             </div>
           </div>

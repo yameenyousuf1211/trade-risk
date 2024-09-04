@@ -533,7 +533,7 @@ export const AddBid = ({
                           value={
                             lcData?.paymentTerms &&
                             lcData?.paymentTerms !== "Sight LC"
-                              ? `${lcData.paymentTerms} ${
+                              ? `${lcData.paymentTerms} for ${
                                   lcData.extraInfo?.days + " days" || ""
                                 } at ${lcData.extraInfo?.other || ""}`
                               : lcData?.paymentTerms || "-"
@@ -846,7 +846,6 @@ export const AddBid = ({
                         setValue={setValue}
                         key={lcData?._id}
                         // maxDate={null}
-                        maxDate={lcData?.period?.endDate}
                         isPast={false}
                       />
                     </div>
@@ -905,9 +904,9 @@ export const AddBid = ({
                       }}
                     />
                   </div>
-                  {errors.validity && (
+                  {errors.confirmationPrice && (
                     <span className="text-red-500 text-[12px]">
-                      {errors.validity.message}
+                      {errors.confirmationPrice.message}
                     </span>
                   )}
                   {isDiscount && (

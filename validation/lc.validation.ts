@@ -123,15 +123,16 @@ export const confirmationSchema = generalLcSchema.concat(
         pricePerAnnum: Yup.string()
           .required("Enter expected price")
           .matches(
-            /^\d+(\.\d+)?%$/,
-            "Enter a valid number with a '%' at the end"
+            /^\d+(\.\d+)?%?$/,
+            "Price per annum: Enter a valid number or percentage"
           )
           .test(
             "is-valid-price",
-            "Price per annum must be less than or equal to 100",
+            "Price per annum must be less than or equal to 100% and greater than 0",
             (value) => {
+              if (!value) return false;
               const numericValue = parseFloat(value.replace("%", ""));
-              return numericValue <= 100;
+              return numericValue > 0 && numericValue <= 100;
             }
           ),
       })
@@ -168,11 +169,11 @@ export const discountingSchema = generalLcSchema.concat(
           )
           .test(
             "is-valid-price",
-            "Price per annum must be less than or equal to 100%",
+            "Price per annum must be less than or equal to 100% and greater than 0",
             (value) => {
               if (!value) return false;
               const numericValue = parseFloat(value.replace("%", "")); // Remove percentage sign and parse the number
-              return numericValue <= 100;
+              return numericValue > 0 && numericValue <= 100;
             }
           ),
       })

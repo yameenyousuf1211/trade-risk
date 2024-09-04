@@ -43,7 +43,7 @@ export const Step2 = ({
   let amount = watch("amount");
   let currencyVal = watch("currency");
   let paymentTerms = watch("paymentTerms");
-  let extraInfo = watch("extraInfo") || { days: 0, other: "" };
+  let extraInfo = watch("extraInfo") || { days: null, other: "" };
 
   const [currencyValue, setCurrencyValue] = useState<string | number>(
     amount || ""
@@ -52,11 +52,11 @@ export const Step2 = ({
   const [otherValue, setOtherValue] = useState("");
   const { addStep, removeStep } = useStepStore();
 
-  useEffect(() => {
-    if (paymentTerms === "Usance LC") {
-      setValue("extraInfo", undefined);
-    }
-  }, [paymentTerms]);
+  // useEffect(() => {
+  //   if (paymentTerms === "Usance LC") {
+  //     setValue("extraInfo", undefined);
+  //   }
+  // }, [paymentTerms]);
 
   const handleChange = (e: any) => {
     const { value } = e.target;

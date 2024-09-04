@@ -46,8 +46,6 @@ export const Step5 = ({
   useEffect(() => {
     if (isExporter) {
       setValue("exporterInfo.beneficiaryName", user ? user.name : "");
-      setValue("importerInfo.applicantName", "");
-      setValue("importerInfo.countryOfImport", "");
     } else {
       setValue("exporterInfo.beneficiaryName", "");
       setValue("exporterInfo.countryOfExport", "");

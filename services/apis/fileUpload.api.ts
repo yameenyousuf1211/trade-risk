@@ -18,7 +18,7 @@ const FileUploadService = {
   ) => {
     const formData = new FormData();
     formData.append("file", file);
-
+    console.log("FormData contents:", Array.from(formData.entries()));
     try {
       const response = await api.post<{
         statusCode: number;
@@ -27,7 +27,7 @@ const FileUploadService = {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        withCredentials: true,
+        // withCredentials: true,
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round(
@@ -58,10 +58,7 @@ const FileUploadService = {
     try {
       const response = await api.delete<{
         statusCode: number;
-      }>(`/firebasestorage/${fileName}`, {
-        withCredentials: true,
-      });
-
+      }>(`/firebasestorage/${fileName}`);
       if (response.data.statusCode === 200) {
         onSuccess();
       } else {

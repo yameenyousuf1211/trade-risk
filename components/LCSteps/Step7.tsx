@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { FileCode, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatFileSize } from "@/utils";
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
@@ -12,7 +12,14 @@ const FileCard = ({
   file,
   onRemoveFile,
 }: {
-  file: { file: File; url: string; fileName: string };
+  file: {
+    file: File;
+    url: string;
+    userFileName: string;
+    firebaseFileName: string;
+    fileSize: number;
+    fileType: string;
+  };
   onRemoveFile: (name: string) => void;
 }) => {
   return (
@@ -28,15 +35,19 @@ const FileCard = ({
           />
         </Button>
         <div>
-          <p className="text-sm text-lightGray">{file?.file.name}</p>
+          <p className="text-sm text-lightGray">{file.userFileName}</p>{" "}
+          {/* Display user's file name */}
           <p className="text-[12px] text-para">
-            {file?.file.type.split("/")[1].toUpperCase()},{" "}
-            {formatFileSize(file?.file.size)}
+            {file.fileType}, {formatFileSize(file.fileSize)}
           </p>
         </div>
       </div>
 
-      <Button variant="ghost" onClick={() => onRemoveFile(file?.fileName)}>
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={() => onRemoveFile(file.userFileName)}
+      >
         <X className="text-lightGray" />
       </Button>
     </div>
@@ -55,7 +66,14 @@ export const Step7 = ({
   setStepCompleted: any;
 }) => {
   const [files, setFiles] = useState<
-    { file: File; url: string; fileName: string }[]
+    {
+      file: File;
+      url: string;
+      userFileName: string;
+      firebaseFileName: string;
+      fileSize: number;
+      fileType: string;
+    }[]
   >([]);
   const [showProgressBar, setShowProgressBar] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
@@ -79,13 +97,27 @@ export const Step7 = ({
       newFiles.forEach((file) => {
         FileUploadService.upload(
           file,
-          (url, fileName) => {
-            const newFile = { file, url, fileName };
+          (url, firebaseFileName) => {
+            const newFile = {
+              file,
+              url,
+              userFileName: file.name, // User's file name for display
+              firebaseFileName, // Firebase's file name for deletion
+              fileSize: file.size,
+              fileType: file.type.split("/")[1].toUpperCase(),
+            };
+
             setFiles((prevFiles) => {
               const updatedFiles = [...prevFiles, newFile];
               setValue(
                 "attachments",
-                updatedFiles.map((f) => ({ url: f.url, fileName: f.fileName }))
+                updatedFiles.map((f) => ({
+                  url: f.url,
+                  userFileName: f.userFileName,
+                  firebaseFileName: f.firebaseFileName,
+                  fileSize: f.fileSize,
+                  fileType: f.fileType,
+                }))
               ); // Update form value
               return updatedFiles.slice(0, 3); // Limit to 3 files
             });
@@ -102,13 +134,35 @@ export const Step7 = ({
     }
   };
 
-  const handleRemoveFile = (name: string) => {
-    const updatedFiles = files.filter((file) => file.fileName !== name);
-    setFiles(updatedFiles);
-    setValue(
-      "attachments",
-      updatedFiles.map((f) => ({ url: f.url, fileName: f.fileName }))
+  const handleRemoveFile = (userFileName: string) => {
+    const fileToRemove = files.find(
+      (file) => file.userFileName === userFileName
     );
+    console.log(fileToRemove, "fileToRemove");
+    if (fileToRemove) {
+      FileUploadService.delete(
+        fileToRemove.firebaseFileName, // Use Firebase file name for deletion
+        () => {
+          const updatedFiles = files.filter(
+            (file) => file.userFileName !== userFileName
+          );
+          setFiles(updatedFiles);
+          setValue(
+            "attachments",
+            updatedFiles.map((f) => ({
+              url: f.url,
+              userFileName: f.userFileName,
+              firebaseFileName: f.firebaseFileName,
+              fileSize: f.fileSize,
+              fileType: f.fileType,
+            }))
+          );
+        },
+        (error) => {
+          setUploadError(error.message);
+        }
+      );
+    }
   };
 
   return (
@@ -167,7 +221,7 @@ export const Step7 = ({
         <div className="mt-5 flex flex-col gap-y-3">
           {files.map((file) => (
             <FileCard
-              key={file.fileName}
+              key={file.userFileName}
               file={file}
               onRemoveFile={handleRemoveFile}
             />

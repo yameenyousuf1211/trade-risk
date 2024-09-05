@@ -112,7 +112,7 @@ const CreateRequestPage = () => {
     data: any;
     isProceed?: boolean;
   }) => {
-    console.log(data.period, "data");
+    console.log(data, "data");
     submit();
     delete data.createdBy;
     if (
@@ -353,6 +353,7 @@ const CreateRequestPage = () => {
           <div className="min-w-[50%] flex flex-col gap-5">
             <Step7
               register={register}
+              setValue={setValue}
               step={7}
               setStepCompleted={handleStepCompletion}
             />

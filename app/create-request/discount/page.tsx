@@ -345,6 +345,7 @@ const CreateDiscountPage = () => {
           <div className="min-w-[50%] flex flex-col gap-5">
             <Step7
               register={register}
+              setValue={setValue}
               step={7}
               setStepCompleted={handleStepCompletion}
             />

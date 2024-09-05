@@ -150,6 +150,7 @@ const CreateDiscountPage = () => {
       amount: {
         price: `${data.amount}.00`,
       },
+      attachments: data.attachments,
       period: {
         ...data.period,
         expectedDate:

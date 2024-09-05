@@ -3,7 +3,7 @@ import { z } from "zod";
 export interface ILoginFields {
   email: string;
   password: string;
-  fcmToken?:string;
+  fcmToken?: string;
 }
 
 export interface IRegisterFields {
@@ -47,6 +47,7 @@ export interface PaginationTypes {
 type RegisterStore = {
   role: string;
   name: string;
+  attachments: Attachment[];
   email: string;
   address: string;
   constitution?: string;
@@ -232,7 +233,7 @@ export interface IBids {
   };
   lcInfo: ILcInfo | any;
   confirmationPrice: string | number;
-  lc?: string[] 
+  lc?: string[];
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -390,6 +391,14 @@ interface IRole {
   manageUsers: boolean;
   manageCompany: boolean;
   manageRequests: boolean;
+}
+
+interface Attachment {
+  url: string;
+  userFileName: string;
+  firebaseFileName: string;
+  fileSize: number;
+  fileType: string;
 }
 
 type PermissionValues = Record<string, boolean>;

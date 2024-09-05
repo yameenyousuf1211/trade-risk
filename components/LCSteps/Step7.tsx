@@ -7,19 +7,17 @@ import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 import useStepStore from "@/store/lcsteps.store";
 import { ATTACHMENTS } from "@/utils/constant/lg";
 import FileUploadService from "@/services/apis/fileUpload.api";
+import { Attachment } from "@/types/type";
+
+interface FileAttachment extends Attachment {
+  file: File;
+}
 
 const FileCard = ({
   file,
   onRemoveFile,
 }: {
-  file: {
-    file: File;
-    url: string;
-    userFileName: string;
-    firebaseFileName: string;
-    fileSize: number;
-    fileType: string;
-  };
+  file: FileAttachment;
   onRemoveFile: (name: string) => void;
 }) => {
   return (
@@ -118,7 +116,7 @@ export const Step7 = ({
                   fileSize: f.fileSize,
                   fileType: f.fileType,
                 }))
-              ); // Update form value
+              );
               return updatedFiles.slice(0, 3); // Limit to 3 files
             });
           },

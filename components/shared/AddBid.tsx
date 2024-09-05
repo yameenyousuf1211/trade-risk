@@ -32,6 +32,7 @@ import { useAuth } from "@/context/AuthProvider";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
 import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargin";
+import ViewFileAttachment from "./ViewFileAttachment";
 
 const LCInfo = ({
   label,
@@ -540,31 +541,14 @@ export const AddBid = ({
                           }
                           noBorder
                         />
-                        <div className=" bg-white border border-borderCol p-2 flex items-center justify-between w-full gap-x-2 rounded-lg">
-                          <div className="flex items-center gap-x-2">
-                            <Button
-                              type="button"
-                              className="block bg-red-200 p-1 hover:bg-red-300"
-                            >
-                              <Image
-                                src="/images/pdf.png"
-                                alt="pdf"
-                                width={500}
-                                height={500}
-                                className="size-8"
-                              />
-                            </Button>
-                            <div>
-                              <p className="text-sm">LC-12390</p>
-                              <p className="text-para text-[12px]">
-                                PDF, 1.4 MB
-                              </p>
-                            </div>
-                          </div>
-                          <p className="text-sm font-medium cursor-pointer underline">
-                            View attachments
-                          </p>
-                        </div>
+                        {lcData?.attachments &&
+                          lcData.attachments.length > 0 &&
+                          lcData.attachments.map((attachment, index) => (
+                            <ViewFileAttachment
+                              key={index}
+                              attachment={attachment}
+                            />
+                          ))}
                       </div>
                       {/* Separator */}
                       <div className="h-[2px] w-full bg-borderCol" />

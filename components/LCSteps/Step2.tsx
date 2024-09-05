@@ -43,7 +43,7 @@ export const Step2 = ({
   let amount = watch("amount");
   let currencyVal = watch("currency");
   let paymentTerms = watch("paymentTerms");
-  let extraInfo = watch("extraInfo") || { days: null, other: "" };
+  let extraInfo = watch("extraInfo") || { days: 0, other: "" };
 
   const [currencyValue, setCurrencyValue] = useState<string | number>(
     amount || ""

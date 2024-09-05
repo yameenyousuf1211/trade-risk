@@ -23,6 +23,7 @@ import { fetchSingleRisk } from "@/services/apis/risk.api";
 import Image from "next/image";
 import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
 import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargin";
+import ViewFileAttachment from "./ViewFileAttachment";
 
 export const BidCard = ({
   data,
@@ -531,10 +532,17 @@ export const TableDialog = ({
                       noBorder
                     />
                   </div>
-                  {/* Separator */}
                   <div className="mt- 5 h-[2px] w-full bg-borderCol" />
                   {/* LC Details */}
                   <div className="mt-2 px-4">
+                    {lcData?.attachments &&
+                      lcData.attachments.length > 0 &&
+                      lcData.attachments.map((attachment, index) => (
+                        <ViewFileAttachment
+                          key={index}
+                          attachment={attachment}
+                        />
+                      ))}
                     <h2 className="text-xl font-semibold">LC Details</h2>
                     <LCInfo
                       label="LC Issuance (Expected)"

@@ -1,9 +1,11 @@
 import * as Yup from "yup";
 
 const fileSchema = Yup.object().shape({
-  name: Yup.string().required(),
-  type: Yup.string().required(),
-  size: Yup.number().required(),
+  url: Yup.string().required("File URL is required"),
+  userFileName: Yup.string().required("User file name is required"),
+  firebaseFileName: Yup.string().required("Firebase file name is required"),
+  fileSize: Yup.number().required("File size is required"),
+  fileType: Yup.string().required("File type is required"),
 });
 
 export const generalLcSchema = Yup.object().shape({
@@ -97,6 +99,7 @@ export const generalLcSchema = Yup.object().shape({
   lastDateOfReceivingBids: Yup.date().required(
     "Select last date of receiving bids"
   ),
+  attachments: Yup.array().of(fileSchema).optional(),
 });
 
 export const confirmationSchema = generalLcSchema.concat(

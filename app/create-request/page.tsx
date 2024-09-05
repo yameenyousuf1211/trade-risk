@@ -151,6 +151,7 @@ const CreateRequestPage = () => {
       amount: {
         price: `${data.amount}.00`,
       },
+      attachments: data.attachments,
       period: {
         ...data.period,
         expectedDate:
@@ -222,7 +223,7 @@ const CreateRequestPage = () => {
           },
           expectedConfirmationDate,
         };
-
+        console.log(preparedData, "preparedData");
         try {
           const validatedData = await confirmationSchema.validate(
             preparedData,
@@ -231,6 +232,7 @@ const CreateRequestPage = () => {
               stripUnknown: true,
             }
           );
+          console.log(validatedData, "preparedData");
           if (isProceed) {
             const { confirmingBank2, extraInfo, ...rest } = validatedData;
             reqData = {

@@ -3,20 +3,21 @@ import { Button } from "../ui/button";
 import { FileCode, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatFileSize } from "@/utils";
-import { UseFormRegister } from "react-hook-form";
+import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 import useStepStore from "@/store/lcsteps.store";
 import { ATTACHMENTS } from "@/utils/constant/lg";
+import FileUploadService from "@/services/apis/fileUpload.api";
 
 const FileCard = ({
   file,
   onRemoveFile,
 }: {
-  file: FileList;
+  file: { file: File; url: string; fileName: string };
   onRemoveFile: (name: string) => void;
 }) => {
   return (
-    <div className="flex items-center justify-between gap-x-2 border border-borderCol p-2 rounded-lg">
-      <div className="flex items-center gap-x-2 w-full">
+    <div className="flex items-center justify-between gap-x-2 rounded-lg border border-borderCol p-2">
+      <div className="flex w-full items-center gap-x-2">
         <Button type="button" className="bg-red-200 p-1 hover:bg-red-300">
           <Image
             src="/images/pdf.png"
@@ -27,15 +28,15 @@ const FileCard = ({
           />
         </Button>
         <div>
-          <p className="text-lightGray text-sm">{file[0]?.name}</p>
+          <p className="text-sm text-lightGray">{file?.file.name}</p>
           <p className="text-[12px] text-para">
-            {file[0]?.type.split("/")[1].toUpperCase()},{" "}
-            {formatFileSize(file[0]?.size)}
+            {file?.file.type.split("/")[1].toUpperCase()},{" "}
+            {formatFileSize(file?.file.size)}
           </p>
         </div>
       </div>
 
-      <Button variant="ghost" onClick={() => onRemoveFile(file[0]?.name)}>
+      <Button variant="ghost" onClick={() => onRemoveFile(file?.fileName)}>
         <X className="text-lightGray" />
       </Button>
     </div>
@@ -45,61 +46,84 @@ const FileCard = ({
 export const Step7 = ({
   register,
   step,
+  setValue,
   setStepCompleted,
 }: {
   register: UseFormRegister<any>;
+  setValue: UseFormSetValue<any>;
   step: number;
   setStepCompleted: any;
 }) => {
-  const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
+  const [files, setFiles] = useState<
+    { file: File; url: string; fileName: string }[]
+  >([]);
+  const [showProgressBar, setShowProgressBar] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
-    if (selectedFiles && selectedFiles?.length > 0) {
+    if (files.length > 0) {
       addStep(ATTACHMENTS);
-    } else removeStep(ATTACHMENTS);
-  }, [selectedFiles]);
+    } else {
+      removeStep(ATTACHMENTS);
+    }
+  }, [files]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const newFiles = Array.from(files).filter((file) => {
-        return !selectedFiles?.some((fileList) =>
-          Array.from(fileList).some((f) => f.name === file.name)
+    const selectedFiles = event.target.files;
+    if (selectedFiles) {
+      const newFiles = Array.from(selectedFiles);
+
+      newFiles.forEach((file) => {
+        FileUploadService.upload(
+          file,
+          (url, fileName) => {
+            const newFile = { file, url, fileName };
+            setFiles((prevFiles) => {
+              const updatedFiles = [...prevFiles, newFile];
+              setValue(
+                "attachments",
+                updatedFiles.map((f) => ({ url: f.url, fileName: f.fileName }))
+              ); // Update form value
+              return updatedFiles.slice(0, 3); // Limit to 3 files
+            });
+          },
+          (error) => {
+            setUploadError(error.message);
+          },
+          (progressBar, progress) => {
+            setShowProgressBar(progressBar);
+            setProgress(progress);
+          }
         );
       });
-      setSelectedFiles((prevFiles: any) => [...(prevFiles ?? []), newFiles]);
     }
   };
 
   const handleRemoveFile = (name: string) => {
-    const filterFiles = selectedFiles?.filter((file) => file[0]?.name !== name);
-    setSelectedFiles(filterFiles as FileList[]);
+    const updatedFiles = files.filter((file) => file.fileName !== name);
+    setFiles(updatedFiles);
+    setValue(
+      "attachments",
+      updatedFiles.map((f) => ({ url: f.url, fileName: f.fileName }))
+    );
   };
-
-  useEffect(() => {
-    if (selectedFiles) {
-      selectedFiles.forEach((fileList, index) => {
-        Array.from(fileList).forEach((file, subIndex) => {
-          // register(`attachments[${index}][${subIndex}]`);
-        });
-      });
-    }
-  }, [selectedFiles]);
 
   return (
     <div
       id="step7"
       className="w-full border border-borderCol rounded-lg py-3 px-4 h-full scroll-target"
     >
-      <div className="flex items-center gap-x-2 ml-2 mb-3">
-        <p className="size-6 rounded-full bg-primaryCol center text-white font-semibold text-sm">
+      <div className="mb-3 ml-2 flex items-center gap-x-2">
+        <p className="center size-6 rounded-full bg-primaryCol text-sm font-semibold text-white">
           {step}
         </p>
-        <p className="font-semibold text-[16px] text-lightGray">Attachments</p>
+        <p className="text-[16px] font-semibold text-lightGray">Attachments</p>
       </div>
 
-      <p className="font-semibold ml-3 text-sm">
+      <p className="ml-3 text-sm font-semibold">
         Add Documents:{" "}
         <span className="font-medium"> e.g Drafts / Invoice </span>{" "}
         (PDF,JPG,PNG,TIFF)
@@ -112,11 +136,15 @@ export const Step7 = ({
           <input
             id="attachment-input"
             type="file"
-            onChange={handleFileChange}
+            onChange={(e) => {
+              handleFileChange(e);
+              e.target.value = "";
+            }}
             multiple
             style={{ display: "none" }}
+            disabled={files.length >= 3}
           />
-          <div className="size-12 bg-white center rounded-full shadow-sm">
+          <div className="center size-12 rounded-full bg-white shadow-sm">
             <Image
               src="/images/attachment.svg"
               alt="att"
@@ -124,20 +152,23 @@ export const Step7 = ({
               height={27}
             />
           </div>
-          <p className="text-lg font-semibold text-lightGray mt-4">
+          <p className="mt-4 text-lg font-semibold text-lightGray">
             Drag your files here
           </p>
           <p className="text-lightGray">or click to select from your device</p>
+          <p className="mt-2 text-sm text-para">
+            {files.length}/3 files selected
+          </p>
         </label>
       </div>
 
       {/* Display selected files */}
-      {selectedFiles && (
-        <div className="flex flex-col gap-y-3 ">
-          {Array.from(selectedFiles).map((fileList, index) => (
+      {files.length > 0 && (
+        <div className="mt-5 flex flex-col gap-y-3">
+          {files.map((file) => (
             <FileCard
-              key={fileList[0].name}
-              file={fileList}
+              key={file.fileName}
+              file={file}
               onRemoveFile={handleRemoveFile}
             />
           ))}

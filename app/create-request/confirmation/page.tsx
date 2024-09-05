@@ -364,6 +364,7 @@ const ConfirmationPage = () => {
         </div>
         <Step7
           register={register}
+          setValue={setValue}
           step={8}
           setStepCompleted={handleStepCompletion}
         />

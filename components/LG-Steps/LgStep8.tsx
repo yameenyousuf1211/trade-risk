@@ -8,14 +8,15 @@ const LgStep8: React.FC<LgStepsProps1> = ({
   watch,
   setStepCompleted,
   setValue,
+  step,
 }) => {
-    const remarks = watch(`remarks`);
-    const { addStep, removeStep } = useStepStore();
-  
-    useEffect(() => {
-      if (remarks?.trim()) addStep(REMARKS);
-      else removeStep(REMARKS);
-    }, [remarks]);
+  const remarks = watch(`remarks`);
+  const { addStep, removeStep } = useStepStore();
+
+  useEffect(() => {
+    if (remarks?.trim()) addStep(REMARKS);
+    else removeStep(REMARKS);
+  }, [remarks]);
   return (
     <div
       id="lg-step7"
@@ -23,7 +24,7 @@ const LgStep8: React.FC<LgStepsProps1> = ({
     >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
-          8
+          {step}
         </p>
         <p className="font-semibold text-[16px] text-lightGray">
           Remarks / Other Requirements / Queries:

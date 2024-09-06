@@ -12,13 +12,12 @@ const LgStep1: React.FC<LgStepsProps1> = ({
 }) => {
   const lgIssuance = watch("lgIssuance") || "LG Re-issuance in another country";
   const { setValue } = useBreadCrumbsTypeStore();
-  const { addStep,removeStep } = useStepStore();
-  
+  const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
-    if(lgIssuance)setValue(lgIssuance);
-    if(lgIssuance) addStep(CHOOSE_TYPE);
-    else removeStep(CHOOSE_TYPE)
+    if (lgIssuance) setValue(lgIssuance);
+    if (lgIssuance) addStep(CHOOSE_TYPE);
+    else removeStep(CHOOSE_TYPE);
   }, [lgIssuance]);
 
   return (
@@ -41,7 +40,6 @@ const LgStep1: React.FC<LgStepsProps1> = ({
           name="lgIssuance"
           value="LG 100% Cash Margin"
           register={register}
-          disabled
           checked={lgIssuance === "LG 100% Cash Margin"}
         />
         <BgRadioInput

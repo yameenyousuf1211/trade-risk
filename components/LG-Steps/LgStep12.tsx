@@ -32,7 +32,7 @@ const LgStep12: React.FC<LgStepsProps10> = ({
         </p>
         <p className="font-semibold text-[16px] text-lightGray">
           {lgIssuance === LG.cashMargin
-            ? "Request Expiry Date"
+            ? "Last date to receive bids from Bank"
             : "Last date for receiving bids"}
         </p>
       </div>

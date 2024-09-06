@@ -40,7 +40,6 @@ const LgStep1: React.FC<LgStepsProps1> = ({
           name="lgIssuance"
           value="LG 100% Cash Margin"
           register={register}
-          disabled
           checked={lgIssuance === "LG 100% Cash Margin"}
         />
         <BgRadioInput

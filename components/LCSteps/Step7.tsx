@@ -92,7 +92,18 @@ export const Step7 = ({
     if (selectedFiles) {
       const newFiles = Array.from(selectedFiles);
 
-      newFiles.forEach((file) => {
+      const allowedFileTypes = ["jpg", "jpeg", "pdf", "tiff", "doc"];
+      const filteredFiles = newFiles.filter((file) => {
+        const fileType = file.type.split("/")[1]?.toLowerCase();
+        return allowedFileTypes.includes(fileType);
+      });
+
+      if (filteredFiles.length + files.length > 3) {
+        setUploadError("You can upload up to 3 files only.");
+        return;
+      }
+
+      filteredFiles.forEach((file) => {
         FileUploadService.upload(
           file,
           (url, firebaseFileName) => {
@@ -195,6 +206,7 @@ export const Step7 = ({
             multiple
             style={{ display: "none" }}
             disabled={files.length >= 3}
+            accept=".jpg,.jpeg,.pdf,.tiff,.doc"
           />
           <div className="center size-12 rounded-full bg-white shadow-sm">
             <Image

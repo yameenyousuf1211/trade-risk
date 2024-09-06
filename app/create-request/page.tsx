@@ -356,6 +356,7 @@ const CreateRequestPage = () => {
             <Step7
               register={register}
               setValue={setValue}
+              watch={watch}
               step={7}
               setStepCompleted={handleStepCompletion}
             />

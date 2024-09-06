@@ -368,6 +368,7 @@ const ConfirmationPage = () => {
           setValue={setValue}
           step={8}
           setStepCompleted={handleStepCompletion}
+          watch={watch}
         />
         <LgStep12
           register={register}

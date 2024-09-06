@@ -3,7 +3,11 @@ import { Button } from "../ui/button";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatFileSize } from "@/utils";
-import { UseFormRegister, UseFormSetValue } from "react-hook-form";
+import {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 import useStepStore from "@/store/lcsteps.store";
 import { ATTACHMENTS } from "@/utils/constant/lg";
 import FileUploadService from "@/services/apis/fileUpload.api";
@@ -56,13 +60,16 @@ export const Step7 = ({
   register,
   step,
   setValue,
+  watch,
   setStepCompleted,
 }: {
   register: UseFormRegister<any>;
   setValue: UseFormSetValue<any>;
   step: number;
+  watch: UseFormWatch<any>;
   setStepCompleted: any;
 }) => {
+  const attachments = watch("attachments");
   const [files, setFiles] = useState<
     {
       file: File;
@@ -86,6 +93,12 @@ export const Step7 = ({
       removeStep(ATTACHMENTS);
     }
   }, [files]);
+
+  useEffect(() => {
+    if (attachments?.length > 0) {
+      setFiles(attachments);
+    }
+  }, [attachments]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files;
@@ -186,47 +199,51 @@ export const Step7 = ({
         <p className="text-[16px] font-semibold text-lightGray">Attachments</p>
       </div>
 
-      <p className="ml-3 text-sm font-semibold">
-        Add Documents:{" "}
-        <span className="font-medium"> e.g Drafts / Invoice </span>{" "}
-        (PDF,JPG,PNG,TIFF)
-      </p>
-      <div className="bg-[#F5F7F9] p-1 mt-1 rounded-md">
-        <label
-          htmlFor="attachment-input"
-          className="cursor-pointer flex flex-col justify-center items-center border-[3px] border-borderCol border-dotted py-4 rounded-md bg-[#F5F7F9]"
-        >
-          <input
-            id="attachment-input"
-            type="file"
-            onChange={(e) => {
-              handleFileChange(e);
-              e.target.value = "";
-            }}
-            multiple
-            style={{ display: "none" }}
-            disabled={files.length >= 3}
-            accept=".jpg,.jpeg,.pdf,.tiff,.doc"
-          />
-          <div className="center size-12 rounded-full bg-white shadow-sm">
-            <Image
-              src="/images/attachment.svg"
-              alt="att"
-              width={27}
-              height={27}
-            />
+      {files.length < 3 && (
+        <div>
+          <p className="ml-3 text-sm font-semibold">
+            Add Documents:{" "}
+            <span className="font-medium"> e.g Drafts / Invoice </span>{" "}
+            (PDF,JPG,PNG,TIFF)
+          </p>
+          <div className="bg-[#F5F7F9] p-1 mt-1 rounded-md">
+            <label
+              htmlFor="attachment-input"
+              className="cursor-pointer flex flex-col justify-center items-center border-[3px] border-borderCol border-dotted py-4 rounded-md bg-[#F5F7F9]"
+            >
+              <input
+                id="attachment-input"
+                type="file"
+                onChange={(e) => {
+                  handleFileChange(e);
+                  e.target.value = "";
+                }}
+                multiple
+                style={{ display: "none" }}
+                disabled={files.length >= 3}
+                accept=".jpg,.jpeg,.pdf,.tiff,.doc"
+              />
+              <div className="center size-12 rounded-full bg-white shadow-sm">
+                <Image
+                  src="/images/attachment.svg"
+                  alt="att"
+                  width={27}
+                  height={27}
+                />
+              </div>
+              <p className="mt-4 text-lg font-semibold text-lightGray">
+                Drag your files here
+              </p>
+              <p className="text-lightGray">
+                or click to select from your device
+              </p>
+              <p className="mt-2 text-sm text-para">
+                {files.length}/3 files selected
+              </p>
+            </label>
           </div>
-          <p className="mt-4 text-lg font-semibold text-lightGray">
-            Drag your files here
-          </p>
-          <p className="text-lightGray">or click to select from your device</p>
-          <p className="mt-2 text-sm text-para">
-            {files.length}/3 files selected
-          </p>
-        </label>
-      </div>
-
-      {/* Display selected files */}
+        </div>
+      )}
       {files.length > 0 && (
         <div className="mt-5 flex flex-col gap-y-3">
           {files.map((file) => (

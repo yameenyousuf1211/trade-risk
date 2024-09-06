@@ -1,4 +1,5 @@
 import { LG } from "@/utils";
+import parsePhoneNumberFromString from "libphonenumber-js";
 import * as Yup from "yup";
 
 const bondSchema = Yup.object().shape({
@@ -80,7 +81,17 @@ export const lgValidator = Yup.object()
         name: Yup.string().required("Beneficiary Name is Required"),
         country: Yup.string().required("Beneficiary Country is Required"),
         address: Yup.string().required("Beneficiary Address is Required"),
-        phone: Yup.string().nullable(),
+        phoneNumber: Yup.string()
+          .nullable()
+          .test(
+            "is-valid-phone-number",
+            "Phone number is not valid",
+            (value) => {
+              if (!value) return true; // If phone number is not provided, it's valid as the field is nullable
+              const phoneNumber = parsePhoneNumberFromString(value);
+              return phoneNumber?.isValid() || false; // If valid, return true; otherwise, false
+            }
+          ),
         city: Yup.string().nullable(),
       })
       .required(),

@@ -425,13 +425,26 @@ export default function LgIssuance() {
             setStepCompleted={handleStepCompletion}
             data={countries}
             flags={flags}
+            step={9}
+            setValue={setValue}
+          />
+        )}
+
+        {lgIssuance === LG.cashMargin && (
+          <LgStep9Part2
+            register={register}
+            watch={watch}
+            setStepCompleted={handleStepCompletion}
+            data={countries}
+            flags={flags}
+            step={10}
             setValue={setValue}
           />
         )}
 
         {lgIssuance === LG.cashMargin && (
           <LgStep8
-            step={9}
+            step={11}
             setValue={setValue}
             register={register}
             watch={watch}
@@ -443,23 +456,23 @@ export default function LgIssuance() {
           register={register}
           watch={watch}
           setStepCompleted={handleStepCompletion}
-          step={lgIssuance === LG.cashMargin ? 11 : 9}
+          step={lgIssuance === LG.cashMargin ? 12 : 9}
         />
 
-        {/* <LgStep10
+        <LgStep10
           register={register}
           watch={watch}
           setStepCompleted={handleStepCompletion}
           setValue={setValue}
-          step={lgIssuance === LG.cashMargin ? 12 : 10}
-        /> */}
+          step={lgIssuance === LG.cashMargin ? 13 : 10}
+        />
 
         <LgStep12
           register={register}
           watch={watch}
           setStepCompleted={handleStepCompletion}
           setValue={setValue}
-          step={10}
+          step={lgIssuance === LG.cashMargin ? 14 : 11}
         />
         <div className="flex items-center gap-x-4 w-full">
           <Button

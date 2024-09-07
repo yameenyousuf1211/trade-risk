@@ -44,7 +44,7 @@ const ConfirmationPage = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [days, setDays] = useState<number>(1);
+  const [days, setDays] = useState<number>(90);
 
   const setValues = useConfirmationDiscountingStore((state) => state.setValues);
   const confirmationData = useConfirmationDiscountingStore((state) => state);

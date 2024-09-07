@@ -12,7 +12,7 @@ import { LgStepsProps5 } from "@/types/lg";
 import { Check, Link, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { DatePicker } from "../helpers";
-import { values } from "@/utils";
+import { formatAmount, values } from "@/utils";
 import { cn } from "@/lib/utils";
 import useLcIssuance from "@/store/issueance.store";
 import { Button } from "../ui/button";
@@ -29,7 +29,6 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   onPercentageChange,
   onBondCheck,
 }) => {
-  const [displayPercentage, setDisplayPercentage] = useState("");
   const checkedValue = watch(`${name}.Contract`, false);
   const expectedDate = watch(`${name}.expectedDate`);
   const lgExpiryDate = watch(`${name}.lgExpiryDate`);
@@ -41,6 +40,12 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
   const otherBondName = watch(`${name}.name`);
   const attachments = watch(`${name}.attachments`);
+  const [displayPercentage, setDisplayPercentage] = useState(
+    valueInPercentage || ""
+  );
+  const [displayCashMargin, setDisplayCashMargin] = useState<string | number>(
+    cashMargin || ""
+  );
 
   // Reference to file input
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -140,23 +145,38 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     setValue(`${name}.expectedPricing`, newValue);
   };
 
-  const handlePercentageBlur = () => {
-    if (valueInPercentage) {
-      setDisplayPercentage(`${valueInPercentage}%`);
-    } else {
+  const handlePercentageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    let newValue = event.target.value.replace(/[^0-9]/g, "");
+    if (newValue === "") {
       setDisplayPercentage("");
+    } else {
+      if (parseInt(newValue) > 100) {
+        newValue = "100";
+      }
+      setDisplayPercentage(newValue);
+    }
+  };
+
+  const handlePercentageBlur = () => {
+    let rawValue = displayPercentage.replace("%", "");
+    if (rawValue === "") {
+      setDisplayPercentage("");
+      setValue(`${name}.valueInPercentage`, null);
+    } else {
+      let intValue = parseInt(rawValue, 10);
+      if (intValue > 100) {
+        intValue = 100;
+      }
+      setDisplayPercentage(`${intValue}%`);
+      setValue(`${name}.valueInPercentage`, intValue);
     }
   };
 
   const handlePercentageFocus = () => {
-    setDisplayPercentage(valueInPercentage?.toString() || "");
-  };
-
-  const handlePercentageChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const newValue = parseInt(event.target.value) || 0;
-    onPercentageChange(name, newValue);
+    const rawValue = displayPercentage.replace("%", "");
+    setDisplayPercentage(rawValue);
   };
 
   const handleBondCheck = (isChecked: boolean) => {
@@ -228,20 +248,31 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <Input
-          disabled={!checkedValue}
-          value={cashMargin}
+          disabled={!watch(`${name}.Contract`)}
+          value={displayCashMargin} // Use the displayCashMargin state
           className="min-w-[130px]"
           register={register}
           name={`${name}.cashMargin`}
           type="text"
           placeholder="Amount"
+          onChange={(e) => {
+            const rawValue = e.target.value.replace(/[^0-9.]/g, "");
+            setValue(`${name}.cashMargin`, rawValue);
+            setDisplayCashMargin(rawValue);
+          }}
+          onBlur={() => {
+            setDisplayCashMargin(formatAmount(cashMargin || 0));
+          }}
+          onFocus={() => {
+            setDisplayCashMargin(cashMargin);
+          }}
         />
       </TableCell>
       <TableCell>
         <Input
           register={register}
           disabled={!checkedValue}
-          value={displayPercentage || valueInPercentage}
+          value={displayPercentage || ""}
           name={`${name}.valueInPercentage`}
           onChange={handlePercentageChange}
           onBlur={handlePercentageBlur}
@@ -362,6 +393,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           {/* Hidden file input */}
           <input
             type="file"
+            disabled={!checkedValue}
             ref={fileInputRef}
             style={{ display: "none" }}
             accept=".pdf, .tiff, .jpeg, .jpg, .doc"
@@ -399,6 +431,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
               size={20}
               onClick={handleFileInputClick}
               className="cursor-pointer"
+              color={!checkedValue ? "#B5B5BE" : "black"}
             />
           )}
         </div>

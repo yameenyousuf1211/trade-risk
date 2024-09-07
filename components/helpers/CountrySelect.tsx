@@ -25,15 +25,17 @@ export const CountrySelect = ({
   setValueChange,
   setIsoCode,
   placeholder,
+  value,
 }: {
   setIsoCode: any;
   setValue: any;
   name: string;
   setValueChange?: any;
   placeholder?: string;
+  value?: string;
 }) => {
   const [countryOpen, setCountryOpen] = useState(false);
-  const [countryVal, setCountryVal] = useState("");
+  const [countryVal, setCountryVal] = useState(value || "");
 
   const { allCountries: allData, countries, flags, isLoading } = useCountries();
 

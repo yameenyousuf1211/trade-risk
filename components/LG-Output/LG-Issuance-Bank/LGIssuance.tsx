@@ -6,7 +6,11 @@ import { BankSelection } from "./BankSelection";
 import { LgTypeSelection } from "./LgTypeSelection";
 import { PricingInput } from "./PricingInput";
 import { BidPreview } from "./BidPreview";
-import { convertDateToCommaString, formatAmount } from "@/utils";
+import {
+  convertDateAndTimeToString,
+  convertDateToCommaString,
+  formatAmount,
+} from "@/utils";
 import { submitLgBid } from "@/services/apis/lg.apis";
 import { useAuth } from "@/context/AuthProvider";
 import { getLgBondTotal, sortBanksAlphabetically } from "../helper";
@@ -111,7 +115,15 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   const mutation = useMutation({
     mutationFn: (newData: any) => submitLgBid(newData),
     onSuccess: () => {
-      queryClient.invalidateQueries(["bondData"]);
+      queryClient.invalidateQueries({
+        queryKey: ["bid-status"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["fetch-lcs"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["single-lc"],
+      });
       setShowPreview(true);
     },
   });
@@ -178,7 +190,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     } else if (mostRecentBid) {
       if (mostRecentBid.status === "Pending") {
         setUserBidStatus({
-          label: `Bid Submitted on ${convertDateToCommaString(
+          label: `Bid Submitted on ${convertDateAndTimeToString(
             mostRecentBid.createdAt
           )}`,
           status: "Pending",

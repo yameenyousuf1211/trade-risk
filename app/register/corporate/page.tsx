@@ -43,6 +43,7 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { Input } from "@/components/ui/input";
 import { emailVerification, phoneVerification } from "@/services/apis";
 import { toast } from "sonner";
+import CorporateStepLayout from "@/components/layouts/CorporateStepLayout";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
@@ -56,6 +57,7 @@ const CompanyInfoPage = () => {
       ? localStorage.getItem("corporateData")
       : null;
 
+  console.log(corporateData, "corporateData");
   const {
     register,
     setValue,
@@ -68,7 +70,6 @@ const CompanyInfoPage = () => {
   } = useForm({
     resolver: yupResolver(companyInfoSchema),
     mode: "all",
-
   });
   // console.log("🚀 ~ CompanyInfoPage ~ getValues:", getValues())
 
@@ -89,11 +90,11 @@ const CompanyInfoPage = () => {
     getValues("phone");
     console.log(
       "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ getValues",
-      getValues("phone"),
+      getValues("phone")
     );
     console.log(
       "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ phoneInput",
-      corporateData,
+      corporateData
     );
 
     if (corporateData) {
@@ -106,7 +107,7 @@ const CompanyInfoPage = () => {
   }, [errors, isValid, corporateData]);
 
   const onSubmit: SubmitHandler<typeof companyInfoSchema> = async (
-    data: any,
+    data: any
   ) => {
     console.log("hello");
     const { response: emailResponse, success: emailSuccess } =
@@ -116,7 +117,7 @@ const CompanyInfoPage = () => {
     if (emailResponse?.isExist) {
       console.log(
         "🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ emailResponse",
-        emailResponse,
+        emailResponse
       );
       toast.error("Email is already exists");
       return;
@@ -126,13 +127,14 @@ const CompanyInfoPage = () => {
     if (!success) {
       console.log(
         "🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ response",
-        response,
+        response
       );
       toast.error("Phone number is invalid");
       return;
     }
 
     setValues(data);
+    console.log(data, "corporateDataSet");
     localStorage.setItem("corporateData", JSON.stringify(data));
     router.push("/register/corporate/product-info");
   };
@@ -171,12 +173,9 @@ const CompanyInfoPage = () => {
     setValue("businessNature", nonDigitsOnly);
   };
 
-  // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ phoneInput", phoneInput);
-  // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ isValid", isValid);
-  // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ allowSubmit", allowSubmit);
   console.log(
     "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ error",
-    dirtyFields,
+    dirtyFields
   );
 
   /// Reseting city when entering country!
@@ -194,13 +193,12 @@ const CompanyInfoPage = () => {
   }, [accountCountry]);
 
   return (
-    <AuthLayout>
+    <CorporateStepLayout
+      step={1}
+      title="Company Info"
+      text="Please add information about your company. This cannot be changed later."
+    >
       <section className="max-xs:px-1 z-10 mx-auto w-full max-w-2xl">
-        <h2 className="text-center text-3xl font-semibold">Company Info</h2>
-        <p className="mt-5 text-center font-roboto text-para">
-          Please add information about your company. This cannot be changed
-          later.
-        </p>
         <form
           className="max-xs:py-8 max-xs:px-4 z-10 mx-auto mt-8 flex w-full max-w-2xl flex-col gap-y-3 rounded-3xl bg-white shadow-md sm:gap-y-6 xs:p-8"
           onSubmit={handleSubmit(onSubmit)}
@@ -237,6 +235,7 @@ const CompanyInfoPage = () => {
               <CountrySelect
                 setIsoCode={setIsoCode}
                 setValue={setValue}
+                value={corporateData && JSON.parse(corporateData).country}
                 name="country"
                 placeholder="Company Country"
               />
@@ -333,8 +332,11 @@ const CompanyInfoPage = () => {
                 >
                   <div className="w-full">
                     <PhoneInput
-                      value={phoneInput}
-                      isOnBoarding={true}
+                      value={
+                        corporateData
+                          ? JSON.parse(corporateData).phone
+                          : phoneInput
+                      }
                       // value={phoneInput}
                       name="phone"
                       onChange={(value) => {
@@ -480,12 +482,11 @@ const CompanyInfoPage = () => {
               <CountrySelect
                 setIsoCode={setIsoCode}
                 setValue={setValue}
-                name="accountCountry"
-                placeholder={
-                  corporateData
-                    ? JSON.parse(corporateData).accountCountry
-                    : "Bank Country"
+                value={
+                  corporateData && JSON.parse(corporateData).accountCountry
                 }
+                name="accountCountry"
+                placeholder={"Bank Country"}
               />
               {errors.accountCountry && (
                 <span className="absolute mt-1 text-[11px] text-red-500">
@@ -509,13 +510,13 @@ const CompanyInfoPage = () => {
                     accountCountry != JSON.parse(corporateData)?.accountCountry
                       ? "Account City"
                       : cityVal
-                        ? cities?.find(
-                            (country: string) =>
-                              country.toLowerCase() === cityVal.toLowerCase(),
-                          )
-                        : corporateData
-                          ? JSON.parse(corporateData).accountCity
-                          : "Account City"}
+                      ? cities?.find(
+                          (country: string) =>
+                            country.toLowerCase() === cityVal.toLowerCase()
+                        )
+                      : corporateData
+                      ? JSON.parse(corporateData).accountCity
+                      : "Account City"}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
@@ -535,7 +536,7 @@ const CompanyInfoPage = () => {
                                 currentValue.toLowerCase() ===
                                   cityVal.toLowerCase()
                                   ? ""
-                                  : currentValue,
+                                  : currentValue
                               );
                               setCityOpen(false);
                               setValue("accountCity", currentValue, {
@@ -548,7 +549,7 @@ const CompanyInfoPage = () => {
                                 "mr-2 h-4 w-4",
                                 country.toLowerCase() === cityVal.toLowerCase()
                                   ? "opacity-100"
-                                  : "opacity-0",
+                                  : "opacity-0"
                               )}
                             />
                             {country}
@@ -609,7 +610,7 @@ const CompanyInfoPage = () => {
           </div>
         </form>
       </section>
-    </AuthLayout>
+    </CorporateStepLayout>
   );
 };
 

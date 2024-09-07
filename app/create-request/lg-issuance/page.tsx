@@ -20,6 +20,7 @@ import LgStep9Part2 from "@/components/LG-Steps/LgStep9Part2";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthProvider";
 import useCountries from "@/hooks/useCountries";
+import { onUpdateLC } from "@/services/apis/lcs.api";
 import { createLg, updateLg } from "@/services/apis/lg.apis";
 import useLcIssuance from "@/store/issueance.store";
 import useStepStore from "@/store/lcsteps.store";
@@ -166,10 +167,10 @@ export default function LgIssuance() {
     // Update existing data
     removeUnnecessaryFields(responseData);
     if (storeData.data._id) {
-      const { response, success } = await updateLg(
-        responseData,
-        storeData.data._id
-      );
+      const { response, success } = await onUpdateLC({
+        payload: responseData,
+        id: storeData.data._id,
+      });
       handleResponse(
         success,
         response,

@@ -129,7 +129,7 @@ const PointContactPage = () => {
 
   return (
     <CorporateStepLayout
-      step={2}
+      step={3}
       title="Point of Contact"
       text="Give us the details of the POC our sales team should get in touch with after verification"
     >
@@ -186,8 +186,9 @@ const PointContactPage = () => {
             >
               <div className="w-full">
                 <PhoneInput
-                  value={phoneInput}
-                  isOnBoarding={true}
+                  value={
+                    contactData ? JSON.parse(contactData).pocPhone : phoneInput
+                  }
                   className=""
                   name="pocPhone"
                   onChange={(value) => {

@@ -95,10 +95,14 @@ export const BidCard = ({
             {data.bidBy.country}
           </p>
         </div>
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="mb-1 text-sm text-para">Bid Received</p>
-          <p className="text-lg font-semibold">{convertDate(data.createdAt)}</p>
-        </div>
+        {data.status !== "Pending" && data.createdBy === user?._id && (
+          <div className={data.status === "Expired" ? "opacity-50" : ""}>
+            <p className="mb-1 text-sm text-para">Bid Received</p>
+            <p className="text-lg font-semibold">
+              {convertDate(data.createdAt)}
+            </p>
+          </div>
+        )}
 
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Bid Expiry</p>
@@ -155,7 +159,7 @@ export const BidCard = ({
             : data.status === "Expired"
             ? "Request Expired"
             : data.status === "Pending"
-            ? `Bid Submitted on ${convertDateToCommaString(data.createdAt)}`
+            ? `Bid Submitted on ${convertDateAndTimeToString(data.createdAt)}`
             : ""}
         </Button>
       )}
@@ -361,7 +365,7 @@ export const TableDialog = ({
                       value={riskData?.advisingBank?.bank || ""}
                     />
                     <LCInfo
-                      label="Confirming Bank"
+                      label="Preferred Confirming Bank"
                       value={riskData?.confirmingBank?.bank || ""}
                     />
                     <LCInfo
@@ -499,14 +503,14 @@ export const TableDialog = ({
                         ""
                       }
                     />
-                    <LCInfo
+                    {/* <LCInfo
                       label="LC Applicant"
                       value={
                         (lcData && lcData.importerInfo
                           ? lcData.importerInfo?.applicantName
                           : lcData?.applicantDetails?.company) || ""
                       }
-                    />
+                    /> */}
                     {lcData?.advisingBank?.bank && (
                       <LCInfo
                         label="Advising Bank"
@@ -515,10 +519,23 @@ export const TableDialog = ({
                     )}
                     {lcData?.confirmingBank?.bank && (
                       <LCInfo
-                        label="Confirming Bank"
+                        label="Preferred Confirming Bank"
                         value={(lcData && lcData.confirmingBank?.bank) || ""}
                       />
                     )}
+                    {lcData?.transhipment && (
+                      <LCInfo
+                        label="Transhipment"
+                        value={lcData && lcData.transhipment ? "Yes" : "No"}
+                      />
+                    )}
+                    {lcData?.shipmentPort?.port &&
+                      lcData.shipmentPort?.country && (
+                        <LCInfo
+                          label="Port of Shipment"
+                          value={`${lcData.shipmentPort.port}, ${lcData.shipmentPort.country}`}
+                        />
+                      )}
                     <LCInfo
                       label="Payment Terms"
                       value={
@@ -591,6 +608,19 @@ export const TableDialog = ({
                       value={(lcData && lcData.shipmentPort?.port) || ""}
                       noBorder
                     />
+                    <h2 className="text-xl font-semibold">Importer Info</h2>
+                    <LCInfo
+                      label="Applicant"
+                      value={
+                        (lcData && lcData.importerInfo?.applicantName) || ""
+                      }
+                    />
+                    <LCInfo
+                      label="Country"
+                      value={
+                        (lcData && lcData.importerInfo?.countryOfImport) || ""
+                      }
+                    />
 
                     <h2 className="text-xl font-semibold">Exporter Info</h2>
                     <LCInfo
@@ -609,19 +639,6 @@ export const TableDialog = ({
                       label="Charges on account of"
                       value="Beneficiary"
                       noBorder
-                    />
-                    <h2 className="text-xl font-semibold">Importer Info</h2>
-                    <LCInfo
-                      label="Applicant"
-                      value={
-                        (lcData && lcData.importerInfo?.applicantName) || ""
-                      }
-                    />
-                    <LCInfo
-                      label="Country"
-                      value={
-                        (lcData && lcData.importerInfo?.countryOfImport) || ""
-                      }
                     />
                   </div>
                 </div>

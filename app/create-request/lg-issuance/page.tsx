@@ -232,6 +232,7 @@ export default function LgIssuance() {
         abortEarly: true,
         stripUnknown: true,
       });
+      console.log(responseData, "responseData");
       const { response, success } = storeData?.data?._id
         ? await updateLg(responseData, storeData?.data?._id)
         : await createLg(responseData);
@@ -445,20 +446,20 @@ export default function LgIssuance() {
           step={lgIssuance === LG.cashMargin ? 11 : 9}
         />
 
-        <LgStep10
+        {/* <LgStep10
           register={register}
           watch={watch}
           setStepCompleted={handleStepCompletion}
           setValue={setValue}
           step={lgIssuance === LG.cashMargin ? 12 : 10}
-        />
+        /> */}
 
         <LgStep12
           register={register}
           watch={watch}
           setStepCompleted={handleStepCompletion}
           setValue={setValue}
-          step={11}
+          step={10}
         />
         <div className="flex items-center gap-x-4 w-full">
           <Button

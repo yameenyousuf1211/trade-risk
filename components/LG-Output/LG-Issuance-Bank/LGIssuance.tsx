@@ -6,19 +6,26 @@ import { BankSelection } from "./BankSelection";
 import { LgTypeSelection } from "./LgTypeSelection";
 import { PricingInput } from "./PricingInput";
 import { BidPreview } from "./BidPreview";
-import { convertDateToCommaString, formatAmount } from "@/utils";
+import {
+  convertDateAndTimeToString,
+  convertDateToCommaString,
+  formatAmount,
+} from "@/utils";
 import { submitLgBid } from "@/services/apis/lg.apis";
 import { useAuth } from "@/context/AuthProvider";
 import { getLgBondTotal, sortBanksAlphabetically } from "../helper";
+import { FileSearch } from "lucide-react";
 
 const LGInfo = ({
   label,
   value,
   noBorder,
+  link,
 }: {
   label: string;
   value: string | null;
   noBorder?: boolean;
+  link?: string;
 }) => {
   return (
     <div
@@ -27,9 +34,23 @@ const LGInfo = ({
       }`}
     >
       <p className="font-roboto text-sm font-normal text-para">{label}</p>
-      <p className="max-w-[60%] text-right text-sm font-semibold capitalize">
-        {value || "-"}
-      </p>
+      {link ? (
+        <div className="flex items-center">
+          <FileSearch className="mr-2" color="#29C084" />{" "}
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="capitalize font-semibold text-right text-base max-w-[100%] truncate"
+          >
+            {value}
+          </a>
+        </div>
+      ) : (
+        <p className="max-w-[60%] text-right text-sm font-semibold capitalize">
+          {value || "-"}
+        </p>
+      )}
     </div>
   );
 };
@@ -94,7 +115,15 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   const mutation = useMutation({
     mutationFn: (newData: any) => submitLgBid(newData),
     onSuccess: () => {
-      queryClient.invalidateQueries(["bondData"]);
+      queryClient.invalidateQueries({
+        queryKey: ["bid-status"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["fetch-lcs"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["single-lc"],
+      });
       setShowPreview(true);
     },
   });
@@ -161,7 +190,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     } else if (mostRecentBid) {
       if (mostRecentBid.status === "Pending") {
         setUserBidStatus({
-          label: `Bid Submitted on ${convertDateToCommaString(
+          label: `Bid Submitted on ${convertDateAndTimeToString(
             mostRecentBid.createdAt
           )}`,
           status: "Pending",
@@ -288,6 +317,17 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     setShowPreview(false);
   };
 
+  const beneficiaryDetails = [
+    { label: "Beneficiary Name", value: data.beneficiaryDetails.name },
+    { label: "Beneficiary Address", value: data.beneficiaryDetails.address },
+    { label: "Beneficiary Country", value: data.beneficiaryDetails.country },
+    {
+      label: "Beneficiary Phone",
+      value: data.beneficiaryDetails.phoneNumber,
+    },
+    { label: "Beneficiary City", value: data.beneficiaryDetails.city },
+  ].filter((detail) => detail.value);
+
   const handleNewBid = () => {
     setShowPreview(false);
     setUserBidStatus({});
@@ -332,11 +372,19 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
         </div>
         <div className="ml-7 mr-1 mt-2">
           <LGInfo
-            label="Total Contract Value"
-            value={
-              `${data.totalContractCurrency} ${data.totalContractValue}` || null
-            }
+            label="Applicant Name"
+            value={data.applicantDetails.company}
           />
+          {data.totalContractCurrency && data.totalContractValue && (
+            <LGInfo
+              label="Total Contract Value"
+              value={
+                `${data.totalContractCurrency} ${formatAmount(
+                  data.totalContractValue
+                )}` || null
+              }
+            />
+          )}
           <LGInfo
             label="Request Expiry Date"
             value={
@@ -349,22 +397,13 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
             Beneficiary Details
           </h2>
 
-          <LGInfo
-            label="Beneficiary Name"
-            value={data.beneficiaryDetails?.name || null}
-          />
-          <LGInfo
-            label="Beneficiary Address"
-            value={data.beneficiaryDetails?.address || null}
-          />
-          <LGInfo
-            label="Beneficiary Country"
-            value={data.beneficiaryDetails?.country || null}
-          />
-          <LGInfo
-            label="Beneficiary Phone"
-            value={data.beneficiaryDetails?.phoneNumber || null}
-          />
+          {beneficiaryDetails.map((detail, index) => (
+            <LGInfo
+              key={index}
+              label={detail.label}
+              value={detail.value || "-"}
+            />
+          ))}
 
           <ApplicantQuery />
         </div>
@@ -442,6 +481,16 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                             : null
                         }
                       />
+                      {selectedBond.expectedPricing && (
+                        <LGInfo
+                          label="Expected Price"
+                          value={
+                            selectedBond.expectedPricing
+                              ? `${selectedBond.expectedPricing}%`
+                              : null
+                          }
+                        />
+                      )}
                       <LGInfo
                         label="LG Tenor"
                         value={
@@ -450,6 +499,22 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                             : null
                         }
                       />
+                      {selectedBond.attachments?.length > 0 && (
+                        <LGInfo
+                          label="LG Text Draft"
+                          value={
+                            selectedBond.attachments[0].userFileName.length > 20
+                              ? `${selectedBond?.attachments[0].userFileName.slice(
+                                  0,
+                                  10
+                                )}...${selectedBond.attachments[0].userFileName.slice(
+                                  -7
+                                )}`
+                              : selectedBond.attachments[0].userFileName
+                          }
+                          link={selectedBond.attachments[0].url}
+                        />
+                      )}
                     </>
                   )}
 

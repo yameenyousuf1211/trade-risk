@@ -234,7 +234,7 @@ export const BankTable = ({
                       onClick={() => handleSort("Confirmation bank")}
                     >
                       <div className="flex items-center gap-x-2 justify-center text-[13px]">
-                        Confirming Bank
+                        Preferred Confirming Bank
                         <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
                           <ChevronUp className="size-4" />
                         </div>

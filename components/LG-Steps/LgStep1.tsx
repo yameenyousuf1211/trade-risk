@@ -12,13 +12,12 @@ const LgStep1: React.FC<LgStepsProps1> = ({
 }) => {
   const lgIssuance = watch("lgIssuance") || "LG Re-issuance in another country";
   const { setValue } = useBreadCrumbsTypeStore();
-  const { addStep,removeStep } = useStepStore();
-  
+  const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
-    if(lgIssuance)setValue(lgIssuance);
-    if(lgIssuance) addStep(CHOOSE_TYPE);
-    else removeStep(CHOOSE_TYPE)
+    if (lgIssuance) setValue(lgIssuance);
+    if (lgIssuance) addStep(CHOOSE_TYPE);
+    else removeStep(CHOOSE_TYPE);
   }, [lgIssuance]);
 
   return (
@@ -45,21 +44,21 @@ const LgStep1: React.FC<LgStepsProps1> = ({
           checked={lgIssuance === "LG 100% Cash Margin"}
         />
         <BgRadioInput
+          id="lgIssuance3"
+          label="LG issuance within the country"
+          name="lgIssuance"
+          value="LG issuance within the country"
+          register={register}
+          disabled
+          checked={lgIssuance === "LG issuance within the country"}
+        />
+        <BgRadioInput
           id="lgIssuance2"
           label="LG Re-issuance in another country"
           name="lgIssuance"
           value="LG Re-issuance in another country"
           register={register}
           checked={lgIssuance === "LG Re-issuance in another country"}
-        />
-        <BgRadioInput
-          id="lgIssuance3"
-          label="LG Advising"
-          name="lgIssuance"
-          value="LG Advising"
-          register={register}
-          disabled
-          checked={lgIssuance === "LG Advising"}
         />
       </div>
     </div>

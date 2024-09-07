@@ -13,15 +13,6 @@ const bondSchema = Yup.object().shape({
   valueInPercentage: Yup.number()
     .nullable() // Allows null values
     .notRequired(), // Makes the field not required regardless of the condition
-
-  // valueInPercentage: Yup.number()
-  //   .when("Contract", {
-  //     is: true,
-  //     then: (schema) => schema.required("Value In Percentage is required"),
-  //     otherwise: (schema) => schema.notRequired(),
-  //   })
-  //   .nullable(),
-  // .typeError("valueInPercenta Percentage should be a number")
   expectedDate: Yup.date().when("Contract", {
     is: true,
     then: (schema) => schema.min(2).required("Expected Date is required"),
@@ -40,7 +31,13 @@ const bondSchema = Yup.object().shape({
       lgTenorValue: Yup.string().nullable(),
     })
     .nullable(),
-  draft: Yup.string().nullable(),
+  attachments: Yup.array().nullable().notRequired(),
+  expectedPricing: Yup.number()
+    .nullable() // Allows null values
+    .notRequired()
+    .typeError("Expected Price must be a valid number")
+    .min(0, "Expected Price cannot be less than 0")
+    .max(100, "Expected Price cannot be more than 100"),
 });
 
 // // SuperRefine equivalent
@@ -130,12 +127,12 @@ export const lgValidator = Yup.object()
     purpose: Yup.string().nullable(),
     remarks: Yup.string().nullable(),
     priceQuotes: Yup.string().required("Price Quotes is required"),
-    expectedPrice: Yup.object()
-      .shape({
-        expectedPrice: Yup.string().required("Price Per Annum is required"),
-        pricePerAnnum: Yup.string().nullable(),
-      })
-      .required(),
+    // expectedPrice: Yup.object()
+    //   .shape({
+    //     expectedPrice: Yup.string().required("Price Per Annum is required"),
+    //     pricePerAnnum: Yup.string().nullable(),
+    //   })
+    //   .required(),
     // typeOfLg: Yup.string().nullable(),
     // issueLgWithStandardText: Yup.boolean().nullable(),
     // lgStandardText: Yup.string().nullable(),

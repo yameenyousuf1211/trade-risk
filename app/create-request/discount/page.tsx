@@ -40,7 +40,7 @@ const CreateDiscountPage = () => {
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
-  const [days, setDays] = useState<number>(1);
+  const [days, setDays] = useState<number>(90);
 
   // Edit Request
   const setValues = useDiscountingStore((state) => state.setValues);

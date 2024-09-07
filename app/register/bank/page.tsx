@@ -316,7 +316,7 @@ const BankRegisterPage = () => {
           </div>
 
           <div className="flex w-full items-center gap-x-2">
-            <div className="relative w-full p-1">
+            <div className="relative w-full">
               <FloatingInput
                 register={register}
                 name="pocEmail"
@@ -399,6 +399,11 @@ const BankRegisterPage = () => {
             <CheckBoxInput
               label="Risk Participation (bank to bank)"
               id="riskParticipation"
+              register={register}
+            />
+            <CheckBoxInput
+              label="LC Confirmation & Discounting"
+              id="lcConfirmationDiscounting"
               register={register}
             />
           </div>

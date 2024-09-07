@@ -509,14 +509,14 @@ export const AddBid = ({
                           label="Country of LC Issuing Bank"
                           value={lcData?.issuingBanks?.[0]?.country || "-"}
                         />
-                        <LCInfo
+                        {/* <LCInfo
                           label="LC Applicant"
                           value={
                             (lcData?.importerInfo?.applicantName
                               ? lcData?.importerInfo?.applicantName
                               : lcData?.applicantDetails?.company) || "-"
                           }
-                        />
+                        /> */}
                         {lcData?.advisingBank?.bank && (
                           <LCInfo
                             label="LC Advising Bank"
@@ -525,10 +525,23 @@ export const AddBid = ({
                         )}
                         {lcData?.confirmingBank?.bank && (
                           <LCInfo
-                            label="Confirming Bank"
+                            label="Preferred Confirming Bank"
                             value={lcData?.confirmingBank?.bank}
                           />
                         )}
+                        {lcData?.transhipment && (
+                          <LCInfo
+                            label="Transhipment"
+                            value={lcData && lcData.transhipment ? "Yes" : "No"}
+                          />
+                        )}
+                        {lcData?.shipmentPort?.port &&
+                          lcData.shipment?.country && (
+                            <LCInfo
+                              label="Port of Shipment"
+                              value={`${lcData.shipmentPort.port}, ${lcData.shipmentPort.country}`}
+                            />
+                          )}
                         <LCInfo
                           label="Payments Terms"
                           value={

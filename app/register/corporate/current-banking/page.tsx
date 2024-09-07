@@ -33,7 +33,7 @@ interface Bank {
   country: string;
   name: string;
   city: string;
-  swiftCode: string
+  swiftCode: string;
 }
 
 const CurrentBankingPage = () => {
@@ -201,11 +201,11 @@ const CurrentBankingPage = () => {
             originalData.productInfo.annualValueImports
           ),
         },
-        currentBanks: originalData.currentBanks.map((bank:Bank) => ({
+        currentBanks: originalData.currentBanks.map((bank: Bank) => ({
           name: bank.name,
           country: bank.country,
           city: bank.city,
-          swiftCode: bank.swiftCode
+          swiftCode: bank.swiftCode,
         })),
         bank: originalData.bank,
         commercialRegistrationNumber: originalData.crNumber,
@@ -275,8 +275,8 @@ const CurrentBankingPage = () => {
 
   return (
     <CorporateStepLayout
-      step={3}
-      title="Current Banking"
+      step={4}
+      title="Your Current Bank"
       text={`Add the banks you have facilities with, so that they can be notified of any requests you add. \nThis list can also be edited later.`}
     >
       <div className="max-w-[800px] w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5">
@@ -297,9 +297,9 @@ const CurrentBankingPage = () => {
                   <span className="truncate w-full text-left">
                     {countryVal
                       ? countries?.find(
-                        (country: string) =>
-                          country.toLowerCase() === countryVal.toLowerCase()
-                      )
+                          (country: string) =>
+                            country.toLowerCase() === countryVal.toLowerCase()
+                        )
                       : "Select country*"}
                   </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -350,9 +350,9 @@ const CurrentBankingPage = () => {
                   <span className="truncate w-full text-left">
                     {bankVal
                       ? banks?.response.find(
-                        (bank: string) =>
-                          bank.toLowerCase() === bankVal.toLowerCase()
-                      )
+                          (bank: string) =>
+                            bank.toLowerCase() === bankVal.toLowerCase()
+                        )
                       : "Select bank*"}
                   </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -410,8 +410,8 @@ const CurrentBankingPage = () => {
                     {cityVal
                       ? cityVal
                       : countryVal
-                        ? "Select city*"
-                        : "Select city*"}
+                      ? "Select city*"
+                      : "Select city*"}
                   </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>

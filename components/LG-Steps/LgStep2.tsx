@@ -29,7 +29,7 @@ const LgStep2: React.FC<LgStepsProps2> = ({
 
   const handleOnChange = (event: any) => {
     const value = event.target.value;
-    setValue("applicantDetails.crNumber",value);
+    setValue("applicantDetails.crNumber", value);
   };
 
   return (
@@ -62,7 +62,21 @@ const LgStep2: React.FC<LgStepsProps2> = ({
           placeholder="Select"
           label="Company"
           id="applicantDetails.company"
-          data={["Saudi Aramco", "Saudi Telecom Company", "Saudi National Bank","Maaden","Al Rajhi Bank","SABIC","Saudi Electricity Company","Saudi Arabian Airlines","Saudi Basic Industries Corporation","Saudi Arabian Mining Company","Saudi Arabian Oil Company","Saudi Arabian Monetary Authority","Saudi Arabian General Investment Authority","Saudi Arabian Military Industries","Saudi Arabian Public Investment Fund"]}
+          data={[
+            "Saudi Aramco",
+            "Saudi Telecom Company",
+            "Maaden",
+            "SABIC",
+            "Saudi Electricity Company",
+            "Saudi Arabian Airlines",
+            "Saudi Basic Industries Corporation",
+            "Saudi Arabian Mining Company",
+            "Saudi Arabian Oil Company",
+            "Saudi Arabian Monetary Authority",
+            "Saudi Arabian General Investment Authority",
+            "Saudi Arabian Military Industries",
+            "Saudi Arabian Public Investment Fund",
+          ]}
           setValue={setValue}
           extStyle="flex-1"
         />

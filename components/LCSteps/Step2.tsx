@@ -227,14 +227,16 @@ export const Step2 = ({
                   inputMode="numeric"
                   name="days"
                   type="number"
-                  max={3}
-                  value={days}
+                  value={days === 0 ? "" : days} // Conditional rendering to display empty input when days is 0
                   className="max-w-[150px] border-none bg-[#F5F7F9] text-sm text-lightGray outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   onChange={(e: any) => {
-                    if (e.target.value > 999) return;
-                    else {
-                      setValue("extraInfo.other", e.target.value);
-                      setDays(Number(e.target.value));
+                    const value = e.target.value;
+                    if (value === "" || Number(value) <= 999) {
+                      setDays(value === "" ? 0 : Number(value));
+                      setValue(
+                        "extraInfo.other",
+                        value === "" ? 0 : Number(value)
+                      );
                     }
                   }}
                 />
@@ -257,11 +259,13 @@ export const Step2 = ({
                     type="button"
                     className="center mb-2 size-6 rounded-sm border border-para"
                     onClick={() => {
-                      if (days >= 999) return;
-                      else {
-                        const newDays = Number(days) > 1 ? Number(days) - 1 : 1;
+                      if (days > 1) {
+                        const newDays = Number(days) - 1;
                         setDays(newDays);
                         setValue("extraInfo.days", newDays);
+                      } else {
+                        setDays(0); // Reset to 0 if it's below 1
+                        setValue("extraInfo.days", 0);
                       }
                     }}
                   >

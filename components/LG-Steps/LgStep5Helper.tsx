@@ -35,20 +35,25 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
     queryFn: getCurrency,
     staleTime: 10 * 60 * 5000,
   });
+  const totalContractValue = watch("totalContractValue");
+
+  const [displayTotalContractValue, setDisplayTotalContractValue] = useState<
+    string | number
+  >(totalContractValue || "");
 
   const [percentages, setPercentages] = useState({
     bidBond: 0,
     advancePaymentBond: 0,
-    retentionMoneyBond: 0,
     performanceBond: 0,
+    retentionMoneyBond: 0,
     otherBond: 0,
   });
 
   const bondTypes = [
     { name: "bidBond", listValue: "Bid Bond" },
     { name: "advancePaymentBond", listValue: "Advance Payment Bond" },
-    { name: "retentionMoneyBond", listValue: "Retention Bond " },
     { name: "performanceBond", listValue: "Performance Bond" },
+    { name: "retentionMoneyBond", listValue: "Retention Bond " },
   ];
   const currencyOptions = useMemo(
     () =>
@@ -71,7 +76,6 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
   const retentionMoneyBondAmount = convertStringToNumber(
     watch("retentionMoneyBond.cashMargin") || "0"
   );
-  const totalContractValue = watch("totalContractValue");
 
   const totalContractCurrency = watch("totalContractCurrency") || "USD";
   const formatNumberWithCommas = (value: string | number) => {
@@ -88,6 +92,28 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
         : sum;
     }, 0);
   };
+
+  const handleTotalContractValueChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const rawValue = e.target.value.replace(/[^0-9.]/g, ""); // Remove non-numeric characters
+    setValue(`totalContractValue`, rawValue); // Store raw value in form state
+    setDisplayTotalContractValue(rawValue); // Display the raw value
+  };
+
+  const handleTotalContractValueBlur = () => {
+    setDisplayTotalContractValue(
+      formatNumberWithCommas(totalContractValue || 0)
+    ); // Format for display
+  };
+
+  const handleTotalContractValueFocus = () => {
+    setDisplayTotalContractValue(totalContractValue); // Show raw value when focused
+  };
+
+  const totalPercentage = bondTypes.reduce((sum, bondType) => {
+    return sum + (percentages[bondType.name as keyof typeof percentages] || 0);
+  }, 0);
 
   const handlePercentageChange = (bondName: string, newValue: number) => {
     const totalPercentage = calculateTotalPercentage();
@@ -155,6 +181,9 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
             LG Tenor
           </TableHead>
           <TableHead className="text-xs text-black font-semibold text-center">
+            Expected Price
+          </TableHead>
+          <TableHead className="text-xs text-black font-semibold text-center">
             Add Draft LG Text
           </TableHead>
         </TableRow>
@@ -203,7 +232,7 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
             >
               Total LG Amount Requested
             </TableCell>
-            <TableCell className="text-start text-[#5625F2]" colSpan={5}>
+            <TableCell className="text-start text-[#5625F2]" colSpan={6}>
               <div className="flex justify-between items-center">
                 $
                 {formatNumberWithCommas(
@@ -229,13 +258,13 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
                     <SelectContent>{currencyOptions}</SelectContent>
                   </Select>
                   <Input
-                    value={totalContractValue}
+                    value={displayTotalContractValue}
                     register={register}
-                    onChange={(e) =>
-                      setValue(`totalContractValue`, e.target.value)
-                    }
+                    onChange={handleTotalContractValueChange}
+                    onBlur={handleTotalContractValueBlur}
+                    onFocus={handleTotalContractValueFocus}
                     name={`totalContractValue`}
-                    type="number"
+                    type="text"
                     placeholder="Amount"
                     className="w-32"
                   />

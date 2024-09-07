@@ -271,15 +271,12 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       <TableCell className="flex gap-2">
         <Select
           disabled={!checkedValue}
+          value={lgTenorType || "Months"} // Ensures "Months" is the default if lgTenorType is undefined
           onValueChange={(value) => {
             setValue(`${name}.lgTenor.lgTenorType`, value);
           }}
         >
-          <SelectTrigger
-            className="bg-borderCol/80"
-            defaultValue={"Months"}
-            value={lgTenorType}
-          >
+          <SelectTrigger className="bg-borderCol/80">
             <SelectValue placeholder="Months" />
           </SelectTrigger>
           <SelectContent>
@@ -317,7 +314,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
             inputMode="numeric"
             disabled={!checkedValue}
             className={cn(
-              "flex h-10 text-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
+              "flex h-10 text-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[80px] focus-visible:ring-offset-0"
             )}
             max={100}
             value={pricing ? `${pricing}%` : ""}

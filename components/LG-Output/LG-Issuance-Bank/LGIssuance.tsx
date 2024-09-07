@@ -10,15 +10,18 @@ import { convertDateToCommaString, formatAmount } from "@/utils";
 import { submitLgBid } from "@/services/apis/lg.apis";
 import { useAuth } from "@/context/AuthProvider";
 import { getLgBondTotal, sortBanksAlphabetically } from "../helper";
+import { FileSearch } from "lucide-react";
 
 const LGInfo = ({
   label,
   value,
   noBorder,
+  link,
 }: {
   label: string;
   value: string | null;
   noBorder?: boolean;
+  link?: string;
 }) => {
   return (
     <div
@@ -27,9 +30,23 @@ const LGInfo = ({
       }`}
     >
       <p className="font-roboto text-sm font-normal text-para">{label}</p>
-      <p className="max-w-[60%] text-right text-sm font-semibold capitalize">
-        {value || "-"}
-      </p>
+      {link ? (
+        <div className="flex items-center">
+          <FileSearch className="mr-2" color="#29C084" />{" "}
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="capitalize font-semibold text-right text-base max-w-[100%] truncate"
+          >
+            {value}
+          </a>
+        </div>
+      ) : (
+        <p className="max-w-[60%] text-right text-sm font-semibold capitalize">
+          {value || "-"}
+        </p>
+      )}
     </div>
   );
 };
@@ -452,6 +469,16 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                             : null
                         }
                       />
+                      {selectedBond.expectedPricing && (
+                        <LGInfo
+                          label="Expected Price"
+                          value={
+                            selectedBond.expectedPricing
+                              ? `${selectedBond.expectedPricing}%`
+                              : null
+                          }
+                        />
+                      )}
                       <LGInfo
                         label="LG Tenor"
                         value={
@@ -460,6 +487,22 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                             : null
                         }
                       />
+                      {selectedBond.attachments?.length > 0 && (
+                        <LGInfo
+                          label="LG Text Draft"
+                          value={
+                            selectedBond.attachments[0].userFileName.length > 20
+                              ? `${selectedBond?.attachments[0].userFileName.slice(
+                                  0,
+                                  10
+                                )}...${selectedBond.attachments[0].userFileName.slice(
+                                  -7
+                                )}`
+                              : selectedBond.attachments[0].userFileName
+                          }
+                          link={selectedBond.attachments[0].url}
+                        />
+                      )}
                     </>
                   )}
 

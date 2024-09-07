@@ -288,6 +288,17 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     setShowPreview(false);
   };
 
+  const beneficiaryDetails = [
+    { label: "Beneficiary Name", value: data.beneficiaryDetails.name },
+    { label: "Beneficiary Address", value: data.beneficiaryDetails.address },
+    { label: "Beneficiary Country", value: data.beneficiaryDetails.country },
+    {
+      label: "Beneficiary Phone",
+      value: data.beneficiaryDetails.phoneNumber,
+    },
+    { label: "Beneficiary City", value: data.beneficiaryDetails.city },
+  ].filter((detail) => detail.value);
+
   const handleNewBid = () => {
     setShowPreview(false);
     setUserBidStatus({});
@@ -332,11 +343,19 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
         </div>
         <div className="ml-7 mr-1 mt-2">
           <LGInfo
-            label="Total Contract Value"
-            value={
-              `${data.totalContractCurrency} ${data.totalContractValue}` || null
-            }
+            label="Applicant Name"
+            value={data.applicantDetails.company}
           />
+          {data.totalContractCurrency && data.totalContractValue && (
+            <LGInfo
+              label="Total Contract Value"
+              value={
+                `${data.totalContractCurrency} ${formatAmount(
+                  data.totalContractValue
+                )}` || null
+              }
+            />
+          )}
           <LGInfo
             label="Request Expiry Date"
             value={
@@ -349,22 +368,13 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
             Beneficiary Details
           </h2>
 
-          <LGInfo
-            label="Beneficiary Name"
-            value={data.beneficiaryDetails?.name || null}
-          />
-          <LGInfo
-            label="Beneficiary Address"
-            value={data.beneficiaryDetails?.address || null}
-          />
-          <LGInfo
-            label="Beneficiary Country"
-            value={data.beneficiaryDetails?.country || null}
-          />
-          <LGInfo
-            label="Beneficiary Phone"
-            value={data.beneficiaryDetails?.phoneNumber || null}
-          />
+          {beneficiaryDetails.map((detail, index) => (
+            <LGInfo
+              key={index}
+              label={detail.label}
+              value={detail.value || "-"}
+            />
+          ))}
 
           <ApplicantQuery />
         </div>

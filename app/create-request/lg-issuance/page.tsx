@@ -232,6 +232,8 @@ export default function LgIssuance() {
         abortEarly: true,
         stripUnknown: true,
       });
+      console.log(responseData, "responseData");
+      return;
       const { response, success } = storeData?.data?._id
         ? await updateLg(responseData, storeData?.data?._id)
         : await createLg(responseData);

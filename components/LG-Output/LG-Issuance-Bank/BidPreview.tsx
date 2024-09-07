@@ -30,7 +30,6 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
   allBondsFilled,
   otherBond, // Add this prop to pass otherBond details
 }) => {
-  const [isApproved, setIsApproved] = useState<boolean>(false);
   const [selectedBidValidity, setSelectedBidValidity] = useState<string>();
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -40,33 +39,32 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
     setIsModalOpen(false);
   };
 
-  const handleSendBackToCreator = () => {
-    setIsApproved(false);
-  };
-
   return (
     <div className="px-4 flex-1">
       <h2 className="text-xl font-semibold mb-4 gap-1 flex items-center justify-between">
         {allBondsFilled ? (
           <div className="flex justify-between items-center w-full">
-            <div className="flex items-center">
-              {!isApproved && (
+            {userBidStatus.status !== "Pending" &&
+            userBidStatus.status !== "Accepted" &&
+            userBidStatus.status !== "Rejected" &&
+            userBidStatus.status !== "Expired" &&
+            userBidStatus.status !== "Not Accepted" &&
+            userBidStatus.status !== "Not Applicable" ? (
+              <div className="flex items-center">
                 <Button variant="ghost" onClick={onBack} className="mr-1 p-1">
                   <ChevronLeft className="h-6 w-6" />
                 </Button>
-              )}
-              <span>Preview Before Final Submission</span>
-            </div>
-            {userBidStatus.status !== "Pending" &&
-              userBidStatus.status !== "Accepted" &&
-              userBidStatus.status !== "Rejected" &&
-              userBidStatus.status !== "Expired" &&
-              isApproved && (
+                <span>Preview Before Final Submission</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <p>Your Bid</p>
                 <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
                   <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
                   <h5 className="text-[0.95rem] font-normal">{user.name}</h5>
                 </div>
-              )}
+              </div>
+            )}
           </div>
         ) : (
           <>Your Bid</>
@@ -85,7 +83,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                 </p>
               </div>
             )}
-            {(bidValidityDate || (isApproved && selectedBidValidity)) && (
+            {(bidValidityDate || selectedBidValidity) && (
               <div className="text-center">
                 <p className="text-base font-normal">
                   {bidValidityDate ||
@@ -110,7 +108,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
               className="p-3 border border-[#E2E2EA] mb-2 rounded-md"
             >
               <h4 className="mb-2 text-lg">
-                <span className="text-[#5625F2]">
+                <span className="text-[#5625F2] font-bold">
                   {formatFirstLetterOfWord(bankDetails.name)}
                 </span>
                 , {formatFirstLetterOfWord(bankDetails.country)}
@@ -177,8 +175,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
           userBidStatus.status !== "Rejected" &&
           userBidStatus.status !== "Expired" &&
           userBidStatus.status !== "Not Accepted" &&
-          userBidStatus.status !== "Not Applicable" &&
-          !isApproved && (
+          userBidStatus.status !== "Not Applicable" && (
             <DatePicker
               placeholder="Select Date"
               value={selectedBidValidity}
@@ -214,35 +211,13 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
             </div>
           ) : (
             <>
-              {!isApproved ? (
-                <>
-                  <Button
-                    className="w-full mt-4 bg-[#5ECFA2] text-white hover:bg-[#5ECFA2]"
-                    onClick={() => setIsApproved(true)}
-                    disabled={!selectedBidValidity}
-                  >
-                    Send for Approval to Authorizer
-                  </Button>
-                  {/* <Button variant="outline">Save as Draft</Button> */}
-                </>
-              ) : (
-                <>
-                  <Button
-                    className="w-full mt-4 bg-[#44C894] text-white hover:bg-[#44C894]"
-                    onClick={() => setIsModalOpen(true)}
-                    disabled={!selectedBidValidity}
-                  >
-                    Submit Bid
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="text-[#636363]"
-                    onClick={handleSendBackToCreator}
-                  >
-                    Send Back to Creator
-                  </Button>
-                </>
-              )}
+              <Button
+                className="w-full mt-4 bg-[#44C894] text-white hover:bg-[#44C894]"
+                onClick={() => setIsModalOpen(true)}
+                disabled={!selectedBidValidity}
+              >
+                Submit Bid
+              </Button>
             </>
           )}
         </div>

@@ -155,6 +155,9 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
             LG Tenor
           </TableHead>
           <TableHead className="text-xs text-black font-semibold text-center">
+            Expected Price {/* New column for Expected Price */}
+          </TableHead>
+          <TableHead className="text-xs text-black font-semibold text-center">
             Add Draft LG Text
           </TableHead>
         </TableRow>

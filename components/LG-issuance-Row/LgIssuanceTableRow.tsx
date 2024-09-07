@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import {
   Select,
@@ -13,7 +13,10 @@ import { Check, Link, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { DatePicker } from "../helpers";
 import { values } from "@/utils";
+import { cn } from "@/lib/utils";
 import useLcIssuance from "@/store/issueance.store";
+import { Button } from "../ui/button";
+import { X } from "lucide-react";
 
 const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   register,
@@ -33,9 +36,35 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   const cashMargin = watch(`${name}.cashMargin`);
   const valueInPercentage = watch(`${name}.valueInPercentage`);
   const currencyType = watch(`${name}.currencyType`);
+  const pricing = watch(`${name}.expectedPricing`);
   const lgTenorType = watch(`${name}.lgTenor.lgTenorType`);
   const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
   const otherBondName = watch(`${name}.name`);
+  const attachments = watch(`${name}.attachments`);
+
+  // Reference to file input
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const fileArray = Array.from(files); // Convert FileList to Array
+      setValue(`${name}.attachments`, fileArray);
+    }
+  };
+
+  const handleFileInputClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleRemoveFile = (fileIndex: number) => {
+    const updatedAttachments = attachments.filter(
+      (_file: File, index: number) => index !== fileIndex
+    );
+    setValue(`${name}.attachments`, updatedAttachments);
+  };
 
   // console.log("🚀 ~ checkedValuecheckedValue:", checkedValue);
   const currencyOptions = useMemo(
@@ -63,6 +92,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   }, [data]);
 
   const lgDetails = watch("lgDetailsType");
+  console.log(lgDetails, "pipipip");
   // const lgDetailsType = watch("lgDetailsType");
 
   const handleOnChange = (
@@ -72,6 +102,24 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     const value = event.target.value;
     const filteredValue = value.replace(/[^0-9]/g, "");
     setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
+  };
+
+  const handleIncrement = () => {
+    const currentValue = parseFloat(pricing) || 0;
+    const newValue = Math.min(
+      100,
+      Math.round((currentValue + 0.1) * 100) / 100
+    ).toFixed(2);
+    setValue(`${name}.expectedPricing`, newValue);
+  };
+
+  const handleDecrement = () => {
+    const currentValue = parseFloat(pricing) || 0;
+    const newValue = Math.max(
+      0,
+      Math.round((currentValue - 0.1) * 100) / 100
+    ).toFixed(2);
+    setValue(`${name}.expectedPricing`, newValue);
   };
 
   // const formatNumberWithCommas = (value: string) => {
@@ -110,6 +158,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   };
 
   const handleBondCheck = (isChecked: boolean) => {
+    if (!lgDetails) return;
     setValue(`${name}.percentage`, "");
     setValue(`${name}.Contract`, isChecked);
     onBondCheck(name, isChecked);
@@ -123,7 +172,11 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     >
       {lgDetails !== "Choose any other type of LGs" ? (
         <TableDataCell className="min-w-[250px]">
-          <div className="flex gap-2 items-center flex-wrap ">
+          <div
+            className={`flex gap-2 items-center flex-wrap ${
+              !lgDetails && "opacity-50"
+            }`}
+          >
             <div
               onClick={() => handleBondCheck(!checkedValue)}
               className="bg-white border-[#5625F2] border-2 rounded-[5px] flex items-center justify-center h-[22px] w-[22px] cursor-pointer"
@@ -198,9 +251,6 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       </TableCell>
       <TableCell>
         <DatePicker
-          maxDate={
-            new Date(new Date().setFullYear(new Date().getFullYear() + 1))
-          }
           value={expectedDate}
           leftText={false}
           name={`${name}.expectedDate`}
@@ -212,9 +262,6 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
         <DatePicker
           value={lgExpiryDate}
           leftText={false}
-          maxDate={
-            new Date(new Date().setFullYear(new Date().getFullYear() + 1))
-          }
           name={`${name}.lgExpiryDate`}
           setValue={setValue}
           disabled={!checkedValue}
@@ -237,7 +284,11 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
             </SelectTrigger>
             <SelectContent>
               {["Days", "Months", "Years"].map((time: string, idx: number) => (
-                <SelectItem key={`${time}-${idx}`} value={time}>
+                <SelectItem
+                  key={`${time}-${idx}`}
+                  value={time}
+                  defaultValue={"Months"}
+                >
                   {time}
                 </SelectItem>
               ))}
@@ -254,9 +305,108 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           />
         </TableCell>
         <TableCell>
-          <div className="flex justify-center items-center">
-            <Link size={20} />
+          <div className="flex items-center gap-x-2 relative">
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={!checkedValue}
+              className="bg-none border-none text-lg"
+              onClick={handleDecrement} // Use the same decrement function
+            >
+              -
+            </Button>
+            <input
+              placeholder="Expected Price"
+              type="text"
+              inputMode="numeric"
+              disabled={!checkedValue}
+              className={cn(
+                "flex h-10 text-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
+              )}
+              max={100}
+              value={pricing ? `${pricing}%` : ""}
+              onChange={(event) => {
+                let newValue = event.target.value.replace(/[^0-9.]/g, "");
+                if (newValue.includes(".")) {
+                  const parts = newValue.split(".");
+                  parts[1] = parts[1].slice(0, 2); // Limiting to 2 decimal places
+                  newValue = parts.join(".");
+                }
+                const numValue = parseFloat(newValue);
+                if (numValue > 100) {
+                  newValue = "100.00";
+                } else if (numValue < 0) {
+                  newValue = "0.00";
+                }
+                setValue(`${name}.expectedPricing`, newValue || "0.00"); // Set value without %
+              }}
+              onBlur={(event) => {
+                if (event.target.value.length === 0) return;
+                let value = parseFloat(
+                  event.target.value.replace("%", "")
+                ).toFixed(2); // Remove % for processing
+                if (parseFloat(value) > 100) {
+                  value = "100.00";
+                } else if (parseFloat(value) < 0) {
+                  value = "0.00";
+                }
+                setValue(`${name}.expectedPricing`, value || "0.00"); // Set value without %
+              }}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={!checkedValue}
+              className="bg-none border-none text-lg"
+              onClick={handleIncrement} // Use the same increment function
+            >
+              +
+            </Button>
           </div>
+        </TableCell>
+        <TableCell>
+          <div className="flex justify-center items-center">
+            {/* Hidden file input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              accept=".pdf, .tiff, .jpeg, .jpg, .doc"
+              multiple={false}
+              onChange={handleFileChange}
+            />
+            {attachments && attachments.length > 0 ? (
+              <div className="mt-2">
+                <ul>
+                  {attachments.map((file: File, index: number) => (
+                    <li key={index} className="flex items-center text-xs gap-2">
+                      {/* Shorten the file name */}
+                      <span
+                        className="truncate max-w-[150px]"
+                        title={file.name}
+                      >
+                        {file.name.length > 20
+                          ? `${file.name.slice(0, 10)}...${file.name.slice(-7)}`
+                          : file.name}
+                      </span>
+                      <X
+                        size={16}
+                        className="cursor-pointer text-red-500"
+                        onClick={() => handleRemoveFile(index)} // Handle file removal
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <Link
+                size={20}
+                onClick={handleFileInputClick}
+                className="cursor-pointer"
+              />
+            )}
+          </div>
+          {/* Display attached files if any */}
         </TableCell>
       </>
     </TableRow>

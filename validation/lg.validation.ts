@@ -41,6 +41,12 @@ const bondSchema = Yup.object().shape({
     })
     .nullable(),
   draft: Yup.string().nullable(),
+  expectedPricing: Yup.number()
+    .nullable() // Allows null values
+    .notRequired()
+    .typeError("Expected Price must be a valid number")
+    .min(0, "Expected Price cannot be less than 0")
+    .max(100, "Expected Price cannot be more than 100"),
 });
 
 // // SuperRefine equivalent
@@ -130,12 +136,12 @@ export const lgValidator = Yup.object()
     purpose: Yup.string().nullable(),
     remarks: Yup.string().nullable(),
     priceQuotes: Yup.string().required("Price Quotes is required"),
-    expectedPrice: Yup.object()
-      .shape({
-        expectedPrice: Yup.string().required("Price Per Annum is required"),
-        pricePerAnnum: Yup.string().nullable(),
-      })
-      .required(),
+    // expectedPrice: Yup.object()
+    //   .shape({
+    //     expectedPrice: Yup.string().required("Price Per Annum is required"),
+    //     pricePerAnnum: Yup.string().nullable(),
+    //   })
+    //   .required(),
     // typeOfLg: Yup.string().nullable(),
     // issueLgWithStandardText: Yup.boolean().nullable(),
     // lgStandardText: Yup.string().nullable(),

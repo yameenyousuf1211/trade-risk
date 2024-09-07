@@ -70,7 +70,9 @@ export const LGTableBidStatus = ({
     { label: "Country", value: data.beneficiaryDetails.country },
     { label: "Name", value: data.beneficiaryDetails.name },
     { label: "Phone Number", value: data.beneficiaryDetails.phoneNumber },
-  ];
+    { label: "City", value: data.beneficiaryDetails.city },
+    { label: "Street Address", value: data.beneficiaryDetails.address },
+  ].filter((detail) => detail.value);
 
   const lgDetails = [
     {
@@ -100,7 +102,9 @@ export const LGTableBidStatus = ({
   const otherDetails = [
     {
       label: "Total Contract Value",
-      value: `${data.totalContractCurrency} ${data.totalContractValue}`,
+      value: `${data.totalContractCurrency} ${formatAmount(
+        data.totalContractValue
+      )}`,
     },
     { label: "Purpose of LG", value: data.purpose },
     data.remarks && { label: "Remarks", value: data.remarks },

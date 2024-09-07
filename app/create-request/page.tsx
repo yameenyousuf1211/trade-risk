@@ -182,7 +182,7 @@ const CreateRequestPage = () => {
           ...rest,
           ...(extraInfoObj && { extraInfo: extraInfoObj }),
           ...baseData,
-          draft: "true",
+          draft: true,
         };
         console.log(reqData, "REQDATA_______FOR CONFIRMATION");
         const { response, success } = confirmationData?._id

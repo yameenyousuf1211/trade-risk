@@ -16,7 +16,7 @@ import { values } from "@/utils";
 import { cn } from "@/lib/utils";
 import useLcIssuance from "@/store/issueance.store";
 import { Button } from "../ui/button";
-import { X } from "lucide-react";
+import FileUploadService from "@/services/apis/fileUpload.api";
 
 const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   register,
@@ -45,28 +45,53 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   // Reference to file input
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const fileArray = Array.from(files); // Convert FileList to Array
-      setValue(`${name}.attachments`, fileArray);
-    }
-  };
-
   const handleFileInputClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
-  const handleRemoveFile = (fileIndex: number) => {
-    const updatedAttachments = attachments.filter(
-      (_file: File, index: number) => index !== fileIndex
-    );
-    setValue(`${name}.attachments`, updatedAttachments);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      FileUploadService.upload(
+        selectedFile,
+        (url, firebaseFileName) => {
+          const uploadedFile = {
+            file: selectedFile,
+            url,
+            userFileName: selectedFile.name,
+            firebaseFileName,
+            fileSize: selectedFile.size,
+            fileType: selectedFile.type.split("/")[1].toUpperCase(),
+          };
+
+          setValue(`${name}.attachments`, [uploadedFile]);
+        },
+        (error) => {
+          console.log(error);
+        },
+        (progressBar, progress) => {
+          console.log(progress);
+        }
+      );
+    }
   };
 
-  // console.log("🚀 ~ checkedValuecheckedValue:", checkedValue);
+  const handleRemoveFile = () => {
+    if (attachments && attachments.length > 0) {
+      FileUploadService.delete(
+        attachments[0].firebaseFileName,
+        () => {
+          setValue(`${name}.attachments`, []);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    }
+  };
+
   const currencyOptions = useMemo(
     () =>
       currency?.response.map((curr: string, idx: number) => (
@@ -76,11 +101,6 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       )),
     [currency]
   );
-
-  // useEffect(() => {
-  //   if (cashMargin && !cashMargin?.toString()?.includes(".00")) {
-  //     setValue(`${name}.cashMargin`, cashMargin + ".00");
-  //   }} , [cashMargin]);
 
   const { data } = useLcIssuance();
   useEffect(() => {
@@ -92,8 +112,6 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   }, [data]);
 
   const lgDetails = watch("lgDetailsType");
-  console.log(lgDetails, "pipipip");
-  // const lgDetailsType = watch("lgDetailsType");
 
   const handleOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -121,22 +139,6 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     ).toFixed(2);
     setValue(`${name}.expectedPricing`, newValue);
   };
-
-  // const formatNumberWithCommas = (value: string) => {
-  //   value = value?.toString();
-  //   const numberString = value.replace(/,/g, ""); // Remove existing commas
-  //   return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  // };
-
-  // const handleOnChangeForCommmas = (
-  //   event: React.ChangeEvent<HTMLInputElement>,
-  //   name: string
-  // ) => {
-  //   const value = event.target.value;
-  //   if (!isNaN(value.replace(/,/g, ""))) {
-  //     setValue(name, !value ? "0" : formatNumberWithCommas(value));
-  //   }
-  // };
 
   const handlePercentageBlur = () => {
     if (valueInPercentage) {
@@ -210,7 +212,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           </SelectContent>
         </Select>
       )}
-      <TableCell className="">
+      <TableCell>
         <Select
           disabled={!checkedValue}
           value={currencyType}
@@ -228,7 +230,6 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
         <Input
           disabled={!checkedValue}
           value={cashMargin}
-          // inputMode=""
           className="min-w-[130px]"
           register={register}
           name={`${name}.cashMargin`}
@@ -267,148 +268,144 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           disabled={!checkedValue}
         />
       </TableCell>
-      <>
-        <TableCell className="flex gap-2">
-          <Select
-            disabled={!checkedValue}
-            onValueChange={(value) => {
-              setValue(`${name}.lgTenor.lgTenorType`, value);
-            }}
+      <TableCell className="flex gap-2">
+        <Select
+          disabled={!checkedValue}
+          onValueChange={(value) => {
+            setValue(`${name}.lgTenor.lgTenorType`, value);
+          }}
+        >
+          <SelectTrigger
+            className="bg-borderCol/80"
+            defaultValue={"Months"}
+            value={lgTenorType}
           >
-            <SelectTrigger
-              className="bg-borderCol/80 "
-              defaultValue={"Months"}
-              value={lgTenorType}
-            >
-              <SelectValue placeholder="Months" />
-            </SelectTrigger>
-            <SelectContent>
-              {["Days", "Months", "Years"].map((time: string, idx: number) => (
-                <SelectItem
-                  key={`${time}-${idx}`}
-                  value={time}
-                  defaultValue={"Months"}
-                >
-                  {time}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Input
+            <SelectValue placeholder="Months" />
+          </SelectTrigger>
+          <SelectContent>
+            {["Days", "Months", "Years"].map((time: string, idx: number) => (
+              <SelectItem key={`${time}-${idx}`} value={time}>
+                {time}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Input
+          disabled={!checkedValue}
+          register={register}
+          value={lgTenorValue}
+          name={`${name}.lgTenor.lgTenorValue`}
+          onChange={(e) => handleOnChange(e, `${name}.lgTenor.lgTenorValue`)}
+          placeholder="No."
+          className="min-w-[60px]"
+        />
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center gap-x-2 relative">
+          <Button
+            type="button"
+            variant="ghost"
             disabled={!checkedValue}
-            register={register}
-            value={lgTenorValue}
-            name={`${name}.lgTenor.lgTenorValue`}
-            onChange={(e) => handleOnChange(e, `${name}.lgTenor.lgTenorValue`)}
-            placeholder="No."
-            className="min-w-[60px]"
-          />
-        </TableCell>
-        <TableCell>
-          <div className="flex items-center gap-x-2 relative">
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={!checkedValue}
-              className="bg-none border-none text-lg"
-              onClick={handleDecrement} // Use the same decrement function
-            >
-              -
-            </Button>
-            <input
-              placeholder="Expected Price"
-              type="text"
-              inputMode="numeric"
-              disabled={!checkedValue}
-              className={cn(
-                "flex h-10 text-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
-              )}
-              max={100}
-              value={pricing ? `${pricing}%` : ""}
-              onChange={(event) => {
-                let newValue = event.target.value.replace(/[^0-9.]/g, "");
-                if (newValue.includes(".")) {
-                  const parts = newValue.split(".");
-                  parts[1] = parts[1].slice(0, 2); // Limiting to 2 decimal places
-                  newValue = parts.join(".");
-                }
-                const numValue = parseFloat(newValue);
-                if (numValue > 100) {
-                  newValue = "100.00";
-                } else if (numValue < 0) {
-                  newValue = "0.00";
-                }
-                setValue(`${name}.expectedPricing`, newValue || "0.00"); // Set value without %
-              }}
-              onBlur={(event) => {
-                if (event.target.value.length === 0) return;
-                let value = parseFloat(
-                  event.target.value.replace("%", "")
-                ).toFixed(2); // Remove % for processing
-                if (parseFloat(value) > 100) {
-                  value = "100.00";
-                } else if (parseFloat(value) < 0) {
-                  value = "0.00";
-                }
-                setValue(`${name}.expectedPricing`, value || "0.00"); // Set value without %
-              }}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={!checkedValue}
-              className="bg-none border-none text-lg"
-              onClick={handleIncrement} // Use the same increment function
-            >
-              +
-            </Button>
-          </div>
-        </TableCell>
-        <TableCell>
-          <div className="flex justify-center items-center">
-            {/* Hidden file input */}
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              accept=".pdf, .tiff, .jpeg, .jpg, .doc"
-              multiple={false}
-              onChange={handleFileChange}
-            />
-            {attachments && attachments.length > 0 ? (
-              <div className="mt-2">
-                <ul>
-                  {attachments.map((file: File, index: number) => (
-                    <li key={index} className="flex items-center text-xs gap-2">
-                      {/* Shorten the file name */}
-                      <span
-                        className="truncate max-w-[150px]"
-                        title={file.name}
-                      >
-                        {file.name.length > 20
-                          ? `${file.name.slice(0, 10)}...${file.name.slice(-7)}`
-                          : file.name}
-                      </span>
-                      <X
-                        size={16}
-                        className="cursor-pointer text-red-500"
-                        onClick={() => handleRemoveFile(index)} // Handle file removal
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <Link
-                size={20}
-                onClick={handleFileInputClick}
-                className="cursor-pointer"
-              />
+            className="bg-none border-none text-lg"
+            onClick={handleDecrement}
+          >
+            -
+          </Button>
+          <input
+            placeholder="0%"
+            type="text"
+            inputMode="numeric"
+            disabled={!checkedValue}
+            className={cn(
+              "flex h-10 text-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
             )}
-          </div>
-          {/* Display attached files if any */}
-        </TableCell>
-      </>
+            max={100}
+            value={pricing ? `${pricing}%` : ""}
+            onChange={(event) => {
+              let newValue = event.target.value.replace(/[^0-9.]/g, "");
+              if (newValue.includes(".")) {
+                const parts = newValue.split(".");
+                parts[1] = parts[1].slice(0, 2); // Limiting to 2 decimal places
+                newValue = parts.join(".");
+              }
+              const numValue = parseFloat(newValue);
+              if (numValue > 100) {
+                newValue = "100.00";
+              } else if (numValue < 0) {
+                newValue = "0.00";
+              }
+              setValue(`${name}.expectedPricing`, newValue || "0.00");
+            }}
+            onBlur={(event) => {
+              if (event.target.value.length === 0) return;
+              let value = parseFloat(
+                event.target.value.replace("%", "")
+              ).toFixed(2); // Remove % for processing
+              if (parseFloat(value) > 100) {
+                value = "100.00";
+              } else if (parseFloat(value) < 0) {
+                value = "0.00";
+              }
+              setValue(`${name}.expectedPricing`, value || "0.00");
+            }}
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={!checkedValue}
+            className="bg-none border-none text-lg"
+            onClick={handleIncrement}
+          >
+            +
+          </Button>
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="flex justify-center items-center">
+          {/* Hidden file input */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            accept=".pdf, .tiff, .jpeg, .jpg, .doc"
+            multiple={false}
+            onChange={handleFileChange}
+          />
+          {attachments && attachments.length > 0 ? (
+            <div className="mt-2">
+              <ul>
+                {attachments.map((file: any, index: number) => (
+                  <li key={index} className="flex items-center text-xs gap-2">
+                    {/* Shorten the file name */}
+                    <span
+                      className="truncate max-w-[150px]"
+                      title={file.userFileName}
+                    >
+                      {file.userFileName.length > 20
+                        ? `${file.userFileName.slice(
+                            0,
+                            10
+                          )}...${file.userFileName.slice(-7)}`
+                        : file.userFileName}
+                    </span>
+                    <X
+                      size={16}
+                      className="cursor-pointer text-red-500"
+                      onClick={handleRemoveFile}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <Link
+              size={20}
+              onClick={handleFileInputClick}
+              className="cursor-pointer"
+            />
+          )}
+        </div>
+      </TableCell>
     </TableRow>
   );
 };

@@ -13,15 +13,6 @@ const bondSchema = Yup.object().shape({
   valueInPercentage: Yup.number()
     .nullable() // Allows null values
     .notRequired(), // Makes the field not required regardless of the condition
-
-  // valueInPercentage: Yup.number()
-  //   .when("Contract", {
-  //     is: true,
-  //     then: (schema) => schema.required("Value In Percentage is required"),
-  //     otherwise: (schema) => schema.notRequired(),
-  //   })
-  //   .nullable(),
-  // .typeError("valueInPercenta Percentage should be a number")
   expectedDate: Yup.date().when("Contract", {
     is: true,
     then: (schema) => schema.min(2).required("Expected Date is required"),
@@ -40,7 +31,7 @@ const bondSchema = Yup.object().shape({
       lgTenorValue: Yup.string().nullable(),
     })
     .nullable(),
-  draft: Yup.string().nullable(),
+  attachments: Yup.array().nullable().notRequired(),
   expectedPricing: Yup.number()
     .nullable() // Allows null values
     .notRequired()

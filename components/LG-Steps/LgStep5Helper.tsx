@@ -155,7 +155,7 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
             LG Tenor
           </TableHead>
           <TableHead className="text-xs text-black font-semibold text-center">
-            Expected Price {/* New column for Expected Price */}
+            Expected Price
           </TableHead>
           <TableHead className="text-xs text-black font-semibold text-center">
             Add Draft LG Text
@@ -206,7 +206,7 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
             >
               Total LG Amount Requested
             </TableCell>
-            <TableCell className="text-start text-[#5625F2]" colSpan={5}>
+            <TableCell className="text-start text-[#5625F2]" colSpan={6}>
               <div className="flex justify-between items-center">
                 $
                 {formatNumberWithCommas(

@@ -86,7 +86,11 @@ export const generalLcSchema = Yup.object().shape({
     .required("Add product description"),
   extraInfo: Yup.object()
     .shape({
-      days: Yup.number().max(999, "Days must be less than or equal to 999"),
+      days: Yup.number()
+        .transform((value, originalValue) =>
+          originalValue === "" ? undefined : value
+        ) // Transform empty string to undefined
+        .max(999, "Days must be less than or equal to 999"),
       other: Yup.string(),
     })
     .when("paymentTerms", (paymentTerms, schema) => {

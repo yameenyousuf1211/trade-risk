@@ -57,11 +57,13 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                 <span>Preview Before Final Submission</span>
               </div>
             ) : (
-              <div className="flex items-center justify-between">
+              <div className="flex justify-between items-center w-full">
                 <p>Your Bid</p>
-                <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
+                <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1 mt-1">
                   <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
-                  <h5 className="text-[0.95rem] font-normal">{user.name}</h5>
+                  <h5 className="text-[0.95rem] font-normal">
+                    {formatFirstLetterOfWord(user.name)}
+                  </h5>
                 </div>
               </div>
             )}

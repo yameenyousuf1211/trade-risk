@@ -501,6 +501,9 @@ export const AddBid = ({
 
                       {/* Main Info */}
                       <div className="px-4 bg-bg pb-5">
+                        <h2 className="text-xl font-semibold mt-1">
+                          LC Details
+                        </h2>
                         <LCInfo
                           label="LC Issuing Bank"
                           value={lcData?.issuingBanks?.[0]?.bank || "-"}
@@ -567,7 +570,6 @@ export const AddBid = ({
                       <div className="h-[2px] w-full bg-borderCol" />
                       {/* LC Details */}
                       <div className="px-4 mt-4">
-                        <h2 className="text-xl font-semibold">LC Details</h2>
                         <LCInfo
                           label="LC Issuance (Expected)"
                           value={
@@ -617,14 +619,14 @@ export const AddBid = ({
                               : "-"
                           }
                         />
-                        <LCInfo
+                        {/* <LCInfo
                           label="Transhipment"
                           value={lcData?.transhipment === true ? "Yes" : "No"}
                         />
                         <LCInfo
                           label="Port of Shipment"
                           value={lcData?.shipmentPort?.port || ""}
-                        />
+                        /> */}
                         <LCInfo
                           label="Product Description"
                           value={lcData?.productDescription || ""}

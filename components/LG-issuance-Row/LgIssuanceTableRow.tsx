@@ -72,6 +72,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           };
 
           setValue(`${name}.attachments`, [uploadedFile]);
+          event.target.value = "";
         },
         (error) => {
           console.log(error);
@@ -96,6 +97,11 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       );
     }
   };
+
+  useEffect(() => {
+    setDisplayCashMargin(cashMargin || "");
+    setDisplayPercentage(valueInPercentage || "");
+  }, [cashMargin, valueInPercentage]);
 
   const currencyOptions = useMemo(
     () =>
@@ -250,7 +256,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
         <Input
           disabled={!watch(`${name}.Contract`)}
           value={displayCashMargin} // Use the displayCashMargin state
-          className="min-w-[130px]"
+          className="min-w-[150px]"
           register={register}
           name={`${name}.cashMargin`}
           type="text"
@@ -278,7 +284,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           onBlur={handlePercentageBlur}
           onFocus={handlePercentageFocus}
           placeholder="%"
-          className="placeholder:text-end"
+          className="placeholder:text-end min-w-[65px]"
         />
       </TableCell>
       <TableCell>

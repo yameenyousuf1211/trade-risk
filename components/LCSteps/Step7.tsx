@@ -12,6 +12,7 @@ import useStepStore from "@/store/lcsteps.store";
 import { ATTACHMENTS } from "@/utils/constant/lg";
 import FileUploadService from "@/services/apis/fileUpload.api";
 import { Attachment } from "@/types/type";
+import { toast } from "sonner";
 
 interface FileAttachment extends Attachment {
   file: File;
@@ -102,13 +103,22 @@ export const Step7 = ({
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files;
+    console.log(event, "event");
     if (selectedFiles) {
       const newFiles = Array.from(selectedFiles);
 
-      const allowedFileTypes = ["jpg", "jpeg", "pdf", "tiff", "doc"];
+      // Define allowed MIME types, not just file extensions
+      const allowedFileTypes = [
+        "application/pdf", // PDF
+        "image/jpeg", // JPEG/JPG
+        "image/jpg", // JPG (not always required as image/jpeg covers this)
+        "image/tiff", // TIFF
+        "application/msword", // DOC
+      ];
+
+      // Filter files based on MIME types
       const filteredFiles = newFiles.filter((file) => {
-        const fileType = file.type.split("/")[1]?.toLowerCase();
-        return allowedFileTypes.includes(fileType);
+        return allowedFileTypes.includes(file.type);
       });
 
       if (filteredFiles.length + files.length > 3) {
@@ -116,6 +126,20 @@ export const Step7 = ({
         return;
       }
 
+      // Check for duplicate file names
+      const duplicateFiles = filteredFiles.filter((newFile) =>
+        files.some((existingFile) => existingFile.userFileName === newFile.name)
+      );
+
+      if (duplicateFiles.length > 0) {
+        setUploadError(
+          "Duplicate file(s) detected. Please choose unique files."
+        );
+        toast.error(`Duplicate file(s) detected. Please choose unique files.`);
+        return;
+      }
+
+      // Proceed with the file upload for valid files
       filteredFiles.forEach((file) => {
         FileUploadService.upload(
           file,
@@ -126,7 +150,7 @@ export const Step7 = ({
               userFileName: file.name, // User's file name for display
               firebaseFileName, // Firebase's file name for deletion
               fileSize: file.size,
-              fileType: file.type.split("/")[1].toUpperCase(),
+              fileType: file.type.split("/")[1].toUpperCase(), // Get file type from MIME type
             };
 
             setFiles((prevFiles) => {

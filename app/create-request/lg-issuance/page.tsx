@@ -79,9 +79,9 @@ export default function LgIssuance() {
             setValue(key, value);
           }
         }
-        if (key == "expectedPrice") {
-          console.log("🚀 ~ expectedPrice store value 123", value);
-        }
+        // if (key == "expectedPrice") {
+        //   console.log("🚀 ~ expectedPrice store value 123", value);
+        // }
         if (key === "lgDetailsType") {
           setValue(key, value);
         }
@@ -110,13 +110,13 @@ export default function LgIssuance() {
           setValue("otherBond.Contract", true);
         }
 
-        if (key == "expectedPrice") {
-          if (value.expectedPrice) {
-            setValue("expectedPrice.expectedPrice", value.expectedPrice);
-          }
+        // if (key == "expectedPrice") {
+        //   if (value.expectedPrice) {
+        //     setValue("expectedPrice.expectedPrice", value.expectedPrice);
+        //   }
 
-          setValue("expectedPrice.pricePerAnnum", value.pricePerAnnum);
-        }
+        //   setValue("expectedPrice.pricePerAnnum", value.pricePerAnnum);
+        // }
       });
     }
   }, [storeData.data]);

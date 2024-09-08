@@ -77,7 +77,7 @@ export const lgValidator = Yup.object()
       .shape({
         name: Yup.string().required("Beneficiary Name is Required"),
         country: Yup.string().required("Beneficiary Country is Required"),
-        address: Yup.string().required("Beneficiary Address is Required"),
+        address: Yup.string().nullable().notRequired(),
         phoneNumber: Yup.string()
           .nullable()
           .test(

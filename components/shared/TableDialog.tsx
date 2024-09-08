@@ -13,6 +13,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   convertDate,
   convertDateAndTimeToString,
+  convertDateAndTimeToStringGMT,
   convertDateToCommaString,
 } from "@/utils";
 import { toast } from "sonner";
@@ -95,11 +96,11 @@ export const BidCard = ({
             {data.bidBy.country}
           </p>
         </div>
-        {data.status !== "Pending" && data.createdBy === user?._id && (
+        {user.type === "corporate" && (
           <div className={data.status === "Expired" ? "opacity-50" : ""}>
-            <p className="mb-1 text-sm text-para">Bid Received</p>
+            <p className="mb-1 text-sm text-para">Bid Submitted</p>
             <p className="text-lg font-semibold">
-              {convertDate(data.createdAt)}
+              {convertDateAndTimeToStringGMT(data.createdAt)}
             </p>
           </div>
         )}
@@ -159,7 +160,9 @@ export const BidCard = ({
             : data.status === "Expired"
             ? "Request Expired"
             : data.status === "Pending"
-            ? `Bid Submitted on ${convertDateAndTimeToString(data.createdAt)}`
+            ? `Bid Submitted on ${convertDateAndTimeToStringGMT(
+                data.createdAt
+              )}`
             : ""}
         </Button>
       )}
@@ -494,6 +497,7 @@ export const TableDialog = ({
                   </div>
                   {/* Main Info */}
                   <div className="bg-[#F5F7F9] px-4">
+                    <h2 className="text-xl font-semibold mt-1">LC Details</h2>
                     <LCInfo
                       label="LC Issuing Bank"
                       value={
@@ -560,7 +564,6 @@ export const TableDialog = ({
                           attachment={attachment}
                         />
                       ))}
-                    <h2 className="text-xl font-semibold">LC Details</h2>
                     <LCInfo
                       label="LC Issuance (Expected)"
                       value={
@@ -597,7 +600,7 @@ export const TableDialog = ({
                           : "-"
                       }
                     />
-                    <LCInfo
+                    {/* <LCInfo
                       label="Transhipment"
                       value={
                         lcData && lcData.transhipment === true ? "Yes" : "No"
@@ -607,7 +610,7 @@ export const TableDialog = ({
                       label="Port of Shipment"
                       value={(lcData && lcData.shipmentPort?.port) || ""}
                       noBorder
-                    />
+                    /> */}
                     <h2 className="text-xl font-semibold">Importer Info</h2>
                     <LCInfo
                       label="Applicant"

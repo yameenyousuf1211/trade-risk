@@ -147,6 +147,10 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
   };
 
   useEffect(() => {
+    setDisplayTotalContractValue(totalContractValue || ""); // Set the state to the value of cashMargin if available
+  }, [totalContractValue]);
+
+  useEffect(() => {
     setValue(
       "totalLgAmount",
       bidBondAmount +

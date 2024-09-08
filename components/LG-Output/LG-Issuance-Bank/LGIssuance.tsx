@@ -9,6 +9,7 @@ import { BidPreview } from "./BidPreview";
 import {
   convertDateAndTimeToString,
   convertDateToCommaString,
+  convertDateAndTimeToStringGMT,
   formatAmount,
 } from "@/utils";
 import { submitLgBid } from "@/services/apis/lg.apis";
@@ -190,7 +191,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     } else if (mostRecentBid) {
       if (mostRecentBid.status === "Pending") {
         setUserBidStatus({
-          label: `Bid Submitted on ${convertDateAndTimeToString(
+          label: `Bid Submitted on ${convertDateAndTimeToStringGMT(
             mostRecentBid.createdAt
           )}`,
           status: "Pending",

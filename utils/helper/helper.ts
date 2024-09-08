@@ -158,6 +158,26 @@ export const convertDateToCommaString = (date: any) => {
   return `${month} ${day}, ${year}`;
 };
 
+export function convertDateAndTimeToStringGMT(date) {
+  const dateObj = new Date(date);
+
+  // Format the date and time
+  const formattedDate = dateObj.toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
+  // Get the timezone offset in hours
+  const timeZoneOffset = dateObj.getTimezoneOffset() / -60;
+  const gmt = `GMT${timeZoneOffset >= 0 ? "+" : ""}${timeZoneOffset}`;
+
+  return `${formattedDate} ${gmt}`;
+}
+
 // export const convertDateAndTimeToString = (date: any) => {
 //   const jsDate = new Date(date);
 

@@ -20,7 +20,7 @@ import LgStep9Part2 from "@/components/LG-Steps/LgStep9Part2";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthProvider";
 import useCountries from "@/hooks/useCountries";
-import { onUpdateLC } from "@/services/apis/lcs.api";
+import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { createLg, updateLg } from "@/services/apis/lg.apis";
 import useLcIssuance from "@/store/issueance.store";
 import useStepStore from "@/store/lcsteps.store";
@@ -178,7 +178,7 @@ export default function LgIssuance() {
       );
     } else {
       // Create new draft
-      const { response, success } = await createLg(responseData);
+      const { response, success } = await onCreateLC(responseData);
       handleResponse(success, response, "LG saved as a draft");
     }
 
@@ -235,8 +235,8 @@ export default function LgIssuance() {
       });
       console.log(responseData, "responseData");
       const { response, success } = storeData?.data?._id
-        ? await updateLg(responseData, storeData?.data?._id)
-        : await createLg(responseData);
+        ? await onUpdateLC({ payload: responseData, id: storeData?.data?._id })
+        : await onCreateLC(responseData);
       handleResponse(
         success,
         response,

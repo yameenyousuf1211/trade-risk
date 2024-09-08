@@ -46,6 +46,11 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   const [displayCashMargin, setDisplayCashMargin] = useState<string | number>(
     cashMargin || ""
   );
+  const [displayPricing, setDisplayPricing] = useState<string>("");
+
+  useEffect(() => {
+    setDisplayPricing(pricing ? `${pricing}%` : "");
+  }, [pricing]);
 
   // Reference to file input
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -151,6 +156,22 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     setValue(`${name}.expectedPricing`, newValue);
   };
 
+  const handlePricingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let newValue = event.target.value.replace(/[^0-9.]/g, "");
+    if (newValue.includes(".")) {
+      const parts = newValue.split(".");
+      parts[1] = parts[1].slice(0, 2); // Limiting to 2 decimal places
+      newValue = parts.join(".");
+    }
+    const numValue = parseFloat(newValue);
+    if (numValue > 100) {
+      newValue = "100.00";
+    } else if (numValue < 0) {
+      newValue = "0.00";
+    }
+    setDisplayPricing(newValue);
+  };
+
   const handlePercentageChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -178,6 +199,24 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       setDisplayPercentage(`${intValue}%`);
       setValue(`${name}.valueInPercentage`, intValue);
     }
+  };
+  const handlePricingBlur = () => {
+    if (displayPricing.length === 0) return;
+
+    let value = parseFloat(displayPricing.replace("%", "")).toFixed(2); // Remove % for processing
+    if (parseFloat(value) > 100) {
+      value = "100.00";
+    } else if (parseFloat(value) < 0) {
+      value = "0.00";
+    }
+
+    setDisplayPricing(`${value}%`);
+    setValue(`${name}.expectedPricing`, value || "0.00");
+  };
+
+  const handlePricingFocus = () => {
+    const rawValue = displayPricing.replace("%", ""); // Remove percentage sign when focused
+    setDisplayPricing(rawValue);
   };
 
   const handlePercentageFocus = () => {
@@ -354,34 +393,10 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
               "flex h-10 text-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[80px] focus-visible:ring-offset-0"
             )}
             max={100}
-            value={pricing ? `${pricing}%` : ""}
-            onChange={(event) => {
-              let newValue = event.target.value.replace(/[^0-9.]/g, "");
-              if (newValue.includes(".")) {
-                const parts = newValue.split(".");
-                parts[1] = parts[1].slice(0, 2); // Limiting to 2 decimal places
-                newValue = parts.join(".");
-              }
-              const numValue = parseFloat(newValue);
-              if (numValue > 100) {
-                newValue = "100.00";
-              } else if (numValue < 0) {
-                newValue = "0.00";
-              }
-              setValue(`${name}.expectedPricing`, newValue || "0.00");
-            }}
-            onBlur={(event) => {
-              if (event.target.value.length === 0) return;
-              let value = parseFloat(
-                event.target.value.replace("%", "")
-              ).toFixed(2); // Remove % for processing
-              if (parseFloat(value) > 100) {
-                value = "100.00";
-              } else if (parseFloat(value) < 0) {
-                value = "0.00";
-              }
-              setValue(`${name}.expectedPricing`, value || "0.00");
-            }}
+            value={displayPricing} // Use displayPricing state for the input value
+            onChange={handlePricingChange}
+            onBlur={handlePricingBlur} // Add percentage sign on blur
+            onFocus={handlePricingFocus} // Remove percentage sign on focus
           />
           <Button
             type="button"

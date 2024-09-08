@@ -105,7 +105,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
 
   useEffect(() => {
     setDisplayCashMargin(cashMargin || "");
-    setDisplayPercentage(valueInPercentage || "");
+    setDisplayPercentage(valueInPercentage ? `${valueInPercentage}%` : "");
   }, [cashMargin, valueInPercentage]);
 
   const currencyOptions = useMemo(

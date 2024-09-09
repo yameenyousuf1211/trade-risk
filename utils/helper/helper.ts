@@ -168,7 +168,6 @@ export function convertDateAndTimeToStringGMTNoTsx(date) {
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    second: "2-digit",
   });
 
   // Get the timezone offset in minutes

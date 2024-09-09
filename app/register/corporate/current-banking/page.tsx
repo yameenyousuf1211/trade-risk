@@ -276,7 +276,7 @@ const CurrentBankingPage = () => {
   return (
     <CorporateStepLayout
       step={4}
-      title="Your Current Bank"
+      title="Your Current Bank's"
       text={`Add the banks you have facilities with, so that they can be notified of any requests you add. \nThis list can also be edited later.`}
     >
       <div className="max-w-[800px] w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5">

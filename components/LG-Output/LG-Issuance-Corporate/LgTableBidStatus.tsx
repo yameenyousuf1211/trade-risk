@@ -38,17 +38,14 @@ const LGInfo = ({
         {label}
       </p>
       {link ? (
-        <div className="flex items-center">
-          <FileSearch className="mr-2" color="#29C084" />{" "}
-          <a
-            href={link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="capitalize font-semibold text-right text-base max-w-[100%] truncate"
-          >
-            {value}
-          </a>
-        </div>
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center capitalize font-semibold text-right text-base max-w-[100%] truncate"
+        >
+          <FileSearch className="mr-2" color="#29C084" /> {value}
+        </a>
       ) : (
         <p className="capitalize font-semibold text-right text-base max-w-[60%]">
           {value}
@@ -89,10 +86,10 @@ export const LGTableBidStatus = ({
   };
 
   const beneficiaryDetails = [
-    { label: "Country", value: data.beneficiaryDetails.country },
     { label: "Name", value: data.beneficiaryDetails.name },
-    { label: "Phone Number", value: data.beneficiaryDetails.phoneNumber },
     { label: "City", value: data.beneficiaryDetails.city },
+    { label: "Country", value: data.beneficiaryDetails.country },
+    { label: "Phone Number", value: data.beneficiaryDetails.phoneNumber },
     { label: "Street Address", value: data.beneficiaryDetails.address },
   ].filter((detail) => detail.value);
 
@@ -185,9 +182,6 @@ export const LGTableBidStatus = ({
         {/* Left Section */}
         <div className="overflow-auto m-0 p-0 pb-8">
           <div className="border-r-2 border-b-2  bg-[#F5F7F9] p-4 flex flex-col gap-3 border-[#F5F7F9]">
-            <h3 className="text-lg text-[#1A1A26]">
-              LC Confirmation Requested
-            </h3>
             <h1 className="text-[#92929D] text-2xl">
               LG Amount:{" "}
               <span className="font-semibold text-black">
@@ -197,8 +191,9 @@ export const LGTableBidStatus = ({
             </h1>
             <h5 className="text-sm text-[#696974] font-light">
               Created at,{" "}
-              {data.createdAt && convertDateAndTimeToStringGMT(data.createdAt)},
-              by{" "}
+              {data.createdAt &&
+                convertDateAndTimeToStringGMT({ date: data.createdAt })}
+              , by{" "}
               <span className="text-[#50B5FF]">
                 {formatFirstLetterOfWord(data.applicantDetails.company)}
               </span>

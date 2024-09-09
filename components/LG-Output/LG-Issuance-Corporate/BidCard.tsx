@@ -149,7 +149,7 @@ export const BidCard = ({
           <div>
             <p className="text-[#92929D] text-sm">Bid Validity</p>
             <p className="font-semibold text-xl">
-              {convertDateAndTimeToStringGMT(bidDetail?.bidValidity)}
+              {convertDateAndTimeToStringGMT({ date: bidDetail?.bidValidity })}
             </p>
           </div>
           <div className="text-end">
@@ -163,7 +163,7 @@ export const BidCard = ({
           <div>
             <p className="text-[#92929D] text-sm">Received At</p>
             <p className="font-semibold text-xl">
-              {convertDateAndTimeToStringGMT(bidDetail?.createdAt)}
+              {convertDateAndTimeToStringGMT({ date: bidDetail?.createdAt })}
             </p>
           </div>
         </div>

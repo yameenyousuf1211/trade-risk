@@ -59,12 +59,12 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
             ) : (
               <div className="flex justify-between items-center w-full">
                 <p>Your Bid</p>
-                <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1 mt-1">
+                {/* <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1 mt-1">
                   <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
                   <h5 className="text-[0.95rem] font-normal">
                     {formatFirstLetterOfWord(user.name)}
                   </h5>
-                </div>
+                </div> */}
               </div>
             )}
           </div>
@@ -107,7 +107,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
           {Object.entries(bids).map(([bankName, bankDetails]: any) => (
             <div
               key={bankName}
-              className="p-3 border border-[#E2E2EA] mb-2 rounded-md"
+              className="p-3 border border-[#E2E2EA] mb-2 rounded-md bg-[#F5F7F9]"
             >
               <h4 className="mb-2 text-lg">
                 <span className="text-[#5625F2] font-bold">
@@ -151,7 +151,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                     ) : userBidStatus.status === "Accepted" &&
                       lgType.status === "Rejected" ? (
                       <div className="flex gap-2 justify-end items-center">
-                        <h6 className="text-[0.7rem] bg-[#F1F1F5]  p-1">
+                        <h6 className="text-[0.7rem] bg-[#FD8D8D]  p-1">
                           Rejected
                         </h6>
                       </div>

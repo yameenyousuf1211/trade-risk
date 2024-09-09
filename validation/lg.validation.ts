@@ -27,8 +27,17 @@ const bondSchema = Yup.object().shape({
     .shape({
       lgTenorType: Yup.string()
         .min(1, "LG Tenor Type is required")
-        .default("Months"),
-      lgTenorValue: Yup.string().nullable(),
+        .default("Months")
+        .when("Contract", {
+          is: true,
+          then: (schema) => schema.required("LG Tenor Type is required"),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+      lgTenorValue: Yup.string().when("Contract", {
+        is: true,
+        then: (schema) => schema.required("LG Tenor Value is required"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
     })
     .nullable(),
   attachments: Yup.array().nullable().notRequired(),
@@ -103,7 +112,13 @@ export const lgValidator = Yup.object()
     advancePaymentBond: bondSchema,
     performanceBond: bondSchema,
     retentionMoneyBond: bondSchema,
-    otherBond: bondSchema,
+    otherBond: bondSchema.shape({
+      name: Yup.string().when("Contract", {
+        is: true,
+        then: (schema) => schema.required("Other Bond Name is required"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    }),
     issuingBanks: Yup.array()
       .of(
         Yup.object().shape({
@@ -144,16 +159,12 @@ export const lgValidator = Yup.object()
     lastDateOfReceivingBids: Yup.date().required(
       "Last Date of Receiving Bids is required"
     ),
-    totalContractValue: Yup.string().when("lgDetailsType", {
-      is: "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
-      then: (schema) => schema.required("Total Contract Value is required"),
-      otherwise: (schema) => schema.notRequired().optional().nullable(),
-    }),
-    totalContractCurrency: Yup.string().when("lgDetailsType", {
-      is: "Contract Related LGs (Bid Bond, Advance Payment Bond, Performance Bond etc)",
-      then: (schema) => schema.required("Total Contract Currency is required"),
-      otherwise: (schema) => schema.notRequired().optional().nullable(),
-    }),
+    totalContractValue: Yup.string().required(
+      "Total Contract Value is required"
+    ),
+    totalContractCurrency: Yup.string().required(
+      "Total Contract Currency is required"
+    ),
   })
   .test(
     "at-least-one-bond",

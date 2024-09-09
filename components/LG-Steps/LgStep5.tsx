@@ -21,6 +21,14 @@ const LgStep5: React.FC<LgStepsProps5> = ({
   const performanceBond = watch("performanceBond.Contract");
   const retentionMoneyBond = watch("retentionMoneyBond.Contract");
 
+  useEffect(() => {
+    if (lgDetailsType === "Choose any other type of LGs") {
+      setValue("otherBond.Contract", true);
+    } else if (lgDetailsType === "Choose any other type of LGs") {
+      setValue("otherBond.Contract", false);
+    }
+  }, [lgDetailsType]);
+
   const bondTypes =
     lgDetailsType === "Choose any other type of LGs"
       ? ["otherBond"]

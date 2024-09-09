@@ -497,6 +497,18 @@ export const AddBid = ({
                             ? lcData?.amount?.price?.toLocaleString() + ".00"
                             : total?.toLocaleString() + ".00" ?? ""}
                         </h2>
+                        <p className="font-roboto text-sm text-para">
+                          Created at,{" "}
+                          {lcData &&
+                            convertDateAndTimeToStringGMT({
+                              date: lcData.createdAt,
+                            })}
+                          , by{" "}
+                          <span className="capitalize text-text">
+                            {(lcData && lcData.exporterInfo?.beneficiaryName) ||
+                              lcData?.createdBy?.name}
+                          </span>
+                        </p>
                         <div className="h-[2px] w-full bg-neutral-800 mt-5" />
                       </div>
 
@@ -533,19 +545,6 @@ export const AddBid = ({
                             value={lcData?.confirmingBank?.bank}
                           />
                         )}
-                        {lcData?.transhipment && (
-                          <LCInfo
-                            label="Transhipment"
-                            value={lcData && lcData.transhipment ? "Yes" : "No"}
-                          />
-                        )}
-                        {lcData?.shipmentPort?.port &&
-                          lcData.shipment?.country && (
-                            <LCInfo
-                              label="Port of Shipment"
-                              value={`${lcData.shipmentPort.port}, ${lcData.shipmentPort.country}`}
-                            />
-                          )}
                         <LCInfo
                           label="Payments Terms"
                           value={
@@ -556,16 +555,21 @@ export const AddBid = ({
                                 } at ${lcData.extraInfo?.other || ""}`
                               : lcData?.paymentTerms || "-"
                           }
-                          noBorder
                         />
-                        {lcData?.attachments &&
-                          lcData.attachments.length > 0 &&
-                          lcData.attachments.map((attachment, index) => (
-                            <ViewFileAttachment
-                              key={index}
-                              attachment={attachment}
+                        {lcData?.transhipment && (
+                          <LCInfo
+                            label="Transhipment"
+                            value={lcData && lcData.transhipment ? "Yes" : "No"}
+                          />
+                        )}
+                        {lcData?.shipmentPort?.port &&
+                          lcData.shipmentPort?.country && (
+                            <LCInfo
+                              label="Port of Shipment"
+                              noBorder
+                              value={`${lcData.shipmentPort.port}, ${lcData.shipmentPort.country}`}
                             />
-                          ))}
+                          )}
                       </div>
                       {/* Separator */}
                       <div className="h-[2px] w-full bg-borderCol" />
@@ -597,16 +601,6 @@ export const AddBid = ({
                           }
                         />
                         <LCInfo
-                          label="Last date for receiving Bids"
-                          value={
-                            lcData?.lastDateOfReceivingBids
-                              ? convertDateToCommaString(
-                                  lcData?.lastDateOfReceivingBids
-                                )
-                              : "-"
-                          }
-                        />
-                        <LCInfo
                           label="Confirmation Date (Expected)"
                           value={
                             lcData?.expectedConfirmationDate
@@ -620,37 +614,63 @@ export const AddBid = ({
                               : "-"
                           }
                         />
+                        <LCInfo
+                          label="Last date for receiving Bids"
+                          value={
+                            lcData?.lastDateOfReceivingBids
+                              ? convertDateToCommaString(
+                                  lcData?.lastDateOfReceivingBids
+                                )
+                              : "-"
+                          }
+                        />
                         {/* <LCInfo
                           label="Transhipment"
                           value={lcData?.transhipment === true ? "Yes" : "No"}
-                        />
-                        <LCInfo
+                          />
+                          <LCInfo
                           label="Port of Shipment"
                           value={lcData?.shipmentPort?.port || ""}
-                        /> */}
+                          /> */}
                         <LCInfo
                           label="Product Description"
                           value={lcData?.productDescription || ""}
                           noBorder
                         />
 
+                        {lcData?.attachments &&
+                          lcData.attachments.length > 0 &&
+                          lcData.attachments.map((attachment, index) => (
+                            <ViewFileAttachment
+                              key={index}
+                              attachment={attachment}
+                            />
+                          ))}
                         <h2 className="text-xl font-semibold mt-3">
                           Importer Info
                         </h2>
                         <LCInfo
                           label="Applicant"
                           value={lcData?.importerInfo?.applicantName || ""}
-                          noBorder
                         />
                         <LCInfo
                           label="Country of Import"
+                          noBorder
                           value={lcData?.importerInfo?.countryOfImport || ""}
                         />
                         <h2 className="text-xl font-semibold mt-3">
                           Exporter Info
                         </h2>
                         <LCInfo
-                          label="Country"
+                          label="Beneficiary Name"
+                          value={lcData?.exporterInfo?.beneficiaryName || ""}
+                        />
+                        <LCInfo
+                          label="Beneficiary Country"
+                          value={lcData?.exporterInfo?.beneficiaryCountry || ""}
+                        />
+                        <LCInfo
+                          label="Country of Export"
                           value={lcData?.exporterInfo?.countryOfExport || ""}
                         />
                         <LCInfo
@@ -784,9 +804,10 @@ export const AddBid = ({
                                   Bid Expiry
                                 </p>
                                 <p className="font-semibold text-lg">
-                                  {convertDateAndTimeToStringGMT(
-                                    bid.bidValidity
-                                  )}
+                                  {convertDateAndTimeToStringGMT({
+                                    date: bid.bidValidity,
+                                    sameLine: false,
+                                  })}
                                 </p>
                               </div>
                               <div

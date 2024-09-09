@@ -14,7 +14,7 @@ export const ViewFileAttachment = ({
   };
 
   return (
-    <div className="bg-white border border-borderCol p-2 flex items-center justify-between w-full gap-x-2 rounded-lg my-1.5">
+    <div className="bg-white border border-borderCol p-2 flex items-center justify-between w-full gap-x-2 rounded-lg mt-4">
       <div className="flex items-center gap-x-2">
         <Button type="button" className="block bg-red-200 p-1 hover:bg-red-300">
           <Image

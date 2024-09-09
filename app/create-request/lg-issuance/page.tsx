@@ -229,11 +229,11 @@ export default function LgIssuance() {
     // // console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
 
     try {
+      console.log(responseData, "responseData");
       await lgValidator.validate(responseData, {
         abortEarly: true,
         stripUnknown: true,
       });
-      console.log(responseData, "responseData");
       const { response, success } = storeData?.data?._id
         ? await onUpdateLC({ payload: responseData, id: storeData?.data?._id })
         : await onCreateLC(responseData);

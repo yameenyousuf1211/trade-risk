@@ -38,7 +38,13 @@ const FileCard = ({
           />
         </Button>
         <div>
-          <p className="text-sm text-lightGray">{file.userFileName}</p>{" "}
+          <p className="text-sm text-lightGray">
+            {file.userFileName.length > 30
+              ? `${file.userFileName.slice(0, 26)}...${file.userFileName.slice(
+                  -7
+                )}`
+              : file.userFileName}
+          </p>{" "}
           {/* Display user's file name */}
           <p className="text-[12px] text-para">
             {file.fileType}, {formatFileSize(file.fileSize)}
@@ -114,6 +120,7 @@ export const Step7 = ({
         "image/jpg", // JPG (not always required as image/jpeg covers this)
         "image/tiff", // TIFF
         "application/msword", // DOC
+        "image/png",
       ];
 
       // Filter files based on MIME types
@@ -245,7 +252,7 @@ export const Step7 = ({
                 multiple
                 style={{ display: "none" }}
                 disabled={files.length >= 3}
-                accept=".jpg,.jpeg,.pdf,.tiff,.doc"
+                accept=".jpg,.jpeg,.pdf,.tiff,.doc,.png"
               />
               <div className="center size-12 rounded-full bg-white shadow-sm">
                 <Image

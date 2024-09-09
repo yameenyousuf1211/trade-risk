@@ -10,6 +10,7 @@ import { ConfirmationModal } from "../ConfirmationModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { respondBid } from "@/services/apis/lg.apis";
 import { convertDateToCommaString } from "@/utils";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 export const BidCard = ({
   bidDetail,
@@ -130,36 +131,40 @@ export const BidCard = ({
   return (
     <div className={`border border-borderCol rounded-lg mt-4`}>
       <div className="border-b-2 border-[#979797] py-3 px-3">
-        <div className="grid grid-cols-3">
-          <div>
-            <p className="font-semibold text-xl">{bidDetail.bidBy.name}</p>
+        <div className="grid grid-cols-[2fr_1fr]">
+          <div className="w-full">
             <p className="text-[#92929D] text-sm">Submitted By</p>
-          </div>
-          <div className="text-center">
             <p className="font-semibold text-xl">
-              {convertDateToCommaString(bidDetail.bidValidity)}
+              {formatFirstLetterOfWord(bidDetail.bidBy.name)}
             </p>
-            <p className="text-[#92929D] text-sm">Bid Validity</p>
           </div>
           <div className="text-end">
-            <p className="font-semibold text-xl">
-              {convertDateToCommaString(bidDetail.createdAt)}
-            </p>
-            <p className="text-[#92929D] text-sm">Created Date</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 mt-1">
-          <div className="text-start">
-            <p className="font-semibold text-xl">
-              {bidDetail._id.substring(0, 6)}
-            </p>
-            <p className="text-[#92929D] text-sm">Bid Number</p>
-          </div>
-          <div className="text-end">
+            <p className="text-[#92929D] text-sm">Country</p>
             <p className="font-semibold text-xl">
               {formatFirstLetterOfWord(bidDetail.bidBy.country)}
             </p>
-            <p className="text-[#92929D] text-sm">Country</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-[2fr_1fr] mt-1">
+          <div>
+            <p className="text-[#92929D] text-sm">Bid Validity</p>
+            <p className="font-semibold text-xl">
+              {convertDateAndTimeToStringGMT(bidDetail.bidValidity)}
+            </p>
+          </div>
+          <div className="text-end">
+            <p className="text-[#92929D] text-sm">Bid Number</p>
+            <p className="font-semibold text-xl">
+              {bidDetail._id.substring(0, 6)}
+            </p>
+          </div>
+        </div>
+        <div className="grid mt-1">
+          <div>
+            <p className="text-[#92929D] text-sm">Created At</p>
+            <p className="font-semibold text-xl">
+              {convertDateAndTimeToStringGMT(bidDetail.bidValidity)}
+            </p>
           </div>
         </div>
 

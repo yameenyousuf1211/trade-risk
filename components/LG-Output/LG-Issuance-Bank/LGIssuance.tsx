@@ -8,12 +8,17 @@ import { PricingInput } from "./PricingInput";
 import { BidPreview } from "./BidPreview";
 import {
   convertDateAndTimeToString,
+  convertDateAndTimeToStringGMTNoTsx,
   convertDateToCommaString,
   formatAmount,
 } from "@/utils";
 import { submitLgBid } from "@/services/apis/lg.apis";
 import { useAuth } from "@/context/AuthProvider";
-import { getLgBondTotal, sortBanksAlphabetically } from "../helper";
+import {
+  getLgBondTotal,
+  sortBanksAlphabetically,
+  formatFirstLetterOfWord,
+} from "../helper";
 import { FileSearch } from "lucide-react";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
@@ -191,7 +196,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     } else if (mostRecentBid) {
       if (mostRecentBid.status === "Pending") {
         setUserBidStatus({
-          label: `Bid Submitted on ${convertDateAndTimeToStringGMT(
+          label: `Bid Submitted on ${convertDateAndTimeToStringGMTNoTsx(
             mostRecentBid.createdAt
           )}`,
           status: "Pending",
@@ -348,19 +353,10 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
         <div className="border-r-2 border-b-2  bg-[#F5F7F9] p-4 flex flex-col gap-3 border-[#F5F7F9]">
           <h5 className="text-[12px] text-[#696974]">
             Created at,{" "}
-            {new Date(data.createdAt).toLocaleDateString("en-US", {
-              month: "short",
-              day: "2-digit",
-              year: "numeric",
-            })}{" "}
-            {new Date(data.createdAt).toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            })}{" "}
+            {data.createdAt && convertDateAndTimeToStringGMT(data.createdAt)},
             by{" "}
             <span className="text-blue-500">
-              {data.applicantDetails.company}
+              {formatFirstLetterOfWord(data.applicantDetails.company)}
             </span>
           </h5>
           <h3 className="text-[#92929D] text-base font-light">

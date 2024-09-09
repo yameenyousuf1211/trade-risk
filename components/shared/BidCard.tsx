@@ -78,7 +78,7 @@ export const BidCard = ({
           )}
 
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="text-sm text-para mb-1">Bid Recieved</p>
+          <p className="text-sm text-para mb-1">Bid Received</p>
           <p className="font-semibold text-lg">
             {convertDateToYYYYMMDD(data.createdAt)}
           </p>

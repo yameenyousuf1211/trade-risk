@@ -44,16 +44,16 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
   const [percentages, setPercentages] = useState({
     bidBond: 0,
     advancePaymentBond: 0,
-    performanceBond: 0,
     retentionMoneyBond: 0,
+    performanceBond: 0,
     otherBond: 0,
   });
 
   const bondTypes = [
     { name: "bidBond", listValue: "Bid Bond" },
     { name: "advancePaymentBond", listValue: "Advance Payment Bond" },
-    { name: "performanceBond", listValue: "Performance Bond" },
     { name: "retentionMoneyBond", listValue: "Retention Bond " },
+    { name: "performanceBond", listValue: "Performance Bond" },
   ];
   const currencyOptions = useMemo(
     () =>

@@ -114,7 +114,6 @@ export default function LgIssuance() {
         //   if (value.expectedPrice) {
         //     setValue("expectedPrice.expectedPrice", value.expectedPrice);
         //   }
-
         //   setValue("expectedPrice.pricePerAnnum", value.pricePerAnnum);
         // }
       });

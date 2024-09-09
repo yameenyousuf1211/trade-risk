@@ -171,9 +171,16 @@ export function convertDateAndTimeToStringGMT(date) {
     second: "2-digit",
   });
 
-  // Get the timezone offset in hours
-  const timeZoneOffset = dateObj.getTimezoneOffset() / -60;
-  const gmt = `GMT${timeZoneOffset >= 0 ? "+" : ""}${timeZoneOffset}`;
+  // Get the timezone offset in minutes
+  const offsetMinutes = dateObj.getTimezoneOffset();
+  const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60);
+  const offsetRemainingMinutes = Math.abs(offsetMinutes) % 60;
+
+  // Format timezone offset as GMT-04:00 or GMT+02:30
+  const gmtSign = offsetMinutes <= 0 ? "+" : "-";
+  const gmt = `GMT${gmtSign}${String(offsetHours).padStart(2, "0")}:${String(
+    offsetRemainingMinutes
+  ).padStart(2, "0")}`;
 
   return `${formattedDate} ${gmt}`;
 }

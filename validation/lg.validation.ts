@@ -89,7 +89,7 @@ export const lgValidator = Yup.object()
               return phoneNumber?.isValid() || false; // If valid, return true; otherwise, false
             }
           ),
-        city: Yup.string().nullable(),
+        city: Yup.string().nullable().notRequired(),
       })
       .required(),
     lgDetailsType: Yup.string()

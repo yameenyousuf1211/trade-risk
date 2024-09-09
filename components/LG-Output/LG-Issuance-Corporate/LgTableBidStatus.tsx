@@ -6,11 +6,16 @@ import {
 } from "@/components/ui/dialog";
 import { Eye, FileSearch, ListFilter, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { BgRadioInputLG, getLgBondTotal } from "../helper";
+import {
+  BgRadioInputLG,
+  getLgBondTotal,
+  formatFirstLetterOfWord,
+} from "../helper";
 import { BidsSort } from "@/components/helpers";
 import { BidCard } from "./BidCard";
 import { convertDateToCommaString, formatAmount } from "@/utils";
 import { DocDraftIcon } from "@/public/images/DocDraftIcon";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 const LGInfo = ({
   label,
@@ -192,19 +197,10 @@ export const LGTableBidStatus = ({
             </h1>
             <h5 className="text-sm text-[#696974] font-light">
               Created at,{" "}
-              {new Date(data.createdAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "2-digit",
-                year: "numeric",
-              })}{" "}
-              {new Date(data.createdAt).toLocaleTimeString("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })}
-              , by{" "}
+              {data.createdAt && convertDateAndTimeToStringGMT(data.createdAt)},
+              by{" "}
               <span className="text-[#50B5FF]">
-                {data.applicantDetails.company}
+                {formatFirstLetterOfWord(data.applicantDetails.company)}
               </span>
             </h5>
           </div>

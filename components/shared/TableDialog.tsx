@@ -11,6 +11,7 @@ import { IBids } from "@/types/type";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  convertDateAndTimeToStringGMTNoTsx,
   convertDateToCommaString,
 } from "@/utils";
 import { toast } from "sonner";
@@ -158,7 +159,7 @@ export const BidCard = ({
             : data.status === "Expired"
             ? "Request Expired"
             : data.status === "Pending"
-            ? `Bid Submitted on ${convertDateAndTimeToStringGMT(
+            ? `Bid Submitted on ${convertDateAndTimeToStringGMTNoTsx(
                 data.createdAt
               )}`
             : ""}

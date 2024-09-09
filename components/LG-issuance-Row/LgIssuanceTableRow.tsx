@@ -104,9 +104,12 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   };
 
   useEffect(() => {
-    setDisplayCashMargin(cashMargin || "");
     setDisplayPercentage(valueInPercentage ? `${valueInPercentage}%` : "");
-  }, [cashMargin, valueInPercentage]);
+  }, [valueInPercentage]);
+
+  useEffect(() => {
+    setDisplayCashMargin(cashMargin || "");
+  }, [cashMargin]);
 
   const currencyOptions = useMemo(
     () =>
@@ -417,7 +420,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
             disabled={!checkedValue}
             ref={fileInputRef}
             style={{ display: "none" }}
-            accept=".pdf, .tiff, .jpeg, .jpg, .doc"
+            accept=".pdf, .tiff, .jpeg, .jpg, .doc, .png"
             multiple={false}
             onChange={handleFileChange}
           />

@@ -26,7 +26,11 @@ export const ViewFileAttachment = ({
           />
         </Button>
         <div>
-          <p className="text-sm">{userFileName}</p>
+          <p className="text-sm">
+            {userFileName.length > 30
+              ? `${userFileName.slice(0, 26)}...${userFileName.slice(-7)}`
+              : userFileName}
+          </p>
           <p className="text-para text-[12px]">
             {fileType}, {formatFileSize(fileSize)}
           </p>

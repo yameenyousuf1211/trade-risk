@@ -11,9 +11,6 @@ import { IBids } from "@/types/type";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  convertDate,
-  convertDateAndTimeToString,
-  convertDateAndTimeToStringGMT,
   convertDateToCommaString,
 } from "@/utils";
 import { toast } from "sonner";
@@ -25,6 +22,7 @@ import Image from "next/image";
 import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
 import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargin";
 import ViewFileAttachment from "./ViewFileAttachment";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 export const BidCard = ({
   data,
@@ -108,7 +106,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Bid Expiry</p>
           <p className="text-lg font-semibold">
-            {convertDate(data.bidValidity)}
+            {convertDateAndTimeToStringGMT(data.bidValidity)}
           </p>
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
@@ -485,8 +483,9 @@ export const TableDialog = ({
                     </h2>
                     <p className="font-roboto text-sm text-para">
                       Created at,{" "}
-                      {lcData && convertDateAndTimeToString(lcData.createdAt)},
-                      by{" "}
+                      {lcData &&
+                        convertDateAndTimeToStringGMT(lcData.createdAt)}
+                      , by{" "}
                       <span className="capitalize text-text">
                         {(lcData && lcData.exporterInfo?.beneficiaryName) ||
                           lcData?.createdBy?.name}

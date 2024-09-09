@@ -33,6 +33,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
 import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargin";
 import ViewFileAttachment from "./ViewFileAttachment";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 const LCInfo = ({
   label,
@@ -783,7 +784,9 @@ export const AddBid = ({
                                   Bid Expiry
                                 </p>
                                 <p className="font-semibold text-lg">
-                                  {convertDate(bid.bidValidity)}
+                                  {convertDateAndTimeToStringGMT(
+                                    bid.bidValidity
+                                  )}
                                 </p>
                               </div>
                               <div

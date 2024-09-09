@@ -9,13 +9,13 @@ import { BidPreview } from "./BidPreview";
 import {
   convertDateAndTimeToString,
   convertDateToCommaString,
-  convertDateAndTimeToStringGMT,
   formatAmount,
 } from "@/utils";
 import { submitLgBid } from "@/services/apis/lg.apis";
 import { useAuth } from "@/context/AuthProvider";
 import { getLgBondTotal, sortBanksAlphabetically } from "../helper";
 import { FileSearch } from "lucide-react";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 const LGInfo = ({
   label,

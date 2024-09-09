@@ -134,8 +134,8 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   const bondTypes = [
     { type: "Bid Bond", value: data.bidBond },
     { type: "Advance Payment Bond", value: data.advancePaymentBond },
-    { type: "Performance Bond", value: data.performanceBond },
     { type: "Retention Money Bond", value: data.retentionMoneyBond },
+    { type: "Performance Bond", value: data.performanceBond },
     { type: "Other Bond", value: data.otherBond },
   ];
 

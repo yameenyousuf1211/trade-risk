@@ -89,8 +89,8 @@ export interface LgDetails {
     typeOfLg?:
       | "Bid Bond"
       | "Advance Payment Bond"
-      | "Performance Bond"
       | "Retention Money Bond"
+      | "Performance Bond"
       | "Payment LG"
       | "Zakat"
       | "Custom"

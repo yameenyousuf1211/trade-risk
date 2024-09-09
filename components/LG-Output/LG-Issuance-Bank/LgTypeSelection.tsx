@@ -21,8 +21,8 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
   const lgTypes = [
     { type: "Bid Bond", value: data.bidBond },
     { type: "Advance Payment Bond", value: data.advancePaymentBond },
-    { type: "Performance Bond", value: data.performanceBond },
     { type: "Retention Money Bond", value: data.retentionMoneyBond },
+    { type: "Performance Bond", value: data.performanceBond },
   ];
 
   return (

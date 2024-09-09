@@ -79,7 +79,8 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Confirmation Rate</p>
           <p className="text-lg font-semibold text-text">
-            {data?.confirmationPrice}% per annum
+            {data?.confirmationPrice}%{" "}
+            <span className="text-black">per annum</span>
           </p>
         </div>
         {data?.discountMargin !== undefined &&
@@ -99,7 +100,10 @@ export const BidCard = ({
           <div className={data.status === "Expired" ? "opacity-50" : ""}>
             <p className="mb-1 text-sm text-para">Bid Submitted</p>
             <p className="text-lg font-semibold">
-              {convertDateAndTimeToStringGMT(data.createdAt)}
+              {convertDateAndTimeToStringGMT({
+                date: data.createdAt,
+                sameLine: false,
+              })}
             </p>
           </div>
         )}
@@ -107,7 +111,10 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para">Bid Expiry</p>
           <p className="text-lg font-semibold">
-            {convertDateAndTimeToStringGMT(data.bidValidity)}
+            {convertDateAndTimeToStringGMT({
+              date: data.bidValidity,
+              sameLine: false,
+            })}
           </p>
         </div>
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
@@ -485,7 +492,9 @@ export const TableDialog = ({
                     <p className="font-roboto text-sm text-para">
                       Created at,{" "}
                       {lcData &&
-                        convertDateAndTimeToStringGMT(lcData.createdAt)}
+                        convertDateAndTimeToStringGMT({
+                          date: lcData.createdAt,
+                        })}
                       , by{" "}
                       <span className="capitalize text-text">
                         {(lcData && lcData.exporterInfo?.beneficiaryName) ||
@@ -527,19 +536,6 @@ export const TableDialog = ({
                         value={(lcData && lcData.confirmingBank?.bank) || ""}
                       />
                     )}
-                    {lcData?.transhipment && (
-                      <LCInfo
-                        label="Transhipment"
-                        value={lcData && lcData.transhipment ? "Yes" : "No"}
-                      />
-                    )}
-                    {lcData?.shipmentPort?.port &&
-                      lcData.shipmentPort?.country && (
-                        <LCInfo
-                          label="Port of Shipment"
-                          value={`${lcData.shipmentPort.port}, ${lcData.shipmentPort.country}`}
-                        />
-                      )}
                     <LCInfo
                       label="Payment Terms"
                       value={
@@ -550,20 +546,25 @@ export const TableDialog = ({
                             } at ${lcData.extraInfo?.other || ""}`
                           : lcData?.paymentTerms || "-"
                       }
-                      noBorder
                     />
+                    {lcData?.transhipment && (
+                      <LCInfo
+                        label="Transhipment"
+                        value={lcData && lcData.transhipment ? "Yes" : "No"}
+                      />
+                    )}
+                    {lcData?.shipmentPort?.port &&
+                      lcData.shipmentPort?.country && (
+                        <LCInfo
+                          label="Port of Shipment"
+                          noBorder
+                          value={`${lcData.shipmentPort.port}, ${lcData.shipmentPort.country}`}
+                        />
+                      )}
                   </div>
                   <div className="mt- 5 h-[2px] w-full bg-borderCol" />
                   {/* LC Details */}
                   <div className="mt-2 px-4">
-                    {lcData?.attachments &&
-                      lcData.attachments.length > 0 &&
-                      lcData.attachments.map((attachment, index) => (
-                        <ViewFileAttachment
-                          key={index}
-                          attachment={attachment}
-                        />
-                      ))}
                     <LCInfo
                       label="LC Issuance (Expected)"
                       value={
@@ -580,13 +581,6 @@ export const TableDialog = ({
                       }
                     />
                     <LCInfo
-                      label="Last date for receiving Bids"
-                      value={
-                        lcData &&
-                        convertDateToCommaString(lcData.lastDateOfReceivingBids)
-                      }
-                    />
-                    <LCInfo
                       label="Confirmation Date (Expected)"
                       value={
                         lcData?.expectedConfirmationDate
@@ -600,6 +594,21 @@ export const TableDialog = ({
                           : "-"
                       }
                     />
+                    <LCInfo
+                      label="Last date for receiving Bids"
+                      value={
+                        lcData &&
+                        convertDateToCommaString(lcData.lastDateOfReceivingBids)
+                      }
+                    />
+                    {lcData?.attachments &&
+                      lcData.attachments.length > 0 &&
+                      lcData.attachments.map((attachment, index) => (
+                        <ViewFileAttachment
+                          key={index}
+                          attachment={attachment}
+                        />
+                      ))}
                     {/* <LCInfo
                       label="Transhipment"
                       value={
@@ -611,7 +620,9 @@ export const TableDialog = ({
                       value={(lcData && lcData.shipmentPort?.port) || ""}
                       noBorder
                     /> */}
-                    <h2 className="text-xl font-semibold">Importer Info</h2>
+                    <h2 className="text-xl font-semibold mt-3">
+                      Importer Info
+                    </h2>
                     <LCInfo
                       label="Applicant"
                       value={
@@ -619,21 +630,31 @@ export const TableDialog = ({
                       }
                     />
                     <LCInfo
-                      label="Country"
+                      label="Country of Import"
+                      noBorder
                       value={
                         (lcData && lcData.importerInfo?.countryOfImport) || ""
                       }
                     />
 
-                    <h2 className="text-xl font-semibold">Exporter Info</h2>
+                    <h2 className="text-xl font-semibold mt-3">
+                      Exporter Info
+                    </h2>
                     <LCInfo
-                      label="Beneficiary"
+                      label="Beneficiary Name"
                       value={
                         (lcData && lcData.exporterInfo?.beneficiaryName) || ""
                       }
                     />
                     <LCInfo
-                      label="Country"
+                      label="Beneficiary Country"
+                      value={
+                        (lcData && lcData.exporterInfo?.beneficiaryCountry) ||
+                        ""
+                      }
+                    />
+                    <LCInfo
+                      label="Country of Export"
                       value={
                         (lcData && lcData.exporterInfo?.countryOfExport) || ""
                       }

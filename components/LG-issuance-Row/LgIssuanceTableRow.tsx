@@ -52,6 +52,22 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
     setDisplayPricing(pricing ? `${pricing}%` : "");
   }, [pricing]);
 
+  const [isOtherTypeInput, setIsOtherTypeInput] = useState(false);
+  const handleOtherTypeSelect = (value: string) => {
+    if (value === "Other Type of LG (Need to type)") {
+      setIsOtherTypeInput(true); // Enable input mode when "Other Type" is selected
+      setValue(`${name}.name`, "");
+    } else {
+      setIsOtherTypeInput(false); // Revert to dropdown mode if another option is selected
+      setValue(`${name}.name`, value); // Set the selected value
+    }
+  };
+
+  const handleClearInput = () => {
+    setIsOtherTypeInput(false); // Revert back to dropdown
+    setValue(`${name}.name`, ""); // Clear the input value
+  };
+
   // Reference to file input
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -260,29 +276,49 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
             </p>
           </div>
         </TableDataCell>
-      ) : (
-        <Select
-          onValueChange={(value) => {
-            setValue(`${name}.Contract`, true);
-            setValue(`${name}.name`, value);
-          }}
-          value={otherBondName}
+      ) : isOtherTypeInput ? (
+        <TableDataCell
+          className="min-w-[340px] justify-center"
+          childDivClassName="border-0"
         >
-          <SelectTrigger className="ml-2">
-            <SelectValue placeholder="Select LG Type" />
-          </SelectTrigger>
-          <SelectContent>
-            {values.map((value: string, idx: number) => (
-              <SelectItem key={`${value}-${idx}`} value={value}>
-                {value}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <div className="relative flex items-center w-[300px]">
+            <Input
+              value={otherBondName || ""}
+              onChange={(e) => setValue(`${name}.name`, e.target.value)}
+              className="w-full"
+              placeholder="Type your LG type"
+            />
+            <X
+              size={20}
+              className="absolute right-2 cursor-pointer text-red-500"
+              onClick={handleClearInput} // Clear and revert back to dropdown
+            />
+          </div>
+        </TableDataCell>
+      ) : (
+        <TableDataCell className="min-w-[340px]" childDivClassName="border-0">
+          <Select
+            onValueChange={handleOtherTypeSelect} // Trigger when an item is selected
+            value={otherBondName || ""}
+          >
+            <SelectTrigger className="w-[300px]">
+              <SelectValue placeholder="Select LG Type" />
+            </SelectTrigger>
+            <SelectContent>
+              {values.map((value: string, idx: number) => (
+                <SelectItem key={`${value}-${idx}`} value={value}>
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </TableDataCell>
       )}
       <TableCell>
         <Select
-          disabled={!checkedValue}
+          disabled={
+            lgDetails !== "Choose any other type of LGs" && !checkedValue
+          }
           value={currencyType}
           onValueChange={(value) => {
             setValue(`${name}.currencyType`, value);
@@ -316,19 +352,23 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           }}
         />
       </TableCell>
-      <TableCell>
-        <Input
-          register={register}
-          disabled={!checkedValue}
-          value={displayPercentage || ""}
-          name={`${name}.valueInPercentage`}
-          onChange={handlePercentageChange}
-          onBlur={handlePercentageBlur}
-          onFocus={handlePercentageFocus}
-          placeholder="%"
-          className="placeholder:text-end min-w-[65px]"
-        />
-      </TableCell>
+      {lgDetails !== "Choose any other type of LGs" && (
+        <TableCell>
+          <Input
+            register={register}
+            disabled={
+              lgDetails !== "Choose any other type of LGs" && !checkedValue
+            }
+            value={displayPercentage || ""}
+            name={`${name}.valueInPercentage`}
+            onChange={handlePercentageChange}
+            onBlur={handlePercentageBlur}
+            onFocus={handlePercentageFocus}
+            placeholder="%"
+            className="placeholder:text-end min-w-[65px]"
+          />
+        </TableCell>
+      )}
       <TableCell>
         <DatePicker
           value={expectedDate}

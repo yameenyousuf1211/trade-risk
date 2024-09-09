@@ -1,4 +1,8 @@
-export function convertDateAndTimeToStringGMT(date, gmtFontSize = "0.85em") {
+export function convertDateAndTimeToStringGMT({
+  date,
+  gmtFontSize = "0.85em",
+  sameLine = true,
+}) {
   const dateObj = new Date(date);
 
   // Format the date and time
@@ -23,13 +27,27 @@ export function convertDateAndTimeToStringGMT(date, gmtFontSize = "0.85em") {
 
   return (
     <>
-      {formattedDate}{" "}
-      <span
-        style={{ color: "gray", fontSize: gmtFontSize }}
-        className="font-roboto font-medium text-para"
-      >
-        {gmt}
-      </span>
+      {sameLine ? (
+        <>
+          {formattedDate}{" "}
+          <span
+            style={{ color: "gray", fontSize: gmtFontSize }}
+            className="font-roboto font-medium text-para"
+          >
+            {gmt}
+          </span>
+        </>
+      ) : (
+        <>
+          <p>{formattedDate} </p>
+          <span
+            style={{ color: "gray", fontSize: gmtFontSize }}
+            className="font-roboto font-medium text-para"
+          >
+            {gmt}
+          </span>
+        </>
+      )}
     </>
   );
 }

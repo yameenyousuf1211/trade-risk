@@ -66,7 +66,7 @@ export const RegisterStepnav = ({ step }: { step: number }) => {
         {/* Current Banking Step */}
         <div className="flex items-center gap-x-2">
           <p className={getStepClass(isCurrentBanking, step === 4)}>
-            Current Banking
+            Current Bank's
           </p>
         </div>
       </nav>

@@ -41,17 +41,14 @@ const LGInfo = ({
     >
       <p className="font-roboto text-sm font-normal text-para">{label}</p>
       {link ? (
-        <div className="flex items-center">
-          <FileSearch className="mr-2" color="#29C084" />{" "}
-          <a
-            href={link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="capitalize font-semibold text-right text-base max-w-[100%] truncate"
-          >
-            {value}
-          </a>
-        </div>
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center capitalize font-semibold text-right text-base max-w-[100%] truncate"
+        >
+          <FileSearch className="mr-2" color="#29C084" /> {value}
+        </a>
       ) : (
         <p className="max-w-[60%] text-right text-sm font-semibold capitalize">
           {value || "-"}
@@ -353,8 +350,9 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
         <div className="border-r-2 border-b-2  bg-[#F5F7F9] p-4 flex flex-col gap-3 border-[#F5F7F9]">
           <h5 className="text-[12px] text-[#696974]">
             Created at,{" "}
-            {data.createdAt && convertDateAndTimeToStringGMT(data.createdAt)},
-            by{" "}
+            {data.createdAt &&
+              convertDateAndTimeToStringGMT({ date: data.createdAt })}
+            , by{" "}
             <span className="text-blue-500">
               {formatFirstLetterOfWord(data.applicantDetails.company)}
             </span>
@@ -416,10 +414,10 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
             <div>
               <div className="flex items-center justify-between">
                 <h5 className="font-semibold">Submit your bid</h5>
-                <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
+                {/* <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
                   <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
                   <h5 className="text-[0.95rem] font-normal">{user.name}</h5>
-                </div>
+                </div> */}
               </div>
               <div className="mt-2 rounded-md border border-[#E2E2EA] p-2">
                 <BankSelection
@@ -478,7 +476,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                             : null
                         }
                       />
-                      {selectedBond.expectedPricing && (
+                      {/* {selectedBond.expectedPricing && (
                         <LGInfo
                           label="Expected Price"
                           value={
@@ -487,12 +485,17 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                               : null
                           }
                         />
-                      )}
+                      )} */}
                       <LGInfo
                         label="LG Tenor"
                         value={
                           selectedBond.lgTenor
-                            ? `${selectedBond.lgTenor.lgTenorValue} ${selectedBond.lgTenor.lgTenorType}`
+                            ? `${
+                                selectedBond.lgTenor.lgTenorValue
+                              } ${selectedBond.lgTenor.lgTenorType.substring(
+                                0,
+                                selectedBond.lgTenor.lgTenorType.length - 1
+                              )}'s`
                             : null
                         }
                       />
@@ -516,6 +519,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                   )}
 
                   <PricingInput
+                    selectedBondPrice={selectedBond?.expectedPricing}
                     pricingValue={pricingValue}
                     setPricingValue={setPricingValue}
                     updateBondPrices={updateBondPrices} // Pass the update function

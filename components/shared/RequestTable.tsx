@@ -31,16 +31,20 @@ type TableDataCellProps = {
   data?: string | number | Date | undefined;
   children?: React.ReactNode;
   className?: string;
+  childDivClassName?: string;
 };
 
 export const TableDataCell: React.FC<TableDataCellProps> = ({
   data,
   children,
   className,
+  childDivClassName,
 }) => {
   return (
     <TableCell className={`max-w-[180px] px-1 py-1 ${className}`}>
-      <div className="w-full truncate rounded-md border border-borderCol p-2 py-2.5 text-center text-sm capitalize text-lightGray">
+      <div
+        className={`w-full truncate rounded-md border border-borderCol p-2 py-2.5 text-center text-sm capitalize text-lightGray ${childDivClassName}`}
+      >
         {children ? children : data !== undefined ? String(data) : "-"}
       </div>
     </TableCell>

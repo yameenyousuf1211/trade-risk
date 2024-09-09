@@ -135,13 +135,13 @@ export const BidCard = ({
           <div className="w-full">
             <p className="text-[#92929D] text-sm">Submitted By</p>
             <p className="font-semibold text-xl">
-              {formatFirstLetterOfWord(bidDetail.bidBy.name)}
+              {formatFirstLetterOfWord(bidDetail?.bidBy?.name)}
             </p>
           </div>
           <div className="text-end">
             <p className="text-[#92929D] text-sm">Country</p>
             <p className="font-semibold text-xl">
-              {formatFirstLetterOfWord(bidDetail.bidBy.country)}
+              {formatFirstLetterOfWord(bidDetail?.bidBy?.country)}
             </p>
           </div>
         </div>
@@ -149,7 +149,7 @@ export const BidCard = ({
           <div>
             <p className="text-[#92929D] text-sm">Bid Validity</p>
             <p className="font-semibold text-xl">
-              {convertDateAndTimeToStringGMT(bidDetail.bidValidity)}
+              {convertDateAndTimeToStringGMT(bidDetail?.bidValidity)}
             </p>
           </div>
           <div className="text-end">
@@ -161,9 +161,9 @@ export const BidCard = ({
         </div>
         <div className="grid mt-1">
           <div>
-            <p className="text-[#92929D] text-sm">Created At</p>
+            <p className="text-[#92929D] text-sm">Received At</p>
             <p className="font-semibold text-xl">
-              {convertDateAndTimeToStringGMT(bidDetail.bidValidity)}
+              {convertDateAndTimeToStringGMT(bidDetail?.createdAt)}
             </p>
           </div>
         </div>

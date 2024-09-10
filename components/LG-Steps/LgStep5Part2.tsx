@@ -30,10 +30,10 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
-    if (issueLgWithStandardText === true) {
+    if (issueLgWithStandardText === "true") {
       if (lgStandardText) addStep(STANDARD_TEXT);
       else removeStep(STANDARD_TEXT);
-    } else if (issueLgWithStandardText === false) {
+    } else if (issueLgWithStandardText === "false") {
       if (selectedFile) addStep(STANDARD_TEXT);
       else removeStep(STANDARD_TEXT);
     } else {
@@ -96,7 +96,10 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({
           {issueLgWithStandardText === "true" ? (
             <div className="border border-[#E2E2EA] bg-[#F5F7F9] w-full p-2 rounded">
               <Select
-                onValueChange={(value) => setValue("lgStandardText", value)}
+                onValueChange={(value) => {
+                  console.log(value);
+                  setValue("lgStandardText", value);
+                }}
                 value={lgStandardText}
               >
                 <SelectTrigger value={lgStandardText} className="h-[60px]">

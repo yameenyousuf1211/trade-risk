@@ -53,11 +53,11 @@ const LgStep1: React.FC<LgStepsProps1> = ({
         />
         <BgRadioInput
           id="lgIssuance2"
-          label="LG Re-issuance in another country"
+          label="LG Issuance within the country"
           name="lgIssuance"
-          value="LG Re-issuance in another country"
+          value="LG Issuance within the country"
           register={register}
-          checked={lgIssuance === "LG Re-issuance in another country"}
+          checked={lgIssuance === "LG Issuance within the country"}
         />
       </div>
     </div>

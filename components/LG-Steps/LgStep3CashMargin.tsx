@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import { LgStepsProps3 } from "@/types/lg";
 import { Plus, X } from "lucide-react";
 import { DDInput } from "../LCSteps/helpers";
-import { getBanks } from "@/services/apis/helpers.api";
 import { Input } from "../ui/input";
+import { useQuery } from "@tanstack/react-query";
+import { getBanks } from "@/services/apis/helpers.api";
 
 export default function LgStep3CashMargin({
   register,
@@ -15,54 +16,44 @@ export default function LgStep3CashMargin({
   setValue,
 }: LgStepsProps3) {
   const issuingBanks = watch("issuingBanks");
-  const [bankOptions, setBankOptions] = useState<Record<number, any>>({});
 
-  useEffect(() => {
-    issuingBanks.forEach((bank, index) => {
-      if (bank.country) {
-        getBanks(bank.country).then((response) => {
-          setBankOptions((prevOptions) => ({
-            ...prevOptions,
-            [index]: response.success ? response.response : [],
-          }));
-        });
-      } else {
-        setBankOptions((prevOptions) => ({
-          ...prevOptions,
-          [index]: [],
-        }));
-      }
-    });
-  }, [issuingBanks]);
+  // Watch the issuing bank's country field for changes
+  const issuingCountry = watch("issuingBanks[0].country");
+
+  // Fetch banks dynamically based on selected country
+  const { data: issuingBankOptions, isLoading } = useQuery({
+    queryKey: ["issuing-banks", issuingCountry],
+    queryFn: () => getBanks(issuingCountry),
+    enabled: !!issuingCountry, // Only fetch when a country is selected
+  });
 
   const handleIssuingBankAddition = () => {
-    setValue("issuingBanks", [
-      ...issuingBanks,
-      {
-        bank: "",
-        swiftCode: "",
-        country: "",
-        accountNumber: "",
-      },
-    ]);
+    if (issuingBanks.length < 5) {
+      setValue("issuingBanks", [
+        ...issuingBanks,
+        {
+          bank: "",
+          swiftCode: "",
+          country: "",
+          accountNumber: "",
+        },
+      ]);
+    }
   };
 
   const handleIssuingBankRemoval = (index: number) => {
-    setValue(
-      "issuingBanks",
-      issuingBanks.filter((_, i) => i !== index)
-    );
-    setBankOptions((prevOptions) => {
-      const newOptions = { ...prevOptions };
-      delete newOptions[index];
-      return newOptions;
-    });
+    if (index > 0) {
+      setValue(
+        "issuingBanks",
+        issuingBanks.filter((_, i) => i !== index)
+      );
+    }
   };
 
   return (
     <div
       id="lg-step3"
-      className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target "
+      className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target"
     >
       <div className="flex items-center gap-x-2 ml-3 mb-3">
         <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
@@ -81,7 +72,7 @@ export default function LgStep3CashMargin({
               label="Issuing Bank Country"
               id="issuingBanks[0].country"
               placeholder="Select a Country"
-              value={issuingBanks[0].country}
+              value={issuingBanks[0]?.country}
               data={data}
               setValue={setValue}
               flags={flags}
@@ -90,71 +81,77 @@ export default function LgStep3CashMargin({
         </div>
       </div>
 
-      {issuingBanks?.map((e, i) => (
+      {issuingBanks?.map((bank, index) => (
         <div
-          key={i}
+          key={index}
           className="border border-[#E2E2EA] bg-[#F5F7F9] rounded-lg mt-4 relative"
         >
-          <p className="px-4 pt-2 font-semibold text-[#1A1A26] font-poppins">
-            Issuing Bank
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="px-4 pt-2 font-semibold text-[#1A1A26] font-poppins">
+              Issuing Bank
+            </p>
+            {index > 0 ? (
+              <div
+                onClick={() => handleIssuingBankRemoval(index)}
+                className="m-1 bg-red-500 center text-white rounded-full size-6 shadow-md z-10 cursor-pointer"
+              >
+                <X className="size-5 text-white" />
+              </div>
+            ) : null}
+          </div>
           <div className="flex items-center gap-3 pt-2 px-2 pb-2">
             <DDInput
               placeholder="Select Bank"
               label="Bank"
-              value={i.bank}
-              id={`issuingBanks[${i}].bank`}
-              setValue={(field, value) =>
-                setValue(field, value, { shouldValidate: true })
+              value={bank.bank}
+              id={`issuingBanks[${index}].bank`}
+              setValue={setValue}
+              data={
+                issuingBankOptions?.success && issuingBankOptions.response
+                  ? issuingBankOptions.response
+                  : []
               }
-              data={bankOptions[i] || []}
-              disabled={!i.country}
+              disabled={isLoading || !issuingCountry}
             />
             <label
-              id={`issuingBanks[${i}].swiftCode`}
+              id={`issuingBanks[${index}].swiftCode`}
               className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
             >
               <p className="w-full text-sm text-lightGray">Swift Code</p>
               <Input
                 register={register}
-                name={`issuingBanks[${i}].swiftCode`}
+                name={`issuingBanks[${index}].swiftCode`}
                 type="text"
-                id={`issuingBanks[${i}].swiftCode`}
+                id={`issuingBanks[${index}].swiftCode`}
                 className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                 placeholder="Type here"
               />
             </label>
             <label
-              id={`issuingBanks[${i}].accountNumber`}
+              id={`issuingBanks[${index}].accountNumber`}
               className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
             >
               <p className="w-full text-sm text-lightGray">Account Number</p>
               <Input
-                value={e.value}
+                value={bank.accountNumber}
                 onChange={(e) =>
-                  setValue(`issuingBanks[${i}].accountNumber`, e.target.value)
+                  setValue(
+                    `issuingBanks[${index}].accountNumber`,
+                    e.target.value
+                  )
                 }
                 register={register}
-                name={`issuingBanks[${i}].accountNumber`}
+                name={`issuingBanks[${index}].accountNumber`}
                 type="text"
                 className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                 placeholder="Type here"
               />
             </label>
           </div>
-
-          {i > 0 ? (
-            <div
-              onClick={handleIssuingBankRemoval}
-              className="absolute top-1 -right-2 bg-red-500 center text-white rounded-full size-6 shadow-md z-10 cursor-pointer"
-            >
-              <X className="size-5 text-white" />
-            </div>
-          ) : null}
         </div>
       ))}
 
-      {issuingBanks?.length < 6 ? (
+      {issuingBanks?.length < 5 ? (
         <div
           onClick={handleIssuingBankAddition}
           className="flex-col cursor-pointer bg-white center gap-y-3 border-2 border-dotted border-borderCol py-3 rounded-md mt-4"

@@ -172,5 +172,3 @@ export const BgRadioInput = ({
     </label>
   );
 };
-
-

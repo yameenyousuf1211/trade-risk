@@ -884,59 +884,68 @@ export const AddBid = ({
                       </span>
                     )}
                   </div>
-
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <label
-                        htmlFor="confirmation"
-                        className="block font-semibold mb-2"
-                      >
-                        {isDiscount ? "Confirmation Pricing" : "Your Pricing"}
-                      </label>
-                      <p className="text-xs text-[#29C084]">
-                        Client&apos;s Expected Price:{" "}
-                        {lcData?.type === "LC Confirmation"
-                          ? lcData?.confirmationInfo?.pricePerAnnum
-                          : lcData?.discountingInfo?.pricePerAnnum}{" "}
-                        P.A
-                      </p>
-                    </div>
-                    <input
-                      placeholder="Enter your pricing per annum (%)"
-                      type="text"
-                      inputMode="numeric"
-                      className={cn(
-                        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  {lcData?.type !== "LC Discounting" && (
+                    <>
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <label
+                            htmlFor="confirmation"
+                            className="block font-semibold mb-2"
+                          >
+                            {lcData?.type === "LC Discounting"
+                              ? "Discount Rate"
+                              : isDiscount
+                              ? "Confirmation Pricing"
+                              : "Your Pricing"}
+                          </label>
+                          <p className="text-xs text-[#29C084]">
+                            Client&apos;s Expected Price:{" "}
+                            {lcData?.type === "LC Confirmation"
+                              ? lcData?.confirmationInfo?.pricePerAnnum
+                              : lcData?.discountingInfo?.pricePerAnnum}{" "}
+                            P.A
+                          </p>
+                        </div>
+                        <input
+                          placeholder="Enter your pricing per annum (%)"
+                          type="text"
+                          inputMode="numeric"
+                          className={cn(
+                            "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          )}
+                          max={100}
+                          {...register("confirmationPrice")}
+                          onChange={(event) => {
+                            const newValue: any = event.target.value.replace(
+                              /[^0-9.]/g,
+                              ""
+                            );
+                            event.target.value = newValue;
+                            setValue("confirmationPrice", newValue);
+                          }}
+                          onBlur={(event: ChangeEvent<HTMLInputElement>) => {
+                            if (
+                              event.target.value.includes("%") ||
+                              event.target.value.length === 0
+                            )
+                              return;
+                            event.target.value += "%";
+                          }}
+                          onKeyUp={(event: any) => {
+                            if (
+                              Number(event.target.value.replace("%", "")) > 100
+                            ) {
+                              event.target.value = "100.0%";
+                            }
+                          }}
+                        />
+                      </div>
+                      {errors.confirmationPrice && (
+                        <span className="text-red-500 text-[12px]">
+                          {errors.confirmationPrice.message}
+                        </span>
                       )}
-                      max={100}
-                      {...register("confirmationPrice")}
-                      onChange={(event) => {
-                        const newValue: any = event.target.value.replace(
-                          /[^0-9.]/g,
-                          ""
-                        );
-                        event.target.value = newValue;
-                        setValue("confirmationPrice", newValue);
-                      }}
-                      onBlur={(event: ChangeEvent<HTMLInputElement>) => {
-                        if (
-                          event.target.value.includes("%") ||
-                          event.target.value.length === 0
-                        )
-                          return;
-                        event.target.value += "%";
-                      }}
-                      onKeyUp={(event: any) => {
-                        if (Number(event.target.value.replace("%", "")) > 100) {
-                          event.target.value = "100.0%";
-                        }
-                      }}
-                    />
-                  </div>
-                  {errors.confirmationPrice && (
-                    <span className="text-red-500 text-[12px]">
-                      {errors.confirmationPrice.message}
-                    </span>
+                    </>
                   )}
                   {isDiscount && (
                     <div className="flex gap-3">
@@ -963,6 +972,9 @@ export const AddBid = ({
                           onChange={(e) => {
                             console.log(e.target.value);
                             setConfirmationPriceType(e.target.value);
+                            if (lcData.type === "LC Discounting") {
+                              setValue("confirmationPrice", "1");
+                            }
                           }}
                           className="accent-primaryCol size-4"
                         />
@@ -981,6 +993,9 @@ export const AddBid = ({
                           value={"flat"}
                           onChange={(e) => {
                             setConfirmationPriceType(e.target.value);
+                            if (lcData.type === "LC Discounting") {
+                              setValue("confirmationPrice", "1");
+                            }
                           }}
                           className="accent-primaryCol size-4"
                         />
@@ -995,7 +1010,9 @@ export const AddBid = ({
                         htmlFor="discount"
                         className="block font-semibold mb-2"
                       >
-                        Discount Pricing
+                        {lcData?.type === "LC Discounting"
+                          ? "Discount Spread"
+                          : "Discount Pricing"}
                       </label>
                       <div className="flex flex-col gap-y-3 items-center w-full">
                         <label
@@ -1021,9 +1038,12 @@ export const AddBid = ({
                               value={discountBaseRate}
                               placeholder="Select Value"
                               setValue={setValue}
-                              onSelectValue={(value) =>
-                                setDiscountBaseRate(value)
-                              }
+                              onSelectValue={(value) => {
+                                setDiscountBaseRate(value);
+                                if (lcData.type === "LC Discounting") {
+                                  setValue("confirmationPrice", "1");
+                                }
+                              }}
                               data={["KIBOR", "LIBOR", "SOFR"]}
                             />
                           </div>
@@ -1041,6 +1061,9 @@ export const AddBid = ({
                               ""
                             );
                             e.target.value = newValue;
+                            if (lcData.type === "LC Discounting") {
+                              setValue("confirmationPrice", "1");
+                            }
                             setDiscountMargin(newValue);
                           }}
                           onBlur={(event: ChangeEvent<HTMLInputElement>) => {

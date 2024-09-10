@@ -23,7 +23,7 @@ const LgStep12: React.FC<LgStepsProps10> = ({
   );
   return (
     <div
-      id={`lg-step${step}`}
+      id={`lastStep`}
       className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target"
     >
       <div className="flex items-center gap-x-2 ml-3 mb-3">

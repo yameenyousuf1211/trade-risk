@@ -342,6 +342,7 @@ export default function LgIssuance() {
             register={register}
             setStepCompleted={handleStepCompletion}
             watch={watch}
+            setValue={setValue}
           />
         ) : (
           <LgStep4

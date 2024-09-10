@@ -16,68 +16,66 @@ const defaultValue = {
   beneficiaryDetails: undefined,
   lgDetailsType: "Choose any other type of LGs",
   bidBond: {
-    Contract:false,
+    Contract: false,
     currencyType: "",
-    cashMargin:"0",
+    cashMargin: "0",
     expectedDate: undefined,
     valueInPercentage: undefined,
-    lgTenor:{
+    lgTenor: {
       lgTenorType: "Months",
-      lgTenorValue: ""
-    }
+      lgTenorValue: "",
+    },
   },
   advancePaymentBond: {
-    Contract:false,
+    Contract: false,
     currencyType: "",
-    cashMargin:"0",
+    cashMargin: "0",
     expectedDate: undefined,
     lgExpiryDate: undefined,
 
     valueInPercentage: "",
-    lgTenor:{
+    lgTenor: {
       lgTenorType: "Months",
-      lgTenorValue: ""
-    }
-
+      lgTenorValue: "",
+    },
   },
   performanceBond: {
-    Contract:false,
+    Contract: false,
     currencyType: "",
-    cashMargin:"0",
-    expectedDate:undefined,
-    lgExpiryDate:undefined,
+    cashMargin: "0",
+    expectedDate: undefined,
+    lgExpiryDate: undefined,
 
     valueInPercentage: "",
-    lgTenor:{
+    lgTenor: {
       lgTenorType: "Months",
-      lgTenorValue: ""
-    }
-
+      lgTenorValue: "",
+    },
   },
   retentionMoneyBond: {
-    Contract:false,
+    Contract: false,
     currencyType: "",
-    cashMargin:"0",
-    expectedDate:undefined,
-    lgExpiryDate:undefined,
+    cashMargin: "0",
+    expectedDate: undefined,
+    lgExpiryDate: undefined,
 
     valueInPercentage: "",
-    lgTenor:{
+    lgTenor: {
       lgTenorType: "Months",
-      lgTenorValue: ""
-    }
+      lgTenorValue: "",
+    },
   },
   otherBond: {
-    Contract:false,
+    Contract: false,
     currencyType: "",
-    cashMargin:"0",
-    expectedDate:undefined,
-    lgExpiryDate:undefined,
+    cashMargin: "0",
+    expectedDate: undefined,
+    lgExpiryDate: undefined,
     valueInPercentage: "",
-    lgTenor:{
+    lgTenor: {
       lgTenorType: "Months",
-      lgTenorValue: ""
-    }
+      lgTenorValue: "",
+    },
   },
   issuingBanks: undefined,
   beneficiaryBanksDetails: undefined,

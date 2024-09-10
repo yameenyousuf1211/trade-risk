@@ -22,48 +22,42 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({
   const issueLgWithStandardText = watch("issueLgWithStandardText");
   const lgStandardText = watch("lgStandardText");
 
-  const [selectedFiles, setSelectedFiles] = useState<FileList[] | null>(null);
+  // State to hold the selected file (only one file allowed)
+  useEffect(() => {
+    console.log(issueLgWithStandardText, "issueLg");
+  }, [issueLgWithStandardText]);
+  const [selectedFile, setSelectedFile] = useState<FileList | null>(null);
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
-    if (issueLgWithStandardText === "true") {
+    if (issueLgWithStandardText === true) {
       if (lgStandardText) addStep(STANDARD_TEXT);
       else removeStep(STANDARD_TEXT);
-    }
-    if (issueLgWithStandardText === "false") {
-      if (selectedFiles && selectedFiles.length > 0) addStep(STANDARD_TEXT);
+    } else if (issueLgWithStandardText === false) {
+      if (selectedFile) addStep(STANDARD_TEXT);
       else removeStep(STANDARD_TEXT);
+    } else {
+      removeStep(STANDARD_TEXT);
     }
-  }, [issueLgWithStandardText, lgStandardText, selectedFiles]);
+  }, [issueLgWithStandardText, lgStandardText, selectedFile]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files) {
-      const newFiles = Array.from(files).filter((file) => {
-        return !selectedFiles?.some((fileList) =>
-          Array.from(fileList).some((f) => f.name === file.name)
-        );
-      });
-      setSelectedFiles((prevFiles: any) => [...(prevFiles ?? []), newFiles]);
+    if (files && files.length > 0) {
+      // Only allow one file to be selected
+      setSelectedFile(files);
+
+      // Update the attachments array with just the one selected file
+      setValue("attachments", [files]);
     }
   };
 
   const handleRemoveFile = (name: string) => {
-    const filterFiles = selectedFiles?.filter((file) => file[0]?.name !== name);
-    setSelectedFiles(filterFiles as FileList[]);
-  };
-
-  useEffect(() => {
-    if (selectedFiles) {
-      selectedFiles.forEach((fileList, index) => {
-        Array.from(fileList).forEach((file, subIndex) => {
-          // register(`attachments[${index}][${subIndex}]`);
-        });
-      });
+    if (selectedFile && selectedFile[0].name === name) {
+      setSelectedFile(null);
+      setValue("attachments", []);
     }
-  }, [selectedFiles]);
-
-  // console.log("DATA COMING FROM FUCKINGGG STORE", lgStandardText);
+  };
 
   return (
     <div
@@ -79,48 +73,47 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({
           Arabia)?
         </p>
       </div>
-      <div className="flex flex-wrap items-center pt-2  rounded-lg">
+      <div className="flex flex-wrap items-center pt-2 rounded-lg">
         <div className="flex gap-3 items-center w-full">
           <BgRadioInput
             id="issueLgWithStandardText1"
             label="Yes"
             name="issueLgWithStandardText"
-            value="true"
+            value={true}
             register={register}
-            checked={issueLgWithStandardText === "Yes"}
+            checked={issueLgWithStandardText === "true"}
           />
           <BgRadioInput
             id="issueLgWithStandardText2"
             label="No"
             name="issueLgWithStandardText"
-            value="false"
+            value={false}
             register={register}
-            checked={issueLgWithStandardText === "No"}
+            checked={issueLgWithStandardText === "false"}
           />
         </div>
-        <div className="flex  items-center w-full ">
+        <div className="flex items-center w-full">
           {issueLgWithStandardText === "true" ? (
-            <Select
-              onValueChange={(value) => {
-                console.log("🚀 ~ value:", value);
-                setValue("lgStandardText", value);
-              }}
-              value={lgStandardText}
-            >
-              <SelectTrigger value={lgStandardText}>
-                <SelectValue placeholder="Select LG Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="SAMA">SAMA</SelectItem>
-                <SelectItem value="Zakat">Zakat</SelectItem>
-                <SelectItem value="Custom">Custom</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="border border-[#E2E2EA] bg-[#F5F7F9] w-full p-2 rounded">
+              <Select
+                onValueChange={(value) => setValue("lgStandardText", value)}
+                value={lgStandardText}
+              >
+                <SelectTrigger value={lgStandardText} className="h-[60px]">
+                  <SelectValue
+                    placeholder="Select Standard Text"
+                    className="rounded"
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SAMA">SAMA</SelectItem>
+                  <SelectItem value="Zakat">Zakat</SelectItem>
+                  <SelectItem value="Custom">Custom</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           ) : (
-            <div
-              id="step7"
-              className="w-full   rounded-lg  h-full scroll-tar get"
-            >
+            <div id="step7" className="w-full rounded-lg h-full scroll-target">
               <div className="bg-[#F5F7F9] p-2 mt-2 rounded-md">
                 <label
                   htmlFor="attachment-input"
@@ -130,8 +123,8 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({
                     id="attachment-input"
                     type="file"
                     onChange={handleFileChange}
-                    multiple
                     style={{ display: "none" }}
+                    accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   />
                   <div className="size-12 bg-white center rounded-full shadow-sm">
                     <Image
@@ -144,19 +137,16 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({
                   <p className="text-lg font-semibold text-lightGray mt-4">
                     Attach a LG draft here
                   </p>
-                  Drag your files here or click to select from your device
+                  Drag your file here or click to select from your device
                 </label>
               </div>
-              {/* Display selected files */}
-              {selectedFiles && (
+              {selectedFile && (
                 <div className="flex flex-col gap-y-3 mt-5">
-                  {selectedFiles.map((fileList, index) => (
-                    <FileCard
-                      key={index}
-                      file={fileList}
-                      onRemoveFile={() => handleRemoveFile(fileList[0].name)}
-                    />
-                  ))}
+                  <FileCard
+                    key={selectedFile[0].name}
+                    file={selectedFile}
+                    onRemoveFile={() => handleRemoveFile(selectedFile[0].name)}
+                  />
                 </div>
               )}
             </div>

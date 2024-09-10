@@ -91,14 +91,22 @@ export const generalLcSchema = Yup.object().shape({
           originalValue === "" ? undefined : value
         ) // Transform empty string to undefined
         .max(999, "Days must be less than or equal to 999"),
-      other: Yup.string(),
+      other: Yup.string(), // Allow nullable when not required
     })
-    .when("paymentTerms", (paymentTerms, schema) => {
-      return paymentTerms !== "Sight LC"
-        ? schema.required(
-            "Extra info is required when payment terms are not 'Sight LC'"
-          )
-        : schema.notRequired();
+    .when("paymentTerms", {
+      is: (paymentTerms) => paymentTerms !== "Sight LC",
+      then: (schema) =>
+        schema.required(
+          "Extra info is required when payment terms are not 'Sight LC'"
+        ),
+      otherwise: (schema) =>
+        schema
+          .shape({
+            days: Yup.number().nullable(), // Make `days` optional when paymentTerms is "Sight LC"
+            other: Yup.string().nullable(), // Make `other` optional when paymentTerms is "Sight LC"
+          })
+          .nullable()
+          .notRequired(), // Allow extraInfo to be nullable when "Sight LC"
     }),
   lastDateOfReceivingBids: Yup.date().required(
     "Select last date of receiving bids"

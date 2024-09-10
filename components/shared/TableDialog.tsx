@@ -76,18 +76,38 @@ export const BidCard = ({
             {data.bidBy?.name || ""}
           </p>
         </div>
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="mb-1 text-sm text-para">Confirmation Rate</p>
-          <p className="text-lg font-semibold text-text">
-            {data?.confirmationPrice}%{" "}
-            <span className="text-black">per annum</span>
-          </p>
-        </div>
+        {data.bidType !== "LC Discounting" && (
+          <div className={data.status === "Expired" ? "opacity-50" : ""}>
+            <p className="mb-1 text-sm text-para">Confirmation Rate</p>
+            <p className="text-lg font-semibold text-text">
+              {data?.confirmationPrice}%{" "}
+              <span className="text-black">per annum</span>
+            </p>
+          </div>
+        )}
         {data?.discountMargin !== undefined &&
-          data?.discountMargin !== null && (
+          data?.discountMargin !== null &&
+          data.bidType !== "LC Discounting" && (
             <div className={data.status === "Expired" ? "opacity-50" : ""}>
               <p className="mb-1 text-sm text-para">Discount Spread</p>
-              <p className="text-lg font-semibold">{data.discountMargin}%</p>
+              <p className="text-lg font-semibold">
+                {data.discountMargin}%{" "}
+                {data.bidType === "LC Confirmation & Discounting" &&
+                  data?.discountBaseRate.toUpperCase()}
+              </p>
+            </div>
+          )}
+        {data?.discountMargin !== undefined &&
+          data?.discountMargin !== null &&
+          data.bidType === "LC Discounting" && (
+            <div className={data.status === "Expired" ? "opacity-50" : ""}>
+              <p className="mb-1 text-sm text-para">Discount Rate</p>
+              <p className="text-lg font-semibold text-text">
+                {data.discountMargin}%{" "}
+                <span className="text-black">
+                  {data?.discountBaseRate.toUpperCase()}
+                </span>
+              </p>
             </div>
           )}
         <div className={data.status === "Expired" ? "opacity-50" : ""}>

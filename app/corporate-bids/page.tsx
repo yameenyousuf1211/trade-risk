@@ -12,30 +12,21 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { useEffect, useState } from "react";
 
-const CorporateBidsPage = () => {
-  const searchParams = useSearchParams();
-  const filter = searchParams.get("filter") || "LC Confirmation";
-  const page = parseInt(searchParams.get("page") || "1");
-  const limit = parseInt(searchParams.get("limit") || "10");
-  const search = searchParams.get("search") || "";
+interface SearchParams {
+  searchParams: {
+    page: number;
+    limit: number;
+    filter: string;
+    search: string;
+  };
+}
+
+const CorporateBidsPage = ({ searchParams }: SearchParams) => {
+  const { page, limit, filter, search } = searchParams;
 
   const pathname = usePathname();
   const { user } = useAuth();
-  const router = useRouter();
-
-  const [queryKey, setQueryKey] = useState([
-    "fetch-my-bids",
-    page,
-    limit,
-    filter,
-    search,
-  ]);
-
-  useEffect(() => {
-    setQueryKey(["fetch-my-bids", page, limit, filter, search]);
-  }, [page, limit, filter, search]);
 
   const {
     isLoading,
@@ -44,7 +35,7 @@ const CorporateBidsPage = () => {
     data: ApiResponse<IMyBids> | undefined;
     isLoading: boolean;
   } = useQuery({
-    queryKey,
+    queryKey: ["fetch-my-bids", page, limit, filter, search],
     queryFn: () =>
       fetchCorporateBids({
         page,
@@ -53,24 +44,26 @@ const CorporateBidsPage = () => {
         search,
         userId: user?.business?._id,
       }),
-    enabled: !!user?.business?._id,
   });
 
   if (user && user.type !== "corporate") {
     redirect("/dashboard");
   }
 
+  const params = useSearchParams();
+  const router = useRouter();
+
   const handleFilter = (lcType: string) => {
-    const queryParams = new URLSearchParams(searchParams);
-    queryParams.set("filter", lcType);
-    queryParams.set("page", "1"); // Reset to page 1 on filter change
+    const queryParams = new URLSearchParams(params);
+    queryParams.set("filter", lcType.toString());
+    queryParams.set("page", "1");
 
     const queryString = queryParams.toString();
     router.push(`${pathname}?${queryString}`, { scroll: false });
   };
 
-    console.log("CorporateBidsPage -> data", data);
-    
+  console.log("CorporateBidsPage -> data", data);
+
   return (
     <DashboardLayout>
       <div className="flex w-full 2xl:px-10 px-2">
@@ -121,7 +114,7 @@ const CorporateBidsPage = () => {
             />
           </div>
         </div>
-        <div className="w-[20vw] max-w-[300px] sticky top-10 h-[80vh]">
+        <div className="w-[20vw] max-w-[300p x] sticky top-10 h-[80vh]">
           <Sidebar isBank={false} />
         </div>
       </div>

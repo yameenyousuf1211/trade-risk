@@ -25,7 +25,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
 import { LGTableBidStatus } from "../LG-Output/LG-Issuance-Corporate/LgTableBidStatus";
-import { formatAmount } from "../../utils/helper/helper";
+import { formatAmount, formatCurrencyAmount } from "../../utils/helper/helper";
 
 type TableDataCellProps = {
   data?: string | number | Date | undefined;
@@ -464,17 +464,18 @@ export const RequestTable = ({
                       }
                     />
                     <TableDataCell
+                      childDivClassName="text-right"
                       data={
                         item.type == "LG Issuance"
-                          ? "USD " + formatAmount(getTotal(item)) + ".00"
+                          ? "USD " +
+                            formatCurrencyAmount(getTotal(item).toFixed(2))
                           : item?.amount
                           ? `${
                               item?.currency
                                 ? item.currency.toUpperCase()
                                 : "USD"
                             } ` +
-                            formatAmount(item?.amount?.price) +
-                            ".00"
+                            formatCurrencyAmount(item?.amount?.price.toFixed(2))
                           : `${
                               item?.currency
                                 ? item.currency.toUpperCase()

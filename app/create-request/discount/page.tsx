@@ -301,6 +301,7 @@ const CreateDiscountPage = () => {
         />
         <Step2
           watch={watch}
+          draftDataId={discountingData._id}
           register={register}
           setValue={setValue}
           setStepCompleted={handleStepCompletion}

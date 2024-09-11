@@ -3,10 +3,9 @@ import { X } from "lucide-react";
 import React from "react";
 import { useAuth } from "@/context/AuthProvider";
 import { TableDialog } from "../shared/TableDialog";
-import { fetchSingleLc2 } from "@/services/apis/lcs.api";
-import { TableBidStatus } from "../helpers";
+import { fetchSingleLc, fetchSingleLc2 } from "@/services/apis/lcs.api";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "../ui/button";
+import { AddBid } from "../shared/AddBid";
 
 const ButtonSkeleton = () => {
   return (
@@ -19,20 +18,20 @@ const ButtonSkeleton = () => {
 const NotificationPopup = ({
   title,
   message,
+  // lcId,
   onClose,
 }: {
   title: string;
   message: string;
+  lcId: string;
   onClose: () => void;
 }) => {
   const { user } = useAuth();
-  const processedTitle = title;
-  const requestId = "sda";
-  console.log(title, message, "TITLEMES");
+  const lcId = "66e16cc75c1f3d6df0034769";
 
   const { data, isLoading } = useQuery({
-    queryKey: [`fetch-data`, requestId],
-    queryFn: () => fetchSingleLc2(requestId),
+    queryKey: [`fetch-data`, lcId],
+    queryFn: () => fetchSingleLc(lcId),
   });
 
   return (
@@ -43,17 +42,7 @@ const NotificationPopup = ({
             <div>
               <CheckIcon />
             </div>
-            {/* {processedTitle?.map((tit, index) => {
-                if (index === processedTitle?.length - 1) {
-                  return null;
-                }
-                return (
-                  <h2 key={tit} className="font-medium text-white text-wrap ">
-                    {tit}
-                  </h2>
-                );
-              })} */}
-            {title}
+            <h2 className="font-medium text-white text-wrap">{title}</h2>
           </div>
           <button onClick={onClose}>
             <X className="text-white" />
@@ -62,34 +51,40 @@ const NotificationPopup = ({
         <p className="font-regular w-[330px] text-[14px] text-white">
           {message}
         </p>
-        {/* {isLoading ? (
-          <ButtonSkeleton />
-        ) : user?.role === "bank" ? (
-          <TableBidStatus
-            id={requestId}
-            lcData={data}
-            isRisk={false}
-            isNotification={true}
-          />
-        ) : (
-          <div className="mt-2 flex gap-3">
-            <TableDialog
-              bids={data?.bids}
-              lcId={requestId}
+        <div className="mt-2 flex gap-3">
+          {user?.type === "bank" ? (
+            <div className="flex items-center w-full gap-4">
+              <TableDialog
+                lcId={lcId}
+                isRisk={false}
+                buttonTitle="Accept"
+                isNotification={true}
+              />
+              <TableDialog
+                lcId={lcId}
+                isRisk={false}
+                buttonTitle="Reject"
+                isNotification={true}
+              />
+            </div>
+          ) : (
+            <AddBid
+              isNotification={true}
+              triggerTitle={"Add Bid"}
+              status={"Add Bid"}
+              isInfo={false}
+              isDiscount={
+                (data?.type && data.type.includes("Discount")) || false
+              }
+              bidData={data?.bids}
+              id={lcId}
               isRisk={false}
-              buttonTitle="Accept"
             />
-            <TableDialog
-              bids={data?.bids}
-              lcId={requestId}
-              isRisk={false}
-              buttonTitle="Reject"
-            />
-          </div>
-        )} */}
-        <div className="mt-3">
-          <Button>Add Bid</Button>
+          )}
         </div>
+        {/* ) : (
+          <div className="mt-3"></div>
+        )} */}
       </div>
     </div>
   );

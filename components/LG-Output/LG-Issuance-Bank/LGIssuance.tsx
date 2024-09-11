@@ -386,7 +386,9 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
               convertDateToCommaString(data.lastDateOfReceivingBids) || null
             }
           />
-          <LGInfo label="Purpose of LG" value={data.purpose || null} />
+          {data.purpose && (
+            <LGInfo label="Purpose of LG" value={data.purpose || null} />
+          )}
 
           <h2 className="my-2 text-xl font-semibold text-[#1A1A26]">
             Beneficiary Details
@@ -533,10 +535,10 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                     handleSubmitOrNext(data.lastDateOfReceivingBids)
                   }
                   type="submit"
-                  className={`mt-4 h-12 w-full ${
+                  className={`mt-4 h-12 opacity-70 w-full ${
                     pricingValue && parseFloat(pricingValue) > 0
-                      ? "bg-[#44C894] text-white"
-                      : "bg-[#F1F1F5] text-black"
+                      ? "bg-[#44C894]  text-white hover:opacity-100 hover:bg-[#44C894]"
+                      : "bg-[#F1F1F5] text-black hover:opacity-100 hover:bg-[#F1F1F5]"
                   }`}
                 >
                   {selectedBank &&

@@ -317,6 +317,7 @@ const CreateRequestPage = () => {
           register={register}
           setValue={setValue}
           setStepCompleted={handleStepCompletion}
+          draftDataId={confirmationData?._id}
           days={days}
           setDays={setDays}
         />

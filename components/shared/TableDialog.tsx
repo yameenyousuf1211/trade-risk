@@ -89,7 +89,7 @@ export const BidCard = ({
           data?.discountMargin !== null &&
           data.bidType !== "LC Discounting" && (
             <div className={data.status === "Expired" ? "opacity-50" : ""}>
-              <p className="mb-1 text-sm text-para">Discount Spread</p>
+              <p className="mb-1 text-sm text-para">Discount Pricing</p>
               <p className="text-lg font-semibold">
                 {data.discountMargin}%{" "}
                 {data.bidType === "LC Confirmation & Discounting" &&
@@ -305,9 +305,11 @@ export const TableDialog = ({
       </DialogTrigger>
       <DialogContent className="h-full !max-h-[95vh] w-full max-w-6xl !p-0 flex flex-col">
         <div className="flex max-h-20 items-center justify-between border-b border-b-borderCol !py-5 px-7">
-          <h2 className="text-lg font-semibold">
-            {(lcData && lcData?.type) || "Risk Participation Request"}
-          </h2>
+          <div className="flex flex-col items-center w-1/2">
+            <h2 className="text-xl font-semibold text-center">
+              {(lcData && lcData?.type) || "Risk Participation Request"}
+            </h2>
+          </div>
           <DialogClose>
             <X className="size-7" />
           </DialogClose>

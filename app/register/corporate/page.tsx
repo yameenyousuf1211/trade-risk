@@ -76,6 +76,10 @@ const CompanyInfoPage = () => {
   // const isValid = true
 
   useEffect(() => {
+    const storedIsoCode = localStorage.getItem("isoCode");
+    if (storedIsoCode) {
+      setIsoCode(storedIsoCode || ""); // Set ISO code for fetching cities
+    }
     if (corporateData) {
       const data = JSON.parse(corporateData);
       data && setValues(data);
@@ -109,7 +113,7 @@ const CompanyInfoPage = () => {
   const onSubmit: SubmitHandler<typeof companyInfoSchema> = async (
     data: any
   ) => {
-    console.log("hello");
+    localStorage.setItem("isoCode", isoCode);
     const { response: emailResponse, success: emailSuccess } =
       await emailVerification(data.email);
     console.log(emailResponse, "email");
@@ -502,9 +506,15 @@ const CompanyInfoPage = () => {
                     role="combobox"
                     aria-expanded={cityOpen}
                     className={`w-full justify-between font-roboto text-sm font-normal capitalize ${
-                      cityVal ? "text-lightGray" : "text-gray-400"
+                      cityVal
+                        ? "text-lightGray"
+                        : cities.length > 0 && accountCountry
+                        ? "text-lightGray"
+                        : "text-gray-400"
                     }`}
-                    disabled={!cities || cities.length <= 0}
+                    disabled={
+                      !cities || (cities.length === 0 && !accountCountry)
+                    }
                   >
                     {cityVal == "" &&
                     accountCountry != JSON.parse(corporateData)?.accountCountry
@@ -594,7 +604,10 @@ const CompanyInfoPage = () => {
                 type="button"
                 variant="ghost"
                 className="bg-[#F5F7F9] text-[16px] text-[#92929D]"
-                onClick={() => localStorage.removeItem("corporateData")}
+                onClick={() => {
+                  localStorage.removeItem("corporateData");
+                  localStorage.removeItem("isoCode");
+                }}
               >
                 Go back to login
               </Button>

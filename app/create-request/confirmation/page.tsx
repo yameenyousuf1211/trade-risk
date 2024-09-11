@@ -316,6 +316,7 @@ const ConfirmationPage = () => {
         />
         <Step2
           watch={watch}
+          draftDataId={confirmationData?._id}
           register={register}
           setValue={setValue}
           setStepCompleted={handleStepCompletion}

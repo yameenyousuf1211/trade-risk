@@ -23,13 +23,14 @@ import { AMOUNT } from "@/utils/constant/lg";
 export const Step2 = ({
   register,
   setValue,
-  setStepCompleted,
   days,
   setDays,
+  draftDataId,
   watch,
 }: {
   register: UseFormRegister<any>;
   setValue: UseFormSetValue<any>;
+  draftDataId: string;
   setStepCompleted: (index: number, status: boolean) => void;
   days: number;
   setDays: React.Dispatch<React.SetStateAction<number>>;
@@ -52,11 +53,16 @@ export const Step2 = ({
   const [otherValue, setOtherValue] = useState("");
   const { addStep, removeStep } = useStepStore();
 
-  // useEffect(() => {
-  //   if (paymentTerms === "Usance LC") {
-  //     setValue("extraInfo", undefined);
-  //   }
-  // }, [paymentTerms]);
+  useEffect(() => {
+    if (!draftDataId) {
+      if (paymentTerms === "Sight LC") {
+        setValue("extraInfo", undefined);
+      } else if (paymentTerms !== "Sight LC") {
+        setValue("extraInfo", undefined);
+        setDays(90);
+      }
+    }
+  }, [paymentTerms]);
 
   const handleChange = (e: any) => {
     const { value } = e.target;

@@ -30,6 +30,7 @@ import {
 import { TableDialog } from "./TableDialog";
 import { usePathname } from "next/navigation";
 import { fetchRisk } from "@/services/apis/risk.api";
+import { formatFirstLetterOfWord } from "../LG-Output/helper";
 
 const SliderCard = ({
   info,
@@ -83,25 +84,25 @@ const SliderCard = ({
           : info.confirmationPrice?.toLocaleString() + ".00" || "00"}
       </p>
       <p className="font-roboto text-para font-medium mt-1">
-        {info.bidBy?.name || ""}
+        {formatFirstLetterOfWord(info.bidBy?.name) || ""}
       </p>
-      <p className="font-roboto text-para text-sm font-light truncate capitalize">
+      <p className="font-roboto text-para text-sm font-medium truncate capitalize">
         {info.bidBy?.country || "Pakistan"}
       </p>
       <div className="flex items-center gap-x-2 mt-2">
         <Button
           onClick={() => handleSubmit("Accepted", info._id)}
-          className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
+          className="border-2 border-[#90ee8f] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
           disabled={isPending}
         >
-          <Check className="size-5 text-para" />
+          <Check className="size-5 text-para" color="lightGreen" />
         </Button>
         <Button
           onClick={() => handleSubmit("Rejected", info._id)}
-          className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
+          className="border-2 border-[#ff0000] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
           disabled={isPending}
         >
-          <X className="size-5 text-para" />
+          <X className="size-5 text-para" color="red" />
         </Button>
       </div>
     </div>
@@ -508,7 +509,7 @@ export const Sidebar = ({
             </SelectContent>
           </Select>
           <p className="text-white text-center font-semibold">
-            Create a quick report of all transaction data
+            Generate a quick report of all transaction data
           </p>
           <Button
             onClick={() => generateReport(generateType)}
@@ -516,7 +517,7 @@ export const Sidebar = ({
             size="lg"
             disabled={isLoading}
           >
-            Generate Report
+            Download Report
           </Button>
         </div>
       )}
@@ -527,7 +528,7 @@ export const Sidebar = ({
               isBank ? "text-left" : "text-center"
             } font-semibold mb-3`}
           >
-            {isBank ? "Needs Action" : "Needs your attention"}
+            {isBank ? "Needs Action" : "Needs Your Attention"}
           </h4>
           <div className="flex flex-col gap-y-5">
             {isRisk

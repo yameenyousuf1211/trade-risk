@@ -274,12 +274,16 @@ export const AddBid = ({
               ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
               : status === "Add Bid" && isBank
               ? "bg-[#1A1A26] text-white text-sm"
-              : "px-3 mt-2 bg-[#F2994A] hover:bg-[#F2994A]/90 text-white opacity-80"
+              : `px-3 mt-2 bg-[#F2994A] hover:bg-[#F2994A]/90 text-white opacity-80 ${
+                  isNotification && "bg-[#0e1829] hover:bg-black/90 "
+                }`
           } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
           disabled={
-            ((lcData?.status === "Accepted" || lcData?.status === "Expired") &&
-              status !== "Accepted") ||
-            computedStatus === "Pending"
+            (((lcData?.status === "Accepted" && !isNotification) ||
+              (lcData?.status === "Expired" && !isNotification)) &&
+              status !== "Accepted" &&
+              !isNotification) ||
+            (computedStatus === "Pending" && !isNotification)
           }
         >
           {status === "Accepted"
@@ -291,10 +295,12 @@ export const AddBid = ({
       )}
       <DialogContent className="w-full max-w-6xl p-0 !max-h-[85vh] h-full">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
-          <h2 className="text-lg font-semibold">
-            {(lcData?.type && lcData?.type + " Request") ||
-              "Risk Participation Request"}
-          </h2>
+          <div className="flex flex-col items-center w-1/2">
+            <h2 className="text-xl font-semibold text-center">
+              {(lcData && lcData?.type + " Request") ||
+                "Risk Participation Request"}
+            </h2>
+          </div>
           <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>
             <X className="size-7" />
           </DialogClose>
@@ -1006,14 +1012,25 @@ export const AddBid = ({
 
                   {isDiscount && (
                     <div className="">
-                      <label
-                        htmlFor="discount"
-                        className="block font-semibold mb-2"
-                      >
-                        {lcData?.type === "LC Discounting"
-                          ? "Discount Spread"
-                          : "Discount Pricing"}
-                      </label>
+                      <div className="flex items-center justify-between">
+                        <label
+                          htmlFor="discount"
+                          className="block font-semibold mb-2"
+                        >
+                          {lcData?.type === "LC Discounting"
+                            ? "Discount Spread"
+                            : "Discount Pricing"}
+                        </label>
+                        <p className="text-xs text-[#29C084]">
+                          {lcData?.type === "LC Discounting" && (
+                            <p>
+                              Client&apos;s Expected Price:{" "}
+                              {lcData?.baseRate.toUpperCase()}+
+                              {lcData?.discountingInfo?.pricePerAnnum} P.A
+                            </p>
+                          )}
+                        </p>
+                      </div>
                       <div className="flex flex-col gap-y-3 items-center w-full">
                         <label
                           id="base-rate"

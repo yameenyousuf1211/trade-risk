@@ -15,7 +15,7 @@ export default function AuthLayout({
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.addEventListener("message", (event) => {
         const data = event.data;
-        console.log(data?.notification,"data?.no")
+        console.log(data?.notification, "data?.no");
         setNotification({
           title: data?.notification?.title,
           message: data?.notification?.body,
@@ -33,6 +33,7 @@ export default function AuthLayout({
       <Header />
       {notification && (
         <NotificationPopup
+          lcId={notification?.requestId}
           title={notification?.title}
           message={notification?.message}
           onClose={() => setNotification(null)}

@@ -62,6 +62,7 @@ const getFilteredHeaders = (filter: string | null) => {
         "Date Submitted",
         "Country of issuing bank",
         "Discounting Rate",
+        "Term",
         "Bid Status",
       ];
     case "LC Confirmation & Discounting":
@@ -355,6 +356,17 @@ export const BankTable = ({
                             (item as IBids).confirmationPrice.toLocaleString() +
                               ".00%") ||
                             ""
+                        )}
+                      />
+                    )}
+                    {filter === "LC Discounting" && (
+                      <TableDataCell
+                        data={renderData(
+                          (item as IBids)?.perAnnum
+                            ? "Per Annum"
+                            : !item.perAnnum
+                            ? "Flat"
+                            : ""
                         )}
                       />
                     )}

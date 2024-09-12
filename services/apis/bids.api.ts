@@ -124,19 +124,17 @@ export const fetchCorporateBids = async ({
   limit,
   filter,
   search,
-  userId,
 }: {
   page: number;
   limit: number;
   filter?: string;
   search?: string;
-  userId: string;
 }) => {
   try {
     const { data } = await api.get(
       `/bids?limit=${limit || 7}&page=${page || 1}&type=${
         (filter && encodeURIComponent(filter)) || ""
-      }&search=${search || ""}&corporateBusinessId=${userId}`
+      }&search=${search || ""}`
     );
     return data.data;
   } catch (error: any) {
@@ -148,7 +146,7 @@ export const fetchCorporateBids = async ({
 export const getBidsCount = async () => {
   try {
     const { data } = await api.get(`/bids/count/list`);
-    
+
     return data.data;
   } catch (error: any) {
     console.log(error);
@@ -159,8 +157,8 @@ export const getBidsCount = async () => {
 export const getTotalRequests = async () => {
   try {
     const { data } = await api.get(`/lcs/total-request/list`);
-    console.log("total-requests",data );
-    
+    console.log("total-requests", data);
+
     return data.data;
   } catch (error: any) {
     console.log(error);

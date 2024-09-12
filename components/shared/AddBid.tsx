@@ -34,6 +34,7 @@ import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
 import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargin";
 import ViewFileAttachment from "./ViewFileAttachment";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
+import { formatFirstLetterOfWord } from "../LG-Output/helper";
 
 const LCInfo = ({
   label,
@@ -293,7 +294,7 @@ export const AddBid = ({
             : computedStatus || "Pending"}
         </DialogTrigger>
       )}
-      <DialogContent className="w-full max-w-6xl p-0 !max-h-[85vh] h-full">
+      <DialogContent className="h-full !max-h-[95vh] w-full max-w-6xl !p-0 flex flex-col">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <div className="flex flex-col items-center w-1/2">
             <h2 className="text-xl font-semibold text-center">
@@ -754,27 +755,68 @@ export const AddBid = ({
                                   Submitted by
                                 </p>
                                 <p className="text-lg font-semibold capitalize">
-                                  {bid ? bid.bidBy.name : "Habib Bank Limited"}
+                                  {bid
+                                    ? formatFirstLetterOfWord(bid?.bidBy?.name)
+                                    : "Habib Bank Limited"}
                                 </p>
                               </div>
 
-                              {/* Confirmation Rate */}
-                              <div
-                                className={
-                                  bid.status === "Expired" ? "opacity-50" : ""
-                                }
-                              >
-                                <p className="mb-1 text-sm text-para font-roboto">
-                                  Confirmation Rate
-                                </p>
-                                <p className="text-lg font-semibold text-text">
-                                  {bid ? bid.confirmationPrice : "1.75"}% per
-                                  annum
-                                </p>
-                              </div>
+                              {lcData.type !== "LC Discounting" && (
+                                <div
+                                  className={
+                                    bid.status === "Expired" ? "opacity-50" : ""
+                                  }
+                                >
+                                  <p className="mb-1 text-sm text-para font-roboto">
+                                    Confirmation Rate
+                                  </p>
+                                  <p className="text-lg font-semibold text-text">
+                                    {bid ? bid.confirmationPrice : "1.75"}%{" "}
+                                    <span className="text-black">
+                                      per annum
+                                    </span>
+                                  </p>
+                                </div>
+                              )}
 
-                              {/* Discounting Base Rate */}
-
+                              {lcData.type === "LC Discounting" && (
+                                <div
+                                  className={
+                                    bid.status === "Expired" ? "opacity-50" : ""
+                                  }
+                                >
+                                  <p className="mb-1 text-sm text-para font-roboto">
+                                    Discount Rate
+                                  </p>
+                                  <p className="text-lg font-semibold capitalize">
+                                    {bid ? (
+                                      <>
+                                        <span className="text-[#0361ff]">
+                                          {bid.discountMargin}%
+                                        </span>{" "}
+                                        {bid.discountBaseRate}
+                                      </>
+                                    ) : (
+                                      "-"
+                                    )}
+                                  </p>
+                                </div>
+                              )}
+                              {lcData.type ===
+                                "LC Confirmation & Discounting" && (
+                                <div
+                                  className={
+                                    bid.status === "Expired" ? "opacity-50" : ""
+                                  }
+                                >
+                                  <p className="mb-1 text-sm text-para font-roboto">
+                                    Discount Pricing
+                                  </p>
+                                  <p className="text-lg font-semibold capitalize">
+                                    {bid ? `${bid.discountMargin}%` : "-"}
+                                  </p>
+                                </div>
+                              )}
                               {/* Country */}
                               <div
                                 className={
@@ -798,7 +840,10 @@ export const AddBid = ({
                                   Bid Received
                                 </p>
                                 <p className="text-lg font-semibold">
-                                  {convertDate(bid.createdAt)}
+                                  {convertDateAndTimeToStringGMT({
+                                    date: bid.createdAt,
+                                    sameLine: false,
+                                  })}
                                 </p>
                               </div>
                               <div

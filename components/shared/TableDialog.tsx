@@ -24,6 +24,7 @@ import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
 import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargin";
 import ViewFileAttachment from "./ViewFileAttachment";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
+import { formatFirstLetterOfWord } from "../LG-Output/helper";
 
 export const BidCard = ({
   data,
@@ -73,7 +74,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm capitalize text-para">Submitted by</p>
           <p className="text-lg font-semibold capitalize">
-            {data.bidBy?.name || ""}
+            {formatFirstLetterOfWord(data.bidBy?.name) || ""}
           </p>
         </div>
         {data.bidType !== "LC Discounting" && (

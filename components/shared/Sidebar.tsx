@@ -167,15 +167,23 @@ const RequestCard = ({
                 </p>
 
                 <p className="text-para text-sm">Request Expiry</p>
-                <p className="text-red-500 font-medium text-sm mb-2">
-                  {(data as ILcs)?.period?.endDate
-                    ? formatLeftDays((data as ILcs)?.period?.endDate)
-                    : data?.expiryDate
-                    ? formatLeftDays((data as IRisk)?.expiryDate)
-                    : data?.otherBond?.lgExpiryDate
-                    ? formatLeftDays(new Date(data?.otherBond?.lgExpiryDate))
-                    : null}
-                </p>
+                {(data as ILcs)?.type === "LG Issuance" ? (
+                  <p className="text-red-500 font-medium text-[12px] mb-2">
+                    {(data as ILcs)?.lastDateOfReceivingBids
+                      ? formatLeftDays((data as ILcs)?.lastDateOfReceivingBids)
+                      : null}
+                  </p>
+                ) : (
+                  <p className="text-red-500 font-medium text-[12px] mb-2">
+                    {(data as ILcs)?.period?.endDate
+                      ? formatLeftDays((data as ILcs)?.period?.endDate)
+                      : data?.expiryDate
+                      ? formatLeftDays((data as IRisk)?.expiryDate)
+                      : data?.otherBond?.lgExpiryDate
+                      ? formatLeftDays(new Date(data?.otherBond?.lgExpiryDate))
+                      : null}
+                  </p>
+                )}
                 <h3 className="font-poppins text-xl font-semibold uppercase">
                   {data.currency ?? "USD"}{" "}
                   {(data as ILcs)?.amount
@@ -219,13 +227,23 @@ const RequestCard = ({
               </span>
               <span className="text-para text-[10px] flex items-center">
                 <Dot />
-                {(data as ILcs)?.period?.endDate
-                  ? formatLeftDays((data as ILcs)?.period?.endDate)
-                  : data?.expiryDate
-                  ? formatLeftDays((data as IRisk)?.expiryDate)
-                  : data?.otherBond?.lgExpiryDate
-                  ? formatLeftDays(new Date(data?.otherBond?.lgExpiryDate))
-                  : null}
+                {(data as ILcs)?.type === "LG Issuance" ? (
+                  <span className="text-[12px] text-[#ff0000] font-medium">
+                    {(data as ILcs)?.lastDateOfReceivingBids
+                      ? formatLeftDays((data as ILcs)?.lastDateOfReceivingBids)
+                      : null}
+                  </span>
+                ) : (
+                  <span className="text-[12px] text-[#ff0000] font-medium">
+                    {(data as ILcs)?.period?.endDate
+                      ? formatLeftDays((data as ILcs)?.period?.endDate)
+                      : data?.expiryDate
+                      ? formatLeftDays((data as IRisk)?.expiryDate)
+                      : data?.otherBond?.lgExpiryDate
+                      ? formatLeftDays(new Date(data?.otherBond?.lgExpiryDate))
+                      : null}
+                  </span>
+                )}
               </span>
             </p>
             <h3 className="text-xl font-semibold uppercase">

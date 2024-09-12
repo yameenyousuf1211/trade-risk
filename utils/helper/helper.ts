@@ -490,9 +490,5 @@ export const convertStringValueToDate = (responseData: any) => {
 };
 
 export const formatAmount = (amount: number | string) => {
-  return Number(amount).toFixed(2).toLocaleString("en-US");
-};
-
-export const formatCurrencyAmount = (value) => {
-  return value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return Number(amount).toLocaleString("en-US");
 };

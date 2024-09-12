@@ -339,9 +339,11 @@ export const BankTable = ({
                       <TableDataCell
                         data={renderData(
                           (item as IBids)?.discountMargin
-                            ? `${(item as IBids)?.discountBaseRate.toUpperCase()} ${(
+                            ? `${(
                                 item as IBids
-                              ).discountMargin.toLocaleString()}.00 %`
+                              )?.discountBaseRate.toUpperCase()} + ${(
+                                item as IBids
+                              ).discountMargin.toLocaleString()}.00%`
                             : ""
                         )}
                       />
@@ -351,7 +353,7 @@ export const BankTable = ({
                         data={renderData(
                           ((item as IBids)?.confirmationPrice &&
                             (item as IBids).confirmationPrice.toLocaleString() +
-                              ".00 %") ||
+                              ".00%") ||
                             ""
                         )}
                       />
@@ -363,7 +365,7 @@ export const BankTable = ({
                             ((item as IBids)?.confirmationPrice &&
                               (
                                 item as IBids
-                              ).confirmationPrice.toLocaleString() + ".00 %") ||
+                              ).confirmationPrice.toLocaleString() + ".00%") ||
                               ""
                           )}
                         />

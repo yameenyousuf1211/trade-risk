@@ -86,37 +86,41 @@ export const BidCard = ({
             </p>
           </div>
         )}
-        {data?.discountMargin !== undefined &&
-          data?.discountMargin !== null &&
-          data.bidType !== "LC Discounting" && (
+        {data?.discountMargin &&
+          data.bidType === "LC Confirmation & Discounting" && (
             <div className={data.status === "Expired" ? "opacity-50" : ""}>
               <p className="mb-1 text-sm text-para">Discount Pricing</p>
               <p className="text-lg font-semibold">
-                {data.discountMargin}%{" "}
-                {data.bidType === "LC Confirmation & Discounting" &&
-                  data?.discountBaseRate.toUpperCase()}
+                {`${data.discountBaseRate.toUpperCase()} + `}
+                <span className="text-text">{`${data.discountMargin}%`}</span>
               </p>
             </div>
           )}
-        {data?.discountMargin !== undefined &&
-          data?.discountMargin !== null &&
-          data.bidType === "LC Discounting" && (
-            <div className={data.status === "Expired" ? "opacity-50" : ""}>
-              <p className="mb-1 text-sm text-para">Discount Rate</p>
-              <p className="text-lg font-semibold text-text">
-                {data.discountMargin}%{" "}
-                <span className="text-black">
-                  {data?.discountBaseRate.toUpperCase()}
-                </span>
-              </p>
-            </div>
-          )}
+        {data?.discountMargin && data.bidType === "LC Discounting" && (
+          <div className={data.status === "Expired" ? "opacity-50" : ""}>
+            <p className="mb-1 text-sm text-para">Discount Rate</p>
+            <p className="text-lg font-semibold">
+              {data?.discountBaseRate.toUpperCase()} +{" "}
+              <span className="text-text">{data.discountMargin}% </span>
+            </p>
+          </div>
+        )}
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="mb-1 text-sm text-para ">Country</p>
           <p className="text-lg font-semibold capitalize">
             {data.bidBy.country}
           </p>
         </div>
+        {data.bidType === "LC Discounting" && (
+          <div className={data.status === "Expired" ? "opacity-50" : ""}>
+            <p className="mb-1 text-sm text-para">Term</p>
+            <p className="text-lg font-semibold text-text">
+              <span className="text-black">
+                {data.perAnnum ? "Per Annum" : "Flat"}
+              </span>
+            </p>
+          </div>
+        )}
         {user.type === "corporate" && (
           <div className={data.status === "Expired" ? "opacity-50" : ""}>
             <p className="mb-1 text-sm text-para">Bid Submitted</p>

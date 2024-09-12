@@ -18,7 +18,7 @@ const ButtonSkeleton = () => {
 const NotificationPopup = ({
   title,
   message,
-  // lcId,
+  lcId,
   onClose,
 }: {
   title: string;
@@ -27,7 +27,6 @@ const NotificationPopup = ({
   onClose: () => void;
 }) => {
   const { user } = useAuth();
-  const lcId = "66e16cc75c1f3d6df0034769";
 
   const { data, isLoading } = useQuery({
     queryKey: [`fetch-data`, lcId],
@@ -52,17 +51,19 @@ const NotificationPopup = ({
           {message}
         </p>
         <div className="mt-2 flex gap-3">
-          {user?.type === "bank" ? (
+          {user?.type === "corporate" ? (
             <div className="flex items-center w-full gap-4">
               <TableDialog
                 lcId={lcId}
                 isRisk={false}
+                bids={data?.bids}
                 buttonTitle="Accept"
                 isNotification={true}
               />
               <TableDialog
                 lcId={lcId}
                 isRisk={false}
+                bids={data?.bids}
                 buttonTitle="Reject"
                 isNotification={true}
               />

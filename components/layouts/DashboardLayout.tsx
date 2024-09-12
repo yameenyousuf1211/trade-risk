@@ -19,7 +19,7 @@ export default function AuthLayout({
         setNotification({
           title: data?.notification?.title,
           message: data?.notification?.body,
-          lcId: data?.notification?.data.lc,
+          lcId: data?.notification?.data?.lc,
         });
 
         setTimeout(() => {

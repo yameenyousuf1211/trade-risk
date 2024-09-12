@@ -326,7 +326,7 @@ export const TableDialog = ({
             {/* Left Section */}
             {isRisk ? (
               <>
-                <div className="flex max-h-[90vh] w-full flex-col overflow-y-scroll">
+                <div className="flex max-h-[90vh] w-full flex-col overflow-y-scroll pb-5">
                   <div className="bg-bg px-4 pb-5">
                     <div className="flex w-full items-center justify-between gap-x-2 rounded-lg border border-borderCol bg-white p-2">
                       <div className="flex items-center gap-x-2">
@@ -717,7 +717,7 @@ export const TableDialog = ({
                 </div> */}
               </div>
               {/* Bids */}
-              <div className="mt-5 flex max-h-[65vh] flex-col gap-y-4 overflow-y-auto overflow-x-hidden">
+              <div className="mt-5 flex max-h-[90vh] flex-col gap-y-4 overflow-y-auto overflow-x-hidden pb-5">
                 {isBank
                   ? userBids &&
                     userBids.length > 0 &&

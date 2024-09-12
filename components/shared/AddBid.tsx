@@ -311,7 +311,7 @@ export const AddBid = ({
         ) : (
           <div className="overflow-y-hidden relative -mt-4 flex items-start justify-between h-full">
             {/* Left Section */}
-            <div className="w-full border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[75vh]">
+            <div className="w-full border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[95vh]">
               {isLoading ? (
                 <div className="w-full h-full center">
                   <Loader />
@@ -693,7 +693,7 @@ export const AddBid = ({
             </div>
 
             {/* Right Section */}
-            <div className="w-full h-full flex flex-col justify-start px-5 overflow-y-auto max-h-[75vh]">
+            <div className="w-full h-full flex flex-col justify-start px-5 overflow-y-auto max-h-[95vh]">
               <p className="text-xl font-semibold pt-5">
                 {computedStatus == "Add bid" || !isInfo
                   ? "Submit Your Bid"

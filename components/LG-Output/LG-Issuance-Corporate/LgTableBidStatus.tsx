@@ -134,7 +134,7 @@ export const LGTableBidStatus = ({
     { label: "Purpose of LG", value: data.purpose },
     data.remarks && { label: "Remarks", value: data.remarks },
     { label: "Preference", value: data.priceQuotes },
-  ].filter(Boolean); // Filter out any `false` or `undefined` items
+  ].filter((detail) => detail.value); // Filter out any `false` or `undefined` items
 
   if (data.expectedPrice?.expectedPrice) {
     otherDetails.push({

@@ -19,6 +19,7 @@ export default function AuthLayout({
         setNotification({
           title: data?.notification?.title,
           message: data?.notification?.body,
+          lcId: data?.notification?.data.lc,
         });
 
         setTimeout(() => {
@@ -33,7 +34,7 @@ export default function AuthLayout({
       <Header />
       {notification && (
         <NotificationPopup
-          lcId={notification?.requestId}
+          lcId={notification?.lcId}
           title={notification?.title}
           message={notification?.message}
           onClose={() => setNotification(null)}

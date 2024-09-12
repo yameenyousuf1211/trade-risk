@@ -30,7 +30,6 @@ import { useAuth } from "@/context/AuthProvider";
 const renderData = (data: string | number | undefined) => {
   return data ? data : "-";
 };
-
 const getCenteredClass = (data: string | number | undefined) => {
   return data === "-" ? "text-center w-full" : "text-start";
 };

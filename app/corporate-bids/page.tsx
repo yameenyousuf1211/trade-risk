@@ -42,7 +42,6 @@ const CorporateBidsPage = ({ searchParams }: SearchParams) => {
         limit,
         filter,
         search,
-        userId: user?.business?._id,
       }),
   });
 

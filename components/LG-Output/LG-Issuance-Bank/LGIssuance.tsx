@@ -491,13 +491,16 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                       <LGInfo
                         label="LG Tenor"
                         value={
-                          selectedBond.lgTenor
-                            ? `${
-                                selectedBond.lgTenor.lgTenorValue
-                              } ${selectedBond.lgTenor.lgTenorType.substring(
-                                0,
-                                selectedBond.lgTenor.lgTenorType.length - 1
-                              )}'s`
+                          selectedBond?.lgTenor
+                            ? `${selectedBond?.lgTenor?.lgTenorValue} ${
+                                selectedBond?.lgTenor?.lgTenorValue === 1
+                                  ? selectedBond?.lgTenor?.lgTenorType.substring(
+                                      0,
+                                      selectedBond?.lgTenor?.lgTenorType
+                                        .length - 1
+                                    )
+                                  : selectedBond?.lgTenor?.lgTenorType
+                              }`
                             : null
                         }
                       />

@@ -335,18 +335,37 @@ export const BankTable = ({
                         </div>
                       </TableCell>
                     )}
-                    <TableDataCell
-                      data={renderData(
-                        ((item as IBids)?.confirmationPrice &&
-                          (item as IBids).confirmationPrice.toLocaleString() +
-                            ".00 %") ||
-                          ""
-                      )}
-                    />
+                    {filter !== "LC Confirmation" && (
+                      <TableDataCell
+                        data={renderData(
+                          (item as IBids)?.discountMargin
+                            ? `${(item as IBids)?.discountBaseRate.toUpperCase()} ${(
+                                item as IBids
+                              ).discountMargin.toLocaleString()}.00 %`
+                            : ""
+                        )}
+                      />
+                    )}
+                    {filter === "LC Confirmation" && (
+                      <TableDataCell
+                        data={renderData(
+                          ((item as IBids)?.confirmationPrice &&
+                            (item as IBids).confirmationPrice.toLocaleString() +
+                              ".00 %") ||
+                            ""
+                        )}
+                      />
+                    )}
                     {filter === "LC Confirmation & Discounting" && (
                       <>
                         <TableDataCell
-                          data={renderData((item as IBids)?.discountBaseRate)}
+                          data={renderData(
+                            ((item as IBids)?.confirmationPrice &&
+                              (
+                                item as IBids
+                              ).confirmationPrice.toLocaleString() + ".00 %") ||
+                              ""
+                          )}
                         />
                       </>
                     )}

@@ -136,7 +136,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
                       {otherBond?.Contract
                         ? `${otherBond.name} - ${
                             lgType.currencyType
-                          } ${formatAmount(lgType.amount.toFixed(2))}`
+                          } ${formatAmount(lgType.amount)}`
                         : `${lgType.type} - ${
                             lgType.currencyType
                           } ${formatAmount(lgType.amount)}`}

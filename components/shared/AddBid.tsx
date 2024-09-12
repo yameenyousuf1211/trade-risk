@@ -791,10 +791,10 @@ export const AddBid = ({
                                   <p className="text-lg font-semibold capitalize">
                                     {bid ? (
                                       <>
-                                        <span className="text-[#0361ff]">
+                                        {bid.discountBaseRate.toUpperCase()} +{" "}
+                                        <span className="text-text">
                                           {bid.discountMargin}%
                                         </span>{" "}
-                                        {bid.discountBaseRate}
                                       </>
                                     ) : (
                                       "-"
@@ -812,8 +812,10 @@ export const AddBid = ({
                                   <p className="mb-1 text-sm text-para font-roboto">
                                     Discount Pricing
                                   </p>
-                                  <p className="text-lg font-semibold capitalize">
-                                    {bid ? `${bid.discountMargin}%` : "-"}
+                                  <p className="text-lg font-semibold">
+                                    {bid &&
+                                      `${bid.discountBaseRate.toUpperCase()} + `}
+                                    <span className="text-text">{`${bid.discountMargin}%`}</span>
                                   </p>
                                 </div>
                               )}
@@ -830,7 +832,22 @@ export const AddBid = ({
                                   {bid ? bid.bidBy.country : "Pakistan"}
                                 </p>
                               </div>
-
+                              {lcData.type === "LC Discounting" && (
+                                <div
+                                  className={
+                                    bidData.status === "Expired"
+                                      ? "opacity-50"
+                                      : ""
+                                  }
+                                >
+                                  <p className="mb-1 text-sm text-para">Term</p>
+                                  <p className="text-lg font-semibold text-text">
+                                    <span className="text-black">
+                                      {bid.perAnnum ? "Per Annum" : "Flat"}
+                                    </span>
+                                  </p>
+                                </div>
+                              )}
                               <div
                                 className={
                                   bid.status === "Expired" ? "opacity-50" : ""

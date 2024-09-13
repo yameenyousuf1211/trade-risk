@@ -76,12 +76,19 @@ const SliderCard = ({
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
       <p className="uppercase">
-        {lcData?.type === "LG Issuance"
-          ? lcData?.totalContractCurrency || lcData?.currency || "USD"
-          : lcData?.currency || "USD"}{" "}
-        {lcData?.type === "LG Issuance"
-          ? total?.toLocaleString() + ".00"
-          : info.confirmationPrice?.toLocaleString() + ".00" || "00"}
+        {(lcData?.type === "LG Issuance" && lcData?.totalContractCurrency) ||
+          (lcData?.type === "LG Issuance" && "USD ")}
+
+        {lcData?.type === "LG Issuance" ? (
+          <>{total?.toLocaleString()}.00</>
+        ) : lcData?.type === "LC Confirmation" ||
+          lcData?.type === "LC Confirmation & Discounting" ? (
+          <>{info?.confirmationPrice?.toLocaleString()}.00%</>
+        ) : lcData?.type === "LC Discounting" ? (
+          <>
+            {info?.discountBaseRate} + {info?.discountMargin}.00%
+          </>
+        ) : null}
       </p>
       <p className="font-roboto text-para font-medium mt-1">
         {formatFirstLetterOfWord(info.bidBy?.name) || ""}

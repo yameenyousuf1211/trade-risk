@@ -171,7 +171,6 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
             </div>
           ))}
         </div>
-
         {userBidStatus.status !== "Pending" &&
           userBidStatus.status !== "Accepted" &&
           userBidStatus.status !== "Rejected" &&
@@ -185,7 +184,6 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
               isLg={true}
             />
           )}
-
         <div className="flex flex-col gap-2">
           {["Pending", "Not Accepted", "Rejected", "Expired"].includes(
             userBidStatus.status

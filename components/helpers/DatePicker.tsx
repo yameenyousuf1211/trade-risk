@@ -50,9 +50,10 @@ export const DatePicker = ({
   }, [value]);
 
   return (
-    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-      <PopoverTrigger asChild>
+    <Popover open={isPopoverOpen}>
+      <PopoverTrigger asChild onClick={() => setIsPopoverOpen(!isPopoverOpen)}>
         <Button
+          onClick={() => setIsPopoverOpen(!isPopoverOpen)}
           disabled={disabled}
           variant={"outline"}
           className={cn(

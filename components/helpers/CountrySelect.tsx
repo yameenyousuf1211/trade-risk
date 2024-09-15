@@ -24,6 +24,7 @@ export const CountrySelect = ({
   name,
   setValueChange,
   setIsoCode,
+  extraClassName,
   placeholder,
   value,
 }: {
@@ -33,6 +34,7 @@ export const CountrySelect = ({
   setValueChange?: any;
   placeholder?: string;
   value?: string;
+  extraClassName?: string;
 }) => {
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryVal, setCountryVal] = useState(value || "");
@@ -57,7 +59,7 @@ export const CountrySelect = ({
             aria-expanded={countryOpen}
             className={`capitalize font-roboto w-full justify-between font-normal text-sm ${
               countryVal ? "text-lightGray" : "text-gray-400"
-            } `}
+            } ${extraClassName}`}
           >
             {countryVal
               ? countries?.find(

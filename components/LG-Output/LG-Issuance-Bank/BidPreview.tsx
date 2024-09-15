@@ -16,7 +16,7 @@ interface BidPreviewProps {
   bidValidityDate?: string;
   handleNewBid: () => void;
   allBondsFilled: any;
-  otherBond: any; // Add this prop to pass otherBond details
+  otherBond: any;
 }
 
 export const BidPreview: React.FC<BidPreviewProps> = ({

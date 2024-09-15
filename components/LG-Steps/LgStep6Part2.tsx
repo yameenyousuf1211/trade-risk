@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { LgStepsProps2 } from "@/types/lg";
 import { Input } from "../ui/input";
 import {
@@ -11,26 +11,47 @@ import {
 import { getCurrency } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import { DatePicker } from "../helpers";
-import { toast } from "sonner";
 import useStepStore from "@/store/lcsteps.store";
 import { LG_DETAILS } from "@/utils/constant/lg";
-import useLcIssuance from "@/store/issueance.store";
 
 const LgStep6Part2: React.FC<LgStepsProps2> = ({
   register,
   watch,
   setStepCompleted,
   setValue,
-  name,
 }) => {
   const [number, setNumber] = useState("");
-  const { data } = useLcIssuance();
+  const { addStep, removeStep } = useStepStore();
+
+  // Watch for lgDetails object fields
+  const lgDetailCurrency = watch("lgDetails.currency");
+  const lgDetailAmount = watch("lgDetails.amount");
+  const lgTenorType = watch("lgDetails.lgTenor.type");
+  const lgTenorValue = watch("lgDetails.lgTenor.value");
+  const expectedDate = watch("lgDetails.expectedDate");
+  const lgExpiryDate = watch("lgDetails.lgExpiryDate");
 
   useEffect(() => {
-    if (number && !number?.toString()?.includes(".00")) {
-      setNumber((prev) => prev + ".00");
+    console.log(lgExpiryDate, "lgExpiryDate");
+    if (lgDetailAmount && lgTenorValue && expectedDate && lgExpiryDate) {
+      addStep(LG_DETAILS);
+    } else {
+      removeStep(LG_DETAILS);
     }
-  }, [number]);
+  }, [lgDetailAmount, lgTenorValue, expectedDate, lgExpiryDate]);
+
+  // Function to format number with commas
+  const formatNumberWithCommas = (value: string) => {
+    const numberString = value.replace(/,/g, "");
+    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const handleChange = (event: any) => {
+    const { value } = event.target;
+    const formattedNumber = formatNumberWithCommas(value);
+    setNumber(formattedNumber);
+    setValue("lgDetails.amount", value);
+  };
 
   const { data: currency } = useQuery({
     queryKey: ["currency"],
@@ -48,82 +69,6 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
     [currency]
   );
 
-  const lgDetailCurrency = watch(`${name}.lgDetailCurrency`);
-  const lgDetailAmount = watch(`${name}.lgDetailAmount`);
-  const cashMargin = watch(`${name}.cashMargin`);
-  const lgTenorType = watch(`${name}.lgTenor.lgTenorType`);
-  // console.log("🚀 ~ cashMargin:", cashMargin);
-  const lgTenorValue = watch(`${name}.lgTenor.lgTenorValue`);
-  const expectedDate = watch(`${name}.expectedDate`);
-  const lgExpiryDate = watch(`${name}.lgExpiryDate`);
-  // console.log("🚀 ~ expectedDate:", expectedDate);
-  // console.log("🚀 ~ lgExpiryDate:", lgExpiryDate);
-  const { addStep, removeStep } = useStepStore();
-
-  useEffect(() => {
-    if (cashMargin && !cashMargin?.toString()?.includes(".00")) {
-      setValue(`${name}.cashMargin`, cashMargin + ".00");
-    }
-  }, [cashMargin]);
-
-  useEffect(() => {
-    if (!lgDetailCurrency) setValue(`${name}.lgDetailCurrency`, "USD");
-    if (!lgTenorType) setValue(`${name}.lgTenor.lgTenorType`, "Months");
-  }, []);
-
-  useEffect(() => {
-    //@ts-ignore
-    if (data[name]?.lgDetailAmount) {
-      //@ts-ignore
-      setValue(`${name}.lgDetailAmount`, data[name]?.lgDetailAmount);
-      //@ts-ignore
-      setNumber(formatNumberWithCommas(data[name]?.lgDetailAmount));
-      //@ts-ignore
-      setValue(`${name}.expectedDate`, data[name]?.expectedDate);
-      //@ts-ignore
-      setValue(`${name}.lgExpiryDate`, data[name]?.lgExpiryDate);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (
-      lgDetailAmount &&
-      cashMargin &&
-      lgTenorValue &&
-      expectedDate &&
-      lgExpiryDate
-    ) {
-      addStep(LG_DETAILS);
-    } else removeStep(LG_DETAILS);
-  }, [lgDetailAmount, cashMargin, lgTenorValue, expectedDate, lgExpiryDate]);
-
-  // Function to format number with commas
-  const formatNumberWithCommas = (value: string) => {
-    value = value?.toString();
-    const numberString = value.replace(/,/g, ""); // Remove existing commas
-    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
-
-  const handleOnChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    name: string
-  ) => {
-    const value = event.target.value;
-    const filteredValue = value;
-    setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
-  };
-
-  // Handler for input change
-  const handleChange = (event: any) => {
-    const { value } = event.target;
-    handleOnChange(event, `${name}.lgDetailAmount`);
-    if (!isNaN(value.replace(/,/g, ""))) {
-      // Ensure the value is a valid number
-      const formattedNumber = formatNumberWithCommas(value);
-      setNumber(formattedNumber);
-    }
-  };
-
   return (
     <div
       id="lg-step6"
@@ -136,20 +81,19 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
         <p className="font-semibold text-[16px] text-lightGray">LG Details</p>
       </div>
       <div className="rounded-lg">
+        {/* Currency Selection */}
         <div className="flex items-center gap-2 mb-2">
           <Select
-            onValueChange={(value) =>
-              setValue(`${name}.lgDetailCurrency`, value)
-            }
+            onValueChange={(value) => setValue("lgDetails.currency", value)}
+            defaultValue={lgDetailCurrency || "USD"}
           >
-            <SelectTrigger
-              className="bg-borderCol/80 w-20 !py-7"
-              defaultValue="USD"
-            >
+            <SelectTrigger className="bg-borderCol/80 w-20 !py-7">
               <SelectValue placeholder="USD" />
             </SelectTrigger>
             <SelectContent>{currencyOptions}</SelectContent>
           </Select>
+
+          {/* Amount Input */}
           <label
             id="lgDetailAmount"
             className="border p-2 px-3 rounded-md w-[55%] flex items-center justify-between bg-white"
@@ -157,7 +101,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
             <p className="w-full text-sm text-lightGray">Enter Amount</p>
             <Input
               register={register}
-              name={`${name}.lgDetailAmount`}
+              name="lgDetails.amount"
               type="text"
               value={number}
               onChange={handleChange}
@@ -170,49 +114,6 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               }
             />
           </label>
-          {/* <label
-            id="cashMargin"
-            className="border flex-1 p-1 pl-2 rounded-md flex items-center justify-between bg-white"
-          >
-            <p className="text-sm w-48 text-lightGray">Cash Margin Required</p>
-            <Select
-              onValueChange={(value) => setValue(`${name}.cashMargin`, value)}
-            >
-              <SelectTrigger
-                className="bg-borderCol/80 w-20 mx-2 !py-6"
-                defaultValue="USD"
-              >
-                <SelectValue placeholder="USD" />
-              </SelectTrigger>
-              <SelectContent>{currencyOptions}</SelectContent>
-            </Select>
-            <label
-              id="cashMarginAmount"
-              className="border p-1 px-3 rounded-md w-[55%] flex items-center justify-between bg-white"
-            >
-              <p className="w-full text-sm text-lightGray">Enter Amount</p>
-              <Input
-                register={register}
-                name={`${name}.cashMargin`}
-                onChange={(e) =>
-                  handleOnChangeForCommmas(e, `${name}.cashMargin`)
-                }
-                value={cashMargin}
-                onBlur={() =>
-                  setValue(
-                    `${name}.cashMargin`,
-                    cashMargin?.includes(".00") || !cashMargin
-                      ? cashMargin
-                      : cashMargin + ".00"
-                  )
-                }
-                type="text"
-                className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                placeholder=""
-              />
-            </label>
-          </label> */}
-
           <label
             id="lgTenor"
             className="border flex-1 py-1 px-2 rounded-md flex items-center justify-between bg-white"
@@ -220,13 +121,11 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
             <p className="text-sm w-48 text-lightGray">LG Tenor</p>
             <Select
               onValueChange={(value) =>
-                setValue(`${name}.lgTenor.lgTenorType`, value)
+                setValue("lgDetails.lgTenor.type", value)
               }
+              defaultValue={lgTenorType || "Months"}
             >
-              <SelectTrigger
-                className="bg-borderCol/80 w-28 mx-2 !py-6"
-                defaultValue="Months"
-              >
+              <SelectTrigger className="bg-borderCol/80 w-28 mx-2 !py-6">
                 <SelectValue placeholder="Months" />
               </SelectTrigger>
               <SelectContent>
@@ -237,15 +136,12 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
             </Select>
             <label
               id="lgTenorValue"
-              className="border p-1 px-3 rounded-md w-[55%] flex items-center justify-between bg-white"
+              className="border p-1 px-3 rounded-md w-[30%] flex items-center justify-between bg-white"
             >
               <p className="w-full text-sm text-lightGray">No.</p>
               <Input
                 register={register}
-                name={`${name}.lgTenor.lgTenorValue`}
-                onChange={(e) =>
-                  handleOnChange(e, `${name}.lgTenor.lgTenorValue`)
-                }
+                name="lgDetails.lgTenor.value"
                 type="text"
                 className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 placeholder=""
@@ -253,6 +149,10 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
             </label>
           </label>
         </div>
+
+        {/* Tenor Type and Value */}
+
+        {/* Expected Date and Expiry Date */}
         <div className="flex items-center gap-3">
           <label
             id="expectedDate"
@@ -263,11 +163,10 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
             </p>
             <DatePicker
               value={expectedDate}
-              maxDate={
-                new Date(new Date().setFullYear(new Date().getFullYear() + 1))
-              }
+              extraClassName="border-0 text-right justify-end"
+              leftText={false}
               isLg={true}
-              name={`${name}.expectedDate`}
+              name="lgDetails.expectedDate"
               setValue={setValue}
             />
           </label>
@@ -278,16 +177,13 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
             <p className="w-full text-sm text-lightGray">LG Expiry Date</p>
             <DatePicker
               value={lgExpiryDate}
-              disabled={!expectedDate}
-              maxDate={
-                new Date(
-                  new Date(expectedDate).setFullYear(
-                    new Date(expectedDate).getFullYear() + 1
-                  )
-                )
-              }
+              maxDate={new Date(expectedDate).setFullYear(
+                new Date(expectedDate).getFullYear() + 1
+              )}
               isLg={true}
-              name={`${name}.lgExpiryDate`}
+              extraClassName="border-0 text-right justify-end"
+              leftText={false}
+              name="lgDetails.lgExpiryDate"
               setValue={setValue}
             />
           </label>

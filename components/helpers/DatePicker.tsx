@@ -26,7 +26,7 @@ export const DatePicker = ({
 }: {
   value: Date;
   setValue: any;
-  maxDate: Date | string | any;
+  maxDate?: Date | string | any;
   name: string;
   startDate?: Date;
   leftText?: boolean;

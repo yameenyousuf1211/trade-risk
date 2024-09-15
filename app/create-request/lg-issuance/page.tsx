@@ -186,6 +186,8 @@ export default function LgIssuance() {
 
   // Function to handle final submissions
   const handleFinalSubmission = async (responseData: any) => {
+    console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
+    return;
     const setBondDefaults = (bond: any) => {
       if (bond?.Contract) {
         bond.currencyType = bond.currencyType ?? "USD";
@@ -427,6 +429,7 @@ export default function LgIssuance() {
             flags={flags}
             step={9}
             setValue={setValue}
+            type="issue" // Pass "issue" for lgIssueIn
           />
         )}
 
@@ -439,6 +442,7 @@ export default function LgIssuance() {
             flags={flags}
             step={10}
             setValue={setValue}
+            type="collect" // Pass "collect" for lgCollectIn
           />
         )}
 

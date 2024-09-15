@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { LgStepsProps3 } from "@/types/lg";
 import { Plus, X } from "lucide-react";
 import { DDInput } from "../LCSteps/helpers";
@@ -20,6 +20,15 @@ export default function LgStep3CashMargin({
   // Watch the issuing bank's country field for changes
   const issuingCountry = watch("issuingBanks[0].country");
 
+  // Automatically reflect the selected country in all issuing banks
+  useEffect(() => {
+    if (issuingCountry) {
+      issuingBanks.forEach((bank, index) => {
+        setValue(`issuingBanks[${index}].country`, issuingCountry);
+      });
+    }
+  }, [issuingCountry, issuingBanks, setValue]);
+
   // Fetch banks dynamically based on selected country
   const { data: issuingBankOptions, isLoading } = useQuery({
     queryKey: ["issuing-banks", issuingCountry],
@@ -34,7 +43,7 @@ export default function LgStep3CashMargin({
         {
           bank: "",
           swiftCode: "",
-          country: "",
+          country: issuingCountry, // Use the selected country
           accountNumber: "",
         },
       ]);
@@ -133,16 +142,10 @@ export default function LgStep3CashMargin({
             >
               <p className="w-full text-sm text-lightGray">Account Number</p>
               <Input
-                value={bank.accountNumber}
-                onChange={(e) =>
-                  setValue(
-                    `issuingBanks[${index}].accountNumber`,
-                    e.target.value
-                  )
-                }
                 register={register}
                 name={`issuingBanks[${index}].accountNumber`}
                 type="text"
+                id={`issuingBanks[${index}].accountNumber`}
                 className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                 placeholder="Type here"
               />

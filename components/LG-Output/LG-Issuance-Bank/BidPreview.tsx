@@ -16,7 +16,8 @@ interface BidPreviewProps {
   bidValidityDate?: string;
   handleNewBid: () => void;
   allBondsFilled: any;
-  otherBond: any; // Add this prop to pass otherBond details
+  otherBond: any;
+  lastDateOfReceivingBids: string;
 }
 
 export const BidPreview: React.FC<BidPreviewProps> = ({
@@ -28,6 +29,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
   bidValidityDate,
   handleNewBid,
   allBondsFilled,
+  lastDateOfReceivingBids,
   otherBond, // Add this prop to pass otherBond details
 }) => {
   const [selectedBidValidity, setSelectedBidValidity] = useState<string>();
@@ -178,8 +180,9 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
           userBidStatus.status !== "Not Accepted" &&
           userBidStatus.status !== "Not Applicable" && (
             <DatePicker
-              placeholder="Select Date"
+              placeholder="Bid Validity"
               value={selectedBidValidity}
+              disabled={{ after: new Date(lastDateOfReceivingBids) }}
               setValue={setSelectedBidValidity}
               isLg={true}
             />

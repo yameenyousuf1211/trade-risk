@@ -286,17 +286,17 @@ export const Step2 = ({
                 id="payment-shipment"
                 label="BL Date/Shipment Date"
                 name="extraInfo.other"
-                value="shipment"
+                value="shipment date"
                 register={register}
-                checked={extraInfo.other === "shipment"}
+                checked={extraInfo.other === "shipment date"}
               />
               <BgRadioInput
                 id="payment-acceptance"
                 label="Acceptance Date"
                 name="extraInfo.other"
-                value="acceptance"
+                value="acceptance date"
                 register={register}
-                checked={extraInfo.other === "acceptance"}
+                checked={extraInfo.other === "acceptance date"}
               />
             </div>
             <div className="flex items-center justify-between gap-x-3">
@@ -304,17 +304,17 @@ export const Step2 = ({
                 id="payment-negotiation"
                 label="Negotiation Date"
                 name="extraInfo.other"
-                value="negotiation"
+                value="negotiation date"
                 register={register}
-                checked={extraInfo.other === "negotiation"}
+                checked={extraInfo.other === "negotiation date"}
               />
               <BgRadioInput
                 id="payment-invoice"
                 label="Invoice Date"
                 name="extraInfo.other"
-                value="invoice"
+                value="invoice date"
                 register={register}
-                checked={extraInfo.other === "invoice"}
+                checked={extraInfo.other === "invoice date"}
               />
               <BgRadioInput
                 id="payment-extra-sight"

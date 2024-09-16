@@ -32,6 +32,7 @@ export const ValidatingCalendar = ({
   endDate,
   isEndDate = false,
   disabled,
+  errorText,
 }: {
   initialDate: Date | undefined;
   onChange: (date: Date) => void;
@@ -45,6 +46,7 @@ export const ValidatingCalendar = ({
     after?: Date | undefined;
   };
   isEndDate?: boolean;
+  errorText?: string;
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
@@ -60,11 +62,13 @@ export const ValidatingCalendar = ({
     if (maxDate) {
       const max = new Date(maxDate);
       if (date > max)
-        return toast.error("Please select a date that comes before LC expiry");
+        return toast.error(
+          errorText || "Please select a date that comes before LC expiry"
+        );
     }
     setSelectedDate(date);
     onChange(date);
-    onClose(); 
+    onClose();
   };
 
   return (
@@ -104,9 +108,6 @@ export const Period = ({
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   console.log(watch(), "START____DATE");
 
-
-
-
   const { data: portsData } = useQuery({
     queryKey: ["port-countries"],
     queryFn: () => getAllPortData(),
@@ -120,7 +121,7 @@ export const Period = ({
       portsData.response.length > 0
     ) {
       const allPortCountries = portsData.response.map(
-        (port: any) => port.country,
+        (port: any) => port.country
       );
       setPortCountries(allPortCountries);
     }
@@ -161,11 +162,10 @@ export const Period = ({
     // }
     setEndDate(date);
     updateValue("period.endDate", date);
-  
-};
+  };
 
-  console.log(lcPeriodType,"TYPEEEEEEEEE");
-  
+  console.log(lcPeriodType, "TYPEEEEEEEEE");
+
   useEffect(() => {
     if (lcPeriodType === "yes") {
       setStartDate(new Date());
@@ -284,8 +284,8 @@ export const Period = ({
                   before: lcStartDate
                     ? new Date(
                         new Date(lcStartDate).setDate(
-                          new Date(lcStartDate).getDate() + 1,
-                        ),
+                          new Date(lcStartDate).getDate() + 1
+                        )
                       )
                     : undefined, // Disable lcStartDate + 1 and all dates before it
                 }}
@@ -369,11 +369,11 @@ export const Transhipment = ({
   const currentDate = new Date();
   const nextWeekDate = addDays(
     period?.startDate ? period?.startDate : currentDate,
-    7,
+    7
   );
   const twoWeeksDate = addDays(
     period?.startDate ? period?.startDate : currentDate,
-    14,
+    14
   );
 
   const [showDescErr, setShowDescErr] = useState(false);
@@ -433,7 +433,7 @@ export const Transhipment = ({
                   className={cn(
                     "w-fit justify-start border-none text-left font-normal",
                     !expectedDate &&
-                      "flex w-fit items-center justify-between text-sm text-muted-foreground",
+                      "flex w-fit items-center justify-between text-sm text-muted-foreground"
                   )}
                   id="expected-confirmation-date"
                 >
@@ -482,6 +482,5 @@ export const Transhipment = ({
         />
       </div>
     </div>
-    
   );
 };

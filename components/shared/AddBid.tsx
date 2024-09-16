@@ -665,26 +665,34 @@ export const AddBid = ({
                           noBorder
                           value={lcData?.importerInfo?.countryOfImport || ""}
                         />
-                        <h2 className="text-xl font-semibold mt-3">
-                          Exporter Info
-                        </h2>
-                        <LCInfo
-                          label="Beneficiary Name"
-                          value={lcData?.exporterInfo?.beneficiaryName || ""}
-                        />
-                        <LCInfo
-                          label="Beneficiary Country"
-                          value={lcData?.exporterInfo?.beneficiaryCountry || ""}
-                        />
-                        <LCInfo
-                          label="Country of Export"
-                          value={lcData?.exporterInfo?.countryOfExport || ""}
-                        />
-                        <LCInfo
-                          label="Charges on account of"
-                          value="Beneficiary"
-                          noBorder
-                        />
+                        {lcData?.type === "LC Confirmation & Discounting" && (
+                          <div>
+                            <h2 className="text-xl font-semibold mt-3">
+                              Confirmation Info
+                            </h2>
+                            <LCInfo
+                              label="Behalf Of"
+                              value={lcData?.confirmationInfo.behalfOf || ""}
+                            />
+                          </div>
+                        )}
+                        {isDiscount && (
+                          <div>
+                            <h2 className="text-xl font-semibold mt-3">
+                              Discounting Info
+                            </h2>
+                            <LCInfo
+                              label="Behalf Of"
+                              value={lcData?.discountingInfo.behalfOf || ""}
+                            />
+                            <LCInfo
+                              label="Discount At Sight"
+                              value={
+                                lcData?.discountingInfo?.discountAtSight || ""
+                              }
+                            />
+                          </div>
+                        )}
                       </div>
                     </>
                   )}
@@ -942,6 +950,9 @@ export const AddBid = ({
                       <DatePicker
                         setValue={setValue}
                         key={lcData?._id}
+                        disabled={{
+                          after: new Date(lcData?.lastDateOfReceivingBids),
+                        }}
                         // maxDate={null}
                         isPast={false}
                       />
@@ -968,9 +979,7 @@ export const AddBid = ({
                           </label>
                           <p className="text-xs text-[#29C084]">
                             Client&apos;s Expected Price:{" "}
-                            {lcData?.type === "LC Confirmation"
-                              ? lcData?.confirmationInfo?.pricePerAnnum
-                              : lcData?.discountingInfo?.pricePerAnnum}{" "}
+                            {lcData?.confirmationInfo?.pricePerAnnum}
                             P.A
                           </p>
                         </div>
@@ -1084,13 +1093,9 @@ export const AddBid = ({
                             : "Discount Pricing"}
                         </label>
                         <p className="text-xs text-[#29C084]">
-                          {lcData?.type === "LC Discounting" && (
-                            <p>
-                              Client&apos;s Expected Price:{" "}
-                              {lcData?.baseRate.toUpperCase()}+
-                              {lcData?.discountingInfo?.pricePerAnnum} P.A
-                            </p>
-                          )}
+                          Client&apos;s Expected Price:{" "}
+                          {lcData?.baseRate?.toUpperCase()}+
+                          {lcData?.discountingInfo?.pricePerAnnum} P.A
                         </p>
                       </div>
                       <div className="flex flex-col gap-y-3 items-center w-full">

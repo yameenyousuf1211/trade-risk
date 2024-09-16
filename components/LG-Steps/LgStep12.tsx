@@ -15,11 +15,56 @@ const LgStep12: React.FC<LgStepsProps10> = ({
 }) => {
   const lgIssuance = watch("lgIssuance") || LG.reIssuanceInAnotherCountry;
   const lastDateOfReceivingBids = watch("lastDateOfReceivingBids");
+  const lcEndDate = watch("period.endDate");
+  const lcStartDate = watch("period.startDate");
+  // Watch for the lgExpiryDate values of each bond
+  const bidBondExpiryDate = watch("bidBond.lgExpiryDate");
+  const performanceBondExpiryDate = watch("performanceBond.lgExpiryDate");
+  const retentionMoneyBondExpiryDate = watch("retentionMoneyBond.lgExpiryDate");
+  const advancePaymentBondExpiryDate = watch("advancePaymentBond.lgExpiryDate");
+  const bidBondExpectedDate = watch("bidBond.expectedDate");
+  const performanceBondExpectedDate = watch("performanceBond.expectedDate");
+  const retentionMoneyBondExpectedDate = watch(
+    "retentionMoneyBond.expectedDate"
+  );
+  const advancePaymentBondExpectedDate = watch(
+    "advancePaymentBond.expectedDate"
+  );
 
-  console.log("🚀 ~ lastDateOfReceivingBidsss", lastDateOfReceivingBids);
-  console.log(
-    "🚀 ~ lastDateOfReceivingBidsss",
-    new Date(lastDateOfReceivingBids)
+  // Utility to find the latest (maximum) date
+  const findMaxDate = (...dates: (string | Date | undefined)[]) => {
+    const validDates = dates
+      .map((date) => (date ? new Date(date) : null))
+      .filter((date) => date && !isNaN(date.getTime())); // Filter out invalid dates
+    return validDates.length > 0
+      ? new Date(Math.max(...validDates.map((d) => d!.getTime())))
+      : null;
+  };
+
+  // Utility to find the earliest (minimum) date
+  const findMinDate = (...dates: (string | Date | undefined)[]) => {
+    const validDates = dates
+      .map((date) => (date ? new Date(date) : null))
+      .filter((date) => date && !isNaN(date.getTime())); // Filter out invalid dates
+    return validDates.length > 0
+      ? new Date(Math.min(...validDates.map((d) => d!.getTime())))
+      : null;
+  };
+
+  // Find the maximum lgExpiryDate
+  const maxLgExpiryDate = findMaxDate(
+    bidBondExpiryDate,
+    performanceBondExpiryDate,
+    retentionMoneyBondExpiryDate,
+    advancePaymentBondExpiryDate,
+    lcEndDate
+  );
+  const minLgExpectedDate = findMaxDate(
+    bidBondExpectedDate,
+    performanceBondExpectedDate,
+    retentionMoneyBondExpectedDate,
+    advancePaymentBondExpectedDate,
+    lcStartDate
   );
   return (
     <div
@@ -48,9 +93,14 @@ const LgStep12: React.FC<LgStepsProps10> = ({
             }
             setValue={setValue}
             extraClassName="border-0"
-            // value={lastDateOfReceivingBids}
             value={new Date(lastDateOfReceivingBids)}
             name={`lastDateOfReceivingBids`}
+            // Pass the maximum lgExpiryDate to disable dates after it
+            disabled={
+              maxLgExpiryDate
+                ? { before: minLgExpectedDate, after: maxLgExpiryDate }
+                : {}
+            }
           />
         </label>
       </div>

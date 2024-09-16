@@ -50,7 +50,7 @@ const NotificationPopup = ({
         <p className="font-regular w-[330px] text-[14px] text-white">
           {message}
         </p>
-        <div className="mt-2 flex gap-3">
+        {/* <div className="mt-2 flex gap-3">
           {user?.type === "corporate" ? (
             <div className="flex items-center w-full gap-4">
               <TableDialog
@@ -82,7 +82,7 @@ const NotificationPopup = ({
               isRisk={false}
             />
           )}
-        </div>
+        </div> */}
         {/* ) : (
           <div className="mt-3"></div>
         )} */}

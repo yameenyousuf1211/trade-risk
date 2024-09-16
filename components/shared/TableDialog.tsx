@@ -691,6 +691,32 @@ export const TableDialog = ({
                       value="Beneficiary"
                       noBorder
                     />
+                    {lcData?.type === "LC Confirmation & Discounting" && (
+                      <div>
+                        <h2 className="text-xl font-semibold mt-3">
+                          Confirmation Info
+                        </h2>
+                        <LCInfo
+                          label="Behalf Of"
+                          value={lcData?.confirmationInfo.behalfOf || ""}
+                        />
+                      </div>
+                    )}
+                    {lcData?.type?.includes("Discount") && (
+                      <div>
+                        <h2 className="text-xl font-semibold mt-3">
+                          Discounting Info
+                        </h2>
+                        <LCInfo
+                          label="Behalf Of"
+                          value={lcData?.discountingInfo.behalfOf || ""}
+                        />
+                        <LCInfo
+                          label="Discount At Sight"
+                          value={lcData?.discountingInfo?.discountAtSight || ""}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </>

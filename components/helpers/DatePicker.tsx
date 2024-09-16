@@ -23,10 +23,12 @@ export const DatePicker = ({
   endDate,
   extraClassName,
   leftText = true,
+  errorText,
+  buttonDisabled,
 }: {
   value: Date;
   setValue: any;
-  maxDate: Date | string | any;
+  maxDate?: Date | string | any;
   name: string;
   startDate?: Date;
   leftText?: boolean;
@@ -38,6 +40,8 @@ export const DatePicker = ({
   isPast?: boolean;
   isLg?: boolean;
   extraClassName?: string;
+  errorText?: string;
+  buttonDisabled?: boolean;
 }) => {
   const [date, setDate] = useState<Date | undefined>(value);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -54,7 +58,7 @@ export const DatePicker = ({
       <PopoverTrigger asChild onClick={() => setIsPopoverOpen(!isPopoverOpen)}>
         <Button
           onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-          disabled={disabled}
+          disabled={buttonDisabled}
           variant={"outline"}
           className={cn(
             "w-full justify-between text-left font-normal flex items-center",
@@ -81,6 +85,7 @@ export const DatePicker = ({
         <ValidatingCalendar
           disabled={disabled}
           initialDate={date}
+          errorText={errorText}
           startDate={startDate}
           endDate={endDate}
           maxDate={maxDate}

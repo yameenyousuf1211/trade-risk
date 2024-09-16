@@ -32,7 +32,6 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
     }
   }, [number]);
 
-
   const { data: currency } = useQuery({
     queryKey: ["currency"],
     queryFn: getCurrency,
@@ -60,7 +59,6 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   // console.log("🚀 ~ expectedDate:", expectedDate);
   // console.log("🚀 ~ lgExpiryDate:", lgExpiryDate);
   const { addStep, removeStep } = useStepStore();
-
 
   useEffect(() => {
     if (cashMargin && !cashMargin?.toString()?.includes(".00")) {
@@ -115,7 +113,6 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
     setValue(name, !filteredValue ? 0 : parseInt(filteredValue));
   };
 
- 
   // Handler for input change
   const handleChange = (event: any) => {
     const { value } = event.target;
@@ -216,7 +213,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
             </label>
           </label> */}
 
-<label
+          <label
             id="lgTenor"
             className="border flex-1 py-1 px-2 rounded-md flex items-center justify-between bg-white"
           >
@@ -257,7 +254,6 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
           </label>
         </div>
         <div className="flex items-center gap-3">
-        
           <label
             id="expectedDate"
             className="border p-1 px-2 rounded-md w-[55%] flex items-center justify-between bg-white"

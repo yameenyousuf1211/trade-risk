@@ -83,7 +83,7 @@ const SliderCard = ({
           <>{total?.toLocaleString()}.00</>
         ) : lcData?.type === "LC Confirmation" ||
           lcData?.type === "LC Confirmation & Discounting" ? (
-          <>{info?.confirmationPrice?.toLocaleString()}.00%</>
+          <>{info?.confirmationPrice?.toLocaleString()}.00% per annum</>
         ) : lcData?.type === "LC Discounting" ? (
           <>
             {info?.discountBaseRate} + {info?.discountMargin}.00%

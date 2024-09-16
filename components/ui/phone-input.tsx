@@ -70,7 +70,7 @@ export function getPhoneData(phone: string): PhoneData {
 }
 
 export function PhoneInput({
-  value: valueProp = "",
+  value: valueProp = "+966", // Default to +966 for Saudi Arabia
   defaultCountry = "SA",
   className,
   id,
@@ -124,10 +124,6 @@ export function PhoneInput({
     asYouType.reset();
 
     let inputValue = event.currentTarget.value;
-    if (!inputValue.startsWith("+")) {
-      inputValue = `+${inputValue}`;
-    }
-
     const formattedValue = asYouType.input(inputValue);
     const number = asYouType.getNumber();
     setCountryCode(number?.country || defaultCountry);

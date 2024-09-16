@@ -241,17 +241,6 @@ export const LGTableBidStatus = ({
                   onChange={handleChange}
                 />
               )}
-              {data.retentionMoneyBond?.Contract && (
-                <BgRadioInputLG
-                  id="2"
-                  label="Retention Money Bond"
-                  name="lgdetails"
-                  value="retentionMoneyBond"
-                  checked={selectedValue === "retentionMoneyBond"}
-                  bgchecked={selectedValue === "retentionMoneyBond"}
-                  onChange={handleChange}
-                />
-              )}
               {data.performanceBond?.Contract && (
                 <BgRadioInputLG
                   id="3"
@@ -260,6 +249,17 @@ export const LGTableBidStatus = ({
                   value="performanceBond"
                   checked={selectedValue === "performanceBond"}
                   bgchecked={selectedValue === "performanceBond"}
+                  onChange={handleChange}
+                />
+              )}
+              {data.retentionMoneyBond?.Contract && (
+                <BgRadioInputLG
+                  id="2"
+                  label="Retention Money Bond"
+                  name="lgdetails"
+                  value="retentionMoneyBond"
+                  checked={selectedValue === "retentionMoneyBond"}
+                  bgchecked={selectedValue === "retentionMoneyBond"}
                   onChange={handleChange}
                 />
               )}

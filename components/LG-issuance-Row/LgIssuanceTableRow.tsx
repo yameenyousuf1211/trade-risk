@@ -252,7 +252,9 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
 
   return (
     <TableRow
-      className={`mt-5 ${checkedValue ? "bg-white" : "bg-[#F5F7F9]"}`}
+      className={`mt-5 items-center ${
+        checkedValue ? "bg-white" : "bg-[#F5F7F9]"
+      }`}
       id={`${name}`}
       key={`${name + listValue!}`}
     >
@@ -375,16 +377,24 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
           leftText={false}
           name={`${name}.expectedDate`}
           setValue={setValue}
-          disabled={!checkedValue}
+          buttonDisabled={!checkedValue}
         />
       </TableCell>
       <TableCell>
         <DatePicker
           value={lgExpiryDate}
+          disabled={{
+            before: new Date(
+              new Date(expectedDate).setDate(
+                new Date(expectedDate).getDate() + 1
+              )
+            ),
+          }}
+          errorText="Expiry date must be after the expected date"
           leftText={false}
           name={`${name}.lgExpiryDate`}
           setValue={setValue}
-          disabled={!checkedValue}
+          buttonDisabled={!checkedValue || !expectedDate}
         />
       </TableCell>
       <TableCell className="flex gap-2">

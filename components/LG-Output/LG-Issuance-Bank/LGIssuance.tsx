@@ -134,8 +134,8 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   const bondTypes = [
     { type: "Bid Bond", value: data.bidBond },
     { type: "Advance Payment Bond", value: data.advancePaymentBond },
-    { type: "Retention Money Bond", value: data.retentionMoneyBond },
     { type: "Performance Bond", value: data.performanceBond },
+    { type: "Retention Money Bond", value: data.retentionMoneyBond },
     { type: "Other Bond", value: data.otherBond },
   ];
 
@@ -563,6 +563,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           handleSubmit={handleSubmitOrNext}
           bids={groupedBids}
           userBidStatus={userBidStatus}
+          lastDateOfReceivingBids={data.lastDateOfReceivingBids}
           bidValidityDate={
             userBid ? convertDateToCommaString(userBid.bidValidity) : undefined
           }

@@ -568,7 +568,7 @@ export const TableDialog = ({
                       value={
                         lcData?.paymentTerms &&
                         lcData?.paymentTerms !== "Sight LC"
-                          ? `${lcData.paymentTerms} for ${
+                          ? `${lcData.paymentTerms} - ${
                               lcData.extraInfo?.days + " days" || ""
                             } at ${lcData.extraInfo?.other || ""}`
                           : lcData?.paymentTerms || "-"

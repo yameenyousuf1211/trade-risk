@@ -91,7 +91,7 @@ export const generalLcSchema = Yup.object().shape({
           originalValue === "" ? undefined : value
         ) // Transform empty string to undefined
         .max(999, "Days must be less than or equal to 999"),
-      other: Yup.string(), // Allow nullable when not required
+      other: Yup.string().required().min(2),
     })
     .when("paymentTerms", {
       is: (paymentTerms) => paymentTerms !== "Sight LC",

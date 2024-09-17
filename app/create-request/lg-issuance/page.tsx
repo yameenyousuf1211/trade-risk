@@ -186,54 +186,51 @@ export default function LgIssuance() {
 
   // Function to handle final submissions
   const handleFinalSubmission = async (responseData: any) => {
-    console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
-    return;
-    const setBondDefaults = (bond: any) => {
-      if (bond?.Contract) {
-        bond.currencyType = bond.currencyType ?? "USD";
-        if (bond.lgTenor) {
-          bond.lgTenor.lgTenorType = bond.lgTenor.lgTenorType ?? "Months";
-        } else {
-          bond.lgTenor = { lgTenorType: "Months" };
+    if (responseData.lgIssuance !== "LG 100% Cash Margin") {
+      const setBondDefaults = (bond: any) => {
+        if (bond?.Contract) {
+          bond.currencyType = bond.currencyType ?? "USD";
+          if (bond.lgTenor) {
+            bond.lgTenor.lgTenorType = bond.lgTenor.lgTenorType ?? "Months";
+          } else {
+            bond.lgTenor = { lgTenorType: "Months" };
+          }
         }
+      };
+
+      responseData.totalContractCurrency =
+        responseData.totalContractCurrency ?? "USD";
+
+      if (responseData.bidBond) {
+        setBondDefaults(responseData.bidBond);
       }
-    };
+      if (responseData.advancePaymentBond) {
+        setBondDefaults(responseData.advancePaymentBond);
+      }
+      if (responseData.performanceBond) {
+        setBondDefaults(responseData.performanceBond);
+      }
+      if (responseData.retentionMoneyBond) {
+        setBondDefaults(responseData.retentionMoneyBond);
+      }
+      if (responseData.otherBond) {
+        setBondDefaults(responseData.otherBond);
+      }
 
-    responseData.totalContractCurrency =
-      responseData.totalContractCurrency ?? "USD";
-
-    if (responseData.bidBond) {
-      setBondDefaults(responseData.bidBond);
+      removeUnnecessaryFieldsForLgCreate(responseData);
+      removeUnnecessaryFields(responseData);
+      // const validate = bondRequiredFields(responseData)
+      // if(!validate) return toast.error("Please Select at least one Bond");
+      convertStringValueToDate(responseData);
     }
-    if (responseData.advancePaymentBond) {
-      setBondDefaults(responseData.advancePaymentBond);
-    }
-    if (responseData.performanceBond) {
-      setBondDefaults(responseData.performanceBond);
-    }
-    if (responseData.retentionMoneyBond) {
-      setBondDefaults(responseData.retentionMoneyBond);
-    }
-    if (responseData.otherBond) {
-      setBondDefaults(responseData.otherBond);
-    }
-
-    removeUnnecessaryFieldsForLgCreate(responseData);
-    removeUnnecessaryFields(responseData);
-    // const validate = bondRequiredFields(responseData)
-    // if(!validate) return toast.error("Please Select at least one Bond");
-    convertStringValueToDate(responseData);
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData SubmittingBIDBOND:", responseData?.bidBond?.Contract);
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond DATE:", responseData?.advancePaymentBond?.Contract);
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond DATE:", responseData?.performanceBond?.Contract)
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond DATE:", responseData?.retentionMoneyBond?.Contract)
-    // // console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
-
     try {
+      console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
       await lgValidator.validate(responseData, {
         abortEarly: true,
         stripUnknown: true,
       });
+      console.log("🚀 ~ handleFinalSubmission ~ validatedData", responseData);
+      return;
       const { response, success } = storeData?.data?._id
         ? await updateLg(responseData, storeData?.data?._id)
         : await createLg(responseData);

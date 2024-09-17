@@ -26,9 +26,9 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   // Watch for lgDetails object fields
   const lgDetailCurrency = watch("lgDetails.currency");
   const lgDetailAmount = watch("lgDetails.amount");
-  const lgTenorType = watch("lgDetails.lgTenor.type");
-  const lgTenorValue = watch("lgDetails.lgTenor.value");
-  const expectedDate = watch("lgDetails.expectedDate");
+  const lgTenorType = watch("lgDetails.LgTenor.type"); // Now watching lgDetails.lgTenorType
+  const lgTenorValue = watch("lgDetails.number"); // Now watching lgDetails.lgTenorValue
+  const expectedDate = watch("lgDetails.expectedDateToIssueLg");
   const lgExpiryDate = watch("lgDetails.lgExpiryDate");
 
   useEffect(() => {
@@ -120,8 +120,8 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
           >
             <p className="text-sm w-48 text-lightGray">LG Tenor</p>
             <Select
-              onValueChange={(value) =>
-                setValue("lgDetails.lgTenor.type", value)
+              onValueChange={
+                (value) => setValue("lgDetails.LgTenor.type", value) // Update lgTenorType directly
               }
               defaultValue={lgTenorType || "Months"}
             >
@@ -141,7 +141,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               <p className="w-full text-sm text-lightGray">No.</p>
               <Input
                 register={register}
-                name="lgDetails.lgTenor.value"
+                name="lgDetails.number" // Updated lgTenorValue
                 type="text"
                 className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 placeholder=""
@@ -149,8 +149,6 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
             </label>
           </label>
         </div>
-
-        {/* Tenor Type and Value */}
 
         {/* Expected Date and Expiry Date */}
         <div className="flex items-center gap-3">
@@ -166,7 +164,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               extraClassName="border-0 text-right justify-end"
               leftText={false}
               isLg={true}
-              name="lgDetails.expectedDate"
+              name="lgDetails.expectedDateToIssueLg"
               setValue={setValue}
             />
           </label>
@@ -177,9 +175,6 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
             <p className="w-full text-sm text-lightGray">LG Expiry Date</p>
             <DatePicker
               value={lgExpiryDate}
-              maxDate={new Date(expectedDate).setFullYear(
-                new Date(expectedDate).getFullYear() + 1
-              )}
               isLg={true}
               extraClassName="border-0 text-right justify-end"
               leftText={false}

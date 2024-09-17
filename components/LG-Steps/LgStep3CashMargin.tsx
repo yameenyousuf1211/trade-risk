@@ -15,46 +15,40 @@ export default function LgStep3CashMargin({
   flags,
   setValue,
 }: LgStepsProps3) {
-  const issuingBanks = watch("issuingBanks");
+  // Watch the entire preferredBanks object
+  const preferredBanks = watch("preferredBanks");
+  const preferredBanksArray = preferredBanks?.banks || [];
 
-  // Watch the issuing bank's country field for changes
-  const issuingCountry = watch("issuingBanks[0].country");
-
-  // Automatically reflect the selected country in all issuing banks
-  useEffect(() => {
-    if (issuingCountry) {
-      issuingBanks.forEach((bank, index) => {
-        setValue(`issuingBanks[${index}].country`, issuingCountry);
-      });
-    }
-  }, [issuingCountry, issuingBanks, setValue]);
+  // Watch the country field
+  const preferredCountry = watch("preferredBanks.country");
 
   // Fetch banks dynamically based on selected country
-  const { data: issuingBankOptions, isLoading } = useQuery({
-    queryKey: ["issuing-banks", issuingCountry],
-    queryFn: () => getBanks(issuingCountry),
-    enabled: !!issuingCountry, // Only fetch when a country is selected
+  const { data: preferredBankOptions, isLoading } = useQuery({
+    queryKey: ["preferred-banks", preferredCountry],
+    queryFn: () => getBanks(preferredCountry),
+    enabled: !!preferredCountry, // Only fetch when a country is selected
   });
 
-  const handleIssuingBankAddition = () => {
-    if (issuingBanks.length < 5) {
-      setValue("issuingBanks", [
-        ...issuingBanks,
+  // Handle adding new banks
+  const handlePreferredBankAddition = () => {
+    if (preferredBanksArray.length < 5) {
+      setValue("preferredBanks.banks", [
+        ...preferredBanksArray,
         {
           bank: "",
           swiftCode: "",
-          country: issuingCountry, // Use the selected country
           accountNumber: "",
         },
       ]);
     }
   };
 
-  const handleIssuingBankRemoval = (index: number) => {
-    if (index > 0) {
+  // Handle removing banks
+  const handlePreferredBankRemoval = (index: number) => {
+    if (index >= 0) {
       setValue(
-        "issuingBanks",
-        issuingBanks.filter((_, i) => i !== index)
+        "preferredBanks.banks",
+        preferredBanksArray.filter((_, i) => i !== index)
       );
     }
   };
@@ -69,7 +63,7 @@ export default function LgStep3CashMargin({
           3
         </p>
         <p className="font-semibold text-[16px] text-lightGray">
-          Any Preferred banks to issue the LG (up to 5 Banks )
+          Any Preferred banks to issue the LG (up to 5 Banks)
         </p>
       </div>
 
@@ -78,10 +72,10 @@ export default function LgStep3CashMargin({
         <div className="relative flex items-center gap-x-3 w-full">
           <div className="flex items-center gap-x-2 w-full">
             <DDInput
-              label="Issuing Bank Country"
-              id="issuingBanks[0].country"
+              label="Preferred Bank Country"
+              id="preferredBanks.country"
               placeholder="Select a Country"
-              value={issuingBanks[0]?.country}
+              value={preferredCountry}
               data={data}
               setValue={setValue}
               flags={flags}
@@ -90,18 +84,18 @@ export default function LgStep3CashMargin({
         </div>
       </div>
 
-      {issuingBanks?.map((bank, index) => (
+      {preferredBanksArray?.map((bank, index) => (
         <div
           key={index}
           className="border border-[#E2E2EA] bg-[#F5F7F9] rounded-lg mt-4 relative"
         >
           <div className="flex items-center justify-between">
             <p className="px-4 pt-2 font-semibold text-[#1A1A26] font-poppins">
-              Issuing Bank
+              Preferred Bank
             </p>
             {index > 0 ? (
               <div
-                onClick={() => handleIssuingBankRemoval(index)}
+                onClick={() => handlePreferredBankRemoval(index)}
                 className="m-1 bg-red-500 center text-white rounded-full size-6 shadow-md z-10 cursor-pointer"
               >
                 <X className="size-5 text-white" />
@@ -113,39 +107,39 @@ export default function LgStep3CashMargin({
               placeholder="Select Bank"
               label="Bank"
               value={bank.bank}
-              id={`issuingBanks[${index}].bank`}
+              id={`preferredBanks.banks[${index}].bank`}
               setValue={setValue}
               data={
-                issuingBankOptions?.success && issuingBankOptions.response
-                  ? issuingBankOptions.response
+                preferredBankOptions?.success && preferredBankOptions.response
+                  ? preferredBankOptions.response
                   : []
               }
-              disabled={isLoading || !issuingCountry}
+              disabled={isLoading || !preferredCountry}
             />
             <label
-              id={`issuingBanks[${index}].swiftCode`}
+              id={`preferredBanks.banks[${index}].swiftCode`}
               className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
             >
               <p className="w-full text-sm text-lightGray">Swift Code</p>
               <Input
                 register={register}
-                name={`issuingBanks[${index}].swiftCode`}
+                name={`preferredBanks.banks[${index}].swiftCode`}
                 type="text"
-                id={`issuingBanks[${index}].swiftCode`}
+                id={`preferredBanks.banks[${index}].swiftCode`}
                 className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                 placeholder="Type here"
               />
             </label>
             <label
-              id={`issuingBanks[${index}].accountNumber`}
+              id={`preferredBanks.banks[${index}].accountNumber`}
               className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
             >
               <p className="w-full text-sm text-lightGray">Account Number</p>
               <Input
                 register={register}
-                name={`issuingBanks[${index}].accountNumber`}
+                name={`preferredBanks.banks[${index}].accountNumber`}
                 type="text"
-                id={`issuingBanks[${index}].accountNumber`}
+                id={`preferredBanks.banks[${index}].accountNumber`}
                 className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
                 placeholder="Type here"
               />
@@ -154,12 +148,12 @@ export default function LgStep3CashMargin({
         </div>
       ))}
 
-      {issuingBanks?.length < 5 ? (
+      {preferredBanksArray?.length < 5 ? (
         <div
-          onClick={handleIssuingBankAddition}
+          onClick={handlePreferredBankAddition}
           className="flex-col cursor-pointer bg-white center gap-y-3 border-2 border-dotted border-borderCol py-3 rounded-md mt-4"
         >
-          <div className=" center p-1 border border-black rounded-full">
+          <div className="center p-1 border border-black rounded-full">
             <Plus className="size-4" />
           </div>
           <p className="text-sm text-lightGray">Add Confirming Bank</p>

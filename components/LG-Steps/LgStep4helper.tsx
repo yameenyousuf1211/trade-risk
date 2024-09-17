@@ -10,18 +10,16 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
   setStepCompleted,
   setValue,
 }) => {
-  const typeOfLg = watch("typeOfLg");
-  const otherTypeValue = watch("otherTypeOfLg");
+  const typeOfLg = watch("typeOfLg.type"); // Now watching typeOfLg.type
   const { addStep } = useStepStore();
   const [isOtherSelected, setIsOtherSelected] = useState(false);
 
+  // Handle typeOfLg changes
   useEffect(() => {
-    if (typeOfLg === "Other (Type Here)") {
+    if (typeOfLg === "Other") {
       setIsOtherSelected(true);
     } else {
       setIsOtherSelected(false);
-      // Clear the other type field if user selects something else
-      setValue("otherTypeOfLg", "");
     }
     if (typeOfLg) {
       addStep(TYPE_OF_LG);
@@ -44,7 +42,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType1"
             label="Bid Bond"
-            name="typeOfLg"
+            name="typeOfLg.type" // Registering the value to typeOfLg.type
             value="Bid Bond"
             register={register}
             checked={typeOfLg === "Bid Bond"}
@@ -52,7 +50,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType2"
             label="Advance Payment Bond"
-            name="typeOfLg"
+            name="typeOfLg.type"
             value="Advance Payment Bond"
             register={register}
             checked={typeOfLg === "Advance Payment Bond"}
@@ -60,7 +58,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType3"
             label="Performance Bond"
-            name="typeOfLg"
+            name="typeOfLg.type"
             value="Performance Bond"
             register={register}
             checked={typeOfLg === "Performance Bond"}
@@ -68,7 +66,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType4"
             label="Retention Bond"
-            name="typeOfLg"
+            name="typeOfLg.type"
             value="Retention Bond"
             register={register}
             checked={typeOfLg === "Retention Bond"}
@@ -76,18 +74,18 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType5"
             label="Payment LG"
-            name="typeOfLg"
+            name="typeOfLg.type"
             value="Payment LG"
             register={register}
             checked={typeOfLg === "Payment LG"}
           />
         </div>
 
-        <div className="flex gap-3 items-center ">
+        <div className="flex gap-3 items-center">
           <BgRadioInput
             id="LgType6"
             label="Zakat"
-            name="typeOfLg"
+            name="typeOfLg.type"
             value="Zakat"
             register={register}
             checked={typeOfLg === "Zakat"}
@@ -95,7 +93,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType7"
             label="Custom"
-            name="typeOfLg"
+            name="typeOfLg.type"
             value="Custom"
             register={register}
             checked={typeOfLg === "Custom"}
@@ -103,7 +101,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType8"
             label="SBLC"
-            name="typeOfLg"
+            name="typeOfLg.type"
             value="SBLC"
             register={register}
             checked={typeOfLg === "SBLC"}
@@ -111,10 +109,10 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType9"
             label="Other (Type Here)"
-            name="typeOfLg"
-            value="Other (Type Here)"
+            name="typeOfLg.type"
+            value="Other"
             register={register}
-            checked={typeOfLg === "Other (Type Here)"}
+            checked={typeOfLg === "Other"}
           />
         </div>
 
@@ -123,16 +121,15 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <div className="mt-3">
             <label
               className="text-sm font-medium text-lightGray"
-              htmlFor="otherTypeOfLg"
+              htmlFor="typeOfLg.type"
             >
               Please specify the LG type
             </label>
             <input
               type="text"
-              {...register("otherTypeOfLg")}
-              id="otherTypeOfLg"
-              value={otherTypeValue}
-              onChange={(e) => setValue("otherTypeOfLg", e.target.value)}
+              {...register("typeOfLg.type")}
+              value={typeOfLg} // Bind the value directly to typeOfLg.type
+              onChange={(e) => setValue("typeOfLg.type", e.target.value)} // Update typeOfLg.type directly
               placeholder="Type your LG here"
               className="mt-2 p-2 w-full border border-borderCol rounded-md"
             />

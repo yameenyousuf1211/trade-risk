@@ -240,7 +240,7 @@ export const Step2 = ({
                     if (value === "" || Number(value) <= 999) {
                       setDays(value === "" ? 0 : Number(value));
                       setValue(
-                        "extraInfo.other",
+                        "extraInfo.days",
                         value === "" ? 0 : Number(value)
                       );
                     }

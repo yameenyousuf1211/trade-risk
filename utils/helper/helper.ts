@@ -86,7 +86,7 @@ export const formatLeftDays = (date: any) => {
     (targetDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  return `${daysUntilTarget}d left`;
+  return daysUntilTarget > 0 ? `${daysUntilTarget}d left` : "0d left";
 };
 
 export const formatFileSize = (size: number): string => {

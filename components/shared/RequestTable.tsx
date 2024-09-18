@@ -18,7 +18,11 @@ import {
 } from "../helpers";
 import { Button } from "../ui/button";
 import { TableDialog } from "./TableDialog";
-import { columnHeaders, bankColumnHeaders } from "@/utils/data";
+import {
+  columnHeaders,
+  bankColumnHeaders,
+  sortableHeaders,
+} from "@/utils/data";
 import { ApiResponse, Country, ILcs, IRisk } from "@/types/type";
 import { compareValues, convertDateToString } from "@/utils";
 import React, { useEffect, useState } from "react";
@@ -204,21 +208,28 @@ export const RequestTable = ({
                       <TableHead
                         key={`${header.name}-${idx}`}
                         className="h-8 min-w-32 px-2 py-0.5 font-roboto"
-                        onClick={() => handleSort(header.name)}
+                        onClick={() =>
+                          sortableHeaders.includes(header.name) &&
+                          handleSort(header.name)
+                        }
                       >
                         <div
                           className={`flex items-center justify-center gap-x-2 text-[12px] font-semibold capitalize text-[#44444F] ${
-                            header?.name == "LC Issuing Bank" &&
-                            "!justify-start"
+                            header.name === "Issuing Bank" && "!justify-start"
                           }`}
                         >
                           {header.name}
-                          <div
-                            onClick={() => handleSort(header.key)}
-                            className="center size-4 cursor-pointer rounded-full border border-primaryCol transition-colors duration-100 hover:bg-primaryCol hover:text-white"
-                          >
-                            <ChevronUp className="size-4" />
-                          </div>
+                          {sortableHeaders.includes(header.name) && (
+                            <div
+                              onClick={() => handleSort(header.key)}
+                              className={`center size-4 cursor-pointer rounded-full border border-primaryCol transition-colors duration-100 hover:bg-primaryCol hover:text-white ${
+                                sortedKey.includes(header.name) &&
+                                "bg-primaryCol text-white"
+                              }`}
+                            >
+                              <ChevronUp className="size-4" />
+                            </div>
+                          )}
                         </div>
                       </TableHead>
                     ))
@@ -229,19 +240,21 @@ export const RequestTable = ({
                       >
                         <div
                           className={`flex items-center justify-center gap-x-2 text-[12px] font-semibold capitalize text-[#44444F] ${
-                            header == "LC Issuing Bank" && "!justify-start"
+                            header === "Issuing Bank" && "!justify-start"
                           }`}
                         >
                           {header}
-                          <div
-                            onClick={() => handleSort(header)}
-                            className={`center size-4 rounded-full border border-primaryCol ${
-                              sortedKey.includes(header) &&
-                              "bg-primaryCol text-white"
-                            } cursor-pointer transition-colors duration-100 hover:bg-primaryCol hover:text-white`}
-                          >
-                            <ChevronUp className="size-4" />
-                          </div>
+                          {sortableHeaders.includes(header) && (
+                            <div
+                              onClick={() => handleSort(header)}
+                              className={`center size-4 rounded-full border border-primaryCol ${
+                                sortedKey.includes(header) &&
+                                "bg-primaryCol text-white"
+                              } cursor-pointer transition-colors duration-100 hover:bg-primaryCol hover:text-white`}
+                            >
+                              <ChevronUp className="size-4" />
+                            </div>
+                          )}
                         </div>
                       </TableHead>
                     ))}

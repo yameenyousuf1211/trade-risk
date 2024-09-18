@@ -20,7 +20,7 @@ export const Pagination = ({ data }: { data: PaginationTypes }) => {
   };
 
   return (
-    <div className="flex items-center gap-x-2 py-3 px-4 rounded-md border border-borderCol bg-bg">
+    <div className="flex items-center gap-x-2 py-3 px-4 rounded-md border border-borderCol bg-bg justify-center">
       <Button
         variant="ghost"
         disabled={!hasPrevPage}

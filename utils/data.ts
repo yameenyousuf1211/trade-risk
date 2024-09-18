@@ -35,6 +35,15 @@ export const bankColumnHeaders = [
   { name: "Bids", key: "bids" },
 ];
 
+export const sortableHeaders = [
+  "Ref no",
+  "Request",
+  "Expires",
+  "Product Type",
+  "Amount",
+  "Bids",
+];
+
 export const myBidsColumnHeaders = [
   "Date Submitted",
   "Country of issuing bank",

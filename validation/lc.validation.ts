@@ -74,7 +74,8 @@ export const generalLcSchema = Yup.object().shape({
     .shape({
       applicantName: Yup.string()
         .required("Enter applicant name")
-        .min(1, "Enter importer applicant name"),
+        .min(1, "Enter importer applicant name")
+        .matches(/.*[a-zA-Z]+.*/, "Applicant name cannot contain only numbers"),
       countryOfImport: Yup.string()
         .required("Select country of import")
         .min(1, "Select country of import"),
@@ -90,6 +91,8 @@ export const generalLcSchema = Yup.object().shape({
         .transform((value, originalValue) =>
           originalValue === "" ? undefined : value
         ) // Transform empty string to undefined
+        .required("Payment Term days is required")
+        .min(1, "Days must be greater than 0")
         .max(999, "Days must be less than or equal to 999"),
       other: Yup.string().required().min(2),
     })

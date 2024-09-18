@@ -77,8 +77,7 @@ const SliderCard = ({
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
       <p className="uppercase">
         {(lcData?.type === "LG Issuance" && lcData?.totalContractCurrency) ||
-          (lcData?.type === "LG Issuance" && "USD ")}
-
+          (lcData?.type === "LG Issuance" && "USD ")}{" "}
         {lcData?.type === "LG Issuance" ? (
           <>{total?.toLocaleString()}.00</>
         ) : lcData?.type === "LC Confirmation" ||
@@ -148,7 +147,7 @@ const RequestCard = ({
     advancePaymentBond +
     performanceBond +
     retentionMoneyBond;
-  console.log(total, "RequestCard");
+  console.log(data, "RequestCard");
   return (
     <>
       {isBank && riskType !== "myRisk" ? (
@@ -207,14 +206,14 @@ const RequestCard = ({
               <AddBid
                 triggerTitle="Add Bid"
                 status="Add Bid"
-                isBank
+                isBank={isBank}
                 isDiscount={
                   ((data as ILcs).type &&
                     (data as ILcs).type.includes("Discount")) ||
                   false
                 }
-                id={data._id}
-                isRisk={isRisk}
+                id={data?._id}
+                // isRisk={isRisk}
               />
             </div>
           </>

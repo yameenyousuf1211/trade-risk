@@ -311,7 +311,7 @@ export const TableDialog = ({
       <DialogContent className="h-full !max-h-[95vh] w-full max-w-6xl !p-0 flex flex-col">
         <div className="flex max-h-20 items-center justify-between border-b border-b-borderCol !py-5 px-7">
           <div className="flex flex-col items-center w-1/2">
-            <h2 className="text-xl font-semibold text-center">
+            <h2 className="text-2xl font-semibold text-center">
               {(lcData && lcData?.type) || "Risk Participation Request"}
             </h2>
           </div>

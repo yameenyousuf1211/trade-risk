@@ -273,8 +273,12 @@ export const AddBid = ({
                 }`
               : status === "Add bid" && !isBank
               ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
-              : status === "Add Bid" && isBank
-              ? "bg-[#1A1A26] text-white text-sm"
+              : status === "Add Bid" && computedStatus === "Add Bid" && isBank
+              ? "bg-primaryCol hover:bg-primaryCol text-white text-sm"
+              : status === "Add Bid" && computedStatus === "Rejected" && isBank
+              ? "bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000]"
+              : status === "Add Bid" && computedStatus === "Accepted" && isBank
+              ? "bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084]"
               : `px-3 mt-2 bg-[#F2994A] hover:bg-[#F2994A]/90 text-white opacity-80 ${
                   isNotification && "bg-[#0e1829] hover:bg-black/90 "
                 }`
@@ -297,7 +301,7 @@ export const AddBid = ({
       <DialogContent className="h-full !max-h-[95vh] w-full max-w-6xl !p-0 flex flex-col">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <div className="flex flex-col items-center w-1/2">
-            <h2 className="text-xl font-semibold text-center">
+            <h2 className="text-2xl font-semibold text-center">
               {(lcData && lcData?.type + " Request") ||
                 "Risk Participation Request"}
             </h2>
@@ -309,7 +313,7 @@ export const AddBid = ({
         {lcData && lcData?.type === "LG Issuance" ? (
           <LGIssuanceDialog data={lcData} />
         ) : (
-          <div className="overflow-y-hidden relative -mt-4 flex items-start justify-between h-full">
+          <div className="overflow-y-hidden relative mt-0 flex items-start justify-between h-full">
             {/* Left Section */}
             <div className="w-full border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[95vh]">
               {isLoading ? (
@@ -979,8 +983,7 @@ export const AddBid = ({
                           </label>
                           <p className="text-xs text-[#29C084]">
                             Client&apos;s Expected Price:{" "}
-                            {lcData?.confirmationInfo?.pricePerAnnum}
-                            P.A
+                            {lcData?.confirmationInfo?.pricePerAnnum} P.A
                           </p>
                         </div>
                         <input

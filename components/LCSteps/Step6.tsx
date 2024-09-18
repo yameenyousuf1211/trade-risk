@@ -56,7 +56,7 @@ export const Step6 = ({
   useEffect(() => {
     if (behalfOf && pricePerAnnum) {
       addStep(CONFIRMATION_CHARGES);
-    }else removeStep(CONFIRMATION_CHARGES);
+    } else removeStep(CONFIRMATION_CHARGES);
   }, [behalfOf, pricePerAnnum, baseRate]);
 
   const handleIncrement = () => {
@@ -106,9 +106,9 @@ export const Step6 = ({
             name={
               isDiscount ? "discountingInfo.discountAtSight" : "discountAtSight"
             }
-            value="yes"
+            value="Sight"
             register={register}
-            checked={discountAtSight === "yes"}
+            checked={discountAtSight === "Sight"}
           />
           <BgRadioInput
             id="discount-no"
@@ -116,9 +116,9 @@ export const Step6 = ({
             name={
               isDiscount ? "discountingInfo.discountAtSight" : "discountAtSight"
             }
-            value="no"
+            value="Acceptance Date"
             register={register}
-            checked={discountAtSight === "no"}
+            checked={discountAtSight === "Acceptance Date"}
           />
         </div>
       )}

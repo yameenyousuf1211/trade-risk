@@ -115,6 +115,7 @@ const CreateDiscountPage = () => {
     data: any;
     isProceed?: boolean;
   }) => {
+    console.log(data, "req Data discounting");
     delete data.lcPeriod;
     submit();
     if (

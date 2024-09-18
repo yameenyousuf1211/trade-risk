@@ -224,6 +224,7 @@ const ConfirmationPage = () => {
 
         const preparedData = {
           ...data,
+          extraInfo: extraInfoObj,
           period: {
             ...data.period,
             startDate: lcStartDate,
@@ -231,6 +232,8 @@ const ConfirmationPage = () => {
           },
           expectedConfirmationDate,
         };
+        console.log(extraInfoObj, "extraInfoObj");
+        console.log(preparedData, "preparedData");
         preparedData.currency = preparedData.currency ?? "USD";
         const validatedData = await confirmationDiscountSchema.validate(
           preparedData,

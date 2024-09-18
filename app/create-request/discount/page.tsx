@@ -214,6 +214,7 @@ const CreateDiscountPage = () => {
         : null;
       const preparedData = {
         ...data,
+        extraInfo: extraInfoObj,
         period: {
           ...data.period,
           startDate: lcStartDate,

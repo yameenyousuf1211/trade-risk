@@ -94,7 +94,7 @@ export const generalLcSchema = Yup.object().shape({
         .required("Payment Term days is required")
         .min(1, "Days must be greater than 0")
         .max(999, "Days must be less than or equal to 999"),
-      other: Yup.string().required().min(2),
+      other: Yup.string().required("Payment Terms type is required").min(2),
     })
     .when("paymentTerms", {
       is: (paymentTerms) => paymentTerms !== "Sight LC",

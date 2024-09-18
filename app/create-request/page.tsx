@@ -112,7 +112,7 @@ const CreateRequestPage = () => {
     data: any;
     isProceed?: boolean;
   }) => {
-    console.log(data, "data");
+    console.log(data.paymentTerms, "data");
     submit();
     delete data.createdBy;
     if (
@@ -135,9 +135,10 @@ const CreateRequestPage = () => {
       data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
+      console.log("something");
       extraInfoObj = { days: days, other: data.extraInfo.other };
     }
-
+    console.log(extraInfoObj, "extraInfoObj");
     let reqData;
     const baseData = {
       issuingBanks: data.issuingBanks, // Handle the array of issuing banks
@@ -163,6 +164,7 @@ const CreateRequestPage = () => {
       },
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
+    console.log(baseData, "baseData");
     if (baseData?.issuingBanks?.[0]?._id) delete baseData.issuingBanks[0]._id;
     try {
       setLoader(true); // Start the loader
@@ -216,6 +218,7 @@ const CreateRequestPage = () => {
           : null;
         const preparedData = {
           ...data,
+          extraInfo: extraInfoObj,
           period: {
             ...data.period,
             startDate: lcStartDate,
@@ -232,7 +235,6 @@ const CreateRequestPage = () => {
               stripUnknown: true,
             }
           );
-          console.log(validatedData, "preparedData");
           if (isProceed) {
             const { confirmingBank2, extraInfo, ...rest } = validatedData;
             reqData = {

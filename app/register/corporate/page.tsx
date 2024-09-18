@@ -343,6 +343,7 @@ const CompanyInfoPage = () => {
                       }
                       // value={phoneInput}
                       name="phone"
+                      defaultCountry="SA"
                       onChange={(value) => {
                         setValue("phone", value);
                         trigger("phone");

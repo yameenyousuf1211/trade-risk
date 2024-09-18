@@ -472,7 +472,7 @@ export const RequestTable = ({
                       data={
                         (item.importerInfo &&
                           item.importerInfo?.applicantName) ||
-                        item?.applicantDetails?.crNumber ||
+                        item?.applicantDetails?.company ||
                         "-"
                       }
                     />

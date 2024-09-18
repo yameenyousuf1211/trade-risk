@@ -84,7 +84,12 @@ export const lgValidator = Yup.object()
       .required(),
     beneficiaryDetails: Yup.object()
       .shape({
-        name: Yup.string().required("Beneficiary Name is Required"),
+        name: Yup.string()
+          .required("Beneficiary Name is Required")
+          .matches(
+            /.*[a-zA-Z]+.*/,
+            "Applicant name cannot contain only numbers"
+          ),
         country: Yup.string().required("Beneficiary Country is Required"),
         address: Yup.string().nullable().notRequired(),
         phoneNumber: Yup.string()

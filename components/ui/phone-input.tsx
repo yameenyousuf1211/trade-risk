@@ -82,7 +82,7 @@ export function PhoneInput({
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Initialize state with useStateHistory hook
-  const [value, handlers, history] = useStateHistory(valueProp);
+  const [value, handlers, history] = useStateHistory("+966");
 
   const [openCommand, setOpenCommand] = React.useState(false);
   const [countryCode, setCountryCode] =

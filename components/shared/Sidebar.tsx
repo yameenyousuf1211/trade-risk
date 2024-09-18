@@ -200,24 +200,31 @@ const RequestCard = ({
                   </span>
                 </p>
 
-                <p className="text-para text-sm">Request Expiry</p>
-                {(data as ILcs)?.type === "LG Issuance" ? (
-                  <p className="text-red-500 font-medium text-[12px] mb-2">
-                    {(data as ILcs)?.lastDateOfReceivingBids
-                      ? formatLeftDays((data as ILcs)?.lastDateOfReceivingBids)
-                      : null}
-                  </p>
-                ) : (
-                  <p className="text-red-500 font-medium text-[12px] mb-2">
-                    {(data as ILcs)?.period?.endDate
-                      ? formatLeftDays((data as ILcs)?.period?.endDate)
-                      : data?.expiryDate
-                      ? formatLeftDays((data as IRisk)?.expiryDate)
-                      : data?.otherBond?.lgExpiryDate
-                      ? formatLeftDays(new Date(data?.otherBond?.lgExpiryDate))
-                      : null}
-                  </p>
-                )}
+                <div className="flex items-center">
+                  <p className="text-para text-sm">Request Expiry</p>
+                  <Dot style={{ margin: 0, padding: 0 }} color="gray" />
+                  {(data as ILcs)?.type === "LG Issuance" ? (
+                    <p className="text-red-500 font-medium text-[12px]">
+                      {(data as ILcs)?.lastDateOfReceivingBids
+                        ? formatLeftDays(
+                            (data as ILcs)?.lastDateOfReceivingBids
+                          )
+                        : null}
+                    </p>
+                  ) : (
+                    <p className="text-red-500 font-medium text-[12px]">
+                      {(data as ILcs)?.period?.endDate
+                        ? formatLeftDays((data as ILcs)?.period?.endDate)
+                        : data?.expiryDate
+                        ? formatLeftDays((data as IRisk)?.expiryDate)
+                        : data?.otherBond?.lgExpiryDate
+                        ? formatLeftDays(
+                            new Date(data?.otherBond?.lgExpiryDate)
+                          )
+                        : null}
+                    </p>
+                  )}
+                </div>
                 <h3 className="font-poppins text-xl font-semibold uppercase">
                   {data.currency ?? "USD"}{" "}
                   {(data as ILcs)?.amount
@@ -292,7 +299,7 @@ const RequestCard = ({
                   ".00"}
             </h3>
             <div className="flex items-center justify-between gap-x-2">
-              <p className="font-roboto text-gray-500 text-sm">
+              <p className="font-roboto text-gray-500 text-sm font-semibold">
                 {pendingBids.length} bid
                 {pendingBids.length > 1 ? "s" : ""}
               </p>
@@ -575,11 +582,7 @@ export const Sidebar = ({
       )}
       <div className="bg-white border border-borderCol py-4 px-5 mt-5 rounded-lg min-h-[70%] max-h-[80%] overflow-y-auto overflow-x-hidden flex flex-col justify-between">
         <div>
-          <h4
-            className={`text-lg ${
-              isBank ? "text-left" : "text-center"
-            } font-semibold mb-3`}
-          >
+          <h4 className={"text-lg text-center font-semibold mb-3"}>
             {isBank ? "Needs Action" : "Needs Your Attention"}
           </h4>
           <div className="flex flex-col gap-y-5">

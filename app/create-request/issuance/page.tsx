@@ -171,7 +171,7 @@ const IssuancePage = () => {
     } catch (validationError) {
       if (validationError instanceof Yup.ValidationError) {
         validationError.errors.forEach((errorMessage) => {
-          toast.error(`Validation Error: ${errorMessage}`);
+          toast.error(`Error: ${errorMessage}`);
         });
       } else {
         console.error("Unexpected error during validation:", validationError);

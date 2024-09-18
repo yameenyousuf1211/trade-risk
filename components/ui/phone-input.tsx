@@ -120,6 +120,21 @@ export function PhoneInput({
     }
   };
 
+  const handleBlur = () => {
+    if (value) {
+      asYouType.reset(); // Reset before formatting
+      const formattedValue = asYouType.input(value); // Format the current value
+      handlers.set(formattedValue); // Update the state with the formatted value
+      if (inputRef.current) {
+        inputRef.current.value = formattedValue; // Set the formatted value in the input
+      }
+
+      if (onChange) {
+        onChange(formattedValue); // Trigger onChange with the formatted value
+      }
+    }
+  };
+
   const handleOnInput = (event: React.FormEvent<HTMLInputElement>) => {
     asYouType.reset();
 
@@ -248,6 +263,7 @@ export function PhoneInput({
         onInput={handleOnInput}
         onPaste={handleOnPaste}
         onKeyDown={handleKeyDown}
+        onBlur={handleBlur} // Format number on blur
         required={required}
         aria-required={required}
         {...rest}

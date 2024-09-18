@@ -88,19 +88,12 @@ const LgStep12: React.FC<LgStepsProps10> = ({
           className="border p-1 px-2 rounded-md w-[100%] flex items-center justify-between bg-white"
         >
           <DatePicker
-            maxDate={
-              new Date(new Date().setFullYear(new Date().getFullYear() + 1))
-            }
             setValue={setValue}
             extraClassName="border-0"
             value={new Date(lastDateOfReceivingBids)}
             name={`lastDateOfReceivingBids`}
             // Pass the maximum lgExpiryDate to disable dates after it
-            disabled={
-              maxLgExpiryDate
-                ? { before: minLgExpectedDate, after: maxLgExpiryDate }
-                : {}
-            }
+            disabled={maxLgExpiryDate ? { before: minLgExpectedDate } : {}}
           />
         </label>
       </div>

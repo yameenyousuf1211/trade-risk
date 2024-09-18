@@ -104,6 +104,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   const [selectedLgType, setSelectedLgType] = useState<string>("Bid Bond");
   const [selectedBank, setSelectedBank] = useState<string | undefined>();
   const [groupedBids, setGroupedBids] = useState<any>({});
+  const [lastBankAndBondReached, setLastBankAndBondReached] = useState(false);
   const [userBidStatus, setUserBidStatus] = useState<any>({});
   const [userBid, setUserBid] = useState();
   const [pricingValue, setPricingValue] = useState<string>("");
@@ -240,6 +241,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   };
 
   const updateBondPrices = (newValue: string) => {
+    setLastBankAndBondReached(false);
     setBondPrices((prev) => ({
       ...prev,
       [selectedBank!]: {
@@ -252,6 +254,14 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   const handleSubmitOrNext = async (bidValidity: string) => {
     if (!selectedLgType || !selectedBank) return;
 
+    const lastBank = isLastBank(selectedBank!);
+    const lastBond = isLastBond(selectedLgType);
+
+    if (lastBank && lastBond && !lastBankAndBondReached) {
+      setLastBankAndBondReached(true);
+      return;
+    }
+
     if (
       isLastBank(selectedBank!) &&
       isLastBond(selectedLgType) &&
@@ -260,7 +270,13 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
       // Filter out bonds with a price of "0%" before creating newBids
       const newBids = Object.entries(bondPrices).flatMap(([bank, bonds]) =>
         Object.entries(bonds)
-          .filter(([bondType, price]) => parseFloat(price.replace("%", "")) > 0) // Exclude 0% pricing
+          .filter(([bondType, price]) => {
+            // Ensure price is a valid string or number before proceeding
+            if (!price || typeof price !== "string") return false;
+
+            const parsedPrice = parseFloat(price.replace("%", ""));
+            return !isNaN(parsedPrice) && parsedPrice > 0;
+          }) // Exclude 0% pricing
           .map(([bondType, price]) => ({
             bank,
             bidType: bondType,
@@ -538,16 +554,17 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                     handleSubmitOrNext(data.lastDateOfReceivingBids)
                   }
                   type="submit"
-                  className={`mt-4 h-12 opacity-70 w-full ${
+                  className={`mt-4 h-12 w-full ${
                     pricingValue && parseFloat(pricingValue) > 0
-                      ? "bg-[#44C894]  text-white hover:opacity-100 hover:bg-[#44C894]"
-                      : "bg-[#F1F1F5] text-black hover:opacity-100 hover:bg-[#F1F1F5]"
+                      ? "bg-[#44C894] text-white hover:bg-[#44C894]"
+                      : "bg-[#F1F1F5] text-black hover:bg-[#F1F1F5]"
+                  } ${
+                    lastBankAndBondReached &&
+                    anyPricingFilled() &&
+                    "bg-[#44C894] text-white hover:bg-[#44C894]"
                   }`}
                 >
-                  {selectedBank &&
-                  isLastBank(selectedBank) &&
-                  isLastBond(selectedLgType) &&
-                  anyPricingFilled()
+                  {lastBankAndBondReached && anyPricingFilled()
                     ? "Preview Bid"
                     : pricingValue && parseFloat(pricingValue) > 0
                     ? "Next"

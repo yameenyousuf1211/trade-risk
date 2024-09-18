@@ -56,7 +56,10 @@ export const DatePicker = ({
   }, [value]);
 
   return (
-    <Popover open={isPopoverOpen}>
+    <Popover
+      open={isPopoverOpen}
+      onOpenChange={(open) => setIsPopoverOpen(open)} // Sync popover state
+    >
       <PopoverTrigger asChild onClick={() => setIsPopoverOpen(!isPopoverOpen)}>
         <Button
           onClick={() => setIsPopoverOpen(!isPopoverOpen)}

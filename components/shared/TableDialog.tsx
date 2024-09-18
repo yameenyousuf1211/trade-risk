@@ -539,7 +539,9 @@ export const TableDialog = ({
                       value={
                         (lcData &&
                           lcData?.issuingBanks?.length > 0 &&
-                          lcData?.issuingBanks[0]?.bank) ||
+                          formatFirstLetterOfWord(
+                            lcData?.issuingBanks[0]?.bank
+                          )) ||
                         ""
                       }
                     />
@@ -554,13 +556,25 @@ export const TableDialog = ({
                     {lcData?.advisingBank?.bank && (
                       <LCInfo
                         label="Advising Bank"
-                        value={(lcData && lcData.advisingBank?.bank) || ""}
+                        value={
+                          (lcData &&
+                            formatFirstLetterOfWord(
+                              lcData.advisingBank?.bank
+                            )) ||
+                          ""
+                        }
                       />
                     )}
                     {lcData?.confirmingBank?.bank && (
                       <LCInfo
                         label="Preferred Confirming Bank"
-                        value={(lcData && lcData.confirmingBank?.bank) || ""}
+                        value={
+                          (lcData &&
+                            formatFirstLetterOfWord(
+                              lcData.confirmingBank?.bank
+                            )) ||
+                          ""
+                        }
                       />
                     )}
                     <LCInfo
@@ -568,7 +582,7 @@ export const TableDialog = ({
                       value={
                         lcData?.paymentTerms &&
                         lcData?.paymentTerms !== "Sight LC"
-                          ? `${lcData.paymentTerms} - ${
+                          ? `${lcData.paymentTerms}: ${
                               lcData.extraInfo?.days + " days" || ""
                             } at ${lcData.extraInfo?.other || ""}`
                           : lcData?.paymentTerms || "-"

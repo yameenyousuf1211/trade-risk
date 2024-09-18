@@ -75,7 +75,7 @@ const SliderCard = ({
 
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
-      <p className="uppercase">
+      <p>
         {(lcData?.type === "LG Issuance" && lcData?.totalContractCurrency) ||
           (lcData?.type === "LG Issuance" && "USD ")}{" "}
         {lcData?.type === "LG Issuance" ? (

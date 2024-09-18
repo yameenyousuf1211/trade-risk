@@ -530,11 +530,19 @@ export const AddBid = ({
                         </h2>
                         <LCInfo
                           label="LC Issuing Bank"
-                          value={lcData?.issuingBanks?.[0]?.bank || "-"}
+                          value={
+                            formatFirstLetterOfWord(
+                              lcData?.issuingBanks?.[0]?.bank
+                            ) || "-"
+                          }
                         />
                         <LCInfo
                           label="Country of LC Issuing Bank"
-                          value={lcData?.issuingBanks?.[0]?.country || "-"}
+                          value={
+                            formatFirstLetterOfWord(
+                              lcData?.issuingBanks?.[0]?.country
+                            ) || "-"
+                          }
                         />
                         {/* <LCInfo
                           label="LC Applicant"
@@ -547,13 +555,17 @@ export const AddBid = ({
                         {lcData?.advisingBank?.bank && (
                           <LCInfo
                             label="LC Advising Bank"
-                            value={lcData?.advisingBank?.bank}
+                            value={formatFirstLetterOfWord(
+                              lcData?.advisingBank?.bank
+                            )}
                           />
                         )}
                         {lcData?.confirmingBank?.bank && (
                           <LCInfo
                             label="Preferred Confirming Bank"
-                            value={lcData?.confirmingBank?.bank}
+                            value={formatFirstLetterOfWord(
+                              lcData?.confirmingBank?.bank
+                            )}
                           />
                         )}
                         <LCInfo
@@ -561,7 +573,7 @@ export const AddBid = ({
                           value={
                             lcData?.paymentTerms &&
                             lcData?.paymentTerms !== "Sight LC"
-                              ? `${lcData.paymentTerms} - ${
+                              ? `${lcData.paymentTerms}: ${
                                   lcData.extraInfo?.days + " days" || ""
                                 } at ${lcData.extraInfo?.other || ""}`
                               : lcData?.paymentTerms || "-"
@@ -675,7 +687,7 @@ export const AddBid = ({
                               Confirmation Info
                             </h2>
                             <LCInfo
-                              label="Behalf Of"
+                              label="Charges An Account Of"
                               value={lcData?.confirmationInfo.behalfOf || ""}
                             />
                           </div>
@@ -686,7 +698,7 @@ export const AddBid = ({
                               Discounting Info
                             </h2>
                             <LCInfo
-                              label="Behalf Of"
+                              label="Charges An Account Of"
                               value={lcData?.discountingInfo.behalfOf || ""}
                             />
                             <LCInfo
@@ -956,7 +968,7 @@ export const AddBid = ({
                         key={lcData?._id}
                         disabled={{
                           before: new Date(lcData?.period?.startDate),
-                          after: new Date(lcData?.lastDateOfReceivingBids),
+                          after: new Date(lcData?.period?.endDate),
                         }}
                         // maxDate={null}
                         isPast={false}

@@ -82,7 +82,7 @@ export function PhoneInput({
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Initialize state with useStateHistory hook
-  const [value, handlers, history] = useStateHistory("+966");
+  const [value, handlers, history] = useStateHistory(valueProp);
 
   const [openCommand, setOpenCommand] = React.useState(false);
   const [countryCode, setCountryCode] =
@@ -120,6 +120,28 @@ export function PhoneInput({
     }
   };
 
+  // Ensure the user cannot modify the country code in the input
+  const handleOnInput = (event: React.FormEvent<HTMLInputElement>) => {
+    let inputValue = event.currentTarget.value;
+
+    // Ensure the value starts with the correct country code
+    if (!inputValue.startsWith(`+${selectedCountry?.phone_code}`)) {
+      inputValue = `+${selectedCountry?.phone_code}${inputValue.replace(
+        /^\+?\d*/,
+        ""
+      )}`;
+    }
+
+    const formattedValue = asYouType.input(inputValue);
+    const number = asYouType.getNumber();
+    setCountryCode(number?.country || defaultCountry);
+    handlers.set(formattedValue);
+
+    if (onChange) {
+      onChange(formattedValue); // Call onChange with the formatted value
+    }
+  };
+
   const handleBlur = () => {
     if (value) {
       asYouType.reset(); // Reset before formatting
@@ -135,34 +157,22 @@ export function PhoneInput({
     }
   };
 
-  const handleOnInput = (event: React.FormEvent<HTMLInputElement>) => {
-    asYouType.reset();
-
-    let inputValue = event.currentTarget.value;
-    const formattedValue = asYouType.input(inputValue);
-    const number = asYouType.getNumber();
-    setCountryCode(number?.country || defaultCountry);
-    handlers.set(formattedValue);
-
-    if (onChange) {
-      onChange(formattedValue); // Call onChange with the formatted value
-    }
-  };
-
   const handleOnPaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
     event.preventDefault();
     asYouType.reset();
 
     const clipboardData = event.clipboardData;
     if (clipboardData) {
-      const pastedData = clipboardData.getData("text/plain");
-      const formattedValue = asYouType.input(pastedData);
-      const number = asYouType.getNumber();
-      setCountryCode(number?.country || defaultCountry);
-      handlers.set(formattedValue);
+      let pastedData = clipboardData.getData("text/plain").trim();
+      let formattedValue = pastedData;
 
+      if (!pastedData.startsWith(`+${selectedCountry?.phone_code}`)) {
+        formattedValue = `+${selectedCountry?.phone_code}${pastedData}`;
+      }
+      formattedValue = asYouType.input(formattedValue);
+      handlers.set(formattedValue);
       if (onChange) {
-        onChange(formattedValue); // Call onChange with the formatted value
+        onChange(formattedValue);
       }
     }
   };

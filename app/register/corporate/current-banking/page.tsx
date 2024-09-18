@@ -150,8 +150,6 @@ const CurrentBankingPage = () => {
       ...prevBanks,
       [countryVal]: [...(prevBanks[countryVal] || []), newBank],
     }));
-
-    setCountryVal("");
     setBankVal("");
     setCityVal("");
     setSwiftCodeVal("");

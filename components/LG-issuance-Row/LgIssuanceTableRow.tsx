@@ -374,6 +374,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
       <TableCell>
         <DatePicker
           value={expectedDate}
+          disabled={{ before: new Date() }}
           leftText={false}
           name={`${name}.expectedDate`}
           setValue={setValue}

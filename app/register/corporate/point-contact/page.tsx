@@ -189,7 +189,7 @@ const PointContactPage = () => {
                   value={
                     contactData ? JSON.parse(contactData).pocPhone : phoneInput
                   }
-                  className=""
+                  defaultCountry="SA"
                   name="pocPhone"
                   onChange={(value) => {
                     setValue("pocPhone", value);

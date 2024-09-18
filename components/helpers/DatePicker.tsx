@@ -24,6 +24,7 @@ export const DatePicker = ({
   extraClassName,
   leftText = true,
   errorText,
+  placeholder,
   buttonDisabled,
 }: {
   value: Date;
@@ -32,6 +33,7 @@ export const DatePicker = ({
   name: string;
   startDate?: Date;
   leftText?: boolean;
+  placeholder?: string;
   endDate?: Date;
   disabled?: {
     before?: Date | undefined;
@@ -68,6 +70,7 @@ export const DatePicker = ({
           id="validity"
         >
           {leftText && <span className="flex-grow">Select Date</span>}
+          {placeholder && <span className="flex-grow">{placeholder}</span>}
           <span className="flex items-center">
             {date && isValid(date) ? (
               format(date, "PPP")

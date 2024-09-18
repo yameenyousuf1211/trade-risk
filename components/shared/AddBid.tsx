@@ -557,7 +557,7 @@ export const AddBid = ({
                           />
                         )}
                         <LCInfo
-                          label="Payments Terms"
+                          label="Payment Terms"
                           value={
                             lcData?.paymentTerms &&
                             lcData?.paymentTerms !== "Sight LC"
@@ -690,7 +690,7 @@ export const AddBid = ({
                               value={lcData?.discountingInfo.behalfOf || ""}
                             />
                             <LCInfo
-                              label="Discount At Sight"
+                              label="Discount At"
                               value={
                                 lcData?.discountingInfo?.discountAtSight || ""
                               }
@@ -955,6 +955,7 @@ export const AddBid = ({
                         setValue={setValue}
                         key={lcData?._id}
                         disabled={{
+                          before: new Date(lcData?.period?.startDate),
                           after: new Date(lcData?.lastDateOfReceivingBids),
                         }}
                         // maxDate={null}
@@ -1097,8 +1098,10 @@ export const AddBid = ({
                         </label>
                         <p className="text-xs text-[#29C084]">
                           Client&apos;s Expected Price:{" "}
-                          {lcData?.baseRate?.toUpperCase()}+
-                          {lcData?.discountingInfo?.pricePerAnnum} P.A
+                          {lcData.type === "LC Discounting"
+                            ? lcData?.baseRate?.toUpperCase()
+                            : lcData?.discountingInfo?.basePerRate?.toUpperCase()}
+                          +{lcData?.discountingInfo?.pricePerAnnum} P.A
                         </p>
                       </div>
                       <div className="flex flex-col gap-y-3 items-center w-full">

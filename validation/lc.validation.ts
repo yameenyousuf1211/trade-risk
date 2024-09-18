@@ -224,7 +224,7 @@ export const confirmationDiscountSchema = generalLcSchema.concat(
     discountingInfo: Yup.object()
       .shape({
         discountAtSight: Yup.mixed()
-          .oneOf(["yes", "no"], "Specify discount at sight")
+          .oneOf(["Sight", "Acceptance Date"], "Specify discount at sight")
           .required(),
         behalfOf: Yup.mixed()
           .oneOf(["Exporter", "Importer"], "Select one of above")

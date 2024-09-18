@@ -111,16 +111,6 @@ export const BidCard = ({
             {data.bidBy.country}
           </p>
         </div>
-        {data.bidType === "LC Discounting" && (
-          <div className={data.status === "Expired" ? "opacity-50" : ""}>
-            <p className="mb-1 text-sm text-para">Term</p>
-            <p className="text-lg font-semibold text-text">
-              <span className="text-black">
-                {data.perAnnum ? "Per Annum" : "Flat"}
-              </span>
-            </p>
-          </div>
-        )}
         {user.type === "corporate" && (
           <div className={data.status === "Expired" ? "opacity-50" : ""}>
             <p className="mb-1 text-sm text-para">Bid Submitted</p>
@@ -142,6 +132,16 @@ export const BidCard = ({
             })}
           </p>
         </div>
+        {data.bidType === "LC Discounting" && (
+          <div className={data.status === "Expired" ? "opacity-50" : ""}>
+            <p className="mb-1 text-sm text-para">Term</p>
+            <p className="text-lg font-semibold text-text">
+              <span className="text-black">
+                {data.perAnnum ? "Per Annum" : "Flat"}
+              </span>
+            </p>
+          </div>
+        )}
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           {/* <p className="text-sm text-para mb-1">Minimum Charges</p>
     <p className="text-lg font-semibold text-text">AED 30,000.00</p> */}
@@ -712,7 +712,7 @@ export const TableDialog = ({
                           value={lcData?.discountingInfo.behalfOf || ""}
                         />
                         <LCInfo
-                          label="Discount At Sight"
+                          label="Discount At"
                           value={lcData?.discountingInfo?.discountAtSight || ""}
                         />
                       </div>

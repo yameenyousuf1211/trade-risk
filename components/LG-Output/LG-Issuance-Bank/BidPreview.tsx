@@ -181,6 +181,7 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
           userBidStatus.status !== "Not Applicable" && (
             <DatePicker
               placeholder="Bid Validity"
+              leftText={false}
               value={selectedBidValidity}
               disabled={{ after: new Date(lastDateOfReceivingBids) }}
               setValue={setSelectedBidValidity}

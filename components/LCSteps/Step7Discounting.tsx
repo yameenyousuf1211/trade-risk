@@ -23,7 +23,6 @@ export const Step7Disounting = ({
   const behalfOf = watch("discountingInfo.behalfOf");
   const baseRate = watch("discountingInfo.basePerRate");
 
-
   let pricePerAnnum = getValues("discountingInfo.pricePerAnnum");
   useEffect(() => {
     if (pricePerAnnum) {
@@ -65,17 +64,17 @@ export const Step7Disounting = ({
           id="discount-yes"
           label="Sight"
           name="discountingInfo.discountAtSight"
-          value="yes"
+          value="Sight"
           register={register}
-          checked={discountAtSight === "yes"}
+          checked={discountAtSight === "Sight"}
         />
         <BgRadioInput
           id="discount-no"
           label="Acceptance Date"
           name="discountingInfo.discountAtSight"
-          value="no"
+          value="Acceptance Date"
           register={register}
-          checked={discountAtSight === "no"}
+          checked={discountAtSight === "Acceptance Date"}
         />
       </div>
 
@@ -102,16 +101,16 @@ export const Step7Disounting = ({
       <div className="border border-borderCol py-3 px-2 rounded-md mt-5 bg-[#F5F7F9]">
         <p className="font-semibold ml-3 mb-2">Expected charges</p>
         <div className="text-end mb-3">
-              <DDInput
-                id="discountingInfo.basePerRate"
-                label="Select Base Rate"
-                type="styles"
-                value={baseRate}
-                placeholder="Select Value"
-                setValue={setValue}
-                data={["KIBOR", "LIBOR", "SOFR"]}
-              />
-            </div>
+          <DDInput
+            id="discountingInfo.basePerRate"
+            label="Select Base Rate"
+            type="styles"
+            value={baseRate}
+            placeholder="Select Value"
+            setValue={setValue}
+            data={["KIBOR", "LIBOR", "SOFR"]}
+          />
+        </div>
 
         <label
           id="expected-pricing"
@@ -134,7 +133,6 @@ export const Step7Disounting = ({
               className="border-none !w-[70px] text-center text-[13px] outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
               max={100}
               {...register("discountingInfo.pricePerAnnum")}
-           
               onChange={(event) => {
                 let newValue = event.target.value.replace(/[^0-9.]/g, "");
 

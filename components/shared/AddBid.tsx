@@ -950,7 +950,6 @@ export const AddBid = ({
                   );
                 })()
               ) : (
-                // Add Bids
                 <form
                   onSubmit={handleSubmit(onSubmit)}
                   className="flex flex-col gap-y-4 py-4 px-4 mt-5 border border-borderCol rounded-lg"

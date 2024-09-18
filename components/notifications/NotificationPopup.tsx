@@ -47,7 +47,10 @@ const NotificationPopup = ({
             <X className="text-white" />
           </button>
         </div>
-        <p className="font-regular w-[330px] text-[14px] text-white">
+        <p
+          className="font-regular text-[14px] text-white flex-wrap"
+          style={{ textWrap: "pretty" }}
+        >
           {message}
         </p>
         {/* <div className="mt-2 flex gap-3">

@@ -292,7 +292,7 @@ export default function LgIssuance() {
       const relevantErrorMessage = fullErrorMessage.split("\n")[0].trim(); // Get the first line and trim any extra spaces
 
       // Display the relevant error message
-      toast.error(`Validation Error: ${relevantErrorMessage}`);
+      toast.error(`Error: ${relevantErrorMessage}`);
     } else {
       toast.error("An unexpected error occurred.");
     }

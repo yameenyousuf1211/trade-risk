@@ -208,8 +208,8 @@ const RequestCard = ({
                 status="Add Bid"
                 isBank={isBank}
                 isDiscount={
-                  ((data as ILcs).type &&
-                    (data as ILcs).type.includes("Discount")) ||
+                  ((data as ILcs)?.type &&
+                    (data as ILcs)?.type.includes("Discount")) ||
                   false
                 }
                 id={data?._id}

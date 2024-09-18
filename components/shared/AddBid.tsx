@@ -773,7 +773,7 @@ export const AddBid = ({
                                 </p>
                               </div>
 
-                              {lcData.type !== "LC Discounting" && (
+                              {lcData?.type !== "LC Discounting" && (
                                 <div
                                   className={
                                     bid.status === "Expired" ? "opacity-50" : ""
@@ -791,7 +791,7 @@ export const AddBid = ({
                                 </div>
                               )}
 
-                              {lcData.type === "LC Discounting" && (
+                              {lcData?.type === "LC Discounting" && (
                                 <div
                                   className={
                                     bid.status === "Expired" ? "opacity-50" : ""
@@ -803,9 +803,9 @@ export const AddBid = ({
                                   <p className="text-lg font-semibold capitalize">
                                     {bid ? (
                                       <>
-                                        {bid.discountBaseRate.toUpperCase()} +{" "}
+                                        {bid?.discountBaseRate.toUpperCase()} +{" "}
                                         <span className="text-text">
-                                          {bid.discountMargin}%
+                                          {bid?.discountMargin}%
                                         </span>{" "}
                                       </>
                                     ) : (
@@ -814,7 +814,7 @@ export const AddBid = ({
                                   </p>
                                 </div>
                               )}
-                              {lcData.type ===
+                              {lcData?.type ===
                                 "LC Confirmation & Discounting" && (
                                 <div
                                   className={
@@ -844,7 +844,7 @@ export const AddBid = ({
                                   {bid ? bid.bidBy.country : "Pakistan"}
                                 </p>
                               </div>
-                              {lcData.type === "LC Discounting" && (
+                              {lcData?.type === "LC Discounting" && (
                                 <div
                                   className={
                                     bidData.status === "Expired"
@@ -855,7 +855,7 @@ export const AddBid = ({
                                   <p className="mb-1 text-sm text-para">Term</p>
                                   <p className="text-lg font-semibold text-text">
                                     <span className="text-black">
-                                      {bid.perAnnum ? "Per Annum" : "Flat"}
+                                      {bid?.perAnnum ? "Per Annum" : "Flat"}
                                     </span>
                                   </p>
                                 </div>
@@ -1053,7 +1053,7 @@ export const AddBid = ({
                           onChange={(e) => {
                             console.log(e.target.value);
                             setConfirmationPriceType(e.target.value);
-                            if (lcData.type === "LC Discounting") {
+                            if (lcData?.type === "LC Discounting") {
                               setValue("confirmationPrice", "1");
                             }
                           }}
@@ -1074,7 +1074,7 @@ export const AddBid = ({
                           value={"flat"}
                           onChange={(e) => {
                             setConfirmationPriceType(e.target.value);
-                            if (lcData.type === "LC Discounting") {
+                            if (lcData?.type === "LC Discounting") {
                               setValue("confirmationPrice", "1");
                             }
                           }}
@@ -1098,7 +1098,7 @@ export const AddBid = ({
                         </label>
                         <p className="text-xs text-[#29C084]">
                           Client&apos;s Expected Price:{" "}
-                          {lcData.type === "LC Discounting"
+                          {lcData?.type === "LC Discounting"
                             ? lcData?.baseRate?.toUpperCase()
                             : lcData?.discountingInfo?.basePerRate?.toUpperCase()}
                           +{lcData?.discountingInfo?.pricePerAnnum} P.A
@@ -1130,7 +1130,7 @@ export const AddBid = ({
                               setValue={setValue}
                               onSelectValue={(value) => {
                                 setDiscountBaseRate(value);
-                                if (lcData.type === "LC Discounting") {
+                                if (lcData?.type === "LC Discounting") {
                                   setValue("confirmationPrice", "1");
                                 }
                               }}
@@ -1151,7 +1151,7 @@ export const AddBid = ({
                               ""
                             );
                             e.target.value = newValue;
-                            if (lcData.type === "LC Discounting") {
+                            if (lcData?.type === "LC Discounting") {
                               setValue("confirmationPrice", "1");
                             }
                             setDiscountMargin(newValue);

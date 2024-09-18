@@ -94,7 +94,7 @@ export const generalLcSchema = Yup.object().shape({
         .required("Payment Term days is required")
         .min(1, "Days must be greater than 0")
         .max(999, "Days must be less than or equal to 999"),
-      other: Yup.string().required("Payment Terms type is required").min(2),
+      other: Yup.string().trim().required("Payment Terms type is required"),
     })
     .when("paymentTerms", {
       is: (paymentTerms) => paymentTerms !== "Sight LC",
@@ -174,7 +174,7 @@ export const discountingSchema = generalLcSchema.concat(
     discountingInfo: Yup.object()
       .shape({
         discountAtSight: Yup.mixed()
-          .oneOf(["yes", "no"], "Specify discount at sight")
+          .oneOf(["Sight", "Acceptance Date"], "Specify discount at sight")
           .required(),
         behalfOf: Yup.mixed()
           .oneOf(["Exporter", "Importer"], "Select charges on account of")

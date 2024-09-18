@@ -80,13 +80,41 @@ const SliderCard = ({
           (lcData?.type === "LG Issuance" && "USD ")}{" "}
         {lcData?.type === "LG Issuance" ? (
           <>{total?.toLocaleString()}.00</>
-        ) : lcData?.type === "LC Confirmation" ||
-          lcData?.type === "LC Confirmation & Discounting" ? (
-          <>{info?.confirmationPrice?.toLocaleString()}.00% per annum</>
+        ) : lcData?.type === "LC Confirmation" ? (
+          <div>
+            <div>
+              <p className="text-[16px]">
+                {info?.confirmationPrice?.toLocaleString()}.00% Per Annum
+              </p>
+              <p className="text-[#5625F2] text-[12px]">Confirmation Rate</p>
+            </div>
+          </div>
+        ) : lcData?.type === "LC Confirmation & Discounting" ? (
+          <div className="space-y-1">
+            <div>
+              <p className="text-[16px]">
+                {formatFirstLetterOfWord(info.discountBaseRate)} +{" "}
+                {info?.discountMargin?.toLocaleString()}.00%
+              </p>
+              <p className="text-[#5625F2] text-[12px]">Discount pricing</p>
+            </div>
+            <div>
+              <p className="text-[16px]">
+                {info?.confirmationPrice?.toLocaleString()}.00% Per Annum
+              </p>
+              <p className="text-[#5625F2] text-[12px]">Confirmation Rate</p>
+            </div>
+          </div>
         ) : lcData?.type === "LC Discounting" ? (
-          <>
-            {info?.discountBaseRate} + {info?.discountMargin}.00%
-          </>
+          <div className="flex items-center">
+            <div>
+              <p className="text-[16px]">
+                {formatFirstLetterOfWord(info.discountBaseRate)} +{" "}
+                {info?.discountMargin?.toLocaleString()}.00%
+              </p>
+              <p className="text-[#5625F2] text-[12px]">Discount pricing</p>
+            </div>
+          </div>
         ) : null}
       </p>
       <p className="font-roboto text-para font-medium mt-1">

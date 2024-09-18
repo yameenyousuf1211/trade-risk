@@ -45,7 +45,7 @@ export const Step2 = ({
   let currencyVal = watch("currency");
   let paymentTerms = watch("paymentTerms");
   let extraInfo = watch("extraInfo") || { days: 0, other: "" };
-
+  const [isOthersSelected, setIsOthersSelected] = useState(false);
   const [currencyValue, setCurrencyValue] = useState<string | number>(
     amount || ""
   );
@@ -61,8 +61,42 @@ export const Step2 = ({
         setValue("extraInfo", undefined);
         setDays(90);
       }
+    } else {
+      setIsOthersSelected(false);
+      setValue("extraInfo.other", "");
+      setOtherValue("");
     }
   }, [paymentTerms]);
+
+  useEffect(() => {
+    if (draftDataId) {
+      if (
+        extraInfo.other !== "shipment date" &&
+        extraInfo.other !== "acceptance date" &&
+        extraInfo.other !== "negotiation date" &&
+        extraInfo.other !== "invoice date" &&
+        extraInfo.other !== "sight" &&
+        extraInfo.other
+      ) {
+        setValue("extraInfo.other", extraInfo.other);
+        setOtherValue(extraInfo.other);
+        setIsOthersSelected(true);
+      }
+    }
+  }, [extraInfo]);
+
+  useEffect(() => {
+    if (
+      extraInfo.other === "shipment date" ||
+      extraInfo.other === "acceptance date" ||
+      extraInfo.other === "negotiation date" ||
+      extraInfo.other === "invoice date" ||
+      extraInfo.other === "sight"
+    ) {
+      setIsOthersSelected(false);
+      setOtherValue("");
+    }
+  }, [extraInfo.other]);
 
   const handleChange = (e: any) => {
     const { value } = e.target;
@@ -327,7 +361,7 @@ export const Step2 = ({
             </div>
             <div
               className={`mb-2 flex w-full items-end gap-x-5 rounded-md border border-borderCol bg-white px-3 py-4 ${
-                extraInfo.other === "others" && "!bg-[#EEE9FE]"
+                isOthersSelected && "!bg-[#EEE9FE]"
               }`}
             >
               <label
@@ -337,22 +371,27 @@ export const Step2 = ({
                 <input
                   type="radio"
                   value="others"
-                  {...register("extraInfo.other")}
                   id="payment-others"
-                  checked={extraInfo.other === "others"}
+                  checked={isOthersSelected} // Control radio button with the new state
+                  onChange={() => {
+                    setIsOthersSelected(true); // Set "Others" as selected
+                    setValue("extraInfo.other", ""); // Clear the previous value in form state
+                    setOtherValue(""); // Clear the local otherValue input
+                  }}
                   className="size-4 accent-primaryCol"
-                  // onChange={() => setOtherValue("others")}
                 />
                 Others
               </label>
               <input
                 type="text"
-                name="ds"
+                name="othersTextInput"
                 value={otherValue}
-                disabled={extraInfo.other !== "others"}
-                onChange={(e: any) => setOtherValue(e.target.value)}
+                disabled={!isOthersSelected} // Enable only when "Others" is selected
+                onChange={(e: any) => {
+                  setOtherValue(e.target.value); // Update the local state
+                  setValue("extraInfo.other", e.target.value); // Set the typed value in form state
+                }}
                 className="w-[80%] rounded-none !border-b-2 border-transparent !border-b-neutral-300 bg-transparent text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                // checked={extraInfo.other !== "others"}
               />
             </div>
           </>

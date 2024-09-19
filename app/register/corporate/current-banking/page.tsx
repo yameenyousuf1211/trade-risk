@@ -151,7 +151,6 @@ const CurrentBankingPage = () => {
       [countryVal]: [...(prevBanks[countryVal] || []), newBank],
     }));
     setBankVal("");
-    setCityVal("");
     setSwiftCodeVal("");
   };
 
@@ -256,7 +255,7 @@ const CurrentBankingPage = () => {
 
     reqData = convertBusinessData(reqData);
 
-    // console.log("🚀 ~ handleSubmit ~ reqData:", reqData);
+    console.log("🚀 ~ handleSubmit ~ reqData:", reqData);
     const { response, success } = await onRegister(reqData);
     console.log("Email = ", response?.data?.email);
     console.log("Password = ", response?.data?.password);

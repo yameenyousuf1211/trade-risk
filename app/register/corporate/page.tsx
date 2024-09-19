@@ -256,7 +256,6 @@ const CompanyInfoPage = () => {
           <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
             <div className="relative w-full">
               <CountrySelect
-                setIsoCode={setIsoCode}
                 setValue={setValue}
                 value={corporateData && JSON.parse(corporateData).country}
                 name="country"
@@ -539,21 +538,6 @@ const CompanyInfoPage = () => {
                 </span>
               )}
             </div>
-
-            {/* <div className="relative w-full">
-              <FloatingInput
-                name="accountNumber"
-                type="number"
-                inputMode="numeric"
-                placeholder="Account Number"
-                register={register}
-              />
-              {errors.accountNumber && (
-                <span className="absolute mt-1 text-[11px] text-red-500">
-                  {errors.accountNumber.message}
-                </span>
-              )}
-            </div> */}
           </div>
 
           <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
@@ -634,6 +618,20 @@ const CompanyInfoPage = () => {
               {errors.accountHolderName && (
                 <span className="absolute mt-1 text-[11px] text-red-500">
                   {errors.accountHolderName.message}
+                </span>
+              )}
+            </div>
+            <div className="relative w-full">
+              <FloatingInput
+                name="accountNumber"
+                type="number"
+                inputMode="numeric"
+                placeholder="Account Number"
+                register={register}
+              />
+              {errors.accountNumber && (
+                <span className="absolute mt-1 text-[11px] text-red-500">
+                  {errors.accountNumber.message}
                 </span>
               )}
             </div>

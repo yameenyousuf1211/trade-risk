@@ -126,14 +126,14 @@ export const Pagination = ({ data }: { data: PaginationTypes }) => {
         Next
         <ChevronRight className="size-5" />
       </Button>
-      <Button
+      {/* <Button
         variant="ghost"
         className="border border-neutral-300 flex items-center gap-x-2 hover:bg-primaryCol hover:text-white"
         disabled={!hasNextPage}
         onClick={() => handlePageChange(totalPages)}
       >
         Go To Last
-      </Button>
+      </Button> */}
     </div>
   );
 };

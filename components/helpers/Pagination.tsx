@@ -21,9 +21,43 @@ export const Pagination = ({ data }: { data: PaginationTypes }) => {
 
   const renderPageNumbers = () => {
     const pages = [];
+    const maxPagesToShow = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2)); // Dynamically adjust start page
+    let endPage = Math.min(startPage + maxPagesToShow - 1, totalPages);
 
-    // Show the first 5 pages
-    for (let i = 1; i <= Math.min(5, totalPages); i++) {
+    // Adjust start page if we're near the end
+    if (endPage - startPage < maxPagesToShow - 1) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+
+    // Add first page and ellipsis if necessary
+    if (startPage > 1) {
+      pages.push(
+        <Button
+          key={1}
+          variant="ghost"
+          className={`${
+            1 === currentPage
+              ? "bg-primaryCol text-white"
+              : "hover:bg-primaryCol hover:text-white border border-neutral-300"
+          }`}
+          onClick={() => handlePageChange(1)}
+        >
+          1
+        </Button>
+      );
+
+      if (startPage > 2) {
+        pages.push(
+          <Button disabled key="start-ellipsis" variant="ghost">
+            ...
+          </Button>
+        );
+      }
+    }
+
+    // Render the range of page numbers
+    for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <Button
           key={i}
@@ -40,29 +74,28 @@ export const Pagination = ({ data }: { data: PaginationTypes }) => {
       );
     }
 
-    // Add ellipsis if necessary
-    if (totalPages > 8 && currentPage < totalPages - 2) {
-      pages.push(
-        <Button disabled key="middle-ellipsis" variant="ghost">
-          ...
-        </Button>
-      );
-    }
+    // Add ellipsis and last page if necessary
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pages.push(
+          <Button disabled key="end-ellipsis" variant="ghost">
+            ...
+          </Button>
+        );
+      }
 
-    // Show the last 3 pages
-    for (let i = Math.max(totalPages - 2, 6); i <= totalPages; i++) {
       pages.push(
         <Button
-          key={i}
+          key={totalPages}
           variant="ghost"
           className={`${
-            i === currentPage
+            totalPages === currentPage
               ? "bg-primaryCol text-white"
               : "hover:bg-primaryCol hover:text-white border border-neutral-300"
           }`}
-          onClick={() => handlePageChange(i)}
+          onClick={() => handlePageChange(totalPages)}
         >
-          {i}
+          {totalPages}
         </Button>
       );
     }

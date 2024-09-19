@@ -35,7 +35,7 @@ import {
   TelephoneInput,
 } from "@/components/helpers";
 import { getBanks, getCities } from "@/services/apis/helpers.api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -47,11 +47,13 @@ import CorporateStepLayout from "@/components/layouts/CorporateStepLayout";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const setValues = useRegisterStore((state) => state.setValues);
   const [phoneInput, setPhoneInput] = useState<string>("");
   const [allowSubmit, setAllowSubmit] = useState(false);
   const [businessNature, setBusinessNature] = useState("");
   const [bankOpen, setBankOpen] = useState(false);
+  const [bankFromData, setBankFromData] = useState("");
 
   const corporateData =
     typeof window !== "undefined"
@@ -83,24 +85,17 @@ const CompanyInfoPage = () => {
     }
     if (corporateData) {
       const data = JSON.parse(corporateData);
-      data && setValues(data);
+      setValues(data);
+
       Object.entries(data).forEach(([key, value]) => {
-        // @ts-ignore
-        setValue(key, value);
+        setValue(key, value); // Populate all form fields from corporateData
       });
-      data && setBusinessNature(data.businessNature);
+      setBusinessNature(data.businessNature);
     }
   }, [corporateData]);
+
   useEffect(() => {
-    getValues("phone");
-    console.log(
-      "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ getValues",
-      getValues("phone")
-    );
-    console.log(
-      "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ phoneInput",
-      corporateData
-    );
+    const phoneValue = getValues("phone");
 
     if (corporateData) {
       setAllowSubmit(true);
@@ -196,10 +191,28 @@ const CompanyInfoPage = () => {
   useEffect(() => {
     if (accountCountry != JSON.parse(corporateData as string)?.accountCountry) {
       setValue("accountCity", ""); // Reset city value
-      setCityVal(""); // Reset city display
+      setValue("bank", "");
+      setCityVal("");
+      setBankFromData("");
     } else {
       setValue("accountCity", JSON.parse(corporateData as string)?.accountCity);
     }
+  }, [accountCountry]);
+
+  useEffect(() => {
+    if (corporateData) {
+      const data = JSON.parse(corporateData);
+      if (data?.bank) {
+        setValue("bank", data.bank, { shouldValidate: true });
+        setBankFromData(data.bank); // Restore bankFromData when coming back
+      }
+    }
+  }, [corporateData]);
+
+  useEffect(() => {
+    queryClient.invalidateQueries({
+      queryKey: ["banks"],
+    });
   }, [accountCountry]);
 
   return (
@@ -338,7 +351,7 @@ const CompanyInfoPage = () => {
               <div className="flex items-center gap-3">
                 <label
                   id="beneficiaryDetails.address"
-                  className="bo rder flex w-full items-center justify-between rounded-md bg-white pl-3"
+                  className="flex w-full items-center justify-between rounded-md bg-white pl-3"
                 >
                   <div className="w-full">
                     <PhoneInput
@@ -457,7 +470,7 @@ const CompanyInfoPage = () => {
                     role="combobox"
                     aria-expanded={cityOpen}
                     className={`w-full justify-between font-roboto text-sm font-normal capitalize ${
-                      cityVal
+                      JSON.parse(corporateData)?.accountCountry || cityVal
                         ? "text-lightGray"
                         : cities.length > 0 && accountCountry
                         ? "text-lightGray"
@@ -472,8 +485,8 @@ const CompanyInfoPage = () => {
                       ? "Account City"
                       : cityVal
                       ? cities?.find(
-                          (country: string) =>
-                            country.toLowerCase() === cityVal.toLowerCase()
+                          (country1: string) =>
+                            country1.toLowerCase() === cityVal.toLowerCase()
                         )
                       : corporateData
                       ? JSON.parse(corporateData).accountCity
@@ -483,7 +496,7 @@ const CompanyInfoPage = () => {
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0">
                   <Command className="font-roboto">
-                    <CommandInput placeholder="Search country..." />
+                    <CommandInput placeholder="Search city..." />
                     <CommandEmpty>No city found.</CommandEmpty>
                     <CommandGroup className="max-h-[300px] overflow-y-auto">
                       {cities &&
@@ -551,15 +564,18 @@ const CompanyInfoPage = () => {
                     variant="outline"
                     role="combobox"
                     disabled={!accountCountry}
-                    className={`w-full justify-between py-6 font-roboto text-sm font-normal capitalize ${
-                      bankVal ? "text-lightGray" : "text-gray-400"
-                    } `}
+                    className={`w-full justify-between py-5 font-roboto text-sm font-normal capitalize ${
+                      bankFromData || bankVal
+                        ? "text-lightGray"
+                        : "text-gray-400"
+                    }`}
                   >
-                    {bankVal
+                    {bankVal // Else show manually selected bank
                       ? banks?.response.find(
-                          (bank: string) =>
-                            bank.toLowerCase() === bankVal.toLowerCase()
+                          (bank) => bank.toLowerCase() === bankVal.toLowerCase()
                         )
+                      : bankFromData
+                      ? bankFromData
                       : "Bank Name"}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
@@ -572,27 +588,27 @@ const CompanyInfoPage = () => {
                       {!banksLoading &&
                         banks &&
                         banks.success &&
-                        banks?.response.map((bank: string) => (
-                          <CommandItem
-                            key={bank}
-                            value={bank}
-                            onSelect={(currentValue) => {
-                              setBankOpen(false);
-                              setValue("bank", currentValue);
-                            }}
-                          >
-                            {bank}
-                          </CommandItem>
-                        ))}
+                        banks?.response.map((bank: string, index) => {
+                          return (
+                            <CommandItem
+                              key={index}
+                              value={bank}
+                              onSelect={(currentValue) => {
+                                setBankOpen(false);
+                                setBankFromData(currentValue);
+                                setValue("bank", currentValue, {
+                                  shouldValidate: true,
+                                });
+                              }}
+                            >
+                              {bank}
+                            </CommandItem>
+                          );
+                        })}
                     </CommandGroup>
                   </Command>
                 </PopoverContent>
               </Popover>
-              {errors.name && (
-                <span className="absolute mt-1 text-[11px] text-red-500">
-                  {errors.name.message}
-                </span>
-              )}
             </div>
             <div className="relative w-full">
               <FloatingInput

@@ -37,11 +37,11 @@ const companyInfoSchema = Yup.object().shape({
     .nullable()
     .min(8, "*Swift code must be at least 8 characters long.")
     .max(11, "*Swift code must be less than 11 characters."),
-  accountNumber: Yup.string()
-    .required("*Account number is required")
-    .min(16, "*Account number must contain 16 digits")
-    .max(16, "*Account number must contain 16 digits")
-    .matches(/^\d+(\.\d+)?$/, "*Enter a valid number"),
+  // accountNumber: Yup.string()
+  //   .required("*Account number is required")
+  //   .min(16, "*Account number must contain 16 digits")
+  //   .max(16, "*Account number must contain 16 digits")
+  //   .matches(/^\d+(\.\d+)?$/, "*Enter a valid number"),
   accountHolderName: Yup.string()
     .required("*Account holder name is required")
     .min(1, "*Account holder name field cannot be empty."),

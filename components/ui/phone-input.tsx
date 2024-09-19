@@ -69,6 +69,8 @@ export function getPhoneData(phone: string): PhoneData {
   };
 }
 
+import { getExampleNumber, isValidNumber } from "libphonenumber-js";
+
 export function PhoneInput({
   value: valueProp = "+966", // Default to +966 for Saudi Arabia
   defaultCountry = "SA",
@@ -87,6 +89,12 @@ export function PhoneInput({
   const [openCommand, setOpenCommand] = React.useState(false);
   const [countryCode, setCountryCode] =
     React.useState<CountryCode>(defaultCountry);
+
+  // Get the maximum length of phone number for the selected country
+  const getMaxPhoneLength = (countryCode: CountryCode) => {
+    const exampleNumber = getExampleNumber(countryCode);
+    return exampleNumber?.nationalNumber.length || 14; // Fallback to 14 if the length isn't available
+  };
 
   // Set the selected country based on countryCode
   const selectedCountry = countries.find(
@@ -120,9 +128,12 @@ export function PhoneInput({
     }
   };
 
-  // Ensure the user cannot modify the country code in the input
+  // Ensure the user cannot modify the country code in the input and limit input length
   const handleOnInput = (event: React.FormEvent<HTMLInputElement>) => {
     let inputValue = event.currentTarget.value;
+
+    // Get the maximum allowed length for the selected country
+    const maxPhoneLength = getMaxPhoneLength(countryCode);
 
     // Ensure the value starts with the correct country code
     if (!inputValue.startsWith(`+${selectedCountry?.phone_code}`)) {
@@ -130,6 +141,14 @@ export function PhoneInput({
         /^\+?\d*/,
         ""
       )}`;
+    }
+
+    // Limit the length of the input to the country's max phone number length
+    if (
+      inputValue.length >
+      maxPhoneLength + selectedCountry?.phone_code.length
+    ) {
+      return; // Stop input if it exceeds max length
     }
 
     const formattedValue = asYouType.input(inputValue);

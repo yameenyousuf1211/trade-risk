@@ -207,7 +207,7 @@ const CurrentBankingPage = () => {
         })),
         bank: originalData.bank,
         commercialRegistrationNumber: originalData.crNumber,
-        accountNumber: originalData.accountNumber,
+        // accountNumber: originalData.accountNumber,
         swiftCode: originalData.swiftCode,
         accountHolderName: originalData.accountHolderName,
         accountCountry: originalData.accountCountry,

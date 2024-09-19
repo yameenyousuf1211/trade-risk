@@ -34,7 +34,7 @@ import {
   DisclaimerDialog,
   TelephoneInput,
 } from "@/components/helpers";
-import { getCities } from "@/services/apis/helpers.api";
+import { getBanks, getCities } from "@/services/apis/helpers.api";
 import { useQuery } from "@tanstack/react-query";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -51,6 +51,7 @@ const CompanyInfoPage = () => {
   const [phoneInput, setPhoneInput] = useState<string>("");
   const [allowSubmit, setAllowSubmit] = useState(false);
   const [businessNature, setBusinessNature] = useState("");
+  const [bankOpen, setBankOpen] = useState(false);
 
   const corporateData =
     typeof window !== "undefined"
@@ -149,6 +150,7 @@ const CompanyInfoPage = () => {
   const [cityOpen, setCityOpen] = useState(false);
   const [constitution, setConstitution] = useState("");
   const [businessSector, setBusinessSector] = useState("");
+  const bankVal = watch("bank");
 
   const { data: citiesData } = useQuery({
     queryKey: ["cities", isoCode],
@@ -186,11 +188,15 @@ const CompanyInfoPage = () => {
   const { accountCountry, accountCity } = watch();
   console.log(accountCity, "ACCOUNTCITY");
 
+  const { data: banks, isLoading: banksLoading } = useQuery({
+    queryKey: ["banks"],
+    queryFn: () => getBanks(accountCountry),
+    enabled: !!accountCountry,
+  });
   useEffect(() => {
     if (accountCountry != JSON.parse(corporateData as string)?.accountCountry) {
-      setValue("accountCity", "");
-      setCityVal("");
-      console.log(cityVal, "accountCity");
+      setValue("accountCity", ""); // Reset city value
+      setCityVal(""); // Reset city display
     } else {
       setValue("accountCity", JSON.parse(corporateData as string)?.accountCity);
     }
@@ -428,62 +434,6 @@ const CompanyInfoPage = () => {
 
           <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
             <div className="relative w-full">
-              <FloatingInput
-                name="bank"
-                placeholder="Bank Name"
-                register={register}
-              />
-              {errors.bank && (
-                <span className="absolute mt-1 text-[11px] text-red-500">
-                  {errors.bank.message}
-                </span>
-              )}
-            </div>
-            <div className="relative w-full">
-              <FloatingInput
-                name="accountNumber"
-                type="number"
-                inputMode="numeric"
-                placeholder="Account Number"
-                register={register}
-              />
-              {errors.accountNumber && (
-                <span className="absolute mt-1 text-[11px] text-red-500">
-                  {errors.accountNumber.message}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
-            <div className="relative w-full">
-              <FloatingInput
-                name="swiftCode"
-                placeholder="SWIFT Code"
-                register={register}
-              />
-              {errors.swiftCode && (
-                <span className="absolute mt-1 text-[11px] text-red-500">
-                  {errors.swiftCode.message}
-                </span>
-              )}
-            </div>
-            <div className="relative w-full">
-              <FloatingInput
-                name="accountHolderName"
-                placeholder="Account holder name"
-                register={register}
-              />
-              {errors.accountHolderName && (
-                <span className="absolute mt-1 text-[11px] text-red-500">
-                  {errors.accountHolderName.message}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
-            <div className="relative w-full">
               <CountrySelect
                 setIsoCode={setIsoCode}
                 setValue={setValue}
@@ -573,6 +523,101 @@ const CompanyInfoPage = () => {
               {errors.accountCity && (
                 <span className="absolute left-0 top-10 mt-1 w-full text-[11px] text-red-500">
                   {errors.accountCity.message}
+                </span>
+              )}
+            </div>
+
+            {/* <div className="relative w-full">
+              <FloatingInput
+                name="accountNumber"
+                type="number"
+                inputMode="numeric"
+                placeholder="Account Number"
+                register={register}
+              />
+              {errors.accountNumber && (
+                <span className="absolute mt-1 text-[11px] text-red-500">
+                  {errors.accountNumber.message}
+                </span>
+              )}
+            </div> */}
+          </div>
+
+          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
+            <div className="relative w-full">
+              <Popover onOpenChange={setBankOpen} open={bankOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    disabled={!accountCountry}
+                    className={`w-full justify-between py-6 font-roboto text-sm font-normal capitalize ${
+                      bankVal ? "text-lightGray" : "text-gray-400"
+                    } `}
+                  >
+                    {bankVal
+                      ? banks?.response.find(
+                          (bank: string) =>
+                            bank.toLowerCase() === bankVal.toLowerCase()
+                        )
+                      : "Bank Name"}
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[230px] p-0">
+                  <Command className="font-roboto">
+                    <CommandInput placeholder="Search bank..." />
+                    <CommandEmpty>No bank found.</CommandEmpty>
+                    <CommandGroup className="max-h-[300px] overflow-y-auto">
+                      {!banksLoading &&
+                        banks &&
+                        banks.success &&
+                        banks?.response.map((bank: string) => (
+                          <CommandItem
+                            key={bank}
+                            value={bank}
+                            onSelect={(currentValue) => {
+                              setBankOpen(false);
+                              setValue("bank", currentValue);
+                            }}
+                          >
+                            {bank}
+                          </CommandItem>
+                        ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {errors.name && (
+                <span className="absolute mt-1 text-[11px] text-red-500">
+                  {errors.name.message}
+                </span>
+              )}
+            </div>
+            <div className="relative w-full">
+              <FloatingInput
+                name="swiftCode"
+                placeholder="SWIFT Code"
+                register={register}
+              />
+              {errors.swiftCode && (
+                <span className="absolute mt-1 text-[11px] text-red-500">
+                  {errors.swiftCode.message}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
+            <div className="relative w-full">
+              <FloatingInput
+                name="accountHolderName"
+                placeholder="Account Holder Name"
+                register={register}
+              />
+              {errors.accountHolderName && (
+                <span className="absolute mt-1 text-[11px] text-red-500">
+                  {errors.accountHolderName.message}
                 </span>
               )}
             </div>

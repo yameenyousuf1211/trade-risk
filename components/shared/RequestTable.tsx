@@ -214,9 +214,7 @@ export const RequestTable = ({
                         }
                       >
                         <div
-                          className={`flex items-center justify-center gap-x-2 text-[12px] font-semibold capitalize text-[#44444F] ${
-                            header.name === "Issuing Bank" && "!justify-start"
-                          }`}
+                          className={`flex items-center justify-center gap-x-2 text-[12px] font-semibold capitalize text-[#44444F]`}
                         >
                           {header.name}
                           {sortableHeaders.includes(header.name) && (
@@ -239,9 +237,7 @@ export const RequestTable = ({
                         className="h-8 min-w-32 rounded-md px-2 py-0.5 font-roboto"
                       >
                         <div
-                          className={`flex items-center justify-center gap-x-2 text-[12px] font-semibold capitalize text-[#44444F] ${
-                            header === "Issuing Bank" && "!justify-start"
-                          }`}
+                          className={`flex items-center justify-center gap-x-2 text-[12px] font-semibold capitalize text-[#44444F]`}
                         >
                           {header}
                           {sortableHeaders.includes(header) && (

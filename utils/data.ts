@@ -28,7 +28,7 @@ export const bankColumnHeaders = [
   { name: "Expires", key: "lcPeriod.endDate" },
   { name: "Product Type", key: "lcType" },
   { name: "Issuing Bank", key: "issuingBank.bank" },
-  { name: "Country", key: "issuingBank.country" },
+  { name: "Issuing Country", key: "issuingBank.country" },
   { name: "Beneficiary", key: "exporterInfo.beneficiaryName" },
   { name: "applicant", key: "importerInfo.applicantName" },
   { name: "Amount", key: "amount" },

@@ -186,9 +186,18 @@ const RequestCard = ({
             <div className="px-3 py-2 flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
               {/* Data */}
               <div className="font-roboto">
-                <p className="font-regular text-[#1A1A26] text-[14px]">
-                  Request #{data.refId}
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="font-regular text-[#1A1A26] text-[14px]">
+                    Request #{data.refId}
+                  </p>
+                  <div className="w-10">
+                    <TableDialog
+                      lcId={data._id}
+                      bids={data.bids}
+                      isRisk={isRisk}
+                    />
+                  </div>
+                </div>
                 <p className="capitalize text-lg font-semibold my-1">
                   {(data as ILcs).createdBy?.[0]?.name || ""}
                 </p>
@@ -257,9 +266,14 @@ const RequestCard = ({
         <div className="flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
           {/* Data */}
           <div className="px-3 pt-2">
-            <p className="font-regular text-[#1A1A26] text-[14px]">
-              Request #{data.refId}
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="font-regular text-[#1A1A26] text-[14px]">
+                Request #{data.refId}
+              </p>
+              <div className="w-10">
+                <TableDialog lcId={data._id} bids={data.bids} isRisk={isRisk} />
+              </div>
+            </div>
 
             <p className="font-roboto text-sm flex items-center flex-wrap">
               <span className="text-text">

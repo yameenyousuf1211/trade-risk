@@ -59,12 +59,12 @@ const LgStep12: React.FC<LgStepsProps10> = ({
     advancePaymentBondExpiryDate,
     lcEndDate
   );
-  const minLgExpectedDate = findMaxDate(
+  const minLgExpectedDate = findMinDate(
     bidBondExpectedDate,
     performanceBondExpectedDate,
     retentionMoneyBondExpectedDate,
     advancePaymentBondExpectedDate,
-    lcStartDate
+    lcStartDate && new Date()
   );
   return (
     <div
@@ -93,7 +93,10 @@ const LgStep12: React.FC<LgStepsProps10> = ({
             value={new Date(lastDateOfReceivingBids)}
             name={`lastDateOfReceivingBids`}
             // Pass the maximum lgExpiryDate to disable dates after it
-            disabled={maxLgExpiryDate ? { before: minLgExpectedDate } : {}}
+            disabled={{
+              before: minLgExpectedDate && minLgExpectedDate,
+              after: maxLgExpiryDate && maxLgExpiryDate,
+            }}
           />
         </label>
       </div>

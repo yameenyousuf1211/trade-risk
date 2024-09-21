@@ -377,7 +377,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
             Total LG Amount Requested{" "}
             <span className="text-[20px] text-[#1A1A26] font-semibold">
               {data.totalContractCurrency || "USD"}{" "}
-              {formatAmount(getLgBondTotal(data))}
+              {formatAmount(getLgBondTotal(data))}.00
             </span>
           </h3>
         </div>
@@ -392,7 +392,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
               value={
                 `${data.totalContractCurrency} ${formatAmount(
                   data.totalContractValue
-                )}` || null
+                )}.00` || null
               }
             />
           )}
@@ -471,7 +471,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                         value={
                           `${selectedBond?.currencyType} ${formatAmount(
                             selectedBond?.cashMargin
-                          )}` || null
+                          )}.00` || null
                         }
                       />
                       <LGInfo

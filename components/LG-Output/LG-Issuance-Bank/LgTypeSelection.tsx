@@ -37,7 +37,7 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
 
         const label = `${lgType?.type} - ${
           bondValue?.currencyType
-        } ${formatAmount(bondValue?.cashMargin)}`;
+        } ${formatAmount(bondValue?.cashMargin)}.00`;
 
         const enteredPrice = bondPrices[selectedBank]?.[lgType.type]
           ? bondPrices[selectedBank]?.[lgType.type]?.endsWith("%")

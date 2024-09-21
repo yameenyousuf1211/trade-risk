@@ -99,7 +99,7 @@ export const LGTableBidStatus = ({
       value:
         `${data[selectedValue]?.currencyType} ${formatAmount(
           data[selectedValue]?.cashMargin
-        )}` || "-",
+        )}.00` || "-",
     },
     data[selectedValue]?.valueInPercentage !== undefined && {
       label: "% of the contract",
@@ -132,7 +132,11 @@ export const LGTableBidStatus = ({
       label: "Total Contract Value",
       value: `${data.totalContractCurrency} ${formatAmount(
         data.totalContractValue
-      )}`,
+      )}.00`,
+    },
+    {
+      label: "Last Date for Receiving Bids",
+      value: convertDateToCommaString(data.lastDateOfReceivingBids),
     },
     { label: "Purpose of LG", value: data.purpose },
     data.remarks && { label: "Remarks", value: data.remarks },
@@ -189,7 +193,7 @@ export const LGTableBidStatus = ({
               LG Amount:{" "}
               <span className="font-semibold text-black">
                 {data.totalContractCurrency || "USD"}{" "}
-                {formatAmount(getLgBondTotal(data))}
+                {formatAmount(getLgBondTotal(data))}.00
               </span>
             </h1>
             <h5 className="text-sm text-[#696974] font-light">

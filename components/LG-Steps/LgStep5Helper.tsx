@@ -103,8 +103,8 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
 
   const handleTotalContractValueBlur = () => {
     setDisplayTotalContractValue(
-      formatNumberWithCommas(totalContractValue || 0)
-    ); // Format for display
+      `${formatNumberWithCommas(totalContractValue || 0)}.00`
+    );
   };
 
   const handleTotalContractValueFocus = () => {

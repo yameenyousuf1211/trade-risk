@@ -705,7 +705,7 @@ export const AddBid = ({
                               value={lcData?.discountingInfo.behalfOf || ""}
                             />
                             <LCInfo
-                              label="Discount At"
+                              label="Discounted At"
                               value={
                                 lcData?.discountingInfo?.discountAtSight || ""
                               }

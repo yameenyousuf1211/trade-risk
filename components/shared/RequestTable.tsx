@@ -116,51 +116,48 @@ export const RequestTable = ({
   };
 
   const handleSort = (key: string) => {
-    setSortedKey(key);
-    let isDescending = sortedKey.includes(key);
+    const isDescending = sortedKey === key;
     setSortedKey(isDescending ? "" : key);
-    console.log(tableData, "key");
 
     let sortedData: ILcs[] = [...tableData].sort((a, b) => {
       let valueA, valueB;
+
       switch (key) {
-        case "LC Amount":
         case "amount":
-          valueA = a?.amount?.price;
-          valueB = b?.amount?.price;
+        case "Amount":
+          valueA = a?.amount?.price ?? getTotal(a);
+          valueB = b?.amount?.price ?? getTotal(b);
           break;
-        case "Beneficiary":
-          valueA = a.exporterInfo && a.exporterInfo.beneficiaryName;
-          valueB = b.exporterInfo && b.exporterInfo.beneficiaryName;
+
+        case "Bids":
+          valueA = a.bids?.length || 0;
+          valueB = b.bids?.length || 0;
           break;
+
         case "Ref no":
           valueA = a.refId;
           valueB = b.refId;
           break;
+
         case "LC Issuing Bank":
-          valueA = a.issuingBank && a.issuingBank.country;
-          valueB = b.issuingBank && b.issuingBank.country;
+          valueA = a.issuingBank?.country ?? "";
+          valueB = b.issuingBank?.country ?? "";
           break;
+
         case "Product Type":
-          valueA = a.type;
-          valueB = b.type;
+          valueA = a.type ?? "";
+          valueB = b.type ?? "";
           break;
-        case "Bids":
-          valueA = a.bidsCount;
-          valueB = b.bidsCount;
-          break;
-        case "Request":
+
+        case "Request On":
         case "Deal Received":
-          valueA = a.period && a.period.startDate;
-          valueB = b.period && b.period.startDate;
+          valueA = a.period?.startDate;
+          valueB = b.period?.startDate;
           break;
-        case "Expires":
-          valueA = a.period && a.period.endDate;
-          valueB = b.period && b.period.endDate;
-          break;
-        case "LC applicant":
-          valueA = a.importerInfo && a.importerInfo.applicantName;
-          valueB = b.importerInfo && b.importerInfo.applicantName;
+
+        case "Expires On":
+          valueA = a.period?.endDate;
+          valueB = b.period?.endDate;
           break;
 
         default:

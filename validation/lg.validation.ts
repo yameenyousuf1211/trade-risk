@@ -162,7 +162,7 @@ export const lgValidator = Yup.object()
     // physicalLgCountry: Yup.string().nullable(),
     // physicalLgSwiftCode: Yup.string().nullable(),
     lastDateOfReceivingBids: Yup.date().required(
-      "Last Date of Receiving Bids is required"
+      "Last Date For Receiving Bids is required"
     ),
     totalContractValue: Yup.string().required(
       "Total Contract Value is required"

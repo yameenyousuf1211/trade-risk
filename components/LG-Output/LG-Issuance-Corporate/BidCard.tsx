@@ -216,7 +216,7 @@ export const BidCard = ({
                           Accepted
                         </h6>
                       ) : bankBid.status === "Rejected" ? (
-                        <h6 className="text-[0.7rem] bg-[#F1F1F5] p-1">
+                        <h6 className="text-[0.7rem] bg-[#FD8D8D] p-1">
                           Rejected
                         </h6>
                       ) : overallStatus !== "Accepted" ? (
@@ -282,7 +282,7 @@ export const BidCard = ({
                           Accepted
                         </h6>
                       ) : bankBid.status === "Rejected" ? (
-                        <h6 className="text-[0.7rem] bg-[#F1F1F5] p-1">
+                        <h6 className="text-[0.7rem] bg-[#FD8D8D] p-1">
                           Rejected
                         </h6>
                       ) : overallStatus !== "Accepted" ? (

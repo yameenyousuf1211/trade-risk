@@ -34,7 +34,7 @@ const NotificationPopup = ({
   });
 
   return (
-    <div className="fixed bottom-0 right-5 z-50 h-[144px] w-[330px]">
+    <div className="fixed bottom-0 right-5 z-50 h-[144px] w-[20%]">
       <div className="flex flex-col gap-1 rounded-[12px] bg-[#2F3031] p-5 text-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

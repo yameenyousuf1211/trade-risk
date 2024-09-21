@@ -147,7 +147,7 @@ export const Period = ({
 
   const updateValue = (name: string, value: any) => {
     setValue(name, value);
-    setValue("lastDateOfReceivingBids", "");
+    setValue("lastDateOfReceivingBids", undefined);
   };
 
   const handleExpiryDateSelect = (date: Date) => {

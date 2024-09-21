@@ -1,7 +1,7 @@
 export const columnHeaders = [
   "Ref no",
-  "Request",
-  "Expires",
+  "Request On",
+  "Expires On",
   "Product Type",
   "Issuing Bank",
   "Beneficiary",
@@ -25,7 +25,7 @@ export const bankColumnHeaders = [
   { name: "Deal ID", key: "refId" },
   // { name: "Swift Code", key: "createdBy.swiftCode" },
   { name: "Deal Received", key: "lcPeriod.startDate" },
-  { name: "Expires", key: "lcPeriod.endDate" },
+  { name: "Expires On", key: "lcPeriod.endDate" },
   { name: "Product Type", key: "lcType" },
   { name: "Issuing Bank", key: "issuingBank.bank" },
   { name: "Issuing Country", key: "issuingBank.country" },
@@ -37,8 +37,8 @@ export const bankColumnHeaders = [
 
 export const sortableHeaders = [
   "Ref no",
-  "Request",
-  "Expires",
+  "Request On",
+  "Expires On",
   "Product Type",
   "Amount",
   "Bids",

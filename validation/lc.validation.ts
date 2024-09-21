@@ -112,7 +112,7 @@ export const generalLcSchema = Yup.object().shape({
           .notRequired(), // Allow extraInfo to be nullable when "Sight LC"
     }),
   lastDateOfReceivingBids: Yup.date().required(
-    "Select last date of receiving bids"
+    "Last Date for Receiving Bids is required"
   ),
   attachments: Yup.array().of(fileSchema).optional(),
 });

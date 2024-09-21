@@ -96,7 +96,10 @@ export const LGTableBidStatus = ({
   const lgDetails = [
     {
       label: "Amount",
-      value: formatAmount(data[selectedValue]?.cashMargin) || "-",
+      value:
+        `${data[selectedValue]?.currencyType} ${formatAmount(
+          data[selectedValue]?.cashMargin
+        )}` || "-",
     },
     data[selectedValue]?.valueInPercentage !== undefined && {
       label: "% of the contract",

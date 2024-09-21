@@ -711,7 +711,7 @@ export const TableDialog = ({
                           Confirmation Info
                         </h2>
                         <LCInfo
-                          label="Charges An Account Of"
+                          label="Charges on Account Of"
                           value={lcData?.confirmationInfo.behalfOf || ""}
                         />
                       </div>
@@ -722,7 +722,7 @@ export const TableDialog = ({
                           Discounting Info
                         </h2>
                         <LCInfo
-                          label="Charges An Account Of"
+                          label="Charges on Account Of"
                           value={lcData?.discountingInfo.behalfOf || ""}
                         />
                         <LCInfo

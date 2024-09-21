@@ -397,7 +397,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
             />
           )}
           <LGInfo
-            label="Request Expiry Date"
+            label="Last Date for Receiving Bids"
             value={
               convertDateToCommaString(data.lastDateOfReceivingBids) || null
             }

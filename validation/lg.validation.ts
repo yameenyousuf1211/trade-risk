@@ -71,7 +71,7 @@ const baseSchema = Yup.object().shape({
 });
 
 // Keep the validation for LG Re-Issuance unchanged, including the test method
-const lgReIssuanceSchema = baseSchema.concat(
+export const lgReIssuanceSchema = baseSchema.concat(
   Yup.object()
     .shape({
       lgDetailsType: Yup.string()
@@ -156,7 +156,7 @@ const lgReIssuanceSchema = baseSchema.concat(
 );
 
 // Define a schema for LG 100% Cash Margin, reusing common fields
-const lg100CashMarginSchema = baseSchema.concat(
+export const lg100CashMarginSchema = baseSchema.concat(
   Yup.object().shape({
     typeOfLg: Yup.object()
       .shape({
@@ -205,14 +205,3 @@ const lg100CashMarginSchema = baseSchema.concat(
       .required(),
   })
 );
-
-// Main lgValidator to switch between "LG Re-Issuance" and "LG 100% Cash Margin"
-export const lgValidator = Yup.object()
-  .shape({
-    lgIssuance: Yup.string().required("LG Issuance is required"),
-  })
-  .when("lgIssuance", {
-    is: "LG 100% Cash Margin",
-    then: lg100CashMarginSchema,
-    otherwise: lgReIssuanceSchema,
-  });

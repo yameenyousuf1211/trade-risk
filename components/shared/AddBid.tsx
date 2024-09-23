@@ -690,7 +690,7 @@ export const AddBid = ({
                               Confirmation Info
                             </h2>
                             <LCInfo
-                              label="Charges on Account Of"
+                              label="Charges on account Of"
                               value={lcData?.confirmationInfo.behalfOf || ""}
                             />
                           </div>
@@ -701,7 +701,7 @@ export const AddBid = ({
                               Discounting Info
                             </h2>
                             <LCInfo
-                              label="Charges on Account Of"
+                              label="Charges on account Of"
                               value={lcData?.discountingInfo.behalfOf || ""}
                             />
                             <LCInfo

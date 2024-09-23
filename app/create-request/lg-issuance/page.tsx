@@ -30,7 +30,10 @@ import {
   removeUnnecessaryFieldsForLgCreate,
 } from "@/utils";
 import { bankCountries } from "@/utils/data";
-import { lgValidator } from "@/validation/lg.validation";
+import {
+  lg100CashMarginSchema,
+  lgReIssuanceSchema,
+} from "@/validation/lg.validation";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -225,12 +228,18 @@ export default function LgIssuance() {
     }
     try {
       console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);
-      await lgValidator.validate(responseData, {
-        abortEarly: true,
-        stripUnknown: true,
-      });
+      if (responseData.lgIssuance === "LG 100% Cash Margin") {
+        await lg100CashMarginSchema.validate(responseData, {
+          abortEarly: true,
+          stripUnknown: true,
+        });
+      } else {
+        await lgReIssuanceSchema.validate(responseData, {
+          abortEarly: true,
+          stripUnknown: true,
+        });
+      }
       console.log("🚀 ~ handleFinalSubmission ~ validatedData", responseData);
-      return;
       const { response, success } = storeData?.data?._id
         ? await updateLg(responseData, storeData?.data?._id)
         : await createLg(responseData);
@@ -376,8 +385,6 @@ export default function LgIssuance() {
             setStepCompleted={handleStepCompletion}
             watch={watch}
             data={[]}
-            stepStatus={stepStatus}
-            name="otherBond"
             flags={[]}
           />
         ) : (

@@ -22,6 +22,19 @@ export default function LgStep3CashMargin({
   // Watch the country field
   const preferredCountry = watch("preferredBanks.country");
 
+  // Ensure there is always one preferred bank
+  useEffect(() => {
+    if (preferredBanksArray.length === 0) {
+      setValue("preferredBanks.banks", [
+        {
+          bank: "",
+          swiftCode: "",
+          accountNumber: "",
+        },
+      ]);
+    }
+  }, [preferredBanksArray.length, setValue]);
+
   // Fetch banks dynamically based on selected country
   const { data: preferredBankOptions, isLoading } = useQuery({
     queryKey: ["preferred-banks", preferredCountry],
@@ -156,7 +169,7 @@ export default function LgStep3CashMargin({
           <div className="center p-1 border border-black rounded-full">
             <Plus className="size-4" />
           </div>
-          <p className="text-sm text-lightGray">Add Confirming Bank</p>
+          <p className="text-sm text-lightGray">Add Preferred Bank</p>
         </div>
       ) : null}
     </div>

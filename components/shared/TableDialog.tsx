@@ -47,6 +47,9 @@ export const BidCard = ({
     },
   });
 
+  // Function to check if the bid has expired
+  const isExpired = new Date(data.bidValidity) < new Date();
+
   const handleSubmit = async (status: string, id: string) => {
     const { success, response } = await mutateAsync({
       status,
@@ -63,22 +66,26 @@ export const BidCard = ({
   };
 
   return (
-    <div className="rounded-lg border border-borderCol px-3 py-5">
+    <div
+      className={`rounded-lg border border-borderCol px-3 py-5 ${
+        isExpired ? "opacity-60" : ""
+      }`}
+    >
       <div className="grid grid-cols-2 gap-y-4">
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+        <div>
           <p className="mb-1 text-sm text-para">Bid Number</p>
           <p className="text-lg font-semibold">
             {data._id?.slice(0, 6) || "12365"}
           </p>
         </div>
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+        <div>
           <p className="mb-1 text-sm capitalize text-para">Submitted by</p>
           <p className="text-lg font-semibold capitalize">
             {formatFirstLetterOfWord(data.bidBy?.name) || ""}
           </p>
         </div>
         {data.bidType !== "LC Discounting" && (
-          <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          <div>
             <p className="mb-1 text-sm text-para">Confirmation Rate</p>
             <p className="text-lg font-semibold text-text">
               {data?.confirmationPrice}%{" "}
@@ -88,7 +95,7 @@ export const BidCard = ({
         )}
         {data?.discountMargin &&
           data.bidType === "LC Confirmation & Discounting" && (
-            <div className={data.status === "Expired" ? "opacity-50" : ""}>
+            <div>
               <p className="mb-1 text-sm text-para">Discount Pricing</p>
               <p className="text-lg font-semibold">
                 {`${data.discountBaseRate.toUpperCase()} + `}
@@ -97,7 +104,7 @@ export const BidCard = ({
             </div>
           )}
         {data?.discountMargin && data.bidType === "LC Discounting" && (
-          <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          <div>
             <p className="mb-1 text-sm text-para">Discount Rate</p>
             <p className="text-lg font-semibold">
               {data?.discountBaseRate.toUpperCase()} +{" "}
@@ -105,14 +112,14 @@ export const BidCard = ({
             </p>
           </div>
         )}
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+        <div>
           <p className="mb-1 text-sm text-para ">Country</p>
           <p className="text-lg font-semibold capitalize">
             {data.bidBy.country}
           </p>
         </div>
         {user.type === "corporate" && (
-          <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          <div>
             <p className="mb-1 text-sm text-para">Bid Submitted</p>
             <p className="text-lg font-semibold">
               {convertDateAndTimeToStringGMT({
@@ -122,8 +129,7 @@ export const BidCard = ({
             </p>
           </div>
         )}
-
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+        <div>
           <p className="mb-1 text-sm text-para">Bid Expiry</p>
           <p className="text-lg font-semibold">
             {convertDateAndTimeToStringGMT({
@@ -133,7 +139,7 @@ export const BidCard = ({
           </p>
         </div>
         {data.bidType === "LC Discounting" && (
-          <div className={data.status === "Expired" ? "opacity-50" : ""}>
+          <div>
             <p className="mb-1 text-sm text-para">Term</p>
             <p className="text-lg font-semibold text-text">
               <span className="text-black">
@@ -142,35 +148,40 @@ export const BidCard = ({
             </p>
           </div>
         )}
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          {/* <p className="text-sm text-para mb-1">Minimum Charges</p>
-    <p className="text-lg font-semibold text-text">AED 30,000.00</p> */}
-        </div>
+
         {data.status === "Pending" && !isBank && (
           <>
-            <DialogClose id="close-button" className="hidden"></DialogClose>
-            <div className="col-span-2 mt-2 flex gap-4">
-              <Button
-                size="lg"
-                className="flex-1 bg-[#29C084] hover:bg-[#29C084]/90"
-                onClick={() => handleSubmit("Accepted", data._id)}
-                disabled={isPending}
-              >
-                Accept
-              </Button>
-              <Button
-                size="lg"
-                className="flex-1 bg-[#f4f7fa] text-para"
-                variant="ghost"
-                onClick={() => handleSubmit("Rejected", data._id)}
-                disabled={isPending}
-              >
-                Reject
-              </Button>
-            </div>
+            {isExpired ? (
+              // Show Bid Expired div if the bid is expired
+              <div className="col-span-2 mt-2 flex justify-center items-center bg-black text-white rounded-lg py-2">
+                Bid Expired
+              </div>
+            ) : (
+              // Show Accept and Reject buttons if the bid is not expired
+              <div className="col-span-2 mt-2 flex gap-4">
+                <Button
+                  size="lg"
+                  className="flex-1 bg-[#29C084] hover:bg-[#29C084]/90"
+                  onClick={() => handleSubmit("Accepted", data._id)}
+                  disabled={isPending}
+                >
+                  Accept
+                </Button>
+                <Button
+                  size="lg"
+                  className="flex-1 bg-[#f4f7fa] text-para"
+                  variant="ghost"
+                  onClick={() => handleSubmit("Rejected", data._id)}
+                  disabled={isPending}
+                >
+                  Reject
+                </Button>
+              </div>
+            )}
           </>
         )}
       </div>
+
       {(data.status !== "Pending" ||
         (data.status === "Pending" && data.createdBy === user?._id)) && (
         <Button
@@ -179,8 +190,6 @@ export const BidCard = ({
               ? "bg-[#29C08433] hover:bg-[#29C08433]"
               : data.status === "Rejected"
               ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
-              : data.status === "Expired"
-              ? "bg-[#97979733] hover:bg-[#97979733]"
               : "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
           } mt-2 w-full cursor-default text-black`}
         >
@@ -188,8 +197,6 @@ export const BidCard = ({
             ? "Bid Accepted"
             : data.status === "Rejected"
             ? "Bid Rejected"
-            : data.status === "Expired"
-            ? "Request Expired"
             : data.status === "Pending"
             ? `Bid Submitted on ${convertDateAndTimeToStringGMTNoTsx(
                 data.createdAt

@@ -6,6 +6,7 @@ import { ConfirmationModal } from "../ConfirmationModal";
 import { formatAmount } from "@/utils";
 import { formatFirstLetterOfWord } from "../helper";
 import { useAuth } from "@/context/AuthProvider";
+import { formatNumberByAddingDigitsToStart } from "../../../utils/helper/helper";
 
 interface BidPreviewProps {
   onBack: () => void;
@@ -81,7 +82,9 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
           <div className="flex space-x-6">
             {bidNumber && (
               <div className="text-center">
-                <p className="text-base font-normal">{bidNumber}</p>
+                <p className="text-base font-normal">
+                  {formatNumberByAddingDigitsToStart(bidNumber)}
+                </p>
                 <p className="text-base text-[#A1A1A8] font-light">
                   Bid Number
                 </p>

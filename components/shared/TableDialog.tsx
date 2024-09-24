@@ -25,6 +25,7 @@ import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargi
 import ViewFileAttachment from "./ViewFileAttachment";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 import { formatFirstLetterOfWord } from "../LG-Output/helper";
+import { formatNumberByAddingDigitsToStart } from "../../utils/helper/helper";
 
 export const BidCard = ({
   data,
@@ -75,7 +76,7 @@ export const BidCard = ({
         <div>
           <p className="mb-1 text-sm text-para">Bid Number</p>
           <p className="text-lg font-semibold">
-            {data._id?.slice(0, 6) || "12365"}
+            {formatNumberByAddingDigitsToStart(data.bidNumber)}
           </p>
         </div>
         <div>

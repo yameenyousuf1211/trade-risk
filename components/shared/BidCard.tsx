@@ -1,6 +1,9 @@
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
 import { IBids } from "@/types/type";
-import { convertDateToYYYYMMDD } from "@/utils/helper/helper";
+import {
+  convertDateToYYYYMMDD,
+  formatNumberByAddingDigitsToStart,
+} from "@/utils/helper/helper";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { DialogClose } from "../ui/dialog";
@@ -49,7 +52,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Bid Number</p>
           <p className="font-semibold text-lg">
-            {data._id?.slice(1, 6) || "12365"}
+            {formatNumberByAddingDigitsToStart(data.bidNumber)}
           </p>
         </div>
 

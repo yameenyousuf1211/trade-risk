@@ -31,6 +31,7 @@ import { TableDialog } from "./TableDialog";
 import { usePathname } from "next/navigation";
 import { fetchRisk } from "@/services/apis/risk.api";
 import { formatFirstLetterOfWord } from "../LG-Output/helper";
+import { formatNumberByAddingDigitsToStart } from "../../utils/helper/helper";
 
 const SliderCard = ({
   info,
@@ -73,7 +74,7 @@ const SliderCard = ({
     advancePaymentBond +
     performanceBond +
     retentionMoneyBond;
-
+  const isExpired = new Date(info?.bidValidity) < new Date();
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
       <p>
@@ -124,22 +125,28 @@ const SliderCard = ({
       <p className="font-roboto text-para text-sm font-medium truncate capitalize">
         {info.bidBy?.country || "Pakistan"}
       </p>
-      <div className="flex items-center gap-x-2 mt-2">
-        <Button
-          onClick={() => handleSubmit("Accepted", info._id)}
-          className="border-2 border-[#90ee8f] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
-          disabled={isPending}
-        >
-          <Check className="size-5 text-para" color="lightGreen" />
-        </Button>
-        <Button
-          onClick={() => handleSubmit("Rejected", info._id)}
-          className="border-2 border-[#ff0000] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
-          disabled={isPending}
-        >
-          <X className="size-5 text-para" color="red" />
-        </Button>
-      </div>
+      {isExpired ? (
+        <div className="col-span-2 mt-2 flex justify-center items-center bg-black text-white rounded-lg py-2">
+          Bid Expired
+        </div>
+      ) : (
+        <div className="flex items-center gap-x-2 mt-2">
+          <Button
+            onClick={() => handleSubmit("Accepted", info._id)}
+            className="border-2 border-[#90ee8f] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
+            disabled={isPending}
+          >
+            <Check className="size-5 text-para" color="lightGreen" />
+          </Button>
+          <Button
+            onClick={() => handleSubmit("Rejected", info._id)}
+            className="border-2 border-[#ff0000] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
+            disabled={isPending}
+          >
+            <X className="size-5 text-para" color="red" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
@@ -190,7 +197,7 @@ const RequestCard = ({
               <div className="font-roboto">
                 <div className="flex items-center justify-between">
                   <p className="font-regular text-[#1A1A26] text-[14px]">
-                    Request #{data.refId}
+                    Request #{formatNumberByAddingDigitsToStart(data.refId)}
                   </p>
                   <div className="w-10">
                     <TableDialog
@@ -270,7 +277,7 @@ const RequestCard = ({
           <div className="px-3 pt-2">
             <div className="flex items-center justify-between">
               <p className="font-regular text-[#1A1A26] text-[14px]">
-                Request #{data.refId}
+                Request #{formatNumberByAddingDigitsToStart(data.refId)}
               </p>
               <div className="w-10">
                 <TableDialog lcId={data._id} bids={data.bids} isRisk={isRisk} />

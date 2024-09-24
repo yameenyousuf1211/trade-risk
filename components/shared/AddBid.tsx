@@ -13,6 +13,7 @@ import {
   convertDate,
   convertDateAndTimeToString,
   convertDateToCommaString,
+  formatNumberByAddingDigitsToStart,
 } from "@/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -775,7 +776,9 @@ export const AddBid = ({
                                     Bid Number
                                   </p>
                                   <p className="text-lg font-semibold">
-                                    {bid._id?.substring(0, 6) || "100928"}
+                                    {formatNumberByAddingDigitsToStart(
+                                      bid?.bidNumber
+                                    )}
                                   </p>
                                 </div>
 

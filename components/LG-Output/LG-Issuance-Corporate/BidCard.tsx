@@ -11,6 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { respondBid } from "@/services/apis/lg.apis";
 import { convertDateToCommaString } from "@/utils";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
+import { formatNumberByAddingDigitsToStart } from "../../../utils/helper/helper";
 
 export const BidCard = ({
   bidDetail,
@@ -155,7 +156,7 @@ export const BidCard = ({
           <div className="text-end">
             <p className="text-[#92929D] text-sm">Bid Number</p>
             <p className="font-semibold text-xl">
-              {bidDetail._id.substring(0, 6)}
+              {formatNumberByAddingDigitsToStart(bidDetail.bidNumber)}
             </p>
           </div>
         </div>

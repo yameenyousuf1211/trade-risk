@@ -29,7 +29,10 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
 import { LGTableBidStatus } from "../LG-Output/LG-Issuance-Corporate/LgTableBidStatus";
-import { formatAmount } from "../../utils/helper/helper";
+import {
+  formatAmount,
+  formatNumberByAddingDigitsToStart,
+} from "../../utils/helper/helper";
 
 type TableDataCellProps = {
   data?: string | number | Date | undefined;
@@ -270,7 +273,9 @@ export const RequestTable = ({
                     <TableCell className="min-w-[90px] px-1 py-1">
                       <div className="flex w-full items-center justify-center gap-x-2 rounded-md border border-borderCol p-2 py-2.5">
                         <div className="tex-sm truncate text-lightGray">
-                          {item?.refId ? item?.refId : "-"}
+                          {item?.refId
+                            ? formatNumberByAddingDigitsToStart(item?.refId)
+                            : "-"}
                         </div>
                       </div>
                     </TableCell>
@@ -403,7 +408,9 @@ export const RequestTable = ({
                     <TableCell className="min-w-[90px] px-1 py-1">
                       <div className="flex w-full items-center justify-center gap-x-2 rounded-md border border-borderCol p-2 py-2.5">
                         <div className="tex-sm truncate text-lightGray">
-                          {item?.refId ? item?.refId : item?.refId}
+                          {item?.refId
+                            ? formatNumberByAddingDigitsToStart(item?.refId)
+                            : "-"}
                         </div>
                       </div>
                     </TableCell>

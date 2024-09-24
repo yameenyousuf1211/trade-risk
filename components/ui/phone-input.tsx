@@ -132,23 +132,35 @@ export function PhoneInput({
   const handleOnInput = (event: React.FormEvent<HTMLInputElement>) => {
     let inputValue = event.currentTarget.value;
 
+    // Remove spaces before checking the length
+    const inputWithoutSpaces = inputValue.replace(/\s+/g, "");
+
     // Get the maximum allowed length for the selected country
-    const maxPhoneLength = getMaxPhoneLength(countryCode);
-    if (!inputValue.startsWith(`+${selectedCountry?.phone_code}`)) {
-      inputValue = `+${selectedCountry?.phone_code}${inputValue.replace(
+    const maxPhoneLength = getMaxPhoneLength(countryCode) - 1;
+
+    // Ensure the number starts with the correct country code
+    if (!inputWithoutSpaces.startsWith(`+${selectedCountry?.phone_code}`)) {
+      inputValue = `+${selectedCountry?.phone_code}${inputWithoutSpaces.replace(
         /^\+?\d*/,
         ""
       )}`;
     }
-    if (inputValue.length > maxPhoneLength) {
+
+    // If the input length without spaces exceeds the max length, stop further input
+    if (inputWithoutSpaces.length > maxPhoneLength) {
       return; // Stop input if it exceeds max length
     }
 
     const formattedValue = asYouType.input(inputValue);
     const number = asYouType.getNumber();
+
+    // Update the country code based on the formatted number
     setCountryCode(number?.country || defaultCountry);
+
+    // Update the input state
     handlers.set(formattedValue);
 
+    // Trigger the onChange callback with the formatted value
     if (onChange) {
       onChange(formattedValue); // Call onChange with the formatted value
     }

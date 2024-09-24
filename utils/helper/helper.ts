@@ -492,3 +492,13 @@ export const convertStringValueToDate = (responseData: any) => {
 export const formatAmount = (amount: number | string) => {
   return Number(amount).toLocaleString("en-US");
 };
+
+export const formatNumberByAddingDigitsToStart = (
+  number: number | undefined | null
+) => {
+  if (number === undefined || number === null || isNaN(number)) {
+    return "-"; // Default value
+  }
+
+  return number.toString().padStart(6, "0");
+};

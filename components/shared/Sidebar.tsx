@@ -58,6 +58,7 @@ const SliderCard = ({
       id,
       key: isRisk ? "risk" : "lc",
     });
+    queryClient.invalidateQueries(["bid-status", "fetch-lcs", "fetch-risks"]);
     if (!success) return toast.error(response as string);
     else return toast.success(`Bid ${status}`);
   };
@@ -570,7 +571,7 @@ export const Sidebar = ({
           </Link>
         </div>
       ) : (
-        <div className="bg-primaryCol rounded-lg pb-2 px-4 flex flex-col gap-y-4 items-center justify-center">
+        <div className="bg-primaryCol rounded-lg pb-3 px-4 flex flex-col gap-y-2 items-center justify-center">
           <Select onValueChange={(val: string) => setGenerateType(val)}>
             <SelectTrigger className="font-roboto max-w-36 w-full mx-auto text-center bg-transparent border-none text-white text-sm ring-0 flex items-center justify-between">
               <p className="text-sm">Export</p>

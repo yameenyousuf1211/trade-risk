@@ -134,20 +134,13 @@ export function PhoneInput({
 
     // Get the maximum allowed length for the selected country
     const maxPhoneLength = getMaxPhoneLength(countryCode);
-
-    // Ensure the value starts with the correct country code
     if (!inputValue.startsWith(`+${selectedCountry?.phone_code}`)) {
       inputValue = `+${selectedCountry?.phone_code}${inputValue.replace(
         /^\+?\d*/,
         ""
       )}`;
     }
-
-    // Limit the length of the input to the country's max phone number length
-    if (
-      inputValue.length >
-      maxPhoneLength + selectedCountry?.phone_code.length
-    ) {
+    if (inputValue.length > maxPhoneLength) {
       return; // Stop input if it exceeds max length
     }
 

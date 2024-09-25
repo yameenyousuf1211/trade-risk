@@ -23,6 +23,7 @@ import { fetchSingleRisk } from "@/services/apis/risk.api";
 import Image from "next/image";
 import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
 import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargin";
+import LGIssuanceCashMarginDialog from "../LG-Output/LG-Issuance-Bank/LGIssuanceCashMargin";
 
 export const BidCard = ({
   data,
@@ -278,8 +279,9 @@ export const TableDialog = ({
             <X className="size-7" />
           </DialogClose>
         </div>
-        {lcData?.type === "LG Issuance" ? (
-          <LGIssuanceDialog data={lcData} />
+        {lcData?.lgIssuance === "LG 100% Cash Margin" ? (
+          // <LGIssuanceDialog data={lcData} />
+          <LGIssuanceCashMarginDialog data={lcData} />
         ) : (
           <div className="relative mt-0 flex h-full items-start justify-between overflow-y-hidden">
             {/* Left Section */}

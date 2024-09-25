@@ -314,8 +314,9 @@ export const AddBid = ({
             <X className="size-7" />
           </DialogClose>
         </div>
-        {lcData && lcData?.type === "LG Issuance" ? (
-          <LGIssuanceDialog data={lcData} />
+        {lcData && lcData?.lgIssuance === "LG 100% Cash Margin" ? (
+          // <LGIssuanceDialog data={lcData} />
+          <LGCashMarginDialog />
         ) : (
           <div className="overflow-y-hidden relative mt-0 flex items-start justify-between h-full">
             {/* Left Section */}

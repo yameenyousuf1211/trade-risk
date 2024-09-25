@@ -26,6 +26,7 @@ import ViewFileAttachment from "./ViewFileAttachment";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 import { formatFirstLetterOfWord } from "../LG-Output/helper";
 import { formatNumberByAddingDigitsToStart } from "../../utils/helper/helper";
+import LGIssuanceCashMarginDialog from "../LG-Output/LG-Issuance-Bank/LGIssuanceCashMargin";
 
 export const BidCard = ({
   data,
@@ -327,8 +328,9 @@ export const TableDialog = ({
             <X className="size-7" />
           </DialogClose>
         </div>
-        {lcData?.type === "LG Issuance" ? (
-          <LGIssuanceDialog data={lcData} />
+        {lcData?.lgIssuance === "LG 100% Cash Margin" ? (
+          // <LGIssuanceDialog data={lcData} />
+          <LGIssuanceCashMarginDialog data={lcData} />
         ) : (
           <div className="relative mt-0 flex h-full items-start justify-between overflow-y-hidden">
             {/* Left Section */}

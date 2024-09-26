@@ -34,6 +34,7 @@ import {
   formatNumberByAddingDigitsToStart,
 } from "../../utils/helper/helper";
 import { LGCashMarginCorporate } from "../LG-Output/LG-Issuance-Corporate/LgCashMarginCorporate";
+import { formatAmount } from "../../utils/helper/helper";
 
 type TableDataCellProps = {
   data?: string | number | Date | undefined;

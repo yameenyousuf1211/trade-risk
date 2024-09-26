@@ -32,10 +32,10 @@ import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
-import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargin";
 import ViewFileAttachment from "./ViewFileAttachment";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 import { formatFirstLetterOfWord } from "../LG-Output/helper";
+import LGIssuanceCashMarginDialog from "../LG-Output/LG-Issuance-Bank/LGIssuanceCashMargin";
 
 const LCInfo = ({
   label,
@@ -314,9 +314,10 @@ export const AddBid = ({
             <X className="size-7" />
           </DialogClose>
         </div>
-        {lcData && lcData?.lgIssuance === "LG 100% Cash Margin" ? (
-          // <LGIssuanceDialog data={lcData} />
-          <LGCashMarginDialog />
+        {lcData?.lgIssuance === "LG 100% Cash Margin" ? (
+          <LGIssuanceCashMarginDialog data={lcData} />
+        ) : lcData?.lgIssuance !== "LG 100% Cash Margin" ? (
+          <LGIssuanceDialog data={lcData} />
         ) : (
           <div className="overflow-y-hidden relative mt-0 flex items-start justify-between h-full">
             {/* Left Section */}

@@ -158,11 +158,7 @@ export const lgReIssuanceSchema = baseSchema.concat(
 // Define a schema for LG 100% Cash Margin, reusing common fields
 export const lg100CashMarginSchema = baseSchema.concat(
   Yup.object().shape({
-    typeOfLg: Yup.object()
-      .shape({
-        type: Yup.string().required("Type of LG is required"), // Validate that typeOfLg.type is a required string
-      })
-      .required("Type of LG is required"),
+    typeOfLg: Yup.string().required("Type of LG is required"),
     preferredBanks: Yup.object()
       .shape({
         country: Yup.string().required("Preferred Bank Country is required"),
@@ -181,10 +177,10 @@ export const lg100CashMarginSchema = baseSchema.concat(
       .shape({
         currency: Yup.string().required("Currency is required"),
         amount: Yup.number().required("Amount is required"),
-        LgTenor: Yup.object().shape({
-          type: Yup.string().required("LG Tenor Type is required"),
+        lgTenor: Yup.object().shape({
+          lgTenorType: Yup.string().required("LG Tenor Type is required"),
+          lgTenorValue: Yup.string().required("LG Tenor Value is required"),
         }),
-        number: Yup.number().required("LG Tenor Number is required"),
         expectedDateToIssueLg: Yup.date().required(
           "Expected Date to Issue LG is required"
         ),
@@ -195,12 +191,18 @@ export const lg100CashMarginSchema = baseSchema.concat(
       .shape({
         country: Yup.string().required("Country for LG Issue is required"),
         city: Yup.string().required("City for LG Issue is required"),
+        isoCode: Yup.string().required(
+          "Please select Lg Issue In country again"
+        ),
       })
       .required(),
     lgCollectIn: Yup.object()
       .shape({
         country: Yup.string().required("Country for LG Collection is required"),
         city: Yup.string().required("City for LG Collection is required"),
+        isoCode: Yup.string().required(
+          "Please select Lg Collect In country again"
+        ),
       })
       .required(),
   })

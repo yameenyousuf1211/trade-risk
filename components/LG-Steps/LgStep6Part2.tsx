@@ -20,14 +20,13 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
   setStepCompleted,
   setValue,
 }) => {
-  const [number, setNumber] = useState("");
   const { addStep, removeStep } = useStepStore();
 
   // Watch for lgDetails object fields
   const lgDetailCurrency = watch("lgDetails.currency");
   const lgDetailAmount = watch("lgDetails.amount");
-  const lgTenorType = watch("lgDetails.LgTenor.type");
-  const lgTenorValue = watch("lgDetails.number");
+  const lgTenorType = watch("lgDetails.lgTenor.lgTenorType");
+  const lgTenorValue = watch("lgDetails.lgTenor.lgTenorValue");
   const expectedDate = watch("lgDetails.expectedDateToIssueLg");
   const lgExpiryDate = watch("lgDetails.lgExpiryDate");
   const [currencyValue, setCurrencyValue] = useState<string | number>(
@@ -149,7 +148,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
             <div className="flex items-center gap-2 w-1/2 justify-end">
               <Select
                 onValueChange={(value) =>
-                  setValue("lgDetails.LgTenor.type", value)
+                  setValue("lgDetails.lgTenor.lgTenorType", value)
                 }
                 defaultValue={lgTenorType || "Months"}
               >
@@ -168,7 +167,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               >
                 <Input
                   register={register}
-                  name="lgDetails.number"
+                  name="lgDetails.lgTenor.lgTenorValue"
                   type="text"
                   className="block bg-none text-sm border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   placeholder="No."

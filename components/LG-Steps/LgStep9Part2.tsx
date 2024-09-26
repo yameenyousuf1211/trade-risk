@@ -24,7 +24,10 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
   const [isoCode, setIsoCode] = useState<string | null>("");
 
   useEffect(() => {
-    console.log(isoCode, "isoCode");
+    setValue(
+      type === "issue" ? "lgIssueIn.isoCode" : "lgCollectIn.isoCode",
+      isoCode
+    );
   }, [isoCode]);
 
   const { data: cities, isLoading } = useQuery({

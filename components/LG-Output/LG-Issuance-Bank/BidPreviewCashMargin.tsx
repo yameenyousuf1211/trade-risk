@@ -4,19 +4,20 @@ import { ChevronLeft } from "lucide-react";
 import { ConfirmationModal } from "../ConfirmationModal";
 import { useAuth } from "@/context/AuthProvider";
 import { convertDateAndTimeToString } from "../../../utils/helper/helper";
+import { formatFirstLetterOfWord } from "../helper";
 
 const BidPreviewCashMargin = ({
   formData,
   onSubmitBid,
   setIsPreview,
-  bids,
+  handleNewBid,
   userBidStatus,
 }: {
   formData: any;
   onSubmitBid: () => void;
   setIsPreview: (value: boolean) => void;
   userBidStatus: { label: string; status: string };
-  bids: any;
+  handleNewBid: () => void;
 }) => {
   const { user } = useAuth();
   const [isApproved, setIsApproved] = useState<boolean>(false);
@@ -72,7 +73,7 @@ const BidPreviewCashMargin = ({
 
         <h4 className="text-gray-500 mt-4 mb-2">Bid Pricing</h4>
         <p className="text-blue-500 font-semibold">
-          {formData?.confirmationPrice || "N/A"}% per annum
+          {formData?.confirmationPrice || "N/A"} per annum
         </p>
       </div>
 
@@ -90,6 +91,14 @@ const BidPreviewCashMargin = ({
             {formData?.issueLg?.branchName || "-"}
           </span>
         </p>
+        {formData?.issueLg.city && (
+          <p className="text-[#5f5f5f]">
+            City -{" "}
+            <span className="text-[#5625f1] font-medium">
+              {formatFirstLetterOfWord(formData?.issueLg?.city) || "-"}
+            </span>
+          </p>
+        )}
         <p className="text-[#5f5f5f]">
           Branch Address -{" "}
           <span className="text-[#5625f1] font-medium">
@@ -112,6 +121,14 @@ const BidPreviewCashMargin = ({
             {formData?.collectLg?.branchName || "-"}
           </span>
         </p>
+        {formData?.collectLg.city && (
+          <p className="text-[#5f5f5f]">
+            City -{" "}
+            <span className="text-[#5625f1] font-medium">
+              {formatFirstLetterOfWord(formData?.collectLg?.city) || "-"}
+            </span>
+          </p>
+        )}
         <p className="text-[#5f5f5f]">
           Branch Address -{" "}
           <span className="text-[#5625f1] font-medium">
@@ -121,11 +138,15 @@ const BidPreviewCashMargin = ({
       </div>
 
       <div className="flex flex-col gap-2 my-3">
-        {["Pending", "Not Accepted", "Rejected", "Expired"].includes(
-          userBidStatus.status
-        ) ? (
+        {[
+          "Pending",
+          "Not Accepted",
+          "Rejected",
+          "Expired",
+          "Accepted",
+        ].includes(userBidStatus.status) ? (
           <div
-            className={`text-center text-sm font-semibold text-black py-3 rounded-md ${
+            className={`text-center text-sm font-medium text-black py-3 rounded-md ${
               userBidStatus.status === "Pending"
                 ? "bg-[#FEFBE8]"
                 : userBidStatus.status === "Rejected"
@@ -134,14 +155,10 @@ const BidPreviewCashMargin = ({
                 ? "bg-[#F6F6F6]"
                 : userBidStatus.status === "Not Accepted"
                 ? "bg-[#FFE6E6]"
+                : userBidStatus.status === "Accepted"
+                ? "bg-[#5ECFA2] text-white"
                 : ""
             }`}
-          >
-            {userBidStatus.label}
-          </div>
-        ) : userBidStatus.status === "Accepted" ? (
-          <div
-            className={`text-base text-[#A5A5A5] font-normal text-black py-1 rounded-md text-left justify-start`}
           >
             {userBidStatus.label}
           </div>
@@ -177,6 +194,14 @@ const BidPreviewCashMargin = ({
           </>
         )}
       </div>
+      {userBidStatus.status === "Rejected" && (
+        <Button
+          className="w-full mt-1 bg-[#5625F2] text-white hover:bg-[#44C894]"
+          onClick={handleNewBid}
+        >
+          Re-submit a new bid
+        </Button>
+      )}
       <ConfirmationModal
         isOpen={isModalOpen}
         onConfirm={handleConfirmSubmit}

@@ -25,6 +25,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
 import { LGTableBidStatus } from "../LG-Output/LG-Issuance-Corporate/LgTableBidStatus";
+import { LGCashMarginCorporate } from "../LG-Output/LG-Issuance-Corporate/LgCashMarginCorporate";
 
 type TableDataCellProps = {
   data?: string | number | Date | undefined;
@@ -493,8 +494,12 @@ export const RequestTable = ({
                       </Button>
                     </TableCell>
                     <TableCell className="max-w-[200px] px-1 py-1">
-                      {item.type == "LG Issuance" ? (
+                      {item.type == "LG Issuance" &&
+                      item.lgIssuance !== "LG 100% Cash Margin" ? (
                         <LGTableBidStatus data={item} />
+                      ) : item.type == "LG Issuance" &&
+                        item.lgIssuance === "LG 100% Cash Margin" ? (
+                        <LGCashMarginCorporate data={item} />
                       ) : (
                         <TableDialog
                           lcId={item._id}

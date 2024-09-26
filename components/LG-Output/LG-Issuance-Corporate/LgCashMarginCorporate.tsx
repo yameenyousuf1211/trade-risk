@@ -194,7 +194,11 @@ export const LGCashMarginCorporate = ({
             </div>
 
             {sortedBids.map((bidDetail: any, key: any) => (
-              <CashMarginBidCard key={bidDetail._id} bidDetail={bidDetail} />
+              <CashMarginBidCard
+                key={bidDetail._id}
+                bidDetail={bidDetail}
+                refId={data.refId}
+              />
             ))}
           </div>
         </div>

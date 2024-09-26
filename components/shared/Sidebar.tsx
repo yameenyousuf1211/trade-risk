@@ -244,15 +244,22 @@ const RequestCard = ({
                   )}
                 </div>
                 <h3 className="font-poppins text-xl font-semibold uppercase">
-                  {data.currency ?? "USD"}{" "}
-                  {(data as ILcs)?.amount
+                  {data?.totalContractCurrency ||
+                    data.currency ||
+                    data?.lgDetails.currency ||
+                    "USD"}{" "}
+                  {(data as ILcs)?.type === "LG Issuance" &&
+                  data.lgIssuance === "LG 100% Cash Margin"
+                    ? data.lgDetails.amount?.toLocaleString() + ".00"
+                    : (data as ILcs)?.type === "LG Issuance" &&
+                      data.lgIssuance !== "LG 100% Cash Margin"
+                    ? total?.toLocaleString() + ".00"
+                    : (data as ILcs)?.amount
                     ? (data as ILcs).amount?.price?.toLocaleString() + ".00"
-                    : (data as IRisk).riskParticipationTransaction?.amount
-                    ? (
+                    : (
                         data as IRisk
-                      ).riskParticipationTransaction?.amount?.toLocaleString() +
-                      ".00"
-                    : total?.toLocaleString() + ".00"}
+                      )?.riskParticipationTransaction?.amount?.toLocaleString() +
+                      ".00"}
                 </h3>
               </div>
 
@@ -311,8 +318,15 @@ const RequestCard = ({
               </span>
             </p>
             <h3 className="text-xl font-semibold uppercase">
-              {data?.totalContractCurrency || data.currency || "USD"}{" "}
-              {(data as ILcs)?.type === "LG Issuance"
+              {data?.totalContractCurrency ||
+                data.currency ||
+                data?.lgDetails.currency ||
+                "USD"}{" "}
+              {(data as ILcs)?.type === "LG Issuance" &&
+              data.lgIssuance === "LG 100% Cash Margin"
+                ? data.lgDetails.amount?.toLocaleString() + ".00"
+                : (data as ILcs)?.type === "LG Issuance" &&
+                  data.lgIssuance !== "LG 100% Cash Margin"
                 ? total?.toLocaleString() + ".00"
                 : (data as ILcs)?.amount
                 ? (data as ILcs).amount?.price?.toLocaleString() + ".00"

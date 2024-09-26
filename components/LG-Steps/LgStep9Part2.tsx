@@ -21,7 +21,9 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
 }) => {
   // Use the type prop to watch different form fields
   const lgDetails = watch(type === "issue" ? "lgIssueIn" : "lgCollectIn");
-  const [isoCode, setIsoCode] = useState<string | null>("");
+  const [isoCode, setIsoCode] = useState<string | null>(
+    lgDetails?.isoCode || ""
+  );
 
   useEffect(() => {
     setValue(

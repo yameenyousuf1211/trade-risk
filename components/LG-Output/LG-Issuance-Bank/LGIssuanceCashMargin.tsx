@@ -22,6 +22,7 @@ import { submitLgBid } from "@/services/apis/lg.apis";
 import BidPreviewCashMargin from "./BidPreviewCashMargin";
 import { DDInput } from "@/components/LCSteps/helpers";
 import { getCities } from "@/services/apis/helpers.api";
+import { toast } from "sonner";
 
 const LGInfo = ({
   label,
@@ -70,8 +71,13 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     data.lgCollectIn.isoCode
   );
 
+  useEffect(() => {
+    setValue("issueLg.type", "accept");
+    setValue("collectLg.type", "accept");
+  }, []);
+
   const lgDetails = [
-    { label: "LG Type", value: data.lgIssuance },
+    { label: "LG Type", value: data.typeOfLg },
     {
       label: "LG Tenor",
       value: `${data.lgDetails.lgTenor.lgTenorValue} ${data.lgDetails.lgTenor.lgTenorType}`,
@@ -114,11 +120,57 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     },
   });
 
+  const validateFields = (data: any) => {
+    if (!data.bidValidity) {
+      toast.error("Bid Validity is required");
+      return false;
+    }
+    if (!data.confirmationPrice) {
+      toast.error("Confirmation Price is required");
+      return false;
+    }
+    if (!data.issueLg?.branchAddress) {
+      toast.error("Issue LG Branch Address is required");
+      return false;
+    }
+    if (!data.issueLg?.email) {
+      toast.error("Issue LG Email is required");
+      return false;
+    }
+    if (!data.issueLg?.branchName) {
+      toast.error("Issue LG Branch Name is required");
+      return false;
+    }
+    if (!data.issueLg?.city && lgIssueInType === "alternate") {
+      toast.error("Issue LG City is required");
+      return false;
+    }
+    if (!data.collectLg?.branchAddress) {
+      toast.error("Collect LG Branch Address is required");
+      return false;
+    }
+    if (!data.collectLg?.email) {
+      toast.error("Collect LG Email is required");
+      return false;
+    }
+    if (!data.collectLg?.branchName) {
+      toast.error("Collect LG Branch Name is required");
+      return false;
+    }
+    if (!data.collectLg?.city && lgCollectInType === "alternate") {
+      toast.error("Collect LG City is required");
+      return false;
+    }
+
+    return true;
+  };
+
   // Capture form data on form submission
   const onSubmit = (data: any) => {
-    console.log(data, "popopo");
-    setFormData(data);
-    setIsPreview(true);
+    if (validateFields(data)) {
+      setFormData(data);
+      setIsPreview(true);
+    }
   };
 
   useEffect(() => {
@@ -303,7 +355,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
           userBidStatus={userBidStatus}
         />
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 px-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 px-4 pb-2">
           {/* Form View */}
           <h3 className="text-xl font-medium text-black mt-1 mb-3">
             Submit your bid
@@ -330,10 +382,12 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                 <label htmlFor="confirmation" className="block font-semibold">
                   Enter your Pricing Below
                 </label>
-                <p className="text-xs text-green-500">
-                  Client&apos;s Expected Price:{" "}
-                  {data.expectedPrice.pricePerAnnum}% Per Annum
-                </p>
+                {data.expectedPrice.pricePerAnnum && (
+                  <p className="text-xs text-green-500">
+                    Client&apos;s Expected Price:{" "}
+                    {data.expectedPrice.pricePerAnnum}% Per Annum
+                  </p>
+                )}
               </div>
               <Input
                 placeholder="Enter your pricing (%)"

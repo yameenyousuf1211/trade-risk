@@ -35,6 +35,7 @@ export const CountrySelect = ({
   placeholder?: string;
   value?: string;
   extraClassName?: string;
+  value?: string;
 }) => {
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryVal, setCountryVal] = useState(value || "");

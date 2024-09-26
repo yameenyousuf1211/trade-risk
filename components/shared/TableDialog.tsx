@@ -27,9 +27,6 @@ import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 import { formatFirstLetterOfWord } from "../LG-Output/helper";
 import { formatNumberByAddingDigitsToStart } from "../../utils/helper/helper";
 import LGIssuanceCashMarginDialog from "../LG-Output/LG-Issuance-Bank/LGIssuanceCashMargin";
-import ViewFileAttachment from "./ViewFileAttachment";
-import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
-import { formatFirstLetterOfWord } from "../LG-Output/helper";
 
 export const BidCard = ({
   data,

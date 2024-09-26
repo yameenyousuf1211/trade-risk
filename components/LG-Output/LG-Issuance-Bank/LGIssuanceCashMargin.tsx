@@ -1,17 +1,27 @@
 import React, { useState, useEffect, use } from "react";
 import { Button } from "../../ui/button";
 import { ApplicantQuery } from "./ApplicantQuery";
-import { convertDateToCommaString, formatAmount } from "@/utils";
+import {
+  convertDateAndTimeToString,
+  convertDateToCommaString,
+  formatAmount,
+} from "@/utils";
 import { useAuth } from "@/context/AuthProvider";
-import { BgRadioInputLG, getLgBondTotal } from "../helper";
+import {
+  BgRadioInputLG,
+  getLgBondTotal,
+  formatFirstLetterOfWord,
+} from "../helper";
 import { DatePicker } from "@/components/helpers";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { submitLgBid } from "@/services/apis/lg.apis";
 import BidPreviewCashMargin from "./BidPreviewCashMargin";
+import { DDInput } from "@/components/LCSteps/helpers";
+import { getCities } from "@/services/apis/helpers.api";
 
 const LGInfo = ({
   label,
@@ -53,12 +63,18 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
   const lgCollectInType = watch("collectLg.type");
   const [isPreview, setIsPreview] = useState(false);
   const [formData, setFormData] = useState<any>(null);
+  const [isoCodeIssue, setIsoCodeIssue] = useState<string | null>(
+    data.lgIssueIn.isoCode
+  );
+  const [isoCodeCollect, setIsoCodeCollect] = useState<string | null>(
+    data.lgCollectIn.isoCode
+  );
 
   const lgDetails = [
     { label: "LG Type", value: data.lgIssuance },
     {
       label: "LG Tenor",
-      value: `${data.lgDetails.number} ${data.lgDetails.LgTenor}`,
+      value: `${data.lgDetails.lgTenor.lgTenorValue} ${data.lgDetails.lgTenor.lgTenorType}`,
     },
     {
       label: "Expected Date of LG Issuance",
@@ -72,10 +88,10 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
   ].filter((detail) => detail.value);
 
   const applicantDetails = [
-    { label: "Applicant Name", value: data.createdBy?.accountHolderName },
+    { label: "Applicant Name", value: data.createdBy.accountHolderName },
     { label: "Applicant CR number", value: data.applicantDetails?.crNumber },
-    { label: "Applicant Account Number", value: data.createdBy?.accountNumber },
-    { label: "Applicant City", value: data.createdBy?.accountCity },
+    { label: "Applicant Account Number", value: data.createdBy.accountNumber },
+    { label: "Applicant City", value: data.createdBy.accountCity },
     { label: "Applicant Country", value: data.applicantDetails?.country },
     {
       label: "Last date for receiving bids",
@@ -143,15 +159,14 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     } else if (mostRecentBid) {
       if (mostRecentBid.status === "Pending") {
         setUserBidStatus({
-          label: `Bid Submitted on ${convertDateToCommaString(
+          label: `Bid Submitted on ${convertDateAndTimeToString(
             mostRecentBid.createdAt
           )}`,
           status: "Pending",
         });
       } else if (mostRecentBid.status === "Accepted") {
         setUserBidStatus({
-          label:
-            "The Above rates against each guarantee and bank have been accepted and a swift message has been generated and sent to your bank.",
+          label: "Bid Accepted",
           status: "Accepted",
         });
       } else if (mostRecentBid.status === "Rejected") {
@@ -183,22 +198,49 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
         branchAddress: formData.issueLg.branchAddress,
         email: formData.issueLg.email,
         branchName: formData.issueLg.branchName,
+        ...(formData.issueLg.type === "alternate" && {
+          city: formData.issueLg.city,
+        }),
       },
       collectLg: {
         branchAddress: formData.collectLg.branchAddress,
         email: formData.collectLg.email,
         branchName: formData.collectLg.branchName,
+        ...(formData.collectLg.type === "alternate" && {
+          city: formData.collectLg.city,
+        }),
       },
     };
 
     console.log(submissionData, "submissionData");
     mutation.mutate(submissionData);
   };
+
+  // Fetch cities based on isoCode for issueLg
+  const { data: citiesIssue, isLoading: isLoadingIssue } = useQuery({
+    queryKey: ["cities", isoCodeIssue],
+    queryFn: () => getCities(isoCodeIssue!),
+    enabled: !!isoCodeIssue, // Fetch cities only when isoCodeIssue is set
+  });
+
+  // Fetch cities based on isoCode for collectLg
+  const { data: citiesCollect, isLoading: isLoadingCollect } = useQuery({
+    queryKey: ["cities", isoCodeCollect],
+    queryFn: () => getCities(isoCodeCollect!),
+    enabled: !!isoCodeCollect, // Fetch cities only when isoCodeCollect is set
+  });
+
+  const handleNewBid = () => {
+    setIsPreview(false);
+    setUserBidStatus({});
+    setUserBid(null);
+  };
+
   return (
     <div className="mt-0 flex w-full h-full items-start justify-between overflow-y-scroll">
       <div className="flex-1 border-r-2 border-[#F5F7F9]">
         <div className="border-r-2 border-b-2  bg-[#F5F7F9] p-4 flex flex-col gap-3 border-[#F5F7F9]">
-          <h5 className="text-[12px] text-[#696974]">
+          <h5 className="text-[14px] text-[#696974]">
             Created at,{" "}
             {new Date(data.createdAt).toLocaleDateString("en-US", {
               month: "short",
@@ -212,10 +254,10 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
             })}{" "}
             by{" "}
             <span className="text-blue-500">
-              {data.applicantDetails.company}
+              {formatFirstLetterOfWord(data.applicantDetails.company)}
             </span>
           </h5>
-          <h3 className="text-[#92929D] text-base font-light">
+          <h3 className="text-[#92929D] text-xl font-light">
             LG Amount:{" "}
             <span className="text-[20px] text-[#1A1A26] font-semibold">
               {data?.lgDetails?.currency || "USD"}{" "}
@@ -242,7 +284,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
             />
           ))}
 
-          <h2 className="font-semibold text-lg">Beneficiary Details</h2>
+          <h2 className="font-semibold text-lg mt-3">Beneficiary Details</h2>
           {beneficiaryDetails.map((detail, index) => (
             <LGInfo
               key={index}
@@ -257,8 +299,8 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
           formData={formData}
           onSubmitBid={onSubmitBid}
           setIsPreview={setIsPreview}
+          handleNewBid={handleNewBid}
           userBidStatus={userBidStatus}
-          bids={userBid}
         />
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="flex-1 px-4">
@@ -269,7 +311,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
 
           <div className="border-[1.5px] border-borderCol p-2 rounded-md">
             {/* Bid Validity */}
-            <div className="w-full">
+            <div className="w-full mb-2">
               <label htmlFor="bidValidity" className="block font-semibold mb-2">
                 Bid Validity
               </label>
@@ -278,6 +320,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                 name="bidValidity"
                 value={bidValidity}
                 setValue={setValue}
+                leftText={false}
               />
             </div>
 
@@ -334,7 +377,8 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
               <p className="text-sm font-semibold mb-2">
                 Corporate wants to Issue LG in{" "}
                 <span className="text-blue-500">
-                  {data.lgIssueIn.city}, {data.lgIssueIn.country}
+                  {formatFirstLetterOfWord(data.lgIssueIn.city)},{" "}
+                  {formatFirstLetterOfWord(data.lgIssueIn.country)}
                 </span>
               </p>
               <div className="flex items-center gap-3">
@@ -380,6 +424,24 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                   />
                 </div>
               ))}
+              {lgIssueInType === "alternate" && (
+                <DDInput
+                  placeholder="Select City"
+                  label="City"
+                  id={"issueLg.city"}
+                  setValue={setValue}
+                  disabled={isLoadingIssue || !isoCodeIssue}
+                  data={
+                    citiesIssue?.success
+                      ? Array.from(
+                          new Set(
+                            citiesIssue.response.map((city: any) => city.name)
+                          )
+                        )
+                      : []
+                  }
+                />
+              )}
             </div>
 
             {/* Corporate Wants to Collect Section */}
@@ -387,7 +449,8 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
               <p className="text-sm font-semibold mb-2">
                 Corporate wants to Collect LG in{" "}
                 <span className="text-blue-500">
-                  {data.lgCollectIn.city}, {data.lgCollectIn.country}
+                  {formatFirstLetterOfWord(data.lgCollectIn.city)},{" "}
+                  {formatFirstLetterOfWord(data.lgCollectIn.country)}
                 </span>
               </p>
               <div className="flex items-center gap-3">
@@ -433,6 +496,24 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                   />
                 </div>
               ))}
+              {lgCollectInType === "alternate" && (
+                <DDInput
+                  placeholder="Select City"
+                  label="City"
+                  id={"collectLg.city"}
+                  setValue={setValue}
+                  disabled={isLoadingCollect || !isoCodeCollect}
+                  data={
+                    citiesCollect?.success
+                      ? Array.from(
+                          new Set(
+                            citiesCollect.response.map((city: any) => city.name)
+                          )
+                        )
+                      : []
+                  }
+                />
+              )}
             </div>
 
             {/* Preview Button */}

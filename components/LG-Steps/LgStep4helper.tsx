@@ -10,7 +10,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
   setStepCompleted,
   setValue,
 }) => {
-  const typeOfLg = watch("typeOfLg.type"); // Now watching typeOfLg.type
+  const typeOfLg = watch("typeOfLg"); // Now watching typeOfLg.type
   const { addStep } = useStepStore();
   const [isOtherSelected, setIsOtherSelected] = useState(false);
 
@@ -42,7 +42,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType1"
             label="Bid Bond"
-            name="typeOfLg.type" // Registering the value to typeOfLg.type
+            name="typeOfLg" // Registering the value to typeOfLg.type
             value="Bid Bond"
             register={register}
             checked={typeOfLg === "Bid Bond"}
@@ -50,7 +50,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType2"
             label="Advance Payment Bond"
-            name="typeOfLg.type"
+            name="typeOfLg"
             value="Advance Payment Bond"
             register={register}
             checked={typeOfLg === "Advance Payment Bond"}
@@ -58,7 +58,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType3"
             label="Performance Bond"
-            name="typeOfLg.type"
+            name="typeOfLg"
             value="Performance Bond"
             register={register}
             checked={typeOfLg === "Performance Bond"}
@@ -66,7 +66,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType4"
             label="Retention Bond"
-            name="typeOfLg.type"
+            name="typeOfLg"
             value="Retention Bond"
             register={register}
             checked={typeOfLg === "Retention Bond"}
@@ -74,7 +74,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType5"
             label="Payment LG"
-            name="typeOfLg.type"
+            name="typeOfLg"
             value="Payment LG"
             register={register}
             checked={typeOfLg === "Payment LG"}
@@ -85,7 +85,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType6"
             label="Zakat"
-            name="typeOfLg.type"
+            name="typeOfLg"
             value="Zakat"
             register={register}
             checked={typeOfLg === "Zakat"}
@@ -93,7 +93,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType7"
             label="Custom"
-            name="typeOfLg.type"
+            name="typeOfLg"
             value="Custom"
             register={register}
             checked={typeOfLg === "Custom"}
@@ -101,7 +101,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType8"
             label="SBLC"
-            name="typeOfLg.type"
+            name="typeOfLg"
             value="SBLC"
             register={register}
             checked={typeOfLg === "SBLC"}
@@ -109,7 +109,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType9"
             label="Other (Type Here)"
-            name="typeOfLg.type"
+            name="typeOfLg"
             value="Other"
             register={register}
             checked={typeOfLg === "Other"}
@@ -121,15 +121,15 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <div className="mt-3">
             <label
               className="text-sm font-medium text-lightGray"
-              htmlFor="typeOfLg.type"
+              htmlFor="typeOfLg"
             >
               Please specify the LG type
             </label>
             <input
               type="text"
-              {...register("typeOfLg.type")}
+              {...register("typeOfLg")}
               value={typeOfLg} // Bind the value directly to typeOfLg.type
-              onChange={(e) => setValue("typeOfLg.type", e.target.value)} // Update typeOfLg.type directly
+              onChange={(e) => setValue("typeOfLg", e.target.value)} // Update typeOfLg.type directly
               placeholder="Type your LG here"
               className="mt-2 p-2 w-full border border-borderCol rounded-md"
             />

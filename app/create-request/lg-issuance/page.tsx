@@ -161,13 +161,25 @@ export default function LgIssuance() {
   // Function to handle draft submissions
   const handleDraftSubmission = async (responseData: any) => {
     setLoader(true);
-    removeUnnecessaryFieldsForLgCreate(responseData);
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData lastDateOfReceivingBids DATE:", responseData.lastDateOfReceivingBids);
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond DATE:", responseData.advancePaymentBond.expectedDate);
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond DATE:", responseData.performanceBond.expectedDate)
-    // console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond DATE:", responseData.retentionMoneyBond.expectedDate)
-    // Update existing data
-    removeUnnecessaryFields(responseData);
+    if (responseData.lgIssuance === "LG 100% Cash Margin") {
+      delete responseData.retentionMoneyBond;
+      delete responseData.advancePaymentBond;
+      delete responseData.performanceBond;
+      delete responseData.bidBond;
+      delete responseData.otherBond;
+      delete responseData.lgDetailsType;
+      delete responseData.totalContractValue;
+      delete responseData.totalContractCurrency;
+      delete responseData.beneficiaryBankDetails;
+    } else {
+      removeUnnecessaryFieldsForLgCreate(responseData);
+      // console.log("🚀 ~ handleFinalSubmission ~ responseData lastDateOfReceivingBids DATE:", responseData.lastDateOfReceivingBids);
+      // console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond DATE:", responseData.advancePaymentBond.expectedDate);
+      // console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond DATE:", responseData.performanceBond.expectedDate)
+      // console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond DATE:", responseData.retentionMoneyBond.expectedDate)
+      // Update existing data
+      removeUnnecessaryFields(responseData);
+    }
     if (storeData.data._id) {
       const { response, success } = await onUpdateLC({
         payload: responseData,
@@ -225,6 +237,16 @@ export default function LgIssuance() {
       // const validate = bondRequiredFields(responseData)
       // if(!validate) return toast.error("Please Select at least one Bond");
       convertStringValueToDate(responseData);
+    } else if (responseData.lgIssuance === "LG 100% Cash Margin") {
+      delete responseData.retentionMoneyBond;
+      delete responseData.advancePaymentBond;
+      delete responseData.performanceBond;
+      delete responseData.bidBond;
+      delete responseData.otherBond;
+      delete responseData.lgDetailsType;
+      delete responseData.totalContractValue;
+      delete responseData.totalContractCurrency;
+      delete responseData.beneficiaryBankDetails;
     }
     try {
       console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);

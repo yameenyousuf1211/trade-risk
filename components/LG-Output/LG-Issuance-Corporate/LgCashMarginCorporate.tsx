@@ -6,11 +6,16 @@ import {
 } from "@/components/ui/dialog";
 import { Eye, ListFilter, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { BgRadioInputLG, getLgBondTotal } from "../helper";
+import {
+  BgRadioInputLG,
+  getLgBondTotal,
+  formatFirstLetterOfWord,
+} from "../helper";
 import { BidsSort } from "@/components/helpers";
 import { BidCard } from "./BidCard";
 import { convertDateToCommaString, formatAmount } from "@/utils";
 import { CashMarginBidCard } from "./CashMarginBidCard";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 const LGInfo = ({
   label,
@@ -48,14 +53,14 @@ export const LGCashMarginCorporate = ({
 }) => {
   const lgDetails = [
     { label: "LG Type", value: data?.typeOfLg },
-    { label: "LG Standard Text", value: data?.lgDetails?.standardText },
+    { label: "LG Standard Text", value: data?.lgStandardText },
     {
       label: "LG Tenor",
       value: `${data?.lgDetails?.lgTenor?.lgTenorValue} ${data?.lgDetails?.lgTenor?.lgTenorType}`,
     },
     {
       label: "Expected Date of LG Issuance",
-      value: convertDateToCommaString(data?.lastDateOfReceivingBids),
+      value: convertDateToCommaString(data?.lgDetails?.expectedDateToIssueLg),
     },
     { label: "Purpose Of LG", value: data?.purpose },
   ].filter((detail) => detail.value);
@@ -65,6 +70,7 @@ export const LGCashMarginCorporate = ({
     { label: "Name", value: data?.beneficiaryDetails?.name },
     { label: "Address", value: data?.beneficiaryDetails?.address },
     { label: "Phone Number", value: data?.beneficiaryDetails?.phoneNumber },
+    { label: "City", value: data?.beneficiaryDetails?.city },
   ].filter((detail) => detail.value);
 
   const sortedBids = data?.bids?.sort(
@@ -84,7 +90,7 @@ export const LGCashMarginCorporate = ({
       </DialogTrigger>
       <DialogContent className="h-full !max-h-[95vh] w-full max-w-6xl !p-0 flex flex-col">
         <div className="col-span-2 flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
-          <h2 className="text-lg font-semibold">LG Re-Issuance Request</h2>
+          <h2 className="text-lg font-semibold">LG 100% Cash Margin Request</h2>
           <DialogClose>
             <X className="size-7" />
           </DialogClose>
@@ -107,7 +113,7 @@ export const LGCashMarginCorporate = ({
                 })}
                 , by{" "}
                 <span className="text-[#50B5FF]">
-                  {data?.applicantDetails?.company}
+                  {formatFirstLetterOfWord(data?.applicantDetails?.company)}
                 </span>
               </h5>
               <h1 className="text-[#92929D] text-2xl">
@@ -118,18 +124,24 @@ export const LGCashMarginCorporate = ({
                 </span>
                 <LGInfo
                   label={"Applicant City"}
-                  value={data.createdBy.accountCity}
+                  value={data?.createdBy.accountCity}
                 />
                 <LGInfo
                   label={"Applicant Country"}
-                  value={data.applicantDetails.country}
+                  value={data?.applicantDetails.country}
+                />
+                <LGInfo
+                  label={"Last date for receiving bids"}
+                  value={convertDateToCommaString(
+                    data?.lastDateOfReceivingBids
+                  )}
                 />
               </h1>
             </div>
 
-            <div className="px-8">
+            <div className="px-6">
               <h2 className="text-[18px] font-semibold mt-4 text-[#1A1A26]">
-                Lg Details
+                LG Details
               </h2>
               {lgDetails.map(
                 (
@@ -182,11 +194,7 @@ export const LGCashMarginCorporate = ({
             </div>
 
             {sortedBids.map((bidDetail: any, key: any) => (
-              <CashMarginBidCard
-                key={bidDetail._id}
-                bidDetail={bidDetail}
-                overallStatus={data.status}
-              />
+              <CashMarginBidCard key={bidDetail._id} bidDetail={bidDetail} />
             ))}
           </div>
         </div>

@@ -33,6 +33,7 @@ import {
   formatAmount,
   formatNumberByAddingDigitsToStart,
 } from "../../utils/helper/helper";
+import { LGCashMarginCorporate } from "../LG-Output/LG-Issuance-Corporate/LgCashMarginCorporate";
 
 type TableDataCellProps = {
   data?: string | number | Date | undefined;
@@ -511,8 +512,12 @@ export const RequestTable = ({
                       </Button>
                     </TableCell>
                     <TableCell className="max-w-[200px] px-1 py-1">
-                      {item.type == "LG Issuance" ? (
+                      {item.type == "LG Issuance" &&
+                      item.lgIssuance !== "LG 100% Cash Margin" ? (
                         <LGTableBidStatus data={item} />
+                      ) : item.type == "LG Issuance" &&
+                        item.lgIssuance === "LG 100% Cash Margin" ? (
+                        <LGCashMarginCorporate data={item} />
                       ) : (
                         <TableDialog
                           lcId={item._id}

@@ -192,6 +192,9 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               leftText={false}
               name="lgDetails.expectedDateToIssueLg"
               setValue={setValue}
+              disabled={{
+                before: new Date(new Date().setDate(new Date().getDate() + 1)), // Disables all dates before and including today
+              }}
             />
           </label>
           <label
@@ -205,6 +208,9 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               leftText={false}
               name="lgDetails.lgExpiryDate"
               setValue={setValue}
+              disabled={{
+                before: new Date(expectedDate), // Disables all dates before and including today
+              }}
             />
           </label>
         </div>

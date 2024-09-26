@@ -94,10 +94,10 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
   ].filter((detail) => detail.value);
 
   const applicantDetails = [
-    { label: "Applicant Name", value: data.createdBy.accountHolderName },
+    { label: "Applicant Name", value: data?.createdBy?.accountHolderName },
     { label: "Applicant CR number", value: data.applicantDetails?.crNumber },
-    { label: "Applicant Account Number", value: data.createdBy.accountNumber },
-    { label: "Applicant City", value: data.createdBy.accountCity },
+    { label: "Applicant Account Number", value: data.createdBy?.accountNumber },
+    { label: "Applicant City", value: data.createdBy?.accountCity },
     { label: "Applicant Country", value: data.applicantDetails?.country },
     {
       label: "Last date for receiving bids",
@@ -372,6 +372,10 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                 name="bidValidity"
                 value={bidValidity}
                 setValue={setValue}
+                disabled={{
+                  before: new Date(),
+                  after: new Date(data?.lastDateOfReceivingBids),
+                }}
                 leftText={false}
               />
             </div>

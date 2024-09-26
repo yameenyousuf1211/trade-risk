@@ -198,7 +198,10 @@ export default function LgIssuance() {
 
     setLoader(false);
   };
-
+  const setLgDetailsDefault = (lgDetail: any) => {
+    lgDetail.currency = lgDetail.currency ?? "USD";
+    lgDetail.lgTenor.lgTenorType = lgDetail.lgTenor.lgTenorType ?? "Months";
+  };
   // Function to handle final submissions
   const handleFinalSubmission = async (responseData: any) => {
     if (responseData.lgIssuance !== "LG 100% Cash Margin") {
@@ -247,6 +250,7 @@ export default function LgIssuance() {
       delete responseData.totalContractValue;
       delete responseData.totalContractCurrency;
       delete responseData.beneficiaryBankDetails;
+      setLgDetailsDefault(responseData.lgDetails);
     }
     try {
       console.log("🚀 ~ handleFinalSubmission ~ responseData", responseData);

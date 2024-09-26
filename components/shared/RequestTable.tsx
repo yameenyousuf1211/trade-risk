@@ -316,8 +316,10 @@ export const RequestTable = ({
                     />
                     <TableDataCell
                       data={
-                        item?.type ||
-                        (item as IRisk).riskParticipationTransaction?.type
+                        item?.type === "LG Issuance"
+                          ? item?.lgIssuance
+                          : item?.type ||
+                            (item as IRisk)?.riskParticipationTransaction?.type
                       }
                     />
                     <TableCell className="max-w-[180px] px-1 py-1">
@@ -367,9 +369,13 @@ export const RequestTable = ({
                     <TableDataCell
                       data={
                         item.type === "LG Issuance"
-                          ? `${item.totalContractCurrency || "USD"} ${getTotal(
-                              item
-                            ).toLocaleString()}.00`
+                          ? item.lgIssuance === "LG 100% Cash Margin"
+                            ? `${
+                                item.lgDetails.currency || "USD"
+                              } ${item?.lgDetails?.amount?.toLocaleString()}.00`
+                            : `${
+                                item.totalContractCurrency || "USD"
+                              } ${getTotal(item).toLocaleString()}.00`
                           : item?.amount
                           ? `${
                               item?.currency
@@ -385,7 +391,6 @@ export const RequestTable = ({
                             )?.riskParticipationTransaction?.amount?.toLocaleString()}.00`
                       }
                     />
-
                     <TableCell className="max-w-[200px] px-1 py-1">
                       <TableBidStatus
                         id={item._id}

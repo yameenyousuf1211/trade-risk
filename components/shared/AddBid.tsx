@@ -306,8 +306,13 @@ export const AddBid = ({
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <div className="flex flex-col items-center w-1/2">
             <h2 className="text-2xl font-semibold text-center">
-              {(lcData && lcData?.type + " Request") ||
-                "Risk Participation Request"}
+              {(lcData?.type === "LG Issuance" &&
+              lcData.lgIssuance === "LG 100% Cash Margin"
+                ? lcData.lgIssuance
+                : lcData?.type === "LG Issuance" &&
+                  lcData.lgIssuance !== "LG 100% Cash Margin"
+                ? "LG Re-Issuance"
+                : lcData?.type || "Risk Participation") + " Request"}
             </h2>
           </div>
           <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>

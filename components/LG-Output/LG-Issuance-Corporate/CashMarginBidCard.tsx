@@ -6,7 +6,13 @@ import { respondBid } from "@/services/apis/lg.apis";
 import { convertDateAndTimeToString } from "@/utils";
 import { formatFirstLetterOfWord } from "../helper";
 
-export const CashMarginBidCard = ({ bidDetail }: { bidDetail: any }) => {
+export const CashMarginBidCard = ({
+  bidDetail,
+  refId,
+}: {
+  bidDetail: any;
+  refId: string;
+}) => {
   const queryClient = useQueryClient();
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [statusToSubmit, setStatusToSubmit] = useState<string | null>(null);
@@ -101,11 +107,8 @@ export const CashMarginBidCard = ({ bidDetail }: { bidDetail: any }) => {
             {bidDetail?.issueLg?.branchAddress}
           </span>
           , with your reference number{" "}
-          <span className="font-semibold text-[#007AFF]">
-            {bidDetail?.referenceNumber}
-          </span>
-          . For further details or inquiries, you may also contact us via email
-          at{" "}
+          <span className="font-semibold text-[#007AFF]">{refId}</span>. For
+          further details or inquiries, you may also contact us via email at{" "}
           <span className="font-semibold text-[#007AFF]">
             {bidDetail?.issueLg?.email}
           </span>
@@ -117,8 +120,8 @@ export const CashMarginBidCard = ({ bidDetail }: { bidDetail: any }) => {
             {bidDetail?.collectLg?.branchAddress}
           </span>
           , with your reference number{" "}
-          <span className="font-semibold">{bidDetail?.referenceNumber}</span>.
-          For further details or inquiries, you may also contact us via email at{" "}
+          <span className="font-semibold text-[#007AFF]">{refId}</span>. For
+          further details or inquiries, you may also contact us via email at{" "}
           <span className="font-semibold text-[#007AFF]">
             {bidDetail?.collectLg?.email}
           </span>

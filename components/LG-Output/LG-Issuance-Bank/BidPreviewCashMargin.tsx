@@ -73,7 +73,13 @@ const BidPreviewCashMargin = ({
 
         <h4 className="text-gray-500 mt-4 mb-2">Bid Pricing</h4>
         <p className="text-blue-500 font-semibold">
-          {formData?.confirmationPrice || "N/A"} per annum
+          {formData?.confirmationPrice
+            ? typeof formData.confirmationPrice === "number" &&
+              Number.isInteger(formData.confirmationPrice)
+              ? `${formData.confirmationPrice}%`
+              : formData.confirmationPrice
+            : "N/A"}{" "}
+          per annum
         </p>
       </div>
 

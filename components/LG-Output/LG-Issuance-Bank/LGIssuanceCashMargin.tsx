@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { Button } from "../../ui/button";
 import { ApplicantQuery } from "./ApplicantQuery";
 import { convertDateToCommaString, formatAmount } from "@/utils";
@@ -9,6 +9,9 @@ import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { submitLgBid } from "@/services/apis/lg.apis";
+import BidPreviewCashMargin from "./BidPreviewCashMargin";
 
 const LGInfo = ({
   label,
@@ -34,25 +37,22 @@ const LGInfo = ({
 };
 
 const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
+  const { user } = useAuth();
+  const [userBidStatus, setUserBidStatus] = useState<any>({});
+  const [userBid, setUserBid] = useState();
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm();
-
-  // State to control the view between form and preview
+  const bidValidity = watch("bidValidity");
+  const lgIssueInType = watch("issueLg.type");
+  const lgCollectInType = watch("collectLg.type");
   const [isPreview, setIsPreview] = useState(false);
-
-  // State to store form data for preview
   const [formData, setFormData] = useState<any>(null);
-
-  const onSubmit = (data: any) => {
-    // Save the form data to state
-    setFormData(data);
-    // Trigger preview mode on form submission
-    setIsPreview(true);
-  };
 
   const lgDetails = [
     { label: "LG Type", value: data.lgIssuance },
@@ -72,8 +72,10 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
   ].filter((detail) => detail.value);
 
   const applicantDetails = [
-    { label: "Applicant Name", value: data.applicantDetails?.company },
+    { label: "Applicant Name", value: data.createdBy?.accountHolderName },
     { label: "Applicant CR number", value: data.applicantDetails?.crNumber },
+    { label: "Applicant Account Number", value: data.createdBy?.accountNumber },
+    { label: "Applicant City", value: data.createdBy?.accountCity },
     { label: "Applicant Country", value: data.applicantDetails?.country },
     {
       label: "Last date for receiving bids",
@@ -89,6 +91,109 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     { label: "Phone Number", value: data.beneficiaryDetails?.phoneNumber },
   ].filter((detail) => detail.value);
 
+  const mutation = useMutation({
+    mutationFn: (newData: any) => submitLgBid(newData),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["bondData"]);
+    },
+  });
+
+  // Capture form data on form submission
+  const onSubmit = (data: any) => {
+    console.log(data, "popopo");
+    setFormData(data);
+    setIsPreview(true);
+  };
+
+  useEffect(() => {
+    const userBids = data.bids
+      .filter((bid: any) => bid.createdBy === user._id)
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+    const mostRecentBid = userBids[0];
+    setUserBid(mostRecentBid);
+
+    if (mostRecentBid) {
+      setFormData({
+        bidValidity: mostRecentBid.bidValidity,
+        confirmationPrice: mostRecentBid.confirmationPrice,
+        issueLg: mostRecentBid.issueLg,
+        collectLg: mostRecentBid.collectLg,
+      });
+      setIsPreview(true);
+    }
+
+    const anotherBankBidAccepted = data.bids.some(
+      (bid: any) => bid.status === "Accepted" && bid.createdBy !== user._id
+    );
+
+    if (mostRecentBid && anotherBankBidAccepted) {
+      setUserBidStatus({
+        label: "Another Bank Bid Accepted",
+        status: "Not Accepted",
+      });
+    } else if (!mostRecentBid && anotherBankBidAccepted) {
+      setUserBidStatus({
+        label: "Bid Not Applicable",
+        status: "Not Applicable",
+      });
+    } else if (mostRecentBid) {
+      if (mostRecentBid.status === "Pending") {
+        setUserBidStatus({
+          label: `Bid Submitted on ${convertDateToCommaString(
+            mostRecentBid.createdAt
+          )}`,
+          status: "Pending",
+        });
+      } else if (mostRecentBid.status === "Accepted") {
+        setUserBidStatus({
+          label:
+            "The Above rates against each guarantee and bank have been accepted and a swift message has been generated and sent to your bank.",
+          status: "Accepted",
+        });
+      } else if (mostRecentBid.status === "Rejected") {
+        setUserBidStatus({
+          label: "Bid Rejected",
+          status: "Rejected",
+        });
+      } else if (new Date(mostRecentBid.bidValidity) < new Date()) {
+        setUserBidStatus({
+          label: "Bid Expired",
+          status: "Expired",
+        });
+      }
+    }
+  }, [data.bids, user._id]);
+
+  const onSubmitBid = () => {
+    const confirmationPrice = parseInt(
+      formData.confirmationPrice.replace(/\D/g, ""),
+      10
+    );
+
+    const submissionData = {
+      confirmationPrice: confirmationPrice,
+      bidType: "LG Issuance",
+      lc: data._id,
+      bidValidity: formData.bidValidity,
+      issueLg: {
+        branchAddress: formData.issueLg.branchAddress,
+        email: formData.issueLg.email,
+        branchName: formData.issueLg.branchName,
+      },
+      collectLg: {
+        branchAddress: formData.collectLg.branchAddress,
+        email: formData.collectLg.email,
+        branchName: formData.collectLg.branchName,
+      },
+    };
+
+    console.log(submissionData, "submissionData");
+    mutation.mutate(submissionData);
+  };
   return (
     <div className="mt-0 flex w-full h-full items-start justify-between overflow-y-scroll">
       <div className="flex-1 border-r-2 border-[#F5F7F9]">
@@ -148,81 +253,13 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
         </div>
       </div>
       {isPreview ? (
-        <div className="p-4 flex-1">
-          {/* Preview View */}
-          <button
-            className="text-xl font-medium text-black mb-4 flex items-center"
-            onClick={() => setIsPreview(false)}
-          >
-            <ChevronLeft className="h-7 w-7" />
-            Edit your bid
-          </button>
-          <div className="border p-4 rounded-md">
-            <h4 className="text-gray-500 mb-2">Bid Expiry</h4>
-            <p className="font-semibold">{formData?.validity || "-"}</p>
-
-            <h4 className="text-gray-500 mt-4 mb-2">Bid Pricing</h4>
-            <p className="text-blue-500 font-semibold">
-              {formData?.confirmationPrice || "N/A"}% per annum
-            </p>
-          </div>
-
-          {/* LG Issue Information */}
-          <div className="mt-6 border p-4 rounded-md bg-[#f6f7f9]">
-            <h4 className="font-semibold">LG Issue Information</h4>
-            <p className="mt-2 text-[#5f5f5f]">
-              Branch Email Address -{" "}
-              <span className="text-[#5625f1] font-medium">
-                {formData?.issueLg?.email || "-"}
-              </span>
-            </p>
-            <p className="text-[#5f5f5f]">
-              Branch Name -{" "}
-              <span className="text-[#5625f1] font-medium">
-                {formData?.issueLg?.branchName || "-"}
-              </span>
-            </p>
-            <p className="text-[#5f5f5f]">
-              Branch Address -{" "}
-              <span className="text-[#5625f1] font-medium">
-                {formData?.issueLg?.branchAddress || "-"}
-              </span>
-            </p>
-          </div>
-
-          {/* LG Collect Information */}
-          <div className="mt-6 border p-4 rounded-md bg-[#f6f7f9]">
-            <h4 className="font-semibold">LG Collect Information</h4>
-            <p className="mt-2 text-[#5f5f5f]">
-              Branch Email Address -{" "}
-              <span className="text-[#5625f1] font-medium">
-                {formData?.collectLg?.email || "-"}
-              </span>
-            </p>
-            <p className="text-[#5f5f5f]">
-              Branch Name -{" "}
-              <span className="text-[#5625f1] font-medium">
-                {formData?.collectLg?.branchName || "-"}
-              </span>
-            </p>
-            <p className="text-[#5f5f5f]">
-              Branch Address -{" "}
-              <span className="text-[#5625f1] font-medium">
-                {formData?.collectLg?.branchAddress || "-"}
-              </span>
-            </p>
-          </div>
-
-          {/* Approval Buttons */}
-          <div className="mt-8">
-            <Button className="w-full mb-2">
-              Send For Approval To Authorizer
-            </Button>
-            <Button className="w-full" variant="outline">
-              Save As Draft
-            </Button>
-          </div>
-        </div>
+        <BidPreviewCashMargin
+          formData={formData}
+          onSubmitBid={onSubmitBid}
+          setIsPreview={setIsPreview}
+          userBidStatus={userBidStatus}
+          bids={userBid}
+        />
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="flex-1 px-4">
           {/* Form View */}
@@ -233,14 +270,14 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
           <div className="border-[1.5px] border-borderCol p-2 rounded-md">
             {/* Bid Validity */}
             <div className="w-full">
-              <label htmlFor="validity" className="block font-semibold mb-2">
+              <label htmlFor="bidValidity" className="block font-semibold mb-2">
                 Bid Validity
               </label>
               <DatePicker
-                selected={data?.validity}
-                onChange={(date) => setValue("bidValidity", date)}
-                className="w-full h-10 border rounded-md px-3 py-2 text-sm"
-                placeholderText="Select Date"
+                placeholder="Select Date"
+                name="bidValidity"
+                value={bidValidity}
+                setValue={setValue}
               />
             </div>
 
@@ -252,7 +289,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                 </label>
                 <p className="text-xs text-green-500">
                   Client&apos;s Expected Price:{" "}
-                  {data.expectedPrice.pricePerAnnum} % Per Annum
+                  {data.expectedPrice.pricePerAnnum}% Per Annum
                 </p>
               </div>
               <Input
@@ -296,7 +333,9 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
             <div className="w-full bg-gray-50 p-4 rounded-lg mb-4 border border-gray-300">
               <p className="text-sm font-semibold mb-2">
                 Corporate wants to Issue LG in{" "}
-                <span className="text-blue-500">Karachi, Pakistan</span>.
+                <span className="text-blue-500">
+                  {data.lgIssueIn.city}, {data.lgIssueIn.country}
+                </span>
               </p>
               <div className="flex items-center gap-3">
                 <BgRadioInputLG
@@ -305,7 +344,8 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                   extraClass="h-12"
                   name="issueLg.type"
                   value="accept"
-                  register={register}
+                  checked={lgIssueInType === "accept"}
+                  onChange={(e) => setValue("issueLg.type", e.target.value)}
                 />
                 <BgRadioInputLG
                   id="alternateRequest"
@@ -313,7 +353,8 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                   extraClass="h-12"
                   name="issueLg.type"
                   value="alternate"
-                  register={register}
+                  checked={lgIssueInType === "alternate"}
+                  onChange={(e) => setValue("issueLg.type", e.target.value)}
                 />
               </div>
 
@@ -345,7 +386,9 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
             <div className="w-full bg-gray-50 p-4 rounded-lg mb-4 border border-gray-300">
               <p className="text-sm font-semibold mb-2">
                 Corporate wants to Collect LG in{" "}
-                <span className="text-blue-500">Dubai, UAE</span>.
+                <span className="text-blue-500">
+                  {data.lgCollectIn.city}, {data.lgCollectIn.country}
+                </span>
               </p>
               <div className="flex items-center gap-3">
                 <BgRadioInputLG
@@ -354,7 +397,8 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                   extraClass="h-12"
                   name="collectLg.type"
                   value="accept"
-                  register={register}
+                  checked={lgCollectInType === "accept"}
+                  onChange={(e) => setValue("collectLg.type", e.target.value)}
                 />
                 <BgRadioInputLG
                   id="alternateRequestCollect"
@@ -362,7 +406,8 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                   extraClass="h-12"
                   name="collectLg.type"
                   value="alternate"
-                  register={register}
+                  checked={lgCollectInType === "alternate"}
+                  onChange={(e) => setValue("collectLg.type", e.target.value)}
                 />
               </div>
 

@@ -484,25 +484,27 @@ export const RequestTable = ({
                     />
                     <TableDataCell
                       data={
-                        item.type == "LG Issuance"
-                          ? "USD " + formatAmount(getTotal(item)) + ".00"
+                        item.type === "LG Issuance"
+                          ? item.lgIssuance === "LG 100% Cash Margin"
+                            ? `${
+                                item.lgDetails.currency || "USD"
+                              } ${item?.lgDetails?.amount?.toLocaleString()}.00`
+                            : `${
+                                item.totalContractCurrency || "USD"
+                              } ${getTotal(item).toLocaleString()}.00`
                           : item?.amount
                           ? `${
                               item?.currency
                                 ? item.currency.toUpperCase()
                                 : "USD"
-                            } ` +
-                            formatAmount(item?.amount?.price) +
-                            ".00"
+                            } ${item?.amount?.price?.toLocaleString()}.00`
                           : `${
                               item?.currency
                                 ? item.currency.toUpperCase()
                                 : "USD"
-                            } ` +
-                            (
+                            } ${(
                               item as IRisk
-                            )?.riskParticipationTransaction?.amount?.toLocaleString() +
-                            ".00"
+                            )?.riskParticipationTransaction?.amount?.toLocaleString()}.00`
                       }
                     />
 

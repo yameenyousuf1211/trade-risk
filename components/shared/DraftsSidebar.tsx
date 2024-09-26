@@ -102,9 +102,12 @@ const DraftCard = ({
       <div className="flex items-center w-full justify-between gap-x-1 mt-2">
         <p className="text-[16px] font-semibold uppercase">
           {draft.currency || "USD"}{" "}
-          {((draft?.amount
+          {draft?.amount
             ? draft.amount?.price?.toLocaleString()
-            : total?.toLocaleString()) || "00") + ".00"}
+            : (draft as ILcs)?.type === "LG Issuance" &&
+              draft.lgIssuance === "LG 100% Cash Margin"
+            ? draft.lgDetails.amount?.toLocaleString() + ".00"
+            : total?.toLocaleString() + ".00"}
         </p>
         <Button
           className="!py-0 font-roboto h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"

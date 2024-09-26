@@ -198,6 +198,8 @@ export const LGCashMarginCorporate = ({
                 key={bidDetail._id}
                 bidDetail={bidDetail}
                 refId={data.refId}
+                lgCollectIn={data.lgCollectIn}
+                lgIssueIn={data.lgIssueIn}
               />
             ))}
           </div>

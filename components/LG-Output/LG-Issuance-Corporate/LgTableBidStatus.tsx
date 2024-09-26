@@ -4,21 +4,29 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Eye, ListFilter, X } from "lucide-react";
+import { Eye, FileSearch, ListFilter, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { BgRadioInputLG, getLgBondTotal } from "../helper";
+import {
+  BgRadioInputLG,
+  getLgBondTotal,
+  formatFirstLetterOfWord,
+} from "../helper";
 import { BidsSort } from "@/components/helpers";
 import { BidCard } from "./BidCard";
 import { convertDateToCommaString, formatAmount } from "@/utils";
+import { DocDraftIcon } from "@/public/images/DocDraftIcon";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 const LGInfo = ({
   label,
   value,
   noBorder,
+  link,
 }: {
   label: string;
   value: string;
   noBorder?: boolean;
+  link?: string;
 }) => {
   return (
     <div
@@ -29,9 +37,20 @@ const LGInfo = ({
       <p className="font-roboto text-para font-normal text-base text-[#696974]">
         {label}
       </p>
-      <p className="capitalize font-semibold text-right text-base max-w-[60%]">
-        {value}
-      </p>
+      {link ? (
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center capitalize font-semibold text-right text-base max-w-[100%] truncate"
+        >
+          <FileSearch className="mr-2" color="#29C084" /> {value}
+        </a>
+      ) : (
+        <p className="capitalize font-semibold text-right text-base max-w-[60%]">
+          {value}
+        </p>
+      )}
     </div>
   );
 };
@@ -67,15 +86,20 @@ export const LGTableBidStatus = ({
   };
 
   const beneficiaryDetails = [
-    { label: "Country", value: data.beneficiaryDetails.country },
     { label: "Name", value: data.beneficiaryDetails.name },
+    { label: "City", value: data.beneficiaryDetails.city },
+    { label: "Country", value: data.beneficiaryDetails.country },
     { label: "Phone Number", value: data.beneficiaryDetails.phoneNumber },
-  ];
+    { label: "Street Address", value: data.beneficiaryDetails.address },
+  ].filter((detail) => detail.value);
 
   const lgDetails = [
     {
       label: "Amount",
-      value: formatAmount(data[selectedValue]?.cashMargin) || "-",
+      value:
+        `${data[selectedValue]?.currencyType} ${formatAmount(
+          data[selectedValue]?.cashMargin
+        )}.00` || "-",
     },
     data[selectedValue]?.valueInPercentage !== undefined && {
       label: "% of the contract",
@@ -95,17 +119,29 @@ export const LGTableBidStatus = ({
         data[selectedValue]?.lgTenor?.lgTenorType || ""
       }`,
     },
-  ].filter(Boolean);
+    {
+      label: "Expected Price",
+      value:
+        data[selectedValue]?.expectedPricing &&
+        `${data[selectedValue]?.expectedPricing}%`,
+    },
+  ].filter((detail) => detail.value);
 
   const otherDetails = [
     {
       label: "Total Contract Value",
-      value: `${data.totalContractCurrency} ${data.totalContractValue}`,
+      value: `${data.totalContractCurrency} ${formatAmount(
+        data.totalContractValue
+      )}.00`,
+    },
+    {
+      label: "Last Date for Receiving Bids",
+      value: convertDateToCommaString(data.lastDateOfReceivingBids),
     },
     { label: "Purpose of LG", value: data.purpose },
     data.remarks && { label: "Remarks", value: data.remarks },
     { label: "Preference", value: data.priceQuotes },
-  ].filter(Boolean); // Filter out any `false` or `undefined` items
+  ].filter((detail) => detail.value); // Filter out any `false` or `undefined` items
 
   if (data.expectedPrice?.expectedPrice) {
     otherDetails.push({
@@ -153,32 +189,20 @@ export const LGTableBidStatus = ({
         {/* Left Section */}
         <div className="overflow-auto m-0 p-0 pb-8">
           <div className="border-r-2 border-b-2  bg-[#F5F7F9] p-4 flex flex-col gap-3 border-[#F5F7F9]">
-            <h3 className="text-lg text-[#1A1A26]">
-              LC Confirmation Requested
-            </h3>
             <h1 className="text-[#92929D] text-2xl">
               LG Amount:{" "}
               <span className="font-semibold text-black">
                 {data.totalContractCurrency || "USD"}{" "}
-                {/* {formatAmount(data.totalLgAmount || data.totalContractValue)} */}
-                {formatAmount(getLgBondTotal(data))}
+                {formatAmount(getLgBondTotal(data))}.00
               </span>
             </h1>
             <h5 className="text-sm text-[#696974] font-light">
               Created at,{" "}
-              {new Date(data.createdAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "2-digit",
-                year: "numeric",
-              })}{" "}
-              {new Date(data.createdAt).toLocaleTimeString("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })}
+              {data.createdAt &&
+                convertDateAndTimeToStringGMT({ date: data.createdAt })}
               , by{" "}
               <span className="text-[#50B5FF]">
-                {data.applicantDetails.company}
+                {formatFirstLetterOfWord(data.applicantDetails.company)}
               </span>
             </h5>
           </div>
@@ -213,18 +237,17 @@ export const LGTableBidStatus = ({
                 />
               )}
 
-              {data.retentionMoneyBond?.Contract && (
+              {data.advancePaymentBond?.Contract && (
                 <BgRadioInputLG
-                  id="2"
-                  label="Retention Money Bond"
+                  id="4"
+                  label="Advance Payment Bond"
                   name="lgdetails"
-                  value="retentionMoneyBond"
-                  checked={selectedValue === "retentionMoneyBond"}
-                  bgchecked={selectedValue === "retentionMoneyBond"}
+                  value="advancePaymentBond"
+                  checked={selectedValue === "advancePaymentBond"}
+                  bgchecked={selectedValue === "advancePaymentBond"}
                   onChange={handleChange}
                 />
               )}
-
               {data.performanceBond?.Contract && (
                 <BgRadioInputLG
                   id="3"
@@ -236,15 +259,14 @@ export const LGTableBidStatus = ({
                   onChange={handleChange}
                 />
               )}
-
-              {data.advancePaymentBond?.Contract && (
+              {data.retentionMoneyBond?.Contract && (
                 <BgRadioInputLG
-                  id="4"
-                  label="Advance Payment Bond"
+                  id="2"
+                  label="Retention Money Bond"
                   name="lgdetails"
-                  value="advancePaymentBond"
-                  checked={selectedValue === "advancePaymentBond"}
-                  bgchecked={selectedValue === "advancePaymentBond"}
+                  value="retentionMoneyBond"
+                  checked={selectedValue === "retentionMoneyBond"}
+                  bgchecked={selectedValue === "retentionMoneyBond"}
                   onChange={handleChange}
                 />
               )}
@@ -268,6 +290,23 @@ export const LGTableBidStatus = ({
               ) => (
                 <LGInfo key={index} label={detail.label} value={detail.value} />
               )
+            )}
+
+            {data[selectedValue]?.attachments?.length > 0 && (
+              <LGInfo
+                label="LG Text Draft"
+                value={
+                  data[selectedValue]?.attachments[0].userFileName.length > 20
+                    ? `${data[selectedValue]?.attachments[0].userFileName.slice(
+                        0,
+                        10
+                      )}...${data[
+                        selectedValue
+                      ]?.attachments[0].userFileName.slice(-7)}`
+                    : data[selectedValue]?.attachments[0].userFileName
+                }
+                link={data[selectedValue]?.attachments[0].url}
+              />
             )}
 
             <h2 className="text-2xl font-semibold my-2 text-[#1A1A26]">

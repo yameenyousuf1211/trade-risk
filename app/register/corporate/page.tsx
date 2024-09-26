@@ -34,8 +34,8 @@ import {
   DisclaimerDialog,
   TelephoneInput,
 } from "@/components/helpers";
-import { getCities } from "@/services/apis/helpers.api";
-import { useQuery } from "@tanstack/react-query";
+import { getBanks, getCities } from "@/services/apis/helpers.api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -43,19 +43,24 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { Input } from "@/components/ui/input";
 import { emailVerification, phoneVerification } from "@/services/apis";
 import { toast } from "sonner";
+import CorporateStepLayout from "@/components/layouts/CorporateStepLayout";
 
 const CompanyInfoPage = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const setValues = useRegisterStore((state) => state.setValues);
   const [phoneInput, setPhoneInput] = useState<string>("");
   const [allowSubmit, setAllowSubmit] = useState(false);
   const [businessNature, setBusinessNature] = useState("");
+  const [bankOpen, setBankOpen] = useState(false);
+  const [bankFromData, setBankFromData] = useState("");
 
   const corporateData =
     typeof window !== "undefined"
       ? localStorage.getItem("corporateData")
       : null;
 
+  console.log(corporateData, "corporateData");
   const {
     register,
     setValue,
@@ -68,33 +73,29 @@ const CompanyInfoPage = () => {
   } = useForm({
     resolver: yupResolver(companyInfoSchema),
     mode: "all",
-
   });
   // console.log("🚀 ~ CompanyInfoPage ~ getValues:", getValues())
 
   // const isValid = true
 
   useEffect(() => {
+    const storedIsoCode = localStorage.getItem("isoCode");
+    if (storedIsoCode) {
+      setIsoCode(storedIsoCode || ""); // Set ISO code for fetching cities
+    }
     if (corporateData) {
       const data = JSON.parse(corporateData);
-      data && setValues(data);
+      setValues(data);
+
       Object.entries(data).forEach(([key, value]) => {
-        // @ts-ignore
-        setValue(key, value);
+        setValue(key, value); // Populate all form fields from corporateData
       });
-      data && setBusinessNature(data.businessNature);
+      setBusinessNature(data.businessNature);
     }
   }, [corporateData]);
+
   useEffect(() => {
-    getValues("phone");
-    console.log(
-      "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ getValues",
-      getValues("phone"),
-    );
-    console.log(
-      "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ phoneInput",
-      corporateData,
-    );
+    const phoneValue = getValues("phone");
 
     if (corporateData) {
       setAllowSubmit(true);
@@ -106,9 +107,9 @@ const CompanyInfoPage = () => {
   }, [errors, isValid, corporateData]);
 
   const onSubmit: SubmitHandler<typeof companyInfoSchema> = async (
-    data: any,
+    data: any
   ) => {
-    console.log("hello");
+    localStorage.setItem("isoCode", isoCode);
     const { response: emailResponse, success: emailSuccess } =
       await emailVerification(data.email);
     console.log(emailResponse, "email");
@@ -116,7 +117,7 @@ const CompanyInfoPage = () => {
     if (emailResponse?.isExist) {
       console.log(
         "🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ emailResponse",
-        emailResponse,
+        emailResponse
       );
       toast.error("Email is already exists");
       return;
@@ -126,13 +127,14 @@ const CompanyInfoPage = () => {
     if (!success) {
       console.log(
         "🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ response",
-        response,
+        response
       );
       toast.error("Phone number is invalid");
       return;
     }
 
     setValues(data);
+    console.log(data, "corporateDataSet");
     localStorage.setItem("corporateData", JSON.stringify(data));
     router.push("/register/corporate/product-info");
   };
@@ -143,6 +145,7 @@ const CompanyInfoPage = () => {
   const [cityOpen, setCityOpen] = useState(false);
   const [constitution, setConstitution] = useState("");
   const [businessSector, setBusinessSector] = useState("");
+  const bankVal = watch("bank");
 
   const { data: citiesData } = useQuery({
     queryKey: ["cities", isoCode],
@@ -171,36 +174,54 @@ const CompanyInfoPage = () => {
     setValue("businessNature", nonDigitsOnly);
   };
 
-  // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ phoneInput", phoneInput);
-  // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ isValid", isValid);
-  // console.log("🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ allowSubmit", allowSubmit);
   console.log(
     "🚀 ~ file: page.tsx ~ line 139 ~ useEffect ~ error",
-    dirtyFields,
+    dirtyFields
   );
 
   /// Reseting city when entering country!
   const { accountCountry, accountCity } = watch();
   console.log(accountCity, "ACCOUNTCITY");
 
+  const { data: banks, isLoading: banksLoading } = useQuery({
+    queryKey: ["banks"],
+    queryFn: () => getBanks(accountCountry),
+    enabled: !!accountCountry,
+  });
   useEffect(() => {
     if (accountCountry != JSON.parse(corporateData as string)?.accountCountry) {
-      setValue("accountCity", "");
+      setValue("accountCity", ""); // Reset city value
+      setValue("bank", "");
       setCityVal("");
-      console.log(cityVal, "accountCity");
+      setBankFromData("");
     } else {
       setValue("accountCity", JSON.parse(corporateData as string)?.accountCity);
     }
   }, [accountCountry]);
 
+  useEffect(() => {
+    if (corporateData) {
+      const data = JSON.parse(corporateData);
+      if (data?.bank) {
+        setValue("bank", data.bank, { shouldValidate: true });
+        setBankFromData(data.bank); // Restore bankFromData when coming back
+      }
+    }
+  }, [corporateData]);
+
+  useEffect(() => {
+    queryClient.invalidateQueries({
+      queryKey: ["banks"],
+    });
+  }, [accountCountry]);
+
   return (
-    <AuthLayout>
+    <CorporateStepLayout
+      step={1}
+      title="Company Info"
+      text="Please add information about your company. This cannot be changed later."
+    >
       <section className="max-xs:px-1 z-10 mx-auto w-full max-w-2xl">
-        <h2 className="text-center text-3xl font-semibold">Company Info</h2>
-        <p className="mt-5 text-center font-roboto text-para">
-          Please add information about your company. This cannot be changed
-          later.
-        </p>
         <form
           className="max-xs:py-8 max-xs:px-4 z-10 mx-auto mt-8 flex w-full max-w-2xl flex-col gap-y-3 rounded-3xl bg-white shadow-md sm:gap-y-6 xs:p-8"
           onSubmit={handleSubmit(onSubmit)}
@@ -235,8 +256,8 @@ const CompanyInfoPage = () => {
           <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
             <div className="relative w-full">
               <CountrySelect
-                setIsoCode={setIsoCode}
                 setValue={setValue}
+                value={corporateData && JSON.parse(corporateData).country}
                 name="country"
                 placeholder="Company Country"
               />
@@ -329,14 +350,18 @@ const CompanyInfoPage = () => {
               <div className="flex items-center gap-3">
                 <label
                   id="beneficiaryDetails.address"
-                  className="bo rder flex w-full items-center justify-between rounded-md bg-white pl-3"
+                  className="flex w-full items-center justify-between rounded-md bg-white pl-3"
                 >
                   <div className="w-full">
                     <PhoneInput
-                      value={phoneInput}
-                      isOnBoarding={true}
+                      value={
+                        corporateData
+                          ? JSON.parse(corporateData).phone
+                          : phoneInput
+                      }
                       // value={phoneInput}
                       name="phone"
+                      defaultCountry="SA"
                       onChange={(value) => {
                         setValue("phone", value);
                         trigger("phone");
@@ -421,71 +446,14 @@ const CompanyInfoPage = () => {
 
           <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
             <div className="relative w-full">
-              <FloatingInput
-                name="bank"
-                placeholder="Bank Name"
-                register={register}
-              />
-              {errors.bank && (
-                <span className="absolute mt-1 text-[11px] text-red-500">
-                  {errors.bank.message}
-                </span>
-              )}
-            </div>
-            <div className="relative w-full">
-              <FloatingInput
-                name="accountNumber"
-                type="number"
-                inputMode="numeric"
-                placeholder="Account Number"
-                register={register}
-              />
-              {errors.accountNumber && (
-                <span className="absolute mt-1 text-[11px] text-red-500">
-                  {errors.accountNumber.message}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
-            <div className="relative w-full">
-              <FloatingInput
-                name="swiftCode"
-                placeholder="SWIFT Code"
-                register={register}
-              />
-              {errors.swiftCode && (
-                <span className="absolute mt-1 text-[11px] text-red-500">
-                  {errors.swiftCode.message}
-                </span>
-              )}
-            </div>
-            <div className="relative w-full">
-              <FloatingInput
-                name="accountHolderName"
-                placeholder="Account holder name"
-                register={register}
-              />
-              {errors.accountHolderName && (
-                <span className="absolute mt-1 text-[11px] text-red-500">
-                  {errors.accountHolderName.message}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
-            <div className="relative w-full">
               <CountrySelect
                 setIsoCode={setIsoCode}
                 setValue={setValue}
-                name="accountCountry"
-                placeholder={
-                  corporateData
-                    ? JSON.parse(corporateData).accountCountry
-                    : "Bank Country"
+                value={
+                  corporateData && JSON.parse(corporateData).accountCountry
                 }
+                name="accountCountry"
+                placeholder={"Bank Country"}
               />
               {errors.accountCountry && (
                 <span className="absolute mt-1 text-[11px] text-red-500">
@@ -501,27 +469,33 @@ const CompanyInfoPage = () => {
                     role="combobox"
                     aria-expanded={cityOpen}
                     className={`w-full justify-between font-roboto text-sm font-normal capitalize ${
-                      cityVal ? "text-lightGray" : "text-gray-400"
+                      JSON.parse(corporateData)?.accountCountry || cityVal
+                        ? "text-lightGray"
+                        : cities.length > 0 && accountCountry
+                        ? "text-lightGray"
+                        : "text-gray-400"
                     }`}
-                    disabled={!cities || cities.length <= 0}
+                    disabled={
+                      !cities || (cities.length === 0 && !accountCountry)
+                    }
                   >
                     {cityVal == "" &&
                     accountCountry != JSON.parse(corporateData)?.accountCountry
                       ? "Account City"
                       : cityVal
-                        ? cities?.find(
-                            (country: string) =>
-                              country.toLowerCase() === cityVal.toLowerCase(),
-                          )
-                        : corporateData
-                          ? JSON.parse(corporateData).accountCity
-                          : "Account City"}
+                      ? cities?.find(
+                          (country1: string) =>
+                            country1.toLowerCase() === cityVal.toLowerCase()
+                        )
+                      : corporateData
+                      ? JSON.parse(corporateData).accountCity
+                      : "Account City"}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0">
                   <Command className="font-roboto">
-                    <CommandInput placeholder="Search country..." />
+                    <CommandInput placeholder="Search city..." />
                     <CommandEmpty>No city found.</CommandEmpty>
                     <CommandGroup className="max-h-[300px] overflow-y-auto">
                       {cities &&
@@ -535,7 +509,7 @@ const CompanyInfoPage = () => {
                                 currentValue.toLowerCase() ===
                                   cityVal.toLowerCase()
                                   ? ""
-                                  : currentValue,
+                                  : currentValue
                               );
                               setCityOpen(false);
                               setValue("accountCity", currentValue, {
@@ -548,7 +522,7 @@ const CompanyInfoPage = () => {
                                 "mr-2 h-4 w-4",
                                 country.toLowerCase() === cityVal.toLowerCase()
                                   ? "opacity-100"
-                                  : "opacity-0",
+                                  : "opacity-0"
                               )}
                             />
                             {country}
@@ -561,6 +535,103 @@ const CompanyInfoPage = () => {
               {errors.accountCity && (
                 <span className="absolute left-0 top-10 mt-1 w-full text-[11px] text-red-500">
                   {errors.accountCity.message}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
+            <div className="relative w-full">
+              <Popover onOpenChange={setBankOpen} open={bankOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    disabled={!accountCountry}
+                    className={`w-full justify-between py-5 font-roboto text-sm font-normal capitalize ${
+                      bankFromData || bankVal
+                        ? "text-lightGray"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {bankVal // Else show manually selected bank
+                      ? banks?.response.find(
+                          (bank) => bank.toLowerCase() === bankVal.toLowerCase()
+                        )
+                      : bankFromData
+                      ? bankFromData
+                      : "Bank Name"}
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[230px] p-0">
+                  <Command className="font-roboto">
+                    <CommandInput placeholder="Search bank..." />
+                    <CommandEmpty>No bank found.</CommandEmpty>
+                    <CommandGroup className="max-h-[300px] overflow-y-auto">
+                      {!banksLoading &&
+                        banks &&
+                        banks.success &&
+                        banks?.response.map((bank: string, index) => {
+                          return (
+                            <CommandItem
+                              key={index}
+                              value={bank}
+                              onSelect={(currentValue) => {
+                                setBankOpen(false);
+                                setBankFromData(currentValue);
+                                setValue("bank", currentValue, {
+                                  shouldValidate: true,
+                                });
+                              }}
+                            >
+                              {bank}
+                            </CommandItem>
+                          );
+                        })}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="relative w-full">
+              <FloatingInput
+                name="swiftCode"
+                placeholder="SWIFT Code"
+                register={register}
+              />
+              {errors.swiftCode && (
+                <span className="absolute mt-1 text-[11px] text-red-500">
+                  {errors.swiftCode.message}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="max-sm:flex-col max-sm:gap-y-3 flex items-center gap-x-2">
+            <div className="relative w-full">
+              <FloatingInput
+                name="accountHolderName"
+                placeholder="Account Holder Name"
+                register={register}
+              />
+              {errors.accountHolderName && (
+                <span className="absolute mt-1 text-[11px] text-red-500">
+                  {errors.accountHolderName.message}
+                </span>
+              )}
+            </div>
+            <div className="relative w-full">
+              <FloatingInput
+                name="accountNumber"
+                type="number"
+                inputMode="numeric"
+                placeholder="Account Number"
+                register={register}
+              />
+              {errors.accountNumber && (
+                <span className="absolute mt-1 text-[11px] text-red-500">
+                  {errors.accountNumber.message}
                 </span>
               )}
             </div>
@@ -593,7 +664,10 @@ const CompanyInfoPage = () => {
                 type="button"
                 variant="ghost"
                 className="bg-[#F5F7F9] text-[16px] text-[#92929D]"
-                onClick={() => localStorage.removeItem("corporateData")}
+                onClick={() => {
+                  localStorage.removeItem("corporateData");
+                  localStorage.removeItem("isoCode");
+                }}
               >
                 Go back to login
               </Button>
@@ -609,7 +683,7 @@ const CompanyInfoPage = () => {
           </div>
         </form>
       </section>
-    </AuthLayout>
+    </CorporateStepLayout>
   );
 };
 

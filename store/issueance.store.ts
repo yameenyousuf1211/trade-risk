@@ -91,7 +91,7 @@ const defaultValue = {
   physicalLgBank: "",
   physicalLgSwiftCode: null,
   type: "",
-  lastDateOfReceivingBids: "",
+  lastDateOfReceivingBids: undefined,
   totalLgAmount: "",
   totalContractValue: "",
   totalContractCurrency: "",

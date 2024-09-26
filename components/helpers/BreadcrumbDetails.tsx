@@ -165,7 +165,7 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
           ))}
         </BreadcrumbList>
       </Breadcrumb>
-      <Link href="#step7">
+      <Link href="#lastStep">
         <Button className="bg-transparent text-para hover:bg-para hover:text-white rounded-lg py-1 border border-para">
           Save as draft
           {/* ({(filteredData && filteredData.length) || 0}) */}

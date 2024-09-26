@@ -37,7 +37,7 @@ const CreateRequestPage = () => {
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
-  const [days, setDays] = useState<number>(1);
+  const [days, setDays] = useState<number>(90);
 
   const queryClient = useQueryClient();
   const setValues = useConfirmationStore((state) => state.setValues);
@@ -112,7 +112,7 @@ const CreateRequestPage = () => {
     data: any;
     isProceed?: boolean;
   }) => {
-    console.log(data.period, "data");
+    console.log(data.paymentTerms, "data");
     submit();
     delete data.createdBy;
     if (
@@ -135,9 +135,10 @@ const CreateRequestPage = () => {
       data.paymentTerms !== "Sight LC" &&
       data.extraInfo
     ) {
+      console.log("something");
       extraInfoObj = { days: days, other: data.extraInfo.other };
     }
-
+    console.log(extraInfoObj, "extraInfoObj");
     let reqData;
     const baseData = {
       issuingBanks: data.issuingBanks, // Handle the array of issuing banks
@@ -151,6 +152,7 @@ const CreateRequestPage = () => {
       amount: {
         price: `${data.amount}.00`,
       },
+      attachments: data.attachments,
       period: {
         ...data.period,
         expectedDate:
@@ -162,6 +164,7 @@ const CreateRequestPage = () => {
       },
       ...(extraInfoObj && { extraInfo: extraInfoObj }),
     };
+    console.log(baseData, "baseData");
     if (baseData?.issuingBanks?.[0]?._id) delete baseData.issuingBanks[0]._id;
     try {
       setLoader(true); // Start the loader
@@ -181,7 +184,7 @@ const CreateRequestPage = () => {
           ...rest,
           ...(extraInfoObj && { extraInfo: extraInfoObj }),
           ...baseData,
-          draft: "true",
+          draft: true,
         };
         console.log(reqData, "REQDATA_______FOR CONFIRMATION");
         const { response, success } = confirmationData?._id
@@ -215,6 +218,7 @@ const CreateRequestPage = () => {
           : null;
         const preparedData = {
           ...data,
+          extraInfo: extraInfoObj,
           period: {
             ...data.period,
             startDate: lcStartDate,
@@ -222,7 +226,7 @@ const CreateRequestPage = () => {
           },
           expectedConfirmationDate,
         };
-
+        console.log(preparedData, "preparedData");
         try {
           const validatedData = await confirmationSchema.validate(
             preparedData,
@@ -315,6 +319,7 @@ const CreateRequestPage = () => {
           register={register}
           setValue={setValue}
           setStepCompleted={handleStepCompletion}
+          draftDataId={confirmationData?._id}
           days={days}
           setDays={setDays}
         />
@@ -353,6 +358,8 @@ const CreateRequestPage = () => {
           <div className="min-w-[50%] flex flex-col gap-5">
             <Step7
               register={register}
+              setValue={setValue}
+              watch={watch}
               step={7}
               setStepCompleted={handleStepCompletion}
             />

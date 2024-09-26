@@ -17,7 +17,9 @@ const LgStep3: React.FC<LgStepsProps3> = ({
   flags,
   setValue,
 }) => {
-  const issuingBanks: IssuingBank[] = watch("issuingBanks") || [{ country: "", bank: "", swiftCode: "" }];
+  const issuingBanks: IssuingBank[] = watch("issuingBanks") || [
+    { country: "", bank: "", swiftCode: "" },
+  ];
   const { addStep, removeStep } = useStepStore();
 
   // State to hold bank options for each issuing bank
@@ -43,16 +45,27 @@ const LgStep3: React.FC<LgStepsProps3> = ({
   }, [issuingBanks]);
 
   useEffect(() => {
-    if (issuingBanks.some((bank: IssuingBank) => bank.country && bank.bank && bank.swiftCode)) {
-      addStep(LG_ISSUING_BANK);
-    } else {
-      removeStep(LG_ISSUING_BANK);
-    }
-  }, [issuingBanks, addStep, removeStep]);
+    const subscription = watch((value) => {
+      const issuingBanks = value.issuingBanks || [];
+      const hasCompleteBank = issuingBanks.some(
+        (bank: IssuingBank) => bank.country && bank.bank
+      );
+
+      if (hasCompleteBank) {
+        addStep(LG_ISSUING_BANK);
+      } else {
+        removeStep(LG_ISSUING_BANK);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, addStep, removeStep]);
 
   const handleAddBank = () => {
     if (issuingBanks.length < 3) {
-      const newBanks = [...issuingBanks, { country: "", bank: "", swiftCode: "" }];
+      const newBanks = [
+        ...issuingBanks,
+        { country: "", bank: "", swiftCode: "" },
+      ];
       setValue("issuingBanks", newBanks);
     } else {
       toast.error("You can add up to 3 banks only");
@@ -86,7 +99,8 @@ const LgStep3: React.FC<LgStepsProps3> = ({
           3
         </p>
         <p className="font-semibold text-[16px] text-lightGray">
-          LG Issuing Bank/Expected (you can add up to three banks if you are not sure yet which bank will issue the LG)
+          LG Issuing Bank/Expected (you can add up to three banks if you are not
+          sure yet which bank will issue the LG)
         </p>
       </div>
 
@@ -131,9 +145,7 @@ const LgStep3: React.FC<LgStepsProps3> = ({
               data={bankOptions[index] || []}
               disabled={!bank.country}
             />
-            <label
-              className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
-            >
+            <label className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white">
               <p className="w-full text-sm text-lightGray">Swift Code</p>
               <Input
                 register={register}

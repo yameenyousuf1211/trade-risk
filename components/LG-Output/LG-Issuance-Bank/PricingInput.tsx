@@ -7,7 +7,7 @@ interface PricingInputProps {
   updateBondPrices: (value: string) => void;
   selectedBank?: string | undefined;
   bankData?: BankData;
-  clientExpectedPrice?: string;
+  selectedBondPrice?: number | string;
 }
 
 export const PricingInput: React.FC<PricingInputProps> = ({
@@ -15,9 +15,10 @@ export const PricingInput: React.FC<PricingInputProps> = ({
   setPricingValue,
   updateBondPrices,
   selectedBank,
+  selectedBondPrice,
   bankData,
-  clientExpectedPrice,
 }) => {
+  console.log(selectedBondPrice, "selectedBondPrice");
   const [internalValue, setInternalValue] = useState<string>(pricingValue);
 
   useEffect(() => {
@@ -25,10 +26,8 @@ export const PricingInput: React.FC<PricingInputProps> = ({
   }, [pricingValue]);
 
   const getClientExpectedPrice = () => {
-    if (bankData?.expectedPrice) {
-      return (
-        "Client's Expected Price: " + bankData.pricePerAnnum + "% Per Annum"
-      );
+    if (selectedBondPrice) {
+      return "Client's Expected Price: " + selectedBondPrice + "% Per Annum";
     }
   };
 

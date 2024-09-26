@@ -6,19 +6,32 @@ import { BankSelection } from "./BankSelection";
 import { LgTypeSelection } from "./LgTypeSelection";
 import { PricingInput } from "./PricingInput";
 import { BidPreview } from "./BidPreview";
-import { convertDateToCommaString, formatAmount } from "@/utils";
+import {
+  convertDateAndTimeToString,
+  convertDateAndTimeToStringGMTNoTsx,
+  convertDateToCommaString,
+  formatAmount,
+} from "@/utils";
 import { submitLgBid } from "@/services/apis/lg.apis";
 import { useAuth } from "@/context/AuthProvider";
-import { getLgBondTotal, sortBanksAlphabetically } from "../helper";
+import {
+  getLgBondTotal,
+  sortBanksAlphabetically,
+  formatFirstLetterOfWord,
+} from "../helper";
+import { FileSearch } from "lucide-react";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 const LGInfo = ({
   label,
   value,
   noBorder,
+  link,
 }: {
   label: string;
   value: string | null;
   noBorder?: boolean;
+  link?: string;
 }) => {
   return (
     <div
@@ -27,9 +40,20 @@ const LGInfo = ({
       }`}
     >
       <p className="font-roboto text-sm font-normal text-para">{label}</p>
-      <p className="max-w-[60%] text-right text-sm font-semibold capitalize">
-        {value || "-"}
-      </p>
+      {link ? (
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center capitalize font-semibold text-right text-base max-w-[100%] truncate"
+        >
+          <FileSearch className="mr-2" color="#29C084" /> {value}
+        </a>
+      ) : (
+        <p className="max-w-[60%] text-right text-sm font-semibold capitalize">
+          {value || "-"}
+        </p>
+      )}
     </div>
   );
 };
@@ -80,6 +104,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   const [selectedLgType, setSelectedLgType] = useState<string>("Bid Bond");
   const [selectedBank, setSelectedBank] = useState<string | undefined>();
   const [groupedBids, setGroupedBids] = useState<any>({});
+  const [lastBankAndBondReached, setLastBankAndBondReached] = useState(false);
   const [userBidStatus, setUserBidStatus] = useState<any>({});
   const [userBid, setUserBid] = useState();
   const [pricingValue, setPricingValue] = useState<string>("");
@@ -94,7 +119,15 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   const mutation = useMutation({
     mutationFn: (newData: any) => submitLgBid(newData),
     onSuccess: () => {
-      queryClient.invalidateQueries(["bondData"]);
+      queryClient.invalidateQueries({
+        queryKey: ["bid-status"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["fetch-lcs"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["single-lc"],
+      });
       setShowPreview(true);
     },
   });
@@ -161,7 +194,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     } else if (mostRecentBid) {
       if (mostRecentBid.status === "Pending") {
         setUserBidStatus({
-          label: `Bid Submitted on ${convertDateToCommaString(
+          label: `Bid Submitted on ${convertDateAndTimeToStringGMTNoTsx(
             mostRecentBid.createdAt
           )}`,
           status: "Pending",
@@ -208,6 +241,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   };
 
   const updateBondPrices = (newValue: string) => {
+    setLastBankAndBondReached(false);
     setBondPrices((prev) => ({
       ...prev,
       [selectedBank!]: {
@@ -220,6 +254,14 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   const handleSubmitOrNext = async (bidValidity: string) => {
     if (!selectedLgType || !selectedBank) return;
 
+    const lastBank = isLastBank(selectedBank!);
+    const lastBond = isLastBond(selectedLgType);
+
+    if (lastBank && lastBond && !lastBankAndBondReached) {
+      setLastBankAndBondReached(true);
+      return;
+    }
+
     if (
       isLastBank(selectedBank!) &&
       isLastBond(selectedLgType) &&
@@ -228,7 +270,13 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
       // Filter out bonds with a price of "0%" before creating newBids
       const newBids = Object.entries(bondPrices).flatMap(([bank, bonds]) =>
         Object.entries(bonds)
-          .filter(([bondType, price]) => parseFloat(price.replace("%", "")) > 0) // Exclude 0% pricing
+          .filter(([bondType, price]) => {
+            // Ensure price is a valid string or number before proceeding
+            if (!price || typeof price !== "string") return false;
+
+            const parsedPrice = parseFloat(price.replace("%", ""));
+            return !isNaN(parsedPrice) && parsedPrice > 0;
+          }) // Exclude 0% pricing
           .map(([bondType, price]) => ({
             bank,
             bidType: bondType,
@@ -288,6 +336,17 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     setShowPreview(false);
   };
 
+  const beneficiaryDetails = [
+    { label: "Beneficiary Name", value: data.beneficiaryDetails.name },
+    { label: "Beneficiary Address", value: data.beneficiaryDetails.address },
+    { label: "Beneficiary Country", value: data.beneficiaryDetails.country },
+    {
+      label: "Beneficiary Phone",
+      value: data.beneficiaryDetails.phoneNumber,
+    },
+    { label: "Beneficiary City", value: data.beneficiaryDetails.city },
+  ].filter((detail) => detail.value);
+
   const handleNewBid = () => {
     setShowPreview(false);
     setUserBidStatus({});
@@ -307,64 +366,57 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
         <div className="border-r-2 border-b-2  bg-[#F5F7F9] p-4 flex flex-col gap-3 border-[#F5F7F9]">
           <h5 className="text-[12px] text-[#696974]">
             Created at,{" "}
-            {new Date(data.createdAt).toLocaleDateString("en-US", {
-              month: "short",
-              day: "2-digit",
-              year: "numeric",
-            })}{" "}
-            {new Date(data.createdAt).toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            })}{" "}
-            by{" "}
+            {data.createdAt &&
+              convertDateAndTimeToStringGMT({ date: data.createdAt })}
+            , by{" "}
             <span className="text-blue-500">
-              {data.applicantDetails.company}
+              {formatFirstLetterOfWord(data.applicantDetails.company)}
             </span>
           </h5>
           <h3 className="text-[#92929D] text-base font-light">
             Total LG Amount Requested{" "}
             <span className="text-[20px] text-[#1A1A26] font-semibold">
               {data.totalContractCurrency || "USD"}{" "}
-              {formatAmount(getLgBondTotal(data))}
+              {formatAmount(getLgBondTotal(data))}.00
             </span>
           </h3>
         </div>
         <div className="ml-7 mr-1 mt-2">
           <LGInfo
-            label="Total Contract Value"
-            value={
-              `${data.totalContractCurrency} ${data.totalContractValue}` || null
-            }
+            label="Applicant Name"
+            value={data.applicantDetails.company}
           />
+          {data.totalContractCurrency && data.totalContractValue && (
+            <LGInfo
+              label="Total Contract Value"
+              value={
+                `${data.totalContractCurrency} ${formatAmount(
+                  data.totalContractValue
+                )}.00` || null
+              }
+            />
+          )}
           <LGInfo
-            label="Request Expiry Date"
+            label="Last Date for Receiving Bids"
             value={
               convertDateToCommaString(data.lastDateOfReceivingBids) || null
             }
           />
-          <LGInfo label="Purpose of LG" value={data.purpose || null} />
+          {data.purpose && (
+            <LGInfo label="Purpose of LG" value={data.purpose || null} />
+          )}
 
           <h2 className="my-2 text-xl font-semibold text-[#1A1A26]">
             Beneficiary Details
           </h2>
 
-          <LGInfo
-            label="Beneficiary Name"
-            value={data.beneficiaryDetails?.name || null}
-          />
-          <LGInfo
-            label="Beneficiary Address"
-            value={data.beneficiaryDetails?.address || null}
-          />
-          <LGInfo
-            label="Beneficiary Country"
-            value={data.beneficiaryDetails?.country || null}
-          />
-          <LGInfo
-            label="Beneficiary Phone"
-            value={data.beneficiaryDetails?.phoneNumber || null}
-          />
+          {beneficiaryDetails.map((detail, index) => (
+            <LGInfo
+              key={index}
+              label={detail.label}
+              value={detail.value || "-"}
+            />
+          ))}
 
           <ApplicantQuery />
         </div>
@@ -380,10 +432,10 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
             <div>
               <div className="flex items-center justify-between">
                 <h5 className="font-semibold">Submit your bid</h5>
-                <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
+                {/* <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
                   <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
                   <h5 className="text-[0.95rem] font-normal">{user.name}</h5>
-                </div>
+                </div> */}
               </div>
               <div className="mt-2 rounded-md border border-[#E2E2EA] p-2">
                 <BankSelection
@@ -419,7 +471,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                         value={
                           `${selectedBond?.currencyType} ${formatAmount(
                             selectedBond?.cashMargin
-                          )}` || null
+                          )}.00` || null
                         }
                       />
                       <LGInfo
@@ -442,18 +494,53 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                             : null
                         }
                       />
+                      {/* {selectedBond.expectedPricing && (
+                        <LGInfo
+                          label="Expected Price"
+                          value={
+                            selectedBond.expectedPricing
+                              ? `${selectedBond.expectedPricing}%`
+                              : null
+                          }
+                        />
+                      )} */}
                       <LGInfo
                         label="LG Tenor"
                         value={
-                          selectedBond.lgTenor
-                            ? `${selectedBond.lgTenor.lgTenorValue} ${selectedBond.lgTenor.lgTenorType}`
+                          selectedBond?.lgTenor
+                            ? `${selectedBond?.lgTenor?.lgTenorValue} ${
+                                selectedBond?.lgTenor?.lgTenorValue === 1
+                                  ? selectedBond?.lgTenor?.lgTenorType.substring(
+                                      0,
+                                      selectedBond?.lgTenor?.lgTenorType
+                                        .length - 1
+                                    )
+                                  : selectedBond?.lgTenor?.lgTenorType
+                              }`
                             : null
                         }
                       />
+                      {selectedBond.attachments?.length > 0 && (
+                        <LGInfo
+                          label="LG Text Draft"
+                          value={
+                            selectedBond.attachments[0].userFileName.length > 20
+                              ? `${selectedBond?.attachments[0].userFileName.slice(
+                                  0,
+                                  10
+                                )}...${selectedBond.attachments[0].userFileName.slice(
+                                  -7
+                                )}`
+                              : selectedBond.attachments[0].userFileName
+                          }
+                          link={selectedBond.attachments[0].url}
+                        />
+                      )}
                     </>
                   )}
 
                   <PricingInput
+                    selectedBondPrice={selectedBond?.expectedPricing}
                     pricingValue={pricingValue}
                     setPricingValue={setPricingValue}
                     updateBondPrices={updateBondPrices} // Pass the update function
@@ -469,14 +556,15 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                   type="submit"
                   className={`mt-4 h-12 w-full ${
                     pricingValue && parseFloat(pricingValue) > 0
-                      ? "bg-[#44C894] text-white"
-                      : "bg-[#F1F1F5] text-black"
+                      ? "bg-[#44C894] text-white hover:bg-[#44C894]"
+                      : "bg-[#F1F1F5] text-black hover:bg-[#F1F1F5]"
+                  } ${
+                    lastBankAndBondReached &&
+                    anyPricingFilled() &&
+                    "bg-[#44C894] text-white hover:bg-[#44C894]"
                   }`}
                 >
-                  {selectedBank &&
-                  isLastBank(selectedBank) &&
-                  isLastBond(selectedLgType) &&
-                  anyPricingFilled()
+                  {lastBankAndBondReached && anyPricingFilled()
                     ? "Preview Bid"
                     : pricingValue && parseFloat(pricingValue) > 0
                     ? "Next"
@@ -492,6 +580,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           handleSubmit={handleSubmitOrNext}
           bids={groupedBids}
           userBidStatus={userBidStatus}
+          lastDateOfReceivingBids={data.lastDateOfReceivingBids}
           bidValidityDate={
             userBid ? convertDateToCommaString(userBid.bidValidity) : undefined
           }

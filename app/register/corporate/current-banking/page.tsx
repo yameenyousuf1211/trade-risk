@@ -33,7 +33,7 @@ interface Bank {
   country: string;
   name: string;
   city: string;
-  swiftCode: string
+  swiftCode: string;
 }
 
 const CurrentBankingPage = () => {
@@ -150,10 +150,7 @@ const CurrentBankingPage = () => {
       ...prevBanks,
       [countryVal]: [...(prevBanks[countryVal] || []), newBank],
     }));
-
-    setCountryVal("");
     setBankVal("");
-    setCityVal("");
     setSwiftCodeVal("");
   };
 
@@ -201,11 +198,11 @@ const CurrentBankingPage = () => {
             originalData.productInfo.annualValueImports
           ),
         },
-        currentBanks: originalData.currentBanks.map((bank:Bank) => ({
+        currentBanks: originalData.currentBanks.map((bank: Bank) => ({
           name: bank.name,
           country: bank.country,
           city: bank.city,
-          swiftCode: bank.swiftCode
+          swiftCode: bank.swiftCode,
         })),
         bank: originalData.bank,
         commercialRegistrationNumber: originalData.crNumber,
@@ -258,7 +255,7 @@ const CurrentBankingPage = () => {
 
     reqData = convertBusinessData(reqData);
 
-    // console.log("🚀 ~ handleSubmit ~ reqData:", reqData);
+    console.log("🚀 ~ handleSubmit ~ reqData:", reqData);
     const { response, success } = await onRegister(reqData);
     console.log("Email = ", response?.data?.email);
     console.log("Password = ", response?.data?.password);
@@ -275,8 +272,8 @@ const CurrentBankingPage = () => {
 
   return (
     <CorporateStepLayout
-      step={3}
-      title="Current Banking"
+      step={4}
+      title="Your Current Bank's"
       text={`Add the banks you have facilities with, so that they can be notified of any requests you add. \nThis list can also be edited later.`}
     >
       <div className="max-w-[800px] w-full shadow-md bg-white rounded-xl p-8 z-10 mt-5 flex flex-col gap-y-5">
@@ -297,9 +294,9 @@ const CurrentBankingPage = () => {
                   <span className="truncate w-full text-left">
                     {countryVal
                       ? countries?.find(
-                        (country: string) =>
-                          country.toLowerCase() === countryVal.toLowerCase()
-                      )
+                          (country: string) =>
+                            country.toLowerCase() === countryVal.toLowerCase()
+                        )
                       : "Select country*"}
                   </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -337,6 +334,62 @@ const CurrentBankingPage = () => {
               </PopoverContent>
             </Popover>
 
+            {/* City Field */}
+            <Popover open={cityOpen} onOpenChange={setCityOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={cityOpen}
+                  className="capitalize font-roboto w-[230px] justify-between font-normal py-6"
+                  disabled={countryVal === ""}
+                >
+                  <span className="truncate w-full text-left">
+                    {cityVal
+                      ? cityVal
+                      : countryVal
+                      ? "Select city*"
+                      : "Select city*"}
+                  </span>
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[230px] p-0">
+                <Command className="font-roboto">
+                  <CommandInput placeholder="Search city..." />
+                  <CommandEmpty>No city found.</CommandEmpty>
+                  <CommandGroup className="max-h-[300px] overflow-y-auto">
+                    {cities &&
+                      cities.length > 0 &&
+                      cities.map((city: string) => (
+                        <CommandItem
+                          key={city}
+                          value={city}
+                          onSelect={(currentValue) => {
+                            setCityVal(
+                              currentValue.toLowerCase() ===
+                                cityVal.toLowerCase()
+                                ? ""
+                                : currentValue
+                            );
+                            setCityOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              city.toLowerCase() === cityVal.toLowerCase()
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {city}
+                        </CommandItem>
+                      ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
             {/* Bank Field */}
             <Popover open={bankOpen} onOpenChange={setBankOpen}>
               <PopoverTrigger asChild>
@@ -350,9 +403,9 @@ const CurrentBankingPage = () => {
                   <span className="truncate w-full text-left">
                     {bankVal
                       ? banks?.response.find(
-                        (bank: string) =>
-                          bank.toLowerCase() === bankVal.toLowerCase()
-                      )
+                          (bank: string) =>
+                            bank.toLowerCase() === bankVal.toLowerCase()
+                        )
                       : "Select bank*"}
                   </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -389,63 +442,6 @@ const CurrentBankingPage = () => {
                             )}
                           />
                           {bank}
-                        </CommandItem>
-                      ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
-
-            {/* City Field */}
-            <Popover open={cityOpen} onOpenChange={setCityOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={cityOpen}
-                  className="capitalize font-roboto w-[230px] justify-between font-normal py-6"
-                  disabled={countryVal === ""}
-                >
-                  <span className="truncate w-full text-left">
-                    {cityVal
-                      ? cityVal
-                      : countryVal
-                        ? "Select city*"
-                        : "Select city*"}
-                  </span>
-                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[230px] p-0">
-                <Command className="font-roboto">
-                  <CommandInput placeholder="Search city..." />
-                  <CommandEmpty>No city found.</CommandEmpty>
-                  <CommandGroup className="max-h-[300px] overflow-y-auto">
-                    {cities &&
-                      cities.length > 0 &&
-                      cities.map((city: string) => (
-                        <CommandItem
-                          key={city}
-                          value={city}
-                          onSelect={(currentValue) => {
-                            setCityVal(
-                              currentValue.toLowerCase() ===
-                                cityVal.toLowerCase()
-                                ? ""
-                                : currentValue
-                            );
-                            setCityOpen(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              city.toLowerCase() === cityVal.toLowerCase()
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {city}
                         </CommandItem>
                       ))}
                   </CommandGroup>

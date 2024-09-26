@@ -1,9 +1,11 @@
 import * as Yup from "yup";
 
 const fileSchema = Yup.object().shape({
-  name: Yup.string().required(),
-  type: Yup.string().required(),
-  size: Yup.number().required(),
+  url: Yup.string().required("File URL is required"),
+  userFileName: Yup.string().required("User file name is required"),
+  firebaseFileName: Yup.string().required("Firebase file name is required"),
+  fileSize: Yup.number().required("File size is required"),
+  fileType: Yup.string().required("File type is required"),
 });
 
 export const generalLcSchema = Yup.object().shape({
@@ -72,7 +74,8 @@ export const generalLcSchema = Yup.object().shape({
     .shape({
       applicantName: Yup.string()
         .required("Enter applicant name")
-        .min(1, "Enter importer applicant name"),
+        .min(1, "Enter importer applicant name")
+        .matches(/.*[a-zA-Z]+.*/, "Applicant name cannot contain only numbers"),
       countryOfImport: Yup.string()
         .required("Select country of import")
         .min(1, "Select country of import"),
@@ -84,19 +87,34 @@ export const generalLcSchema = Yup.object().shape({
     .required("Add product description"),
   extraInfo: Yup.object()
     .shape({
-      days: Yup.number().max(999, "Days must be less than or equal to 999"),
-      other: Yup.string(),
+      days: Yup.number()
+        .transform((value, originalValue) =>
+          originalValue === "" ? undefined : value
+        ) // Transform empty string to undefined
+        .required("Payment Term days is required")
+        .min(1, "Days must be greater than 0")
+        .max(999, "Days must be less than or equal to 999"),
+      other: Yup.string().trim().required("Payment Terms type is required"),
     })
-    .when("paymentTerms", (paymentTerms, schema) => {
-      return paymentTerms !== "Sight LC"
-        ? schema.required(
-            "Extra info is required when payment terms are not 'Sight LC'"
-          )
-        : schema.notRequired();
+    .when("paymentTerms", {
+      is: (paymentTerms) => paymentTerms !== "Sight LC",
+      then: (schema) =>
+        schema.required(
+          "Extra info is required when payment terms are not 'Sight LC'"
+        ),
+      otherwise: (schema) =>
+        schema
+          .shape({
+            days: Yup.number().nullable(), // Make `days` optional when paymentTerms is "Sight LC"
+            other: Yup.string().nullable(), // Make `other` optional when paymentTerms is "Sight LC"
+          })
+          .nullable()
+          .notRequired(), // Allow extraInfo to be nullable when "Sight LC"
     }),
   lastDateOfReceivingBids: Yup.date().required(
-    "Select last date of receiving bids"
+    "Last Date for Receiving Bids is required"
   ),
+  attachments: Yup.array().of(fileSchema).optional(),
 });
 
 export const confirmationSchema = generalLcSchema.concat(
@@ -156,7 +174,7 @@ export const discountingSchema = generalLcSchema.concat(
     discountingInfo: Yup.object()
       .shape({
         discountAtSight: Yup.mixed()
-          .oneOf(["yes", "no"], "Specify discount at sight")
+          .oneOf(["Sight", "Acceptance Date"], "Specify discount at sight")
           .required(),
         behalfOf: Yup.mixed()
           .oneOf(["Exporter", "Importer"], "Select charges on account of")
@@ -206,7 +224,7 @@ export const confirmationDiscountSchema = generalLcSchema.concat(
     discountingInfo: Yup.object()
       .shape({
         discountAtSight: Yup.mixed()
-          .oneOf(["yes", "no"], "Specify discount at sight")
+          .oneOf(["Sight", "Acceptance Date"], "Specify discount at sight")
           .required(),
         behalfOf: Yup.mixed()
           .oneOf(["Exporter", "Importer"], "Select one of above")

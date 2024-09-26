@@ -11,8 +11,7 @@ import { IBids } from "@/types/type";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  convertDate,
-  convertDateAndTimeToString,
+  convertDateAndTimeToStringGMTNoTsx,
   convertDateToCommaString,
 } from "@/utils";
 import { toast } from "sonner";
@@ -24,6 +23,9 @@ import Image from "next/image";
 import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
 import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargin";
 import LGIssuanceCashMarginDialog from "../LG-Output/LG-Issuance-Bank/LGIssuanceCashMargin";
+import ViewFileAttachment from "./ViewFileAttachment";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
+import { formatFirstLetterOfWord } from "../LG-Output/helper";
 
 export const BidCard = ({
   data,
@@ -46,6 +48,9 @@ export const BidCard = ({
     },
   });
 
+  // Function to check if the bid has expired
+  const isExpired = new Date(data.bidValidity) < new Date();
+
   const handleSubmit = async (status: string, id: string) => {
     const { success, response } = await mutateAsync({
       status,
@@ -62,79 +67,122 @@ export const BidCard = ({
   };
 
   return (
-    <div className="rounded-lg border border-borderCol px-3 py-5">
+    <div
+      className={`rounded-lg border border-borderCol px-3 py-5 ${
+        isExpired ? "opacity-60" : ""
+      }`}
+    >
       <div className="grid grid-cols-2 gap-y-4">
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+        <div>
           <p className="mb-1 text-sm text-para">Bid Number</p>
           <p className="text-lg font-semibold">
             {data._id?.slice(0, 6) || "12365"}
           </p>
         </div>
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+        <div>
           <p className="mb-1 text-sm capitalize text-para">Submitted by</p>
           <p className="text-lg font-semibold capitalize">
-            {data.bidBy?.name || ""}
+            {formatFirstLetterOfWord(data.bidBy?.name) || ""}
           </p>
         </div>
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="mb-1 text-sm text-para">Confirmation Rate</p>
-          <p className="text-lg font-semibold text-text">
-            {data?.confirmationPrice}% per annum
-          </p>
-        </div>
-        {data?.discountMargin !== undefined &&
-          data?.discountMargin !== null && (
-            <div className={data.status === "Expired" ? "opacity-50" : ""}>
-              <p className="mb-1 text-sm text-para">Discount Spread</p>
-              <p className="text-lg font-semibold">{data.discountMargin}%</p>
+        {data.bidType !== "LC Discounting" && (
+          <div>
+            <p className="mb-1 text-sm text-para">Confirmation Rate</p>
+            <p className="text-lg font-semibold text-text">
+              {data?.confirmationPrice}%{" "}
+              <span className="text-black">per annum</span>
+            </p>
+          </div>
+        )}
+        {data?.discountMargin &&
+          data.bidType === "LC Confirmation & Discounting" && (
+            <div>
+              <p className="mb-1 text-sm text-para">Discount Pricing</p>
+              <p className="text-lg font-semibold">
+                {`${data.discountBaseRate.toUpperCase()} + `}
+                <span className="text-text">{`${data.discountMargin}%`}</span>
+              </p>
             </div>
           )}
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+        {data?.discountMargin && data.bidType === "LC Discounting" && (
+          <div>
+            <p className="mb-1 text-sm text-para">Discount Rate</p>
+            <p className="text-lg font-semibold">
+              {data?.discountBaseRate.toUpperCase()} +{" "}
+              <span className="text-text">{data.discountMargin}% </span>
+            </p>
+          </div>
+        )}
+        <div>
           <p className="mb-1 text-sm text-para ">Country</p>
           <p className="text-lg font-semibold capitalize">
             {data.bidBy.country}
           </p>
         </div>
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          <p className="mb-1 text-sm text-para">Bid Received</p>
-          <p className="text-lg font-semibold">{convertDate(data.createdAt)}</p>
-        </div>
-
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
+        {user.type === "corporate" && (
+          <div>
+            <p className="mb-1 text-sm text-para">Bid Submitted</p>
+            <p className="text-lg font-semibold">
+              {convertDateAndTimeToStringGMT({
+                date: data.createdAt,
+                sameLine: false,
+              })}
+            </p>
+          </div>
+        )}
+        <div>
           <p className="mb-1 text-sm text-para">Bid Expiry</p>
           <p className="text-lg font-semibold">
-            {convertDate(data.bidValidity)}
+            {convertDateAndTimeToStringGMT({
+              date: data.bidValidity,
+              sameLine: false,
+            })}
           </p>
         </div>
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          {/* <p className="text-sm text-para mb-1">Minimum Charges</p>
-    <p className="text-lg font-semibold text-text">AED 30,000.00</p> */}
-        </div>
+        {data.bidType === "LC Discounting" && (
+          <div>
+            <p className="mb-1 text-sm text-para">Term</p>
+            <p className="text-lg font-semibold text-text">
+              <span className="text-black">
+                {data.perAnnum ? "Per Annum" : "Flat"}
+              </span>
+            </p>
+          </div>
+        )}
+
         {data.status === "Pending" && !isBank && (
           <>
-            <DialogClose id="close-button" className="hidden"></DialogClose>
-            <div className="col-span-2 mt-2 flex gap-4">
-              <Button
-                size="lg"
-                className="flex-1 bg-[#29C084] hover:bg-[#29C084]/90"
-                onClick={() => handleSubmit("Accepted", data._id)}
-                disabled={isPending}
-              >
-                Accept
-              </Button>
-              <Button
-                size="lg"
-                className="flex-1 bg-[#f4f7fa] text-para"
-                variant="ghost"
-                onClick={() => handleSubmit("Rejected", data._id)}
-                disabled={isPending}
-              >
-                Reject
-              </Button>
-            </div>
+            {isExpired ? (
+              // Show Bid Expired div if the bid is expired
+              <div className="col-span-2 mt-2 flex justify-center items-center bg-black text-white rounded-lg py-2">
+                Bid Expired
+              </div>
+            ) : (
+              // Show Accept and Reject buttons if the bid is not expired
+              <div className="col-span-2 mt-2 flex gap-4">
+                <Button
+                  size="lg"
+                  className="flex-1 bg-[#29C084] hover:bg-[#29C084]/90"
+                  onClick={() => handleSubmit("Accepted", data._id)}
+                  disabled={isPending}
+                >
+                  Accept
+                </Button>
+                <Button
+                  size="lg"
+                  className="flex-1 bg-[#f4f7fa] text-para"
+                  variant="ghost"
+                  onClick={() => handleSubmit("Rejected", data._id)}
+                  disabled={isPending}
+                >
+                  Reject
+                </Button>
+              </div>
+            )}
           </>
         )}
       </div>
+
       {(data.status !== "Pending" ||
         (data.status === "Pending" && data.createdBy === user?._id)) && (
         <Button
@@ -143,8 +191,6 @@ export const BidCard = ({
               ? "bg-[#29C08433] hover:bg-[#29C08433]"
               : data.status === "Rejected"
               ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
-              : data.status === "Expired"
-              ? "bg-[#97979733] hover:bg-[#97979733]"
               : "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
           } mt-2 w-full cursor-default text-black`}
         >
@@ -152,10 +198,10 @@ export const BidCard = ({
             ? "Bid Accepted"
             : data.status === "Rejected"
             ? "Bid Rejected"
-            : data.status === "Expired"
-            ? "Request Expired"
             : data.status === "Pending"
-            ? `Bid Submitted on ${convertDateToCommaString(data.createdAt)}`
+            ? `Bid Submitted on ${convertDateAndTimeToStringGMTNoTsx(
+                data.createdAt
+              )}`
             : ""}
         </Button>
       )}
@@ -272,9 +318,11 @@ export const TableDialog = ({
       </DialogTrigger>
       <DialogContent className="h-full !max-h-[95vh] w-full max-w-6xl !p-0 flex flex-col">
         <div className="flex max-h-20 items-center justify-between border-b border-b-borderCol !py-5 px-7">
-          <h2 className="text-lg font-semibold">
-            {(lcData && lcData?.type) || "Risk Participation Request"}
-          </h2>
+          <div className="flex flex-col items-center w-1/2">
+            <h2 className="text-2xl font-semibold text-center">
+              {(lcData && lcData?.type) || "Risk Participation Request"}
+            </h2>
+          </div>
           <DialogClose>
             <X className="size-7" />
           </DialogClose>
@@ -288,7 +336,7 @@ export const TableDialog = ({
             {/* Left Section */}
             {isRisk ? (
               <>
-                <div className="flex max-h-[90vh] w-full flex-col overflow-y-scroll">
+                <div className="flex max-h-[90vh] w-full flex-col overflow-y-scroll pb-5">
                   <div className="bg-bg px-4 pb-5">
                     <div className="flex w-full items-center justify-between gap-x-2 rounded-lg border border-borderCol bg-white p-2">
                       <div className="flex items-center gap-x-2">
@@ -363,7 +411,7 @@ export const TableDialog = ({
                       value={riskData?.advisingBank?.bank || ""}
                     />
                     <LCInfo
-                      label="Confirming Bank"
+                      label="Preferred Confirming Bank"
                       value={riskData?.confirmingBank?.bank || ""}
                     />
                     <LCInfo
@@ -480,8 +528,11 @@ export const TableDialog = ({
                     </h2>
                     <p className="font-roboto text-sm text-para">
                       Created at,{" "}
-                      {lcData && convertDateAndTimeToString(lcData.createdAt)},
-                      by{" "}
+                      {lcData &&
+                        convertDateAndTimeToStringGMT({
+                          date: lcData.createdAt,
+                        })}
+                      , by{" "}
                       <span className="capitalize text-text">
                         {(lcData && lcData.exporterInfo?.beneficiaryName) ||
                           lcData?.createdBy?.name}
@@ -492,33 +543,48 @@ export const TableDialog = ({
                   </div>
                   {/* Main Info */}
                   <div className="bg-[#F5F7F9] px-4">
+                    <h2 className="text-xl font-semibold mt-1">LC Details</h2>
                     <LCInfo
                       label="LC Issuing Bank"
                       value={
                         (lcData &&
                           lcData?.issuingBanks?.length > 0 &&
-                          lcData?.issuingBanks[0]?.bank) ||
+                          formatFirstLetterOfWord(
+                            lcData?.issuingBanks[0]?.bank
+                          )) ||
                         ""
                       }
                     />
-                    <LCInfo
+                    {/* <LCInfo
                       label="LC Applicant"
                       value={
                         (lcData && lcData.importerInfo
                           ? lcData.importerInfo?.applicantName
                           : lcData?.applicantDetails?.company) || ""
                       }
-                    />
+                    /> */}
                     {lcData?.advisingBank?.bank && (
                       <LCInfo
                         label="Advising Bank"
-                        value={(lcData && lcData.advisingBank?.bank) || ""}
+                        value={
+                          (lcData &&
+                            formatFirstLetterOfWord(
+                              lcData.advisingBank?.bank
+                            )) ||
+                          ""
+                        }
                       />
                     )}
                     {lcData?.confirmingBank?.bank && (
                       <LCInfo
-                        label="Confirming Bank"
-                        value={(lcData && lcData.confirmingBank?.bank) || ""}
+                        label="Preferred Confirming Bank"
+                        value={
+                          (lcData &&
+                            formatFirstLetterOfWord(
+                              lcData.confirmingBank?.bank
+                            )) ||
+                          ""
+                        }
                       />
                     )}
                     <LCInfo
@@ -526,19 +592,30 @@ export const TableDialog = ({
                       value={
                         lcData?.paymentTerms &&
                         lcData?.paymentTerms !== "Sight LC"
-                          ? `${lcData.paymentTerms} for ${
+                          ? `${lcData.paymentTerms}: ${
                               lcData.extraInfo?.days + " days" || ""
                             } at ${lcData.extraInfo?.other || ""}`
                           : lcData?.paymentTerms || "-"
                       }
-                      noBorder
                     />
+                    {lcData?.transhipment && (
+                      <LCInfo
+                        label="Transhipment"
+                        value={lcData && lcData.transhipment ? "Yes" : "No"}
+                      />
+                    )}
+                    {lcData?.shipmentPort?.port &&
+                      lcData.shipmentPort?.country && (
+                        <LCInfo
+                          label="Port of Shipment"
+                          noBorder
+                          value={`${lcData.shipmentPort.port}, ${lcData.shipmentPort.country}`}
+                        />
+                      )}
                   </div>
-                  {/* Separator */}
                   <div className="mt- 5 h-[2px] w-full bg-borderCol" />
                   {/* LC Details */}
                   <div className="mt-2 px-4">
-                    <h2 className="text-xl font-semibold">LC Details</h2>
                     <LCInfo
                       label="LC Issuance (Expected)"
                       value={
@@ -552,13 +629,6 @@ export const TableDialog = ({
                         lcData &&
                         lcData.period &&
                         convertDateToCommaString(lcData.period?.endDate)
-                      }
-                    />
-                    <LCInfo
-                      label="Last date for receiving Bids"
-                      value={
-                        lcData &&
-                        convertDateToCommaString(lcData.lastDateOfReceivingBids)
                       }
                     />
                     <LCInfo
@@ -576,6 +646,21 @@ export const TableDialog = ({
                       }
                     />
                     <LCInfo
+                      label="Last date for receiving Bids"
+                      value={
+                        lcData &&
+                        convertDateToCommaString(lcData.lastDateOfReceivingBids)
+                      }
+                    />
+                    {lcData?.attachments &&
+                      lcData.attachments.length > 0 &&
+                      lcData.attachments.map((attachment, index) => (
+                        <ViewFileAttachment
+                          key={index}
+                          attachment={attachment}
+                        />
+                      ))}
+                    {/* <LCInfo
                       label="Transhipment"
                       value={
                         lcData && lcData.transhipment === true ? "Yes" : "No"
@@ -585,17 +670,42 @@ export const TableDialog = ({
                       label="Port of Shipment"
                       value={(lcData && lcData.shipmentPort?.port) || ""}
                       noBorder
+                    /> */}
+                    <h2 className="text-xl font-semibold mt-3">
+                      Importer Info
+                    </h2>
+                    <LCInfo
+                      label="Applicant"
+                      value={
+                        (lcData && lcData.importerInfo?.applicantName) || ""
+                      }
+                    />
+                    <LCInfo
+                      label="Country of Import"
+                      noBorder
+                      value={
+                        (lcData && lcData.importerInfo?.countryOfImport) || ""
+                      }
                     />
 
-                    <h2 className="text-xl font-semibold">Exporter Info</h2>
+                    <h2 className="text-xl font-semibold mt-3">
+                      Exporter Info
+                    </h2>
                     <LCInfo
-                      label="Beneficiary"
+                      label="Beneficiary Name"
                       value={
                         (lcData && lcData.exporterInfo?.beneficiaryName) || ""
                       }
                     />
                     <LCInfo
-                      label="Country"
+                      label="Beneficiary Country"
+                      value={
+                        (lcData && lcData.exporterInfo?.beneficiaryCountry) ||
+                        ""
+                      }
+                    />
+                    <LCInfo
+                      label="Country of Export"
                       value={
                         (lcData && lcData.exporterInfo?.countryOfExport) || ""
                       }
@@ -605,19 +715,32 @@ export const TableDialog = ({
                       value="Beneficiary"
                       noBorder
                     />
-                    <h2 className="text-xl font-semibold">Importer Info</h2>
-                    <LCInfo
-                      label="Applicant"
-                      value={
-                        (lcData && lcData.importerInfo?.applicantName) || ""
-                      }
-                    />
-                    <LCInfo
-                      label="Country"
-                      value={
-                        (lcData && lcData.importerInfo?.countryOfImport) || ""
-                      }
-                    />
+                    {lcData?.type === "LC Confirmation & Discounting" && (
+                      <div>
+                        <h2 className="text-xl font-semibold mt-3">
+                          Confirmation Info
+                        </h2>
+                        <LCInfo
+                          label="Charges on account Of"
+                          value={lcData?.confirmationInfo.behalfOf || ""}
+                        />
+                      </div>
+                    )}
+                    {lcData?.type?.includes("Discount") && (
+                      <div>
+                        <h2 className="text-xl font-semibold mt-3">
+                          Discounting Info
+                        </h2>
+                        <LCInfo
+                          label="Charges on account Of"
+                          value={lcData?.discountingInfo.behalfOf || ""}
+                        />
+                        <LCInfo
+                          label="Discounted At"
+                          value={lcData?.discountingInfo?.discountAtSight || ""}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </>
@@ -644,7 +767,7 @@ export const TableDialog = ({
                 </div> */}
               </div>
               {/* Bids */}
-              <div className="mt-5 flex max-h-[65vh] flex-col gap-y-4 overflow-y-auto overflow-x-hidden">
+              <div className="mt-5 flex max-h-[90vh] flex-col gap-y-4 overflow-y-auto overflow-x-hidden pb-5">
                 {isBank
                   ? userBids &&
                     userBids.length > 0 &&

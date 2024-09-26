@@ -69,9 +69,11 @@ export function getPhoneData(phone: string): PhoneData {
   };
 }
 
+import { getExampleNumber, isValidNumber } from "libphonenumber-js";
+
 export function PhoneInput({
-  value: valueProp = "",
-  defaultCountry = "US",
+  value: valueProp = "+966", // Default to +966 for Saudi Arabia
+  defaultCountry = "SA",
   className,
   id,
   required = true,
@@ -82,11 +84,17 @@ export function PhoneInput({
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Initialize state with useStateHistory hook
-  const [value, handlers, history] = useStateHistory(valueProp);
+  const [value, handlers, history] = useStateHistory("+966");
 
   const [openCommand, setOpenCommand] = React.useState(false);
   const [countryCode, setCountryCode] =
     React.useState<CountryCode>(defaultCountry);
+
+  // Get the maximum length of phone number for the selected country
+  const getMaxPhoneLength = (countryCode: CountryCode) => {
+    const exampleNumber = getExampleNumber(countryCode);
+    return exampleNumber?.nationalNumber.length || 14; // Fallback to 14 if the length isn't available
+  };
 
   // Set the selected country based on countryCode
   const selectedCountry = countries.find(
@@ -120,12 +128,20 @@ export function PhoneInput({
     }
   };
 
+  // Ensure the user cannot modify the country code in the input and limit input length
   const handleOnInput = (event: React.FormEvent<HTMLInputElement>) => {
-    asYouType.reset();
-
     let inputValue = event.currentTarget.value;
-    if (!inputValue.startsWith("+")) {
-      inputValue = `+${inputValue}`;
+
+    // Get the maximum allowed length for the selected country
+    const maxPhoneLength = getMaxPhoneLength(countryCode);
+    if (!inputValue.startsWith(`+${selectedCountry?.phone_code}`)) {
+      inputValue = `+${selectedCountry?.phone_code}${inputValue.replace(
+        /^\+?\d*/,
+        ""
+      )}`;
+    }
+    if (inputValue.length > maxPhoneLength) {
+      return; // Stop input if it exceeds max length
     }
 
     const formattedValue = asYouType.input(inputValue);
@@ -138,20 +154,37 @@ export function PhoneInput({
     }
   };
 
+  const handleBlur = () => {
+    if (value) {
+      asYouType.reset(); // Reset before formatting
+      const formattedValue = asYouType.input(value); // Format the current value
+      handlers.set(formattedValue); // Update the state with the formatted value
+      if (inputRef.current) {
+        inputRef.current.value = formattedValue; // Set the formatted value in the input
+      }
+
+      if (onChange) {
+        onChange(formattedValue); // Trigger onChange with the formatted value
+      }
+    }
+  };
+
   const handleOnPaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
     event.preventDefault();
     asYouType.reset();
 
     const clipboardData = event.clipboardData;
     if (clipboardData) {
-      const pastedData = clipboardData.getData("text/plain");
-      const formattedValue = asYouType.input(pastedData);
-      const number = asYouType.getNumber();
-      setCountryCode(number?.country || defaultCountry);
-      handlers.set(formattedValue);
+      let pastedData = clipboardData.getData("text/plain").trim();
+      let formattedValue = pastedData;
 
+      if (!pastedData.startsWith(`+${selectedCountry?.phone_code}`)) {
+        formattedValue = `+${selectedCountry?.phone_code}${pastedData}`;
+      }
+      formattedValue = asYouType.input(formattedValue);
+      handlers.set(formattedValue);
       if (onChange) {
-        onChange(formattedValue); // Call onChange with the formatted value
+        onChange(formattedValue);
       }
     }
   };
@@ -252,6 +285,7 @@ export function PhoneInput({
         onInput={handleOnInput}
         onPaste={handleOnPaste}
         onKeyDown={handleKeyDown}
+        onBlur={handleBlur} // Format number on blur
         required={required}
         aria-required={required}
         {...rest}

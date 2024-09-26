@@ -40,7 +40,7 @@ const CreateDiscountPage = () => {
   const { startLoading, stopLoading, isLoading } = useLoading();
   const router = useRouter();
   const pathname = usePathname();
-  const [days, setDays] = useState<number>(1);
+  const [days, setDays] = useState<number>(90);
 
   // Edit Request
   const setValues = useDiscountingStore((state) => state.setValues);
@@ -115,6 +115,7 @@ const CreateDiscountPage = () => {
     data: any;
     isProceed?: boolean;
   }) => {
+    console.log(data, "req Data discounting");
     delete data.lcPeriod;
     submit();
     if (
@@ -150,6 +151,7 @@ const CreateDiscountPage = () => {
       amount: {
         price: `${data.amount}.00`,
       },
+      attachments: data.attachments,
       period: {
         ...data.period,
         expectedDate:
@@ -178,7 +180,7 @@ const CreateDiscountPage = () => {
       reqData = {
         ...rest,
         ...baseData,
-        draft: "true",
+        draft: true,
       };
       console.log(reqData, "reqData Discounting");
       reqData.currency = reqData.currency ?? "USD";
@@ -213,6 +215,7 @@ const CreateDiscountPage = () => {
         : null;
       const preparedData = {
         ...data,
+        extraInfo: extraInfoObj,
         period: {
           ...data.period,
           startDate: lcStartDate,
@@ -300,6 +303,7 @@ const CreateDiscountPage = () => {
         />
         <Step2
           watch={watch}
+          draftDataId={discountingData._id}
           register={register}
           setValue={setValue}
           setStepCompleted={handleStepCompletion}
@@ -345,6 +349,8 @@ const CreateDiscountPage = () => {
           <div className="min-w-[50%] flex flex-col gap-5">
             <Step7
               register={register}
+              watch={watch}
+              setValue={setValue}
               step={7}
               setStepCompleted={handleStepCompletion}
             />

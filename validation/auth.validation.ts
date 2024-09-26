@@ -29,11 +29,8 @@ const companyInfoSchema = Yup.object().shape({
     .min(1, "*Address is required"),
   phone: Yup.string()
     .required("*Phone number is required")
-    .min(4, "*Phone number is required")
-    .max(15),
-  bank: Yup.string()
-    .required("*Bank field cannot be empty.")
-    .min(1, "*Bank field cannot be empty."),
+    .min(4, "*Phone number is required"),
+  bank: Yup.string().trim().required("*Bank field cannot be empty."),
   swiftCode: Yup.string()
     .nullable()
     .min(8, "*Swift code must be at least 8 characters long.")

@@ -21,7 +21,7 @@ import {
 import { Button } from "../ui/button";
 import { myBidsColumnHeaders } from "@/utils/data";
 import { AddBid } from "./AddBid";
-import { ApiResponse, Country, IBids, IBidsInfo, IRisk } from "@/types/type";
+import { ApiResponse, Country, IBids, IRisk } from "@/types/type";
 import { compareValues, convertDateToString } from "@/utils";
 import { getCountries } from "../../services/apis/helpers.api";
 import { TableDialog } from "./TableDialog";
@@ -30,7 +30,6 @@ import { useAuth } from "@/context/AuthProvider";
 const renderData = (data: string | number | undefined) => {
   return data ? data : "-";
 };
-
 const getCenteredClass = (data: string | number | undefined) => {
   return data === "-" ? "text-center w-full" : "text-start";
 };
@@ -46,6 +45,36 @@ const TableDataCell = ({ data }: { data: string | number | undefined }) => {
       </div>
     </TableCell>
   );
+};
+
+const getFilteredHeaders = (filter: string | null) => {
+  switch (filter) {
+    case "LC Confirmation":
+      return [
+        "Date Submitted",
+        "Country of issuing bank",
+        "Confirmation Rate",
+        "Bid Status",
+      ];
+    case "LC Discounting":
+      return [
+        "Date Submitted",
+        "Country of issuing bank",
+        "Discounting Rate",
+        "Term",
+        "Bid Status",
+      ];
+    case "LC Confirmation & Discounting":
+      return [
+        "Date Submitted",
+        "Country of issuing bank",
+        "Discounting Rate",
+        "Confirmation Rate",
+        "Bid Status",
+      ];
+    default:
+      return myBidsColumnHeaders; // Default headers if no filter is selected
+  }
 };
 
 export const BankTable = ({
@@ -198,14 +227,7 @@ export const BankTable = ({
     setFilteredData(sortedData);
   };
 
-  const filteredHeaders =
-    filter === "LC Confirmation"
-      ? myBidsColumnHeaders.filter(
-          (header) => !["Discounting Rate", "Discount Margin"].includes(header)
-        )
-      : myBidsColumnHeaders;
-
-  console.log("Dataaaa CORP", data);
+  const filteredHeaders = getFilteredHeaders(filter);
 
   return (
     <div className="">
@@ -229,12 +251,12 @@ export const BankTable = ({
                 <React.Fragment key={`${header}-${idx}`}>
                   {idx === 2 && isCorporate && (
                     <TableHead
-                      key="Confirmation bank"
+                      key="Preferred Confirming Bank"
                       className="font-roboto px-2 h-8 py-2 min-w-44"
-                      onClick={() => handleSort("Confirmation bank")}
+                      onClick={() => handleSort("Preferred Confirming Bank")}
                     >
-                      <div className="flex items-center gap-x-2 justify-center text-[13px]">
-                        Confirming Bank
+                      <div className="flex items-center gap-x-2 justify-center text-[12px] text-lightGray">
+                        Preferred Confirming Bank
                         <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer">
                           <ChevronUp className="size-4" />
                         </div>
@@ -262,14 +284,12 @@ export const BankTable = ({
             ) : (
               filteredData &&
               filteredData?.map((item: IBids | IRisk, index: number) => {
-                console.log(item, "item123");
                 return (
                   <TableRow key={index} className="border-none font-roboto">
                     <TableDataCell
                       data={convertDateToString(item?.createdAt)}
                     />
                     <TableCell className="px-1 py-1 max-w-[200px]">
-                      {" "}
                       <div className="flex items-center gap-x-2 border border-borderCol rounded-md w-full p-2 py-2.5">
                         <p className="text-[16px] emoji-font">
                           {allCountries &&
@@ -279,7 +299,6 @@ export const BankTable = ({
                                   ?.country ||
                                 "-"
                             )}
-                          {/* // (item as IRisk)?.risk[2]?.country */}
                         </p>
                         <div
                           className={`truncate text-lightGray capitalize ${getCenteredClass(
@@ -316,40 +335,53 @@ export const BankTable = ({
                         </div>
                       </TableCell>
                     )}
-                    <TableDataCell
-                      data={renderData(
-                        ((item as IBids)?.confirmationPrice &&
-                          (item as IBids).confirmationPrice.toLocaleString() +
-                            ".00 %") ||
-                          ""
-                      )}
-                    />
                     {filter !== "LC Confirmation" && (
+                      <TableDataCell
+                        data={renderData(
+                          (item as IBids)?.discountMargin
+                            ? `${(
+                                item as IBids
+                              )?.discountBaseRate.toUpperCase()} + ${(
+                                item as IBids
+                              ).discountMargin.toLocaleString()}.00%`
+                            : ""
+                        )}
+                      />
+                    )}
+                    {filter === "LC Confirmation" && (
+                      <TableDataCell
+                        data={renderData(
+                          ((item as IBids)?.confirmationPrice &&
+                            (item as IBids).confirmationPrice.toLocaleString() +
+                              ".00%") ||
+                            ""
+                        )}
+                      />
+                    )}
+                    {filter === "LC Discounting" && (
+                      <TableDataCell
+                        data={renderData(
+                          (item as IBids)?.perAnnum
+                            ? "Per Annum"
+                            : !item.perAnnum
+                            ? "Flat"
+                            : ""
+                        )}
+                      />
+                    )}
+                    {filter === "LC Confirmation & Discounting" && (
                       <>
                         <TableDataCell
-                          data={renderData((item as IBids)?.discountBaseRate)}
-                        />
-
-                        <TableDataCell
-                          data={
-                            (item as IBids)?.discountMargin
-                              ? (
-                                  item as IBids
-                                ).discountMargin?.toLocaleString() + ".00%"
-                              : "Not Applicable"
-                          }
+                          data={renderData(
+                            ((item as IBids)?.confirmationPrice &&
+                              (
+                                item as IBids
+                              ).confirmationPrice.toLocaleString() + ".00%") ||
+                              ""
+                          )}
                         />
                       </>
                     )}
-                    <TableDataCell
-                      data={renderData(
-                        "USD " +
-                          ((item as IBids).confirmationPrice ||
-                            (item as IRisk).riskParticipationTransaction
-                              ?.amount) +
-                          ".00" || ""
-                      )}
-                    />
                     <TableCell className="px-1 py-1 max-w-[200px]">
                       {(item as IBids).status !== "Pending" ? (
                         <AddBid

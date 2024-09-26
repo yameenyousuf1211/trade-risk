@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader } from "../helpers";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { formatFirstLetterOfWord } from "../LG-Output/helper";
 
 const Chart = ({
   value,
@@ -91,7 +92,9 @@ const Chart = ({
           <div className="progress-value text-4xl font-semibold">{value}</div>
         </div>
       </div>
-      <p className="text-sm font-light	 text-[#1A1A26] text-center">{title}</p>
+      <p className="text-sm font-light	 text-[#1A1A26] text-center">
+        {formatFirstLetterOfWord(title)}
+      </p>
     </div>
   );
 };
@@ -114,7 +117,6 @@ export const ProgressCharts = ({
     queryFn: () => (isBank ? getBidsCount() : getTotalRequests()),
   });
 
-
   const [accepted, setAccepted] = useState(0);
   const [rejected, setRejected] = useState(0);
   const [expired, setExpired] = useState(0);
@@ -122,10 +124,9 @@ export const ProgressCharts = ({
   const [maxValue, setMaxValue] = useState(0);
 
   useEffect(() => {
-    console.log("USEEFFECT DATA",data);
-    
+    console.log("USEEFFECT DATA", data);
+
     if (data && data.length > 0) {
-      
       const statusCounts = {
         Accepted: 0,
         Rejected: 0,
@@ -160,7 +161,7 @@ export const ProgressCharts = ({
   console.log("Rejected", rejected);
   console.log("Expired", expired);
   console.log("Pending", pending);
-  
+
   return (
     <div
       className={`bg-[white] ${

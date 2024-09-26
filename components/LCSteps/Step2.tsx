@@ -23,13 +23,14 @@ import { AMOUNT } from "@/utils/constant/lg";
 export const Step2 = ({
   register,
   setValue,
-  setStepCompleted,
   days,
   setDays,
+  draftDataId,
   watch,
 }: {
   register: UseFormRegister<any>;
   setValue: UseFormSetValue<any>;
+  draftDataId: string;
   setStepCompleted: (index: number, status: boolean) => void;
   days: number;
   setDays: React.Dispatch<React.SetStateAction<number>>;
@@ -44,7 +45,7 @@ export const Step2 = ({
   let currencyVal = watch("currency");
   let paymentTerms = watch("paymentTerms");
   let extraInfo = watch("extraInfo") || { days: 0, other: "" };
-
+  const [isOthersSelected, setIsOthersSelected] = useState(false);
   const [currencyValue, setCurrencyValue] = useState<string | number>(
     amount || ""
   );
@@ -52,11 +53,50 @@ export const Step2 = ({
   const [otherValue, setOtherValue] = useState("");
   const { addStep, removeStep } = useStepStore();
 
-  // useEffect(() => {
-  //   if (paymentTerms === "Usance LC") {
-  //     setValue("extraInfo", undefined);
-  //   }
-  // }, [paymentTerms]);
+  useEffect(() => {
+    if (!draftDataId) {
+      if (paymentTerms === "Sight LC") {
+        setValue("extraInfo", undefined);
+      } else if (paymentTerms !== "Sight LC") {
+        setValue("extraInfo", undefined);
+        setDays(90);
+      }
+    } else {
+      setIsOthersSelected(false);
+      setValue("extraInfo.other", "");
+      setOtherValue("");
+    }
+  }, [paymentTerms]);
+
+  useEffect(() => {
+    if (draftDataId) {
+      if (
+        extraInfo.other !== "shipment date" &&
+        extraInfo.other !== "acceptance date" &&
+        extraInfo.other !== "negotiation date" &&
+        extraInfo.other !== "invoice date" &&
+        extraInfo.other !== "sight" &&
+        extraInfo.other
+      ) {
+        setValue("extraInfo.other", extraInfo.other);
+        setOtherValue(extraInfo.other);
+        setIsOthersSelected(true);
+      }
+    }
+  }, [extraInfo]);
+
+  useEffect(() => {
+    if (
+      extraInfo.other === "shipment date" ||
+      extraInfo.other === "acceptance date" ||
+      extraInfo.other === "negotiation date" ||
+      extraInfo.other === "invoice date" ||
+      extraInfo.other === "sight"
+    ) {
+      setIsOthersSelected(false);
+      setOtherValue("");
+    }
+  }, [extraInfo.other]);
 
   const handleChange = (e: any) => {
     const { value } = e.target;
@@ -227,14 +267,16 @@ export const Step2 = ({
                   inputMode="numeric"
                   name="days"
                   type="number"
-                  max={3}
-                  value={days}
+                  value={days === 0 ? "" : days} // Conditional rendering to display empty input when days is 0
                   className="max-w-[150px] border-none bg-[#F5F7F9] text-sm text-lightGray outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   onChange={(e: any) => {
-                    if (e.target.value > 999) return;
-                    else {
-                      setValue("extraInfo.other", e.target.value);
-                      setDays(Number(e.target.value));
+                    const value = e.target.value;
+                    if (value === "" || Number(value) <= 999) {
+                      setDays(value === "" ? 0 : Number(value));
+                      setValue(
+                        "extraInfo.days",
+                        value === "" ? 0 : Number(value)
+                      );
                     }
                   }}
                 />
@@ -257,11 +299,13 @@ export const Step2 = ({
                     type="button"
                     className="center mb-2 size-6 rounded-sm border border-para"
                     onClick={() => {
-                      if (days >= 999) return;
-                      else {
-                        const newDays = Number(days) > 1 ? Number(days) - 1 : 1;
+                      if (days > 1) {
+                        const newDays = Number(days) - 1;
                         setDays(newDays);
                         setValue("extraInfo.days", newDays);
+                      } else {
+                        setDays(0); // Reset to 0 if it's below 1
+                        setValue("extraInfo.days", 0);
                       }
                     }}
                   >
@@ -276,17 +320,17 @@ export const Step2 = ({
                 id="payment-shipment"
                 label="BL Date/Shipment Date"
                 name="extraInfo.other"
-                value="shipment"
+                value="shipment date"
                 register={register}
-                checked={extraInfo.other === "shipment"}
+                checked={extraInfo.other === "shipment date"}
               />
               <BgRadioInput
                 id="payment-acceptance"
                 label="Acceptance Date"
                 name="extraInfo.other"
-                value="acceptance"
+                value="acceptance date"
                 register={register}
-                checked={extraInfo.other === "acceptance"}
+                checked={extraInfo.other === "acceptance date"}
               />
             </div>
             <div className="flex items-center justify-between gap-x-3">
@@ -294,17 +338,17 @@ export const Step2 = ({
                 id="payment-negotiation"
                 label="Negotiation Date"
                 name="extraInfo.other"
-                value="negotiation"
+                value="negotiation date"
                 register={register}
-                checked={extraInfo.other === "negotiation"}
+                checked={extraInfo.other === "negotiation date"}
               />
               <BgRadioInput
                 id="payment-invoice"
                 label="Invoice Date"
                 name="extraInfo.other"
-                value="invoice"
+                value="invoice date"
                 register={register}
-                checked={extraInfo.other === "invoice"}
+                checked={extraInfo.other === "invoice date"}
               />
               <BgRadioInput
                 id="payment-extra-sight"
@@ -317,7 +361,7 @@ export const Step2 = ({
             </div>
             <div
               className={`mb-2 flex w-full items-end gap-x-5 rounded-md border border-borderCol bg-white px-3 py-4 ${
-                extraInfo.other === "others" && "!bg-[#EEE9FE]"
+                isOthersSelected && "!bg-[#EEE9FE]"
               }`}
             >
               <label
@@ -327,22 +371,27 @@ export const Step2 = ({
                 <input
                   type="radio"
                   value="others"
-                  {...register("extraInfo.other")}
                   id="payment-others"
-                  checked={extraInfo.other === "others"}
+                  checked={isOthersSelected} // Control radio button with the new state
+                  onChange={() => {
+                    setIsOthersSelected(true); // Set "Others" as selected
+                    setValue("extraInfo.other", ""); // Clear the previous value in form state
+                    setOtherValue(""); // Clear the local otherValue input
+                  }}
                   className="size-4 accent-primaryCol"
-                  // onChange={() => setOtherValue("others")}
                 />
                 Others
               </label>
               <input
                 type="text"
-                name="ds"
+                name="othersTextInput"
                 value={otherValue}
-                disabled={extraInfo.other !== "others"}
-                onChange={(e: any) => setOtherValue(e.target.value)}
+                disabled={!isOthersSelected} // Enable only when "Others" is selected
+                onChange={(e: any) => {
+                  setOtherValue(e.target.value); // Update the local state
+                  setValue("extraInfo.other", e.target.value); // Set the typed value in form state
+                }}
                 className="w-[80%] rounded-none !border-b-2 border-transparent !border-b-neutral-300 bg-transparent text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                // checked={extraInfo.other !== "others"}
               />
             </div>
           </>

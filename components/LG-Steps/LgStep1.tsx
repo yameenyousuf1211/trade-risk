@@ -43,21 +43,21 @@ const LgStep1: React.FC<LgStepsProps1> = ({
           checked={lgIssuance === "LG 100% Cash Margin"}
         />
         <BgRadioInput
+          id="lgIssuance3"
+          label="LG issuance within the country"
+          name="lgIssuance"
+          value="LG issuance within the country"
+          register={register}
+          disabled
+          checked={lgIssuance === "LG issuance within the country"}
+        />
+        <BgRadioInput
           id="lgIssuance2"
           label="LG Issuance within the country"
           name="lgIssuance"
           value="LG Issuance within the country"
           register={register}
           checked={lgIssuance === "LG Issuance within the country"}
-        />
-        <BgRadioInput
-          id="lgIssuance3"
-          label="LG Advising"
-          name="lgIssuance"
-          value="LG Advising"
-          register={register}
-          disabled
-          checked={lgIssuance === "LG Advising"}
         />
       </div>
     </div>

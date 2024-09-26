@@ -13,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { phoneVerification } from "@/services/apis";
 import { toast } from "sonner";
+import FileUploadService from "@/services/apis/fileUpload.api";
 
 const PointContactPage = () => {
   const router = useRouter();
@@ -34,8 +35,49 @@ const PointContactPage = () => {
     typeof window !== "undefined" ? localStorage.getItem("contactData") : null;
 
   const [allowSubmit, setAllowSubmit] = useState(false);
-  const [pdfFile, setPdfFile] = useState<File | undefined>(undefined);
+  const [pdfFile, setPdfFile] = useState<any | undefined>(undefined);
   const [pdfError, setPdfError] = useState(false);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      FileUploadService.upload(
+        selectedFile,
+        (url, firebaseFileName) => {
+          const uploadedFile = {
+            file: selectedFile,
+            url,
+            userFileName: selectedFile.name,
+            firebaseFileName,
+            fileSize: selectedFile.size,
+            fileType: selectedFile.type.split("/")[1].toUpperCase(),
+          };
+
+          setPdfFile(uploadedFile);
+        },
+        (error) => {
+          console.log(error);
+        },
+        (progressBar, progress) => {
+          console.log(progress);
+        }
+      );
+    }
+  };
+
+  const handleRemoveFile = () => {
+    if (pdfFile) {
+      FileUploadService.delete(
+        pdfFile.firebaseFileName,
+        () => {
+          setPdfFile(undefined);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    }
+  };
 
   useEffect(() => {
     if (contactData) {
@@ -59,7 +101,7 @@ const PointContactPage = () => {
   }, [errors, isValid, isDirty, contactData, pdfFile]);
 
   const onSubmit: SubmitHandler<typeof pointOfContractSchema> = async (
-    data: any,
+    data: any
   ) => {
     if (!pdfFile) {
       setPdfError(true);
@@ -71,8 +113,12 @@ const PointContactPage = () => {
       toast.error("Invalid phone number");
       return;
     }
+    const reqData = {
+      attachments: [pdfFile],
+      ...data,
+    };
 
-    setValues(data);
+    setValues(reqData);
 
     localStorage.setItem("contactData", JSON.stringify(data));
     router.push("/register/corporate/current-banking");
@@ -83,7 +129,7 @@ const PointContactPage = () => {
 
   return (
     <CorporateStepLayout
-      step={2}
+      step={3}
       title="Point of Contact"
       text="Give us the details of the POC our sales team should get in touch with after verification"
     >
@@ -140,9 +186,10 @@ const PointContactPage = () => {
             >
               <div className="w-full">
                 <PhoneInput
-                  value={phoneInput}
-                  isOnBoarding={true}
-                  className=""
+                  value={
+                    contactData ? JSON.parse(contactData).pocPhone : phoneInput
+                  }
+                  defaultCountry="SA"
                   name="pocPhone"
                   onChange={(value) => {
                     setValue("pocPhone", value);
@@ -172,12 +219,14 @@ const PointContactPage = () => {
               {pdfFile && (
                 <div
                   className="center z-20 size-4 rounded-full bg-red-500 text-[12px] text-white"
-                  onClick={() => setPdfFile(undefined)}
+                  onClick={handleRemoveFile} // Updated to remove file
                 >
                   <X className="size-3" />
                 </div>
               )}
-              {pdfFile ? pdfFile.name.substring(0, 20) : "Select PDF file"}
+              {pdfFile
+                ? pdfFile.userFileName.substring(0, 20)
+                : "Select PDF file"}
             </p>
           </label>
           <input
@@ -185,9 +234,9 @@ const PointContactPage = () => {
             id="pdf-file"
             accept=".pdf"
             className="hidden"
-            onChange={(e) => setPdfFile(e.target.files?.[0])}
+            onChange={handleFileChange} // Handle single file upload
           />
-          {(Object.keys(errors).length > 0 || pdfError) && !pdfFile && (
+          {(!pdfFile || pdfError) && (
             <span className="absolute mt-1 text-[11px] text-red-500">
               Please select a file
             </span>

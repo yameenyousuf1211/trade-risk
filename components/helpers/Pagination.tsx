@@ -19,8 +19,92 @@ export const Pagination = ({ data }: { data: PaginationTypes }) => {
     router.push(`${pathname}?${queryString}`, { scroll: false });
   };
 
+  const renderPageNumbers = () => {
+    const pages = [];
+    const maxPagesToShow = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2)); // Dynamically adjust start page
+    let endPage = Math.min(startPage + maxPagesToShow - 1, totalPages);
+
+    // Adjust start page if we're near the end
+    if (endPage - startPage < maxPagesToShow - 1) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+
+    // Add first page and ellipsis if necessary
+    if (startPage > 1) {
+      pages.push(
+        <Button
+          key={1}
+          variant="ghost"
+          className={`${
+            1 === currentPage
+              ? "bg-primaryCol text-white"
+              : "hover:bg-primaryCol hover:text-white border border-neutral-300"
+          }`}
+          onClick={() => handlePageChange(1)}
+        >
+          1
+        </Button>
+      );
+
+      if (startPage > 2) {
+        pages.push(
+          <Button disabled key="start-ellipsis" variant="ghost">
+            ...
+          </Button>
+        );
+      }
+    }
+
+    // Render the range of page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <Button
+          key={i}
+          variant="ghost"
+          className={`${
+            i === currentPage
+              ? "bg-primaryCol text-white"
+              : "hover:bg-primaryCol hover:text-white border border-neutral-300"
+          }`}
+          onClick={() => handlePageChange(i)}
+        >
+          {i}
+        </Button>
+      );
+    }
+
+    // Add ellipsis and last page if necessary
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pages.push(
+          <Button disabled key="end-ellipsis" variant="ghost">
+            ...
+          </Button>
+        );
+      }
+
+      pages.push(
+        <Button
+          key={totalPages}
+          variant="ghost"
+          className={`${
+            totalPages === currentPage
+              ? "bg-primaryCol text-white"
+              : "hover:bg-primaryCol hover:text-white border border-neutral-300"
+          }`}
+          onClick={() => handlePageChange(totalPages)}
+        >
+          {totalPages}
+        </Button>
+      );
+    }
+
+    return pages;
+  };
+
   return (
-    <div className="flex items-center gap-x-2 py-3 px-4 rounded-md border border-borderCol bg-bg">
+    <div className="flex items-center gap-x-2 py-3 px-4 rounded-md border border-borderCol bg-bg justify-center">
       <Button
         variant="ghost"
         disabled={!hasPrevPage}
@@ -30,42 +114,8 @@ export const Pagination = ({ data }: { data: PaginationTypes }) => {
         <ChevronLeft className="size-5" />
         Prev
       </Button>
-      {hasPrevPage && (
-        <Button
-          variant="ghost"
-          className="hover:bg-primaryCol hover:text-white border border-neutral-300"
-          onClick={() => handlePageChange(currentPage - 1)}
-        >
-          {currentPage - 1}
-        </Button>
-      )}
-      <Button className="bg-primaryCol text-white hover:bg-primaryCol/90 hover:text-white ">
-        {currentPage}
-      </Button>
-      {hasNextPage && (
-        <Button
-          variant="ghost"
-          className="hover:bg-primaryCol hover:text-white border border-neutral-300"
-          onClick={() => handlePageChange(currentPage + 1)}
-        >
-          {currentPage + 1}
-        </Button>
-      )}
-      {totalPages > 2 && totalPages - currentPage > 1 && (
-        <>
-          <Button disabled variant="ghost">
-            ...
-          </Button>
 
-          <Button
-            variant="ghost"
-            className="border border-neutral-300 hover:bg-primaryCol hover:text-white"
-            onClick={() => handlePageChange(totalPages)}
-          >
-            {totalPages}
-          </Button>
-        </>
-      )}
+      {renderPageNumbers()}
 
       <Button
         variant="ghost"
@@ -76,6 +126,14 @@ export const Pagination = ({ data }: { data: PaginationTypes }) => {
         Next
         <ChevronRight className="size-5" />
       </Button>
+      {/* <Button
+        variant="ghost"
+        className="border border-neutral-300 flex items-center gap-x-2 hover:bg-primaryCol hover:text-white"
+        disabled={!hasNextPage}
+        onClick={() => handlePageChange(totalPages)}
+      >
+        Go To Last
+      </Button> */}
     </div>
   );
 };

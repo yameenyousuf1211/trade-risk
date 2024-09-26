@@ -141,7 +141,7 @@ const ProductInfoPage = () => {
 
   return (
     <CorporateStepLayout
-      step={1}
+      step={2}
       title="Product Info"
       text="Please add information about your products and trade volume below"
     >

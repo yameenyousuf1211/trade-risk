@@ -23,6 +23,9 @@ export const DatePicker = ({
   endDate,
   extraClassName,
   leftText = true,
+  errorText,
+  placeholder,
+  buttonDisabled,
 }: {
   value: Date;
   setValue: any;
@@ -30,6 +33,7 @@ export const DatePicker = ({
   name: string;
   startDate?: Date;
   leftText?: boolean;
+  placeholder?: string;
   endDate?: Date;
   disabled?: {
     before?: Date | undefined;
@@ -38,6 +42,8 @@ export const DatePicker = ({
   isPast?: boolean;
   isLg?: boolean;
   extraClassName?: string;
+  errorText?: string;
+  buttonDisabled?: boolean;
 }) => {
   const [date, setDate] = useState<Date | undefined>(value);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -50,10 +56,14 @@ export const DatePicker = ({
   }, [value]);
 
   return (
-    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-      <PopoverTrigger asChild>
+    <Popover
+      open={isPopoverOpen}
+      onOpenChange={(open) => setIsPopoverOpen(open)} // Sync popover state
+    >
+      <PopoverTrigger asChild onClick={() => setIsPopoverOpen(!isPopoverOpen)}>
         <Button
-          disabled={disabled}
+          onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+          disabled={buttonDisabled}
           variant={"outline"}
           className={cn(
             "w-full justify-between text-left font-normal flex items-center",
@@ -63,6 +73,7 @@ export const DatePicker = ({
           id="validity"
         >
           {leftText && <span className="flex-grow">Select Date</span>}
+          {placeholder && <span className="flex-grow">{placeholder}</span>}
           <span className="flex items-center">
             {date && isValid(date) ? (
               format(date, "PPP")
@@ -80,6 +91,7 @@ export const DatePicker = ({
         <ValidatingCalendar
           disabled={disabled}
           initialDate={date}
+          errorText={errorText}
           startDate={startDate}
           endDate={endDate}
           maxDate={maxDate}

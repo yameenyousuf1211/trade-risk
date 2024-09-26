@@ -18,7 +18,11 @@ import {
 } from "../helpers";
 import { Button } from "../ui/button";
 import { TableDialog } from "./TableDialog";
-import { columnHeaders, bankColumnHeaders } from "@/utils/data";
+import {
+  columnHeaders,
+  bankColumnHeaders,
+  sortableHeaders,
+} from "@/utils/data";
 import { ApiResponse, Country, ILcs, IRisk } from "@/types/type";
 import { compareValues, convertDateToString } from "@/utils";
 import React, { useEffect, useState } from "react";
@@ -26,21 +30,26 @@ import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/services/apis/helpers.api";
 import { LGTableBidStatus } from "../LG-Output/LG-Issuance-Corporate/LgTableBidStatus";
 import { LGCashMarginCorporate } from "../LG-Output/LG-Issuance-Corporate/LgCashMarginCorporate";
+import { formatAmount } from "../../utils/helper/helper";
 
 type TableDataCellProps = {
   data?: string | number | Date | undefined;
   children?: React.ReactNode;
   className?: string;
+  childDivClassName?: string;
 };
 
 export const TableDataCell: React.FC<TableDataCellProps> = ({
   data,
   children,
   className,
+  childDivClassName,
 }) => {
   return (
     <TableCell className={`max-w-[180px] px-1 py-1 ${className}`}>
-      <div className="w-full truncate rounded-md border border-borderCol p-2 py-2.5 text-center text-sm capitalize text-lightGray">
+      <div
+        className={`w-full truncate rounded-md border border-borderCol p-2 py-2.5 text-center text-sm capitalize text-lightGray ${childDivClassName}`}
+      >
         {children ? children : data !== undefined ? String(data) : "-"}
       </div>
     </TableCell>
@@ -108,51 +117,48 @@ export const RequestTable = ({
   };
 
   const handleSort = (key: string) => {
-    setSortedKey(key);
-    let isDescending = sortedKey.includes(key);
+    const isDescending = sortedKey === key;
     setSortedKey(isDescending ? "" : key);
-    console.log(tableData, "key");
 
     let sortedData: ILcs[] = [...tableData].sort((a, b) => {
       let valueA, valueB;
+
       switch (key) {
-        case "LC Amount":
         case "amount":
-          valueA = a?.amount?.price;
-          valueB = b?.amount?.price;
+        case "Amount":
+          valueA = a?.amount?.price ?? getTotal(a);
+          valueB = b?.amount?.price ?? getTotal(b);
           break;
-        case "Beneficiary":
-          valueA = a.exporterInfo && a.exporterInfo.beneficiaryName;
-          valueB = b.exporterInfo && b.exporterInfo.beneficiaryName;
+
+        case "Bids":
+          valueA = a.bids?.length || 0;
+          valueB = b.bids?.length || 0;
           break;
+
         case "Ref no":
           valueA = a.refId;
           valueB = b.refId;
           break;
+
         case "LC Issuing Bank":
-          valueA = a.issuingBank && a.issuingBank.country;
-          valueB = b.issuingBank && b.issuingBank.country;
+          valueA = a.issuingBank?.country ?? "";
+          valueB = b.issuingBank?.country ?? "";
           break;
+
         case "Product Type":
-          valueA = a.type;
-          valueB = b.type;
+          valueA = a.type ?? "";
+          valueB = b.type ?? "";
           break;
-        case "Bids":
-          valueA = a.bidsCount;
-          valueB = b.bidsCount;
-          break;
-        case "Request":
+
+        case "Request On":
         case "Deal Received":
-          valueA = a.period && a.period.startDate;
-          valueB = b.period && b.period.startDate;
+          valueA = a.period?.startDate;
+          valueB = b.period?.startDate;
           break;
-        case "Expires":
-          valueA = a.period && a.period.endDate;
-          valueB = b.period && b.period.endDate;
-          break;
-        case "LC applicant":
-          valueA = a.importerInfo && a.importerInfo.applicantName;
-          valueB = b.importerInfo && b.importerInfo.applicantName;
+
+        case "Expires On":
+          valueA = a.period?.endDate;
+          valueB = b.period?.endDate;
           break;
 
         default:
@@ -200,21 +206,26 @@ export const RequestTable = ({
                       <TableHead
                         key={`${header.name}-${idx}`}
                         className="h-8 min-w-32 px-2 py-0.5 font-roboto"
-                        onClick={() => handleSort(header.name)}
+                        onClick={() =>
+                          sortableHeaders.includes(header.name) &&
+                          handleSort(header.name)
+                        }
                       >
                         <div
-                          className={`flex items-center justify-center gap-x-2 text-[12px] font-semibold capitalize text-[#44444F] ${
-                            header?.name == "LC Issuing Bank" &&
-                            "!justify-start"
-                          }`}
+                          className={`flex items-center justify-center gap-x-2 text-[12px] font-semibold capitalize text-[#44444F]`}
                         >
                           {header.name}
-                          <div
-                            onClick={() => handleSort(header.key)}
-                            className="center size-4 cursor-pointer rounded-full border border-primaryCol transition-colors duration-100 hover:bg-primaryCol hover:text-white"
-                          >
-                            <ChevronUp className="size-4" />
-                          </div>
+                          {sortableHeaders.includes(header.name) && (
+                            <div
+                              onClick={() => handleSort(header.key)}
+                              className={`center size-4 cursor-pointer rounded-full border border-primaryCol transition-colors duration-100 hover:bg-primaryCol hover:text-white ${
+                                sortedKey.includes(header.name) &&
+                                "bg-primaryCol text-white"
+                              }`}
+                            >
+                              <ChevronUp className="size-4" />
+                            </div>
+                          )}
                         </div>
                       </TableHead>
                     ))
@@ -224,20 +235,20 @@ export const RequestTable = ({
                         className="h-8 min-w-32 rounded-md px-2 py-0.5 font-roboto"
                       >
                         <div
-                          className={`flex items-center justify-center gap-x-2 text-[12px] font-semibold capitalize text-[#44444F] ${
-                            header == "LC Issuing Bank" && "!justify-start"
-                          }`}
+                          className={`flex items-center justify-center gap-x-2 text-[12px] font-semibold capitalize text-[#44444F]`}
                         >
                           {header}
-                          <div
-                            onClick={() => handleSort(header)}
-                            className={`center size-4 rounded-full border border-primaryCol ${
-                              sortedKey.includes(header) &&
-                              "bg-primaryCol text-white"
-                            } cursor-pointer transition-colors duration-100 hover:bg-primaryCol hover:text-white`}
-                          >
-                            <ChevronUp className="size-4" />
-                          </div>
+                          {sortableHeaders.includes(header) && (
+                            <div
+                              onClick={() => handleSort(header)}
+                              className={`center size-4 rounded-full border border-primaryCol ${
+                                sortedKey.includes(header) &&
+                                "bg-primaryCol text-white"
+                              } cursor-pointer transition-colors duration-100 hover:bg-primaryCol hover:text-white`}
+                            >
+                              <ChevronUp className="size-4" />
+                            </div>
+                          )}
                         </div>
                       </TableHead>
                     ))}
@@ -455,21 +466,21 @@ export const RequestTable = ({
                       data={
                         (item.importerInfo &&
                           item.importerInfo?.applicantName) ||
-                        item?.applicantDetails?.crNumber ||
+                        item?.applicantDetails?.company ||
                         "-"
                       }
                     />
                     <TableDataCell
                       data={
                         item.type == "LG Issuance"
-                          ? "USD " + getTotal(item) + ".00"
+                          ? "USD " + formatAmount(getTotal(item)) + ".00"
                           : item?.amount
                           ? `${
                               item?.currency
                                 ? item.currency.toUpperCase()
                                 : "USD"
                             } ` +
-                            item?.amount?.price?.toLocaleString() +
+                            formatAmount(item?.amount?.price) +
                             ".00"
                           : `${
                               item?.currency

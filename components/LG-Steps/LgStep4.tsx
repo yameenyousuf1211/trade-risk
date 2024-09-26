@@ -29,20 +29,10 @@ const LgStep4: React.FC<LgStepsProps2> = ({
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
-    if (
-      beneficiaryCountry &&
-      beneficiaryName &&
-      beneficiaryAddress &&
-      beneficiaryPhoneNumber
-    ) {
+    if (beneficiaryCountry && beneficiaryName) {
       addStep(BENEFICIARY);
     } else removeStep(BENEFICIARY);
-  }, [
-    beneficiaryCountry,
-    beneficiaryName,
-    beneficiaryAddress,
-    beneficiaryPhoneNumber,
-  ]);
+  }, [beneficiaryCountry, beneficiaryName]);
   const [isoCode, setIsoCode] = useState<string | null>("");
 
   const { data: cities, isLoading } = useQuery({

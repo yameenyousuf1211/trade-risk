@@ -30,6 +30,7 @@ import {
 import { TableDialog } from "./TableDialog";
 import { usePathname } from "next/navigation";
 import { fetchRisk } from "@/services/apis/risk.api";
+import { formatFirstLetterOfWord } from "../LG-Output/helper";
 
 const SliderCard = ({
   info,
@@ -57,6 +58,7 @@ const SliderCard = ({
       id,
       key: isRisk ? "risk" : "lc",
     });
+    queryClient.invalidateQueries(["bid-status", "fetch-lcs", "fetch-risks"]);
     if (!success) return toast.error(response as string);
     else return toast.success(`Bid ${status}`);
   };
@@ -74,34 +76,68 @@ const SliderCard = ({
 
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
-      <p className="uppercase">
-        {lcData?.type === "LG Issuance"
-          ? lcData?.totalContractCurrency || lcData?.currency || "USD"
-          : lcData?.currency || "USD"}{" "}
-        {lcData?.type === "LG Issuance"
-          ? total?.toLocaleString() + ".00"
-          : info.confirmationPrice?.toLocaleString() + ".00" || "00"}
+      <p>
+        {(lcData?.type === "LG Issuance" && lcData?.totalContractCurrency) ||
+          (lcData?.type === "LG Issuance" && "USD ")}{" "}
+        {lcData?.type === "LG Issuance" ? (
+          <>{total?.toLocaleString()}.00</>
+        ) : lcData?.type === "LC Confirmation" ? (
+          <div>
+            <div>
+              <p className="text-[16px]">
+                {info?.confirmationPrice?.toLocaleString()}.00% Per Annum
+              </p>
+              <p className="text-[#5625F2] text-[12px]">Confirmation Rate</p>
+            </div>
+          </div>
+        ) : lcData?.type === "LC Confirmation & Discounting" ? (
+          <div className="space-y-1">
+            <div>
+              <p className="text-[16px]">
+                {formatFirstLetterOfWord(info.discountBaseRate)} +{" "}
+                {info?.discountMargin?.toLocaleString()}.00%
+              </p>
+              <p className="text-[#5625F2] text-[12px]">Discount pricing</p>
+            </div>
+            <div>
+              <p className="text-[16px]">
+                {info?.confirmationPrice?.toLocaleString()}.00% Per Annum
+              </p>
+              <p className="text-[#5625F2] text-[12px]">Confirmation Rate</p>
+            </div>
+          </div>
+        ) : lcData?.type === "LC Discounting" ? (
+          <div className="flex items-center">
+            <div>
+              <p className="text-[16px]">
+                {formatFirstLetterOfWord(info.discountBaseRate)} +{" "}
+                {info?.discountMargin?.toLocaleString()}.00%
+              </p>
+              <p className="text-[#5625F2] text-[12px]">Discount pricing</p>
+            </div>
+          </div>
+        ) : null}
       </p>
       <p className="font-roboto text-para font-medium mt-1">
-        {info.bidBy?.name || ""}
+        {formatFirstLetterOfWord(info.bidBy?.name) || ""}
       </p>
-      <p className="font-roboto text-para text-sm font-light truncate capitalize">
+      <p className="font-roboto text-para text-sm font-medium truncate capitalize">
         {info.bidBy?.country || "Pakistan"}
       </p>
       <div className="flex items-center gap-x-2 mt-2">
         <Button
           onClick={() => handleSubmit("Accepted", info._id)}
-          className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
+          className="border-2 border-[#90ee8f] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
           disabled={isPending}
         >
-          <Check className="size-5 text-para" />
+          <Check className="size-5 text-para" color="lightGreen" />
         </Button>
         <Button
           onClick={() => handleSubmit("Rejected", info._id)}
-          className="border-2 border-para bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
+          className="border-2 border-[#ff0000] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
           disabled={isPending}
         >
-          <X className="size-5 text-para" />
+          <X className="size-5 text-para" color="red" />
         </Button>
       </div>
     </div>
@@ -140,20 +176,30 @@ const RequestCard = ({
     advancePaymentBond +
     performanceBond +
     retentionMoneyBond;
-  console.log(total, "RequestCard");
+  console.log(data, "RequestCard");
   return (
     <>
       {isBank && riskType !== "myRisk" ? (
         showData &&
         data.status !== "Expired" &&
+        data.status !== "Accepted" &&
         (data.status == "Add Bid" || data.status !== "Pending") && (
           <>
             <div className="px-3 py-2 flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
               {/* Data */}
               <div className="font-roboto">
-                <p className="font-regular text-[#1A1A26] text-[14px]">
-                  Request #{data.refId}
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="font-regular text-[#1A1A26] text-[14px]">
+                    Request #{data.refId}
+                  </p>
+                  <div className="w-10">
+                    <TableDialog
+                      lcId={data._id}
+                      bids={data.bids}
+                      isRisk={isRisk}
+                    />
+                  </div>
+                </div>
                 <p className="capitalize text-lg font-semibold my-1">
                   {(data as ILcs).createdBy?.[0]?.name || ""}
                 </p>
@@ -165,16 +211,31 @@ const RequestCard = ({
                   </span>
                 </p>
 
-                <p className="text-para text-sm">Request Expiry</p>
-                <p className="text-red-500 font-medium text-sm mb-2">
-                  {(data as ILcs)?.period?.endDate
-                    ? formatLeftDays((data as ILcs)?.period?.endDate)
-                    : data?.expiryDate
-                    ? formatLeftDays((data as IRisk)?.expiryDate)
-                    : data?.otherBond?.lgExpiryDate
-                    ? formatLeftDays(new Date(data?.otherBond?.lgExpiryDate))
-                    : null}
-                </p>
+                <div className="flex items-center">
+                  <p className="text-para text-sm">Request Expiry</p>
+                  <Dot style={{ margin: 0, padding: 0 }} color="gray" />
+                  {(data as ILcs)?.type === "LG Issuance" ? (
+                    <p className="text-red-500 font-medium text-[12px]">
+                      {(data as ILcs)?.lastDateOfReceivingBids
+                        ? formatLeftDays(
+                            (data as ILcs)?.lastDateOfReceivingBids
+                          )
+                        : null}
+                    </p>
+                  ) : (
+                    <p className="text-red-500 font-medium text-[12px]">
+                      {(data as ILcs)?.period?.endDate
+                        ? formatLeftDays((data as ILcs)?.period?.endDate)
+                        : data?.expiryDate
+                        ? formatLeftDays((data as IRisk)?.expiryDate)
+                        : data?.otherBond?.lgExpiryDate
+                        ? formatLeftDays(
+                            new Date(data?.otherBond?.lgExpiryDate)
+                          )
+                        : null}
+                    </p>
+                  )}
+                </div>
                 <h3 className="font-poppins text-xl font-semibold uppercase">
                   {data.currency ?? "USD"}{" "}
                   {(data as ILcs)?.amount
@@ -191,14 +252,14 @@ const RequestCard = ({
               <AddBid
                 triggerTitle="Add Bid"
                 status="Add Bid"
-                isBank
+                isBank={isBank}
                 isDiscount={
-                  ((data as ILcs).type &&
-                    (data as ILcs).type.includes("Discount")) ||
+                  ((data as ILcs)?.type &&
+                    (data as ILcs)?.type.includes("Discount")) ||
                   false
                 }
-                id={data._id}
-                isRisk={isRisk}
+                id={data?._id}
+                // isRisk={isRisk}
               />
             </div>
           </>
@@ -207,9 +268,14 @@ const RequestCard = ({
         <div className="flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
           {/* Data */}
           <div className="px-3 pt-2">
-            <p className="font-regular text-[#1A1A26] text-[14px]">
-              Request #{data.refId}
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="font-regular text-[#1A1A26] text-[14px]">
+                Request #{data.refId}
+              </p>
+              <div className="w-10">
+                <TableDialog lcId={data._id} bids={data.bids} isRisk={isRisk} />
+              </div>
+            </div>
 
             <p className="font-roboto text-sm flex items-center flex-wrap">
               <span className="text-text">
@@ -218,13 +284,23 @@ const RequestCard = ({
               </span>
               <span className="text-para text-[10px] flex items-center">
                 <Dot />
-                {(data as ILcs)?.period?.endDate
-                  ? formatLeftDays((data as ILcs)?.period?.endDate)
-                  : data?.expiryDate
-                  ? formatLeftDays((data as IRisk)?.expiryDate)
-                  : data?.otherBond?.lgExpiryDate
-                  ? formatLeftDays(new Date(data?.otherBond?.lgExpiryDate))
-                  : null}
+                {(data as ILcs)?.type === "LG Issuance" ? (
+                  <span className="text-[12px] text-[#ff0000] font-medium">
+                    {(data as ILcs)?.lastDateOfReceivingBids
+                      ? formatLeftDays((data as ILcs)?.lastDateOfReceivingBids)
+                      : null}
+                  </span>
+                ) : (
+                  <span className="text-[12px] text-[#ff0000] font-medium">
+                    {(data as ILcs)?.period?.endDate
+                      ? formatLeftDays((data as ILcs)?.period?.endDate)
+                      : data?.expiryDate
+                      ? formatLeftDays((data as IRisk)?.expiryDate)
+                      : data?.otherBond?.lgExpiryDate
+                      ? formatLeftDays(new Date(data?.otherBond?.lgExpiryDate))
+                      : null}
+                  </span>
+                )}
               </span>
             </p>
             <h3 className="text-xl font-semibold uppercase">
@@ -239,7 +315,7 @@ const RequestCard = ({
                   ".00"}
             </h3>
             <div className="flex items-center justify-between gap-x-2">
-              <p className="font-roboto text-gray-500 text-sm">
+              <p className="font-roboto text-gray-500 text-sm font-semibold">
                 {pendingBids.length} bid
                 {pendingBids.length > 1 ? "s" : ""}
               </p>
@@ -495,7 +571,7 @@ export const Sidebar = ({
           </Link>
         </div>
       ) : (
-        <div className="bg-primaryCol rounded-lg py-4 px-4 flex flex-col gap-y-4 items-center justify-center">
+        <div className="bg-primaryCol rounded-lg pb-3 px-4 flex flex-col gap-y-2 items-center justify-center">
           <Select onValueChange={(val: string) => setGenerateType(val)}>
             <SelectTrigger className="font-roboto max-w-36 w-full mx-auto text-center bg-transparent border-none text-white text-sm ring-0 flex items-center justify-between">
               <p className="text-sm">Export</p>
@@ -508,7 +584,7 @@ export const Sidebar = ({
             </SelectContent>
           </Select>
           <p className="text-white text-center font-semibold">
-            Create a quick report of all transaction data
+            Generate a quick report of all transaction data
           </p>
           <Button
             onClick={() => generateReport(generateType)}
@@ -516,18 +592,14 @@ export const Sidebar = ({
             size="lg"
             disabled={isLoading}
           >
-            Generate Report
+            Download Report
           </Button>
         </div>
       )}
       <div className="bg-white border border-borderCol py-4 px-5 mt-5 rounded-lg min-h-[70%] max-h-[80%] overflow-y-auto overflow-x-hidden flex flex-col justify-between">
         <div>
-          <h4
-            className={`text-lg ${
-              isBank ? "text-left" : "text-center"
-            } font-semibold mb-3`}
-          >
-            {isBank ? "Needs Action" : "Needs your attention"}
+          <h4 className={"text-lg text-center font-semibold mb-3"}>
+            {isBank ? "Needs Action" : "Needs Your Attention"}
           </h4>
           <div className="flex flex-col gap-y-5">
             {isRisk

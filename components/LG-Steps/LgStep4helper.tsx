@@ -37,7 +37,6 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
         </p>
         <p className="font-semibold text-[16px] text-lightGray">Type of LG</p>
       </div>
-
       <div className="border border-[#E2E2EA] bg-[#F5F7F9] pt-2 px-2 rounded-lg ">
         <div className="flex gap-3 items-center w-full">
           <BgRadioInput

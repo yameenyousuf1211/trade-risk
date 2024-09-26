@@ -44,7 +44,7 @@ const ConfirmationPage = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [days, setDays] = useState<number>(1);
+  const [days, setDays] = useState<number>(90);
 
   const setValues = useConfirmationDiscountingStore((state) => state.setValues);
   const confirmationData = useConfirmationDiscountingStore((state) => state);
@@ -156,6 +156,7 @@ const ConfirmationPage = () => {
       amount: {
         price: `${data.amount}.00`,
       },
+      attachments: data.attachments,
       period: {
         ...data.period,
         expectedDate:
@@ -186,7 +187,7 @@ const ConfirmationPage = () => {
         reqData = {
           ...rest,
           ...baseData,
-          draft: "true",
+          draft: true,
         };
         console.log(reqData, "reqData Confirmation and Discounting");
         reqData.currency = reqData.currency ?? "USD";
@@ -223,6 +224,7 @@ const ConfirmationPage = () => {
 
         const preparedData = {
           ...data,
+          extraInfo: extraInfoObj,
           period: {
             ...data.period,
             startDate: lcStartDate,
@@ -230,6 +232,8 @@ const ConfirmationPage = () => {
           },
           expectedConfirmationDate,
         };
+        console.log(extraInfoObj, "extraInfoObj");
+        console.log(preparedData, "preparedData");
         preparedData.currency = preparedData.currency ?? "USD";
         const validatedData = await confirmationDiscountSchema.validate(
           preparedData,
@@ -315,6 +319,7 @@ const ConfirmationPage = () => {
         />
         <Step2
           watch={watch}
+          draftDataId={confirmationData?._id}
           register={register}
           setValue={setValue}
           setStepCompleted={handleStepCompletion}
@@ -364,8 +369,10 @@ const ConfirmationPage = () => {
         </div>
         <Step7
           register={register}
+          setValue={setValue}
           step={8}
           setStepCompleted={handleStepCompletion}
+          watch={watch}
         />
         <LgStep12
           register={register}

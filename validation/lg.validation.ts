@@ -28,7 +28,13 @@ const bondSchema = Yup.object().shape({
       lgTenorValue: Yup.string().nullable(),
     })
     .nullable(),
-  draft: Yup.string().nullable(),
+  attachments: Yup.array().nullable().notRequired(),
+  expectedPricing: Yup.number()
+    .nullable() // Allows null values
+    .notRequired()
+    .typeError("Expected Price must be a valid number")
+    .min(0, "Expected Price cannot be less than 0")
+    .max(100, "Expected Price cannot be more than 100"),
 });
 
 // Base schema with common fields for both LG Re-Issuance and 100% Cash Margin

@@ -9,9 +9,13 @@ import { formatFirstLetterOfWord } from "../helper";
 export const CashMarginBidCard = ({
   bidDetail,
   refId,
+  lgIssueIn,
+  lgCollectIn,
 }: {
   bidDetail: any;
   refId: string;
+  lgIssueIn: { city: string; country: string };
+  lgCollectIn: { city: string; country: string };
 }) => {
   const queryClient = useQueryClient();
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
@@ -102,9 +106,14 @@ export const CashMarginBidCard = ({
           If you accept our bid, you will need for:
         </p>
         <p className="text-[17px] mt-5">
-          For "LG Issuance", please visit{" "}
+          For &quot;LG Issuance&quot;, please visit{" "}
           <span className="font-semibold text-[#007AFF]">
-            {bidDetail?.issueLg?.branchAddress}
+            {bidDetail?.issueLg?.branchAddress},{" "}
+            {bidDetail?.lgIssueIn?.city
+              ? formatFirstLetterOfWord(bidDetail?.lgIssueIn?.city)
+              : formatFirstLetterOfWord(lgIssueIn?.city)}
+            {", "}
+            {formatFirstLetterOfWord(lgIssueIn?.country)}
           </span>
           , with your reference number{" "}
           <span className="font-semibold text-[#007AFF]">{refId}</span>. For
@@ -115,9 +124,14 @@ export const CashMarginBidCard = ({
           .
         </p>
         <p className="text-[17px] mt-5">
-          For "LG Collection", please visit{" "}
+          For &quot;LG Collection&quot;, please visit{" "}
           <span className="font-semibold text-[#007AFF]">
-            {bidDetail?.collectLg?.branchAddress}
+            {bidDetail?.collectLg?.branchAddress},{" "}
+            {bidDetail?.collectLg?.city
+              ? formatFirstLetterOfWord(bidDetail?.collectLg?.city)
+              : formatFirstLetterOfWord(lgCollectIn?.city)}
+            {", "}
+            {formatFirstLetterOfWord(lgCollectIn?.country)}
           </span>
           , with your reference number{" "}
           <span className="font-semibold text-[#007AFF]">{refId}</span>. For

@@ -17,7 +17,6 @@ import { DatePicker } from "@/components/helpers";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { submitLgBid } from "@/services/apis/lg.apis";
 import BidPreviewCashMargin from "./BidPreviewCashMargin";

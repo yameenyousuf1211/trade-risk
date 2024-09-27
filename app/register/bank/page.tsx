@@ -31,18 +31,20 @@ import { getBanks } from "@/services/apis/helpers.api";
 import { bankCountries } from "@/utils/data";
 import { cn } from "@/utils";
 
-const CheckBoxInput = ({
+export const CheckBoxInput = ({
   label,
   id,
   register,
+  onChange,
 }: {
   label: string;
   id: string;
   register: any;
+  onChange?: any;
 }) => {
   return (
     <div className="my-2 flex items-center space-x-2 font-roboto">
-      <input type="checkbox" id={id} {...register(id)} />
+      <input type="checkbox" id={id} {...register(id)} onChange={onChange} />
       <label htmlFor={id} className="text-sm leading-none text-[#44444F]">
         {label}
       </label>

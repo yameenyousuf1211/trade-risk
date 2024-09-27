@@ -122,16 +122,16 @@ const CompanyInfoPage = () => {
       toast.error("Email is already exists");
       return;
     }
-    const { response, success } = await phoneVerification(data.phone);
+    // const { response, success } = await phoneVerification(data.phone);
 
-    if (!success) {
-      console.log(
-        "🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ response",
-        response
-      );
-      toast.error("Phone number is invalid");
-      return;
-    }
+    // if (!success) {
+    //   console.log(
+    //     "🚀 ~ file: page.tsx ~ line 139 ~ onSubmit: ~ response",
+    //     response
+    //   );
+    //   toast.error("Phone number is invalid");
+    //   return;
+    // }
 
     setValues(data);
     console.log(data, "corporateDataSet");
@@ -350,7 +350,7 @@ const CompanyInfoPage = () => {
               <div className="flex items-center gap-3">
                 <label
                   id="beneficiaryDetails.address"
-                  className="flex w-full items-center justify-between rounded-md bg-white pl-3"
+                  className="flex w-full items-center justify-between rounded-md bg-white"
                 >
                   <div className="w-full">
                     <PhoneInput

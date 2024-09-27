@@ -27,14 +27,15 @@ export const CountrySelect = ({
   extraClassName,
   placeholder,
   value,
+  disabled,
 }: {
   setIsoCode: any;
   setValue: any;
   name: string;
   setValueChange?: any;
   placeholder?: string;
-  value?: string;
   extraClassName?: string;
+  disabled?: boolean;
   value?: string;
 }) => {
   const [countryOpen, setCountryOpen] = useState(false);
@@ -58,6 +59,7 @@ export const CountrySelect = ({
             variant="outline"
             role="combobox"
             aria-expanded={countryOpen}
+            disabled={disabled}
             className={`capitalize font-roboto w-full justify-between font-normal text-sm ${
               countryVal ? "text-lightGray" : "text-gray-400"
             } ${extraClassName}`}

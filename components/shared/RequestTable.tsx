@@ -442,8 +442,10 @@ export const RequestTable = ({
                     />
                     <TableDataCell
                       data={
-                        item?.type ||
-                        (item as IRisk)?.riskParticipationTransaction?.type
+                        item?.type === "LG Issuance"
+                          ? item?.lgIssuance
+                          : item?.type ||
+                            (item as IRisk)?.riskParticipationTransaction?.type
                       }
                     />
                     <TableCell className="max-w-[180px] px-1 py-1">

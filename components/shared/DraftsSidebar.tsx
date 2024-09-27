@@ -106,8 +106,10 @@ const DraftCard = ({
             ? draft.amount?.price?.toLocaleString()
             : (draft as ILcs)?.type === "LG Issuance" &&
               draft.lgIssuance === "LG 100% Cash Margin"
-            ? draft.lgDetails.amount?.toLocaleString() + ".00"
-            : total?.toLocaleString() + ".00"}
+            ? draft?.lgDetails?.amount?.toLocaleString()
+              ? draft?.lgDetails?.amount?.toLocaleString()
+              : "0.00"
+            : total.toLocaleString() + ".00"}
         </p>
         <Button
           className="!py-0 font-roboto h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"

@@ -136,7 +136,7 @@ export function PhoneInput({
     const inputWithoutSpaces = inputValue.replace(/\s+/g, "");
 
     // Get the maximum allowed length for the selected country
-    const maxPhoneLength = getMaxPhoneLength(countryCode) - 1;
+    const maxPhoneLength = getMaxPhoneLength(countryCode);
 
     // Ensure the number starts with the correct country code
     if (!inputWithoutSpaces.startsWith(`+${selectedCountry?.phone_code}`)) {
@@ -190,10 +190,6 @@ export function PhoneInput({
       let pastedData = clipboardData.getData("text/plain").trim();
       let formattedValue = pastedData;
 
-      if (!pastedData.startsWith(`+${selectedCountry?.phone_code}`)) {
-        formattedValue = `+${selectedCountry?.phone_code}${pastedData}`;
-      }
-      formattedValue = asYouType.input(formattedValue);
       handlers.set(formattedValue);
       if (onChange) {
         onChange(formattedValue);

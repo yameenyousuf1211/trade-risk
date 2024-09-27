@@ -108,6 +108,7 @@ export const CashMarginBidCard = ({
         <p className="text-[17px] mt-5">
           For &quot;LG Issuance&quot;, please visit{" "}
           <span className="font-semibold text-[#007AFF]">
+            {bidDetail?.issueLg?.branchName},{" "}
             {bidDetail?.issueLg?.branchAddress},{" "}
             {bidDetail?.lgIssueIn?.city
               ? formatFirstLetterOfWord(bidDetail?.lgIssueIn?.city)
@@ -126,6 +127,7 @@ export const CashMarginBidCard = ({
         <p className="text-[17px] mt-5">
           For &quot;LG Collection&quot;, please visit{" "}
           <span className="font-semibold text-[#007AFF]">
+            {bidDetail?.collectLg?.branchName},{" "}
             {bidDetail?.collectLg?.branchAddress},{" "}
             {bidDetail?.collectLg?.city
               ? formatFirstLetterOfWord(bidDetail?.collectLg?.city)

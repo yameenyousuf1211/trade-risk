@@ -4,6 +4,7 @@ import { LgStepsProps2 } from "@/types/lg";
 import { useQuery } from "@tanstack/react-query";
 import { getCities } from "@/services/apis/helpers.api";
 import { CountrySelect } from "../helpers";
+import { CheckBoxInput } from "@/app/register/bank/page";
 
 interface LgStep9Part2Props extends LgStepsProps2 {
   type: "issue" | "collect"; // Add a type prop
@@ -19,12 +20,15 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
   step,
   type, // Accept type prop
 }) => {
-  // Use the type prop to watch different form fields
   const lgDetails = watch(type === "issue" ? "lgIssueIn" : "lgCollectIn");
+  const lgIssueInDetails = watch("lgIssueIn");
   const [isoCode, setIsoCode] = useState<string | null>(
     lgDetails?.isoCode || ""
   );
 
+  const [isSameAsIssue, setIsSameAsIssue] = useState(false); // State to track checkbox
+
+  // Whenever the isoCode changes, update the form values
   useEffect(() => {
     setValue(
       type === "issue" ? "lgIssueIn.isoCode" : "lgCollectIn.isoCode",
@@ -32,26 +36,59 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
     );
   }, [isoCode]);
 
+  // Whenever the checkbox changes, update the form values
+  useEffect(() => {
+    if (isSameAsIssue) {
+      // Copy values from lgIssueIn to lgCollectIn when checkbox is checked
+      setValue("lgCollectIn", lgIssueInDetails);
+    }
+  }, [isSameAsIssue, lgIssueInDetails, setValue]);
+
   const { data: cities, isLoading } = useQuery({
     queryKey: ["cities", isoCode],
     queryFn: () => getCities(isoCode!),
     enabled: !!isoCode, // Fetch cities only when isoCode is set
   });
 
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsSameAsIssue(e.target.checked); // Update the checkbox state
+    if (e.target.checked) {
+      // Copy values from lgIssueIn to lgCollectIn when checked
+      setValue("lgCollectIn", lgIssueInDetails);
+    } else {
+      // Clear values when unchecked
+      setValue("lgCollectIn", {
+        country: "",
+        city: "",
+        isoCode: "",
+      });
+    }
+  };
+
   return (
     <div
       id={`lg-step9-${type}`}
       className="py-3 px-2 border border-borderCol rounded-lg w-full scroll-target"
     >
-      <div className="flex items-center gap-x-2 ml-3 mb-3">
-        <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
-          {step}
-        </p>
-        <p className="font-semibold text-[16px] text-lightGray">
-          {type === "issue"
-            ? "Where you want to issue your LG in?"
-            : "Where you want to collect your LG in?"}
-        </p>
+      <div className="flex items-center ml-3 mb-3 justify-between">
+        <div className="flex items-center gap-x-2">
+          <p className="text-sm size-6 rounded-full bg-primaryCol center text-white font-semibold">
+            {step}
+          </p>
+          <p className="font-semibold text-[16px] text-lightGray">
+            {type === "issue"
+              ? "Where you want to issue your LG in?"
+              : "Where you want to collect your LG in?"}
+          </p>
+        </div>
+        {type !== "issue" && (
+          <CheckBoxInput
+            label="Same as LG physical issue"
+            register={register}
+            id="sameAsIssueCheckbox" // ID for the checkbox
+            onChange={handleCheckboxChange} // Call the handler
+          />
+        )}
       </div>
 
       <div className="w-full">
@@ -64,6 +101,7 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
               type === "issue" ? "lgIssueIn.country" : "lgCollectIn.country"
             } // Adjust name based on type
             placeholder={lgDetails?.country || "Select Country"}
+            disabled={isSameAsIssue} // Disable when checkbox is checked
           />
           <DDInput
             placeholder="Select City"
@@ -71,7 +109,7 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
             id={type === "issue" ? "lgIssueIn.city" : "lgCollectIn.city"} // Adjust id based on type
             value={lgDetails?.city}
             setValue={setValue}
-            disabled={isLoading || !isoCode}
+            disabled={isSameAsIssue || isLoading || !isoCode} // Disable when checkbox is checked or no isoCode
             data={
               cities?.success
                 ? Array.from(

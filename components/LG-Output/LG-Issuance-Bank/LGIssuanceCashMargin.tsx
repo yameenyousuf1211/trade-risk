@@ -130,7 +130,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
       return false;
     }
     if (!data.confirmationPrice) {
-      toast.error("Confirmation Price is required");
+      toast.error("Price is required");
       return false;
     }
     if (!data.issueLg?.branchAddress) {

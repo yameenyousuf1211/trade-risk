@@ -79,8 +79,12 @@ const SliderCard = ({
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
       <p>
         {(lcData?.type === "LG Issuance" && lcData?.totalContractCurrency) ||
-          (lcData?.type === "LG Issuance" && "USD ")}{" "}
-        {lcData?.type === "LG Issuance" ? (
+          (lcData?.type === "LG Issuance" &&
+            lcData.lgIssuance !== "LG 100% Cash Margin" &&
+            "USD ")}{" "}
+        {lcData.lgIssuance === "LG 100% Cash Margin" ? (
+          <>{info?.confirmationPrice?.toLocaleString()}.00% Per Annum</>
+        ) : lcData?.type === "LG Issuance" ? (
           <>{total?.toLocaleString()}.00</>
         ) : lcData?.type === "LC Confirmation" ? (
           <div>

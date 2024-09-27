@@ -50,9 +50,15 @@ export const DDInput = ({
       id={id}
       className={`${
         type !== "baseRate" && "border"
-      } text-sm border-borderCol p-1 pl-3 rounded-md w-full flex items-center justify-between bg-white ${extStyle}`}
+      } text-sm border-borderCol p-1 pl-3 rounded-md w-full flex items-center justify-between bg-white ${extStyle} ${
+        disabled && "border-gray-100"
+      }`}
     >
-      {type !== "baseRate" && <p className="text-lightGray">{label}</p>}
+      {type !== "baseRate" && (
+        <p className={`text-lightGray ${disabled && "text-[#a0a0a6]"}`}>
+          {label}
+        </p>
+      )}
       <Popover open={ddOpen} onOpenChange={setDdOpen} modal={true}>
         <PopoverTrigger asChild>
           <Button

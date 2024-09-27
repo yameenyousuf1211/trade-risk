@@ -10,21 +10,17 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
   setStepCompleted,
   setValue,
 }) => {
-  const typeOfLg = watch("typeOfLg"); // Now watching typeOfLg.type
+  const typeOfLg = watch("typeOfLg");
   const { addStep } = useStepStore();
-  const [isOtherSelected, setIsOtherSelected] = useState(false);
+  const [isOthersSelected, setIsOthersSelected] = useState(false);
+  const [otherValue, setOtherValue] = useState(""); // Store the custom "Other" value
 
-  // Handle typeOfLg changes
+  // Handle changes in the radio selection
   useEffect(() => {
-    if (typeOfLg === "Other") {
-      setIsOtherSelected(true);
-    } else {
-      setIsOtherSelected(false);
-    }
-    if (typeOfLg) {
+    if (typeOfLg && typeOfLg !== "Other") {
       addStep(TYPE_OF_LG);
     }
-  }, [typeOfLg, setValue]);
+  }, [typeOfLg]);
 
   return (
     <div
@@ -42,7 +38,8 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType1"
             label="Bid Bond"
-            name="typeOfLg" // Registering the value to typeOfLg.type
+            name="typeOfLg"
+            extraClassName="h-14"
             value="Bid Bond"
             register={register}
             checked={typeOfLg === "Bid Bond"}
@@ -51,6 +48,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
             id="LgType2"
             label="Advance Payment Bond"
             name="typeOfLg"
+            extraClassName="h-14"
             value="Advance Payment Bond"
             register={register}
             checked={typeOfLg === "Advance Payment Bond"}
@@ -59,6 +57,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
             id="LgType3"
             label="Performance Bond"
             name="typeOfLg"
+            extraClassName="h-14"
             value="Performance Bond"
             register={register}
             checked={typeOfLg === "Performance Bond"}
@@ -67,6 +66,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
             id="LgType4"
             label="Retention Bond"
             name="typeOfLg"
+            extraClassName="h-14"
             value="Retention Bond"
             register={register}
             checked={typeOfLg === "Retention Bond"}
@@ -75,6 +75,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
             id="LgType5"
             label="Payment LG"
             name="typeOfLg"
+            extraClassName="h-14"
             value="Payment LG"
             register={register}
             checked={typeOfLg === "Payment LG"}
@@ -86,6 +87,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
             id="LgType6"
             label="Zakat"
             name="typeOfLg"
+            extraClassName="h-14"
             value="Zakat"
             register={register}
             checked={typeOfLg === "Zakat"}
@@ -93,6 +95,7 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
           <BgRadioInput
             id="LgType7"
             label="Custom"
+            extraClassName="h-14"
             name="typeOfLg"
             value="Custom"
             register={register}
@@ -102,39 +105,47 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
             id="LgType8"
             label="SBLC"
             name="typeOfLg"
+            extraClassName="h-14"
             value="SBLC"
             register={register}
             checked={typeOfLg === "SBLC"}
           />
-          <BgRadioInput
-            id="LgType9"
-            label="Other (Type Here)"
-            name="typeOfLg"
-            value="Other"
-            register={register}
-            checked={typeOfLg === "Other"}
-          />
-        </div>
-
-        {/* Show input if "Other" is selected */}
-        {isOtherSelected && (
-          <div className="mt-3">
+          <div
+            className={`mb-2 flex w-full items-end gap-x-5 rounded-md border border-borderCol bg-white px-3 py-4 ${
+              isOthersSelected && "!bg-[#EEE9FE]"
+            }`}
+          >
             <label
-              className="text-sm font-medium text-lightGray"
-              htmlFor="typeOfLg"
+              htmlFor="payment-others"
+              className="flex items-center gap-x-2 text-sm text-lightGray"
             >
-              Please specify the LG type
+              <input
+                type="radio"
+                value="others"
+                id="payment-others"
+                checked={isOthersSelected} // Control radio button with the new state
+                onChange={() => {
+                  setIsOthersSelected(true); // Set "Others" as selected
+                  setValue("typeOfLg", ""); // Clear the previous value in form state
+                  setOtherValue(""); // Clear the local otherValue input
+                }}
+                className="size-4 accent-primaryCol"
+              />
+              Others
             </label>
             <input
               type="text"
-              {...register("typeOfLg")}
-              value={typeOfLg} // Bind the value directly to typeOfLg.type
-              onChange={(e) => setValue("typeOfLg", e.target.value)} // Update typeOfLg.type directly
-              placeholder="Type your LG here"
-              className="mt-2 p-2 w-full border border-borderCol rounded-md"
+              name="othersTextInput"
+              value={otherValue}
+              disabled={!isOthersSelected} // Enable only when "Others" is selected
+              onChange={(e: any) => {
+                setOtherValue(e.target.value); // Update the local state
+                setValue("typeOfLg", e.target.value); // Set the typed value in form state
+              }}
+              className="w-[80%] rounded-none !border-b-2 border-transparent !border-b-neutral-300 bg-transparent text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
             />
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

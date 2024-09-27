@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BgRadioInput } from "../LCSteps/helpers";
 import { LgStepsProps10 } from "@/types/lg";
 import { Button } from "../ui/button";
@@ -12,22 +12,62 @@ const LgStep10: React.FC<LgStepsProps10> = ({
 }) => {
   const expectedPrice = String(watch("expectedPrice.expectedPrice")) || "";
   const pricingPerAnnum = watch("expectedPrice.pricePerAnnum");
+  const [displayPricing, setDisplayPricing] = useState<string>("");
+
+  useEffect(() => {
+    // Ensure the display value reflects the form value
+    setDisplayPricing(pricingPerAnnum ? `${pricingPerAnnum}%` : "");
+  }, [pricingPerAnnum]);
 
   const handleIncrement = () => {
     const currentValue = parseFloat(pricingPerAnnum) || 0;
-    const newValue = Math.min(
-      100,
-      Math.round((currentValue + 0.1) * 100) / 100
-    ).toFixed(2);
+    const newValue = Math.min(100, currentValue + 0.1).toFixed(2);
     setValue("expectedPrice.pricePerAnnum", newValue);
+    setDisplayPricing(`${newValue}%`);
   };
 
   const handleDecrement = () => {
     const currentValue = parseFloat(pricingPerAnnum) || 0;
-    const newValue = Math.max(
-      0,
-      Math.round((currentValue - 0.1) * 100) / 100
-    ).toFixed(2);
+    const newValue = Math.max(0, currentValue - 0.1).toFixed(2);
+    setValue("expectedPrice.pricePerAnnum", newValue);
+    setDisplayPricing(`${newValue}%`);
+  };
+
+  const handlePricingBlur = () => {
+    if (displayPricing.length === 0) return;
+
+    let value = parseFloat(displayPricing.replace("%", "")).toFixed(2);
+    if (parseFloat(value) > 100) {
+      value = "100.00";
+    } else if (parseFloat(value) < 0) {
+      value = "0.00";
+    }
+
+    setDisplayPricing(`${value}%`);
+    setValue("expectedPrice.pricePerAnnum", value);
+  };
+
+  const handlePricingFocus = () => {
+    const rawValue = displayPricing.replace("%", ""); // Remove percentage sign when focused
+    setDisplayPricing(rawValue);
+  };
+
+  const handlePricingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let newValue = event.target.value.replace(/[^0-9.]/g, "");
+    if (newValue.includes(".")) {
+      const parts = newValue.split(".");
+      parts[1] = parts[1].slice(0, 2); // Limiting to 2 decimal places
+      newValue = parts.join(".");
+    }
+
+    const numValue = parseFloat(newValue);
+    if (numValue > 100) {
+      newValue = "100.00";
+    } else if (numValue < 0) {
+      newValue = "0.00";
+    }
+
+    setDisplayPricing(newValue);
     setValue("expectedPrice.pricePerAnnum", newValue);
   };
 
@@ -80,41 +120,17 @@ const LgStep10: React.FC<LgStepsProps10> = ({
                 -
               </Button>
               <input
-                placeholder="Value (%)"
+                placeholder="0%"
                 type="text"
                 inputMode="numeric"
                 className={cn(
-                  "flex h-10 text-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[100px] focus-visible:ring-offset-0"
+                  "flex h-10 text-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-none outline-none focus-visible:ring-0 max-w-[80px] focus-visible:ring-offset-0"
                 )}
                 max={100}
-                {...register("expectedPrice.pricePerAnnum")}
-                onChange={(event) => {
-                  let newValue = event.target.value.replace(/[^0-9.]/g, "");
-                  if (newValue.includes(".")) {
-                    const parts = newValue.split(".");
-                    parts[1] = parts[1].slice(0, 2);
-                    newValue = parts.join(".");
-                  }
-                  const numValue = parseFloat(newValue);
-                  if (numValue > 100) {
-                    newValue = "100.00";
-                  } else if (numValue < 0) {
-                    newValue = "0.00";
-                  }
-                  event.target.value = newValue;
-                  setValue("expectedPrice.pricePerAnnum", newValue || "0.00");
-                }}
-                onBlur={(event) => {
-                  if (event.target.value.length === 0) return;
-                  let value = parseFloat(event.target.value).toFixed(2);
-                  if (parseFloat(value) > 100) {
-                    value = "100.00";
-                  } else if (parseFloat(value) < 0) {
-                    value = "0.00";
-                  }
-                  event.target.value = value;
-                  setValue("expectedPrice.pricePerAnnum", value || "0.00");
-                }}
+                value={displayPricing} // Use displayPricing state for the input value
+                onChange={handlePricingChange}
+                onBlur={handlePricingBlur} // Add percentage sign on blur
+                onFocus={handlePricingFocus} // Remove percentage sign on focus
               />
               <Button
                 type="button"

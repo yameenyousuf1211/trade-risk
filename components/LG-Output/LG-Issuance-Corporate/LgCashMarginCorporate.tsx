@@ -120,7 +120,7 @@ export const LGCashMarginCorporate = ({
                 LG Amount:{" "}
                 <span className="font-semibold text-black">
                   {data?.lgDetails?.currency || "USD"}{" "}
-                  {formatAmount(data?.lgDetails?.amount)}
+                  {formatAmount(data?.lgDetails?.amount) + ".00"}
                 </span>
                 <LGInfo
                   label={"Applicant City"}

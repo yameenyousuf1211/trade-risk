@@ -1,7 +1,8 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, use, ChangeEvent } from "react";
 import { Button } from "../../ui/button";
 import { ApplicantQuery } from "./ApplicantQuery";
 import {
+  cn,
   convertDateAndTimeToString,
   convertDateToCommaString,
   formatAmount,
@@ -49,6 +50,8 @@ const LGInfo = ({
 
 const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
   const { user } = useAuth();
+  const [formattedConfirmationPrice, setFormattedConfirmationPrice] =
+    useState("");
   const [userBidStatus, setUserBidStatus] = useState<any>({});
   const [userBid, setUserBid] = useState();
   const queryClient = useQueryClient();
@@ -59,6 +62,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     watch,
     formState: { errors },
   } = useForm();
+  const confirmationPrice = watch("confirmationPrice");
   const bidValidity = watch("bidValidity");
   const lgIssueInType = watch("issueLg.type");
   const lgCollectInType = watch("collectLg.type");
@@ -165,10 +169,29 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     return true;
   };
 
-  // Capture form data on form submission
-  const onSubmit = (data: any) => {
-    if (validateFields(data)) {
-      setFormData(data);
+  useEffect(() => {
+    // Add % sign if confirmationPrice exists and is a number
+    if (confirmationPrice !== undefined) {
+      const priceValue = confirmationPrice.replace(/\D/g, "");
+      setFormattedConfirmationPrice(priceValue ? `${priceValue}%` : "");
+    }
+  }, [confirmationPrice]);
+
+  const onSubmit = (formData: any) => {
+    const updatedData = {
+      ...formData,
+      confirmationPrice: confirmationPrice.replace(/\D/g, ""), // Submit as number without %
+      collectLg: {
+        ...formData.collectLg,
+        city: formData.collectLg.city || data?.lgCollectIn?.city,
+      },
+      issueLg: {
+        ...formData.issueLg,
+        city: formData.issueLg.city || data?.lgIssueIn?.city,
+      },
+    };
+    if (validateFields(updatedData)) {
+      setFormData(updatedData);
       setIsPreview(true);
     }
   };
@@ -250,17 +273,13 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
         branchAddress: formData.issueLg.branchAddress,
         email: formData.issueLg.email,
         branchName: formData.issueLg.branchName,
-        ...(formData.issueLg.type === "alternate" && {
-          city: formData.issueLg.city,
-        }),
+        city: formData.issueLg.city || data?.lgIssueIn?.city,
       },
       collectLg: {
         branchAddress: formData.collectLg.branchAddress,
         email: formData.collectLg.email,
         branchName: formData.collectLg.branchName,
-        ...(formData.collectLg.type === "alternate" && {
-          city: formData.collectLg.city,
-        }),
+        city: formData.collectLg.city || data?.lgCollectIn?.city,
       },
     };
 
@@ -313,7 +332,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
             LG Amount:{" "}
             <span className="text-[20px] text-[#1A1A26] font-semibold">
               {data?.lgDetails?.currency || "USD"}{" "}
-              {formatAmount(data?.lgDetails?.amount)}
+              {formatAmount(data?.lgDetails?.amount) + ".00"}
             </span>
           </h3>
           <div>
@@ -393,13 +412,36 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                   </p>
                 )}
               </div>
-              <Input
-                placeholder="Enter your pricing (%)"
+              <input
+                placeholder="Enter your pricing per annum (%)"
                 type="text"
                 inputMode="numeric"
-                className="w-full h-10 border rounded-md px-3 py-2 text-sm"
-                register={register}
-                name="confirmationPrice"
+                className={cn(
+                  "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                )}
+                max={100}
+                {...register("confirmationPrice")}
+                onChange={(event) => {
+                  const newValue: any = event.target.value.replace(
+                    /[^0-9.]/g,
+                    ""
+                  );
+                  event.target.value = newValue;
+                  setValue("confirmationPrice", newValue);
+                }}
+                onBlur={(event: ChangeEvent<HTMLInputElement>) => {
+                  if (
+                    event.target.value.includes("%") ||
+                    event.target.value.length === 0
+                  )
+                    return;
+                  event.target.value += "%";
+                }}
+                onKeyUp={(event: any) => {
+                  if (Number(event.target.value.replace("%", "")) > 100) {
+                    event.target.value = "100.0%";
+                  }
+                }}
               />
             </div>
 

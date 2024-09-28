@@ -40,7 +40,9 @@ export const CountrySelect = ({
 }) => {
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryVal, setCountryVal] = useState(value || "");
-
+  useEffect(() => {
+    setCountryVal(value || "");
+  }, [value]);
   const { allCountries: allData, countries, flags, isLoading } = useCountries();
 
   const setCountryCode = (selectedCountry: string) => {

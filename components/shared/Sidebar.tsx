@@ -32,6 +32,8 @@ import { usePathname } from "next/navigation";
 import { fetchRisk } from "@/services/apis/risk.api";
 import { formatFirstLetterOfWord } from "../LG-Output/helper";
 import { formatNumberByAddingDigitsToStart } from "../../utils/helper/helper";
+import { LGCashMarginCorporate } from "../LG-Output/LG-Issuance-Corporate/LgCashMarginCorporate";
+import { LGTableBidStatus } from "../LG-Output/LG-Issuance-Corporate/LgTableBidStatus";
 
 const SliderCard = ({
   info,
@@ -250,7 +252,7 @@ const RequestCard = ({
                 <h3 className="font-poppins text-xl font-semibold uppercase">
                   {data?.totalContractCurrency ||
                     data.currency ||
-                    data?.lgDetails.currency ||
+                    data?.lgDetails?.currency ||
                     "USD"}{" "}
                   {(data as ILcs)?.type === "LG Issuance" &&
                   data.lgIssuance === "LG 100% Cash Margin"
@@ -291,7 +293,19 @@ const RequestCard = ({
                 Request #{formatNumberByAddingDigitsToStart(data.refId)}
               </p>
               <div className="w-10">
-                <TableDialog lcId={data._id} bids={data.bids} isRisk={isRisk} />
+                {data?.type == "LG Issuance" &&
+                data?.lgIssuance !== "LG 100% Cash Margin" ? (
+                  <LGTableBidStatus data={data} />
+                ) : data?.type == "LG Issuance" &&
+                  data?.lgIssuance === "LG 100% Cash Margin" ? (
+                  <LGCashMarginCorporate data={data} />
+                ) : (
+                  <TableDialog
+                    lcId={data._id}
+                    bids={data.bids}
+                    isRisk={isRisk}
+                  />
+                )}
               </div>
             </div>
 
@@ -344,9 +358,9 @@ const RequestCard = ({
                 {pendingBids.length} bid
                 {pendingBids.length > 1 ? "s" : ""}
               </p>
-              {pendingBids.length > 1 && (
+              {/* {pendingBids.length > 1 && (
                 <TableDialog bids={pendingBids} lcId={data._id} isViewAll />
-              )}
+              )} */}
             </div>
           </div>
 

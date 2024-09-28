@@ -1,6 +1,5 @@
 import React from "react";
 import { BgRadioInputLG } from "../helper";
-import { AssignedValues } from "../../../types/LGBankTypes";
 import { formatAmount } from "@/utils/helper/helper";
 
 interface LgTypeSelectionProps {
@@ -25,6 +24,13 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
     { type: "Retention Money Bond", value: data.retentionMoneyBond },
   ];
 
+  const isBondExpired = (expiryDate: string | undefined) => {
+    if (!expiryDate) return false; // If no expiry date, assume not expired
+    const expiry = new Date(expiryDate).getTime();
+    const now = new Date().getTime();
+    return expiry < now;
+  };
+
   return (
     <div id="lg_type_selection">
       {lgTypes.map((lgType, key) => {
@@ -45,6 +51,8 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
             : `${bondPrices[selectedBank]?.[lgType.type]}%`
           : null;
 
+        const expired = isBondExpired(bondValue?.lgExpiryDate); // Check if the bond is expired
+
         return (
           <BgRadioInputLG
             key={key}
@@ -56,6 +64,8 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
             onChange={(event) => setSelectedLgType(event.target.value)}
             bgchecked={lgType.type === selectedLgType}
             sidesublabel={enteredPrice ? enteredPrice : null} // Show entered price if available
+            disabled={expired} // Disable if the bond is expired
+            isBondExpired={expired} // Pass the expired status to show it in the UI
           />
         );
       })}

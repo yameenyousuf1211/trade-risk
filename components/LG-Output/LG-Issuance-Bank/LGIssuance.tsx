@@ -7,7 +7,6 @@ import { LgTypeSelection } from "./LgTypeSelection";
 import { PricingInput } from "./PricingInput";
 import { BidPreview } from "./BidPreview";
 import {
-  convertDateAndTimeToString,
   convertDateAndTimeToStringGMTNoTsx,
   convertDateToCommaString,
   formatAmount,
@@ -142,13 +141,26 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
 
   const availableBondTypes = bondTypes.filter((bond) => bond.value?.Contract);
 
+  const isBondExpired = (expiryDate: string | undefined) => {
+    if (!expiryDate) return false;
+    const expiry = new Date(expiryDate).getTime();
+    const now = new Date().getTime();
+    return expiry < now;
+  };
+
+  // Step 1: Automatically select the first valid (non-expired) bond
   useEffect(() => {
     const sorted = sortBanksAlphabetically(data.issuingBanks);
     setSortedIssuingBanks(sorted);
-    if (sorted.length > 0) {
-      setSelectedBank(sorted[0].bank);
+
+    // Automatically select the first valid bank and bond (non-expired)
+    const firstValidBond = availableBondTypes.find(
+      (bond) => !isBondExpired(bond.value?.lgExpiryDate)
+    );
+    setSelectedBank(sorted[0]?.bank);
+    if (firstValidBond) {
+      setSelectedLgType(firstValidBond.type);
     }
-    setSelectedLgType(availableBondTypes[0].type);
   }, [data.issuingBanks]);
 
   useEffect(() => {
@@ -229,7 +241,10 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   };
 
   const isLastBond = (bondType: string) => {
-    return bondType === availableBondTypes[availableBondTypes.length - 1].type;
+    const nonExpiredBonds = availableBondTypes.filter(
+      (bond) => !isBondExpired(bond.value?.lgExpiryDate)
+    );
+    return nonExpiredBonds[nonExpiredBonds.length - 1]?.type === bondType;
   };
 
   const anyPricingFilled = () => {
@@ -257,7 +272,20 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     const lastBank = isLastBank(selectedBank!);
     const lastBond = isLastBond(selectedLgType);
 
+    // If the last bank and last bond are reached, and the last bond is expired, do not proceed further
     if (lastBank && lastBond && !lastBankAndBondReached) {
+      if (
+        isBondExpired(
+          availableBondTypes.find((bond) => bond.type === selectedLgType)?.value
+            ?.lgExpiryDate
+        )
+      ) {
+        const { nextBankIndex, nextBondIndex } = findNextValidBond(0, 0); // Start from the beginning again
+        setSelectedBank(sortedIssuingBanks[nextBankIndex].bank);
+        setSelectedLgType(availableBondTypes[nextBondIndex].type);
+        return;
+      }
+
       setLastBankAndBondReached(true);
       return;
     }
@@ -267,16 +295,13 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
       isLastBond(selectedLgType) &&
       anyPricingFilled()
     ) {
-      // Filter out bonds with a price of "0%" before creating newBids
       const newBids = Object.entries(bondPrices).flatMap(([bank, bonds]) =>
         Object.entries(bonds)
           .filter(([bondType, price]) => {
-            // Ensure price is a valid string or number before proceeding
             if (!price || typeof price !== "string") return false;
-
             const parsedPrice = parseFloat(price.replace("%", ""));
             return !isNaN(parsedPrice) && parsedPrice > 0;
-          }) // Exclude 0% pricing
+          })
           .map(([bondType, price]) => ({
             bank,
             bidType: bondType,
@@ -285,7 +310,6 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           }))
       );
 
-      // Proceed only if there are valid bids
       if (newBids.length > 0) {
         const groupedBidsWithBankData = await groupBidsByBank(
           newBids,
@@ -310,26 +334,45 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
       }
     }
 
-    const currentBankIndex = sortedIssuingBanks.findIndex(
-      (bank) => bank.bank === selectedBank
-    );
-    const currentBondIndex = availableBondTypes.findIndex(
-      (bond) => bond.type === selectedLgType
+    // Find the next valid bond and bank
+    const { nextBankIndex, nextBondIndex } = findNextValidBond(
+      sortedIssuingBanks.findIndex((bank) => bank.bank === selectedBank),
+      availableBondTypes.findIndex((bond) => bond.type === selectedLgType)
     );
 
-    if (isLastBond(selectedLgType)) {
-      if (sortedIssuingBanks.length > 0) {
-        const nextBankIndex =
-          (currentBankIndex + 1) % sortedIssuingBanks.length;
-        setSelectedBank(sortedIssuingBanks[nextBankIndex].bank);
-        setSelectedLgType(availableBondTypes[0].type);
+    // Update the selected bond and bank
+    setSelectedBank(sortedIssuingBanks[nextBankIndex].bank);
+    setSelectedLgType(availableBondTypes[nextBondIndex].type);
+    setPricingValue("");
+  };
+
+  // Helper function to find the next valid bond that is not expired
+  const findNextValidBond = (bankIndex: number, bondIndex: number) => {
+    let nextBankIndex = bankIndex;
+    let nextBondIndex = bondIndex;
+    let validBondFound = false;
+
+    while (!validBondFound) {
+      // Move to the next bond within the current bank
+      nextBondIndex = (nextBondIndex + 1) % availableBondTypes.length;
+
+      // If all bonds in the current bank are expired, move to the next bank
+      if (nextBondIndex === 0) {
+        nextBankIndex = (nextBankIndex + 1) % sortedIssuingBanks.length;
       }
-    } else {
-      const nextBondIndex = (currentBondIndex + 1) % availableBondTypes.length;
-      setSelectedLgType(availableBondTypes[nextBondIndex].type);
+
+      // Check if the current bond is expired, and stop the loop if a valid (non-expired) bond is found
+      if (
+        !isBondExpired(availableBondTypes[nextBondIndex]?.value?.lgExpiryDate)
+      ) {
+        validBondFound = true;
+      }
+      if (nextBankIndex === bankIndex && nextBondIndex === bondIndex) {
+        break;
+      }
     }
 
-    setPricingValue("");
+    return { nextBankIndex, nextBondIndex };
   };
 
   const handleBack = () => {
@@ -357,7 +400,12 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     setSelectedBank(
       sortedIssuingBanks.length > 0 ? sortedIssuingBanks[0].bank : undefined
     );
-    setSelectedLgType(availableBondTypes[0].type);
+    const firstValidBond = availableBondTypes.find(
+      (bond) => !isBondExpired(bond.value?.lgExpiryDate)
+    );
+    if (firstValidBond) {
+      setSelectedLgType(firstValidBond.type);
+    }
   };
 
   return (

@@ -3,7 +3,10 @@ import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "../ConfirmationModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { respondBid } from "@/services/apis/lg.apis";
-import { convertDateAndTimeToString } from "@/utils";
+import {
+  convertDateAndTimeToString,
+  formatNumberByAddingDigitsToStart,
+} from "@/utils";
 import { formatFirstLetterOfWord } from "../helper";
 
 export const CashMarginBidCard = ({
@@ -62,7 +65,9 @@ export const CashMarginBidCard = ({
         <div className="grid grid-cols-2">
           <div>
             <p className="text-[#92929D] text-sm">Bid Number</p>
-            <p className="font-semibold text-xl">{bidDetail.bidNumber}</p>
+            <p className="font-semibold text-xl">
+              {formatNumberByAddingDigitsToStart(bidDetail.bidNumber)}
+            </p>
           </div>
           <div>
             <p className="text-[#92929D] text-sm">Submitted By</p>

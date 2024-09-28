@@ -12,6 +12,7 @@ export const BgRadioInputLG = ({
   disabled = false,
   bgchecked = false,
   extraClass,
+  isBondExpired,
 }: {
   id: string;
   label: string;
@@ -24,6 +25,7 @@ export const BgRadioInputLG = ({
   disabled?: boolean;
   bgchecked?: boolean;
   extraClass?: string;
+  isBondExpired?: boolean;
 }) => {
   return (
     <label
@@ -49,7 +51,14 @@ export const BgRadioInputLG = ({
           sidesublabel ? "flex flex-row justify-between" : "flex flex-col"
         }`}
       >
-        <span className="font-light text-xs">{label}</span>
+        <div className="flex items-center">
+          <span className="font-light text-xs">{label}</span>
+          {isBondExpired && (
+            <div className="bg-[#D9D9D9] border border-[#C6C6C6] px-1 rounded-sm text-[12px] mx-1">
+              Expired
+            </div>
+          )}
+        </div>
         {sublabel && (
           <span className="text-[#797979] text-xs font-light">{sublabel}</span>
         )}

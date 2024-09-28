@@ -330,9 +330,11 @@ export const TableDialog = ({
             <X className="size-7" />
           </DialogClose>
         </div>
-        {lcData?.lgIssuance === "LG 100% Cash Margin" ? (
+        {lcData?.type === "LG Issuance" &&
+        lcData?.lgIssuance === "LG 100% Cash Margin" ? (
           <LGIssuanceCashMarginDialog data={lcData} />
-        ) : lcData?.lgIssuance !== "LG 100% Cash Margin" ? (
+        ) : lcData?.type === "LG Issuance" &&
+          lcData?.lgIssuance !== "LG 100% Cash Margin" ? (
           <LGIssuanceDialog data={lcData} />
         ) : (
           <div className="relative mt-0 flex h-full items-start justify-between overflow-y-hidden">

@@ -22,6 +22,13 @@ const LgStep4Helper: React.FC<LgStepsProps1> = ({
     }
   }, [typeOfLg]);
 
+  useEffect(() => {
+    if (typeOfLg !== otherValue) {
+      setOtherValue("");
+      setIsOthersSelected(false);
+    }
+  }, [typeOfLg]);
+
   return (
     <div
       id="lg-step4"

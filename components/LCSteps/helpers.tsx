@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -44,7 +44,9 @@ export const DDInput = ({
 }) => {
   const [ddOpen, setDdOpen] = useState(false);
   const [ddVal, setDdVal] = useState("");
-
+  useEffect(() => {
+    setDdVal(value || "");
+  }, [value]);
   return (
     <label
       id={id}
@@ -70,14 +72,7 @@ export const DDInput = ({
             }`}
             disabled={disabled}
           >
-            {ddVal
-              ? data?.find(
-                  (country: string) =>
-                    country.toLowerCase() === ddVal.toLowerCase()
-                )
-              : value
-              ? value
-              : placeholder}
+            {ddVal ? ddVal : value ? value : placeholder}
             <ChevronDown
               className={`${
                 type === "baseRate"

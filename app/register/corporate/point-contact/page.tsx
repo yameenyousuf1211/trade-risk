@@ -107,12 +107,12 @@ const PointContactPage = () => {
       setPdfError(true);
       return;
     }
-    const { success } = await phoneVerification(data.pocPhone);
+    // const { success } = await phoneVerification(data.pocPhone);
 
-    if (!success) {
-      toast.error("Invalid phone number");
-      return;
-    }
+    // if (!success) {
+    //   toast.error("Invalid phone number");
+    //   return;
+    // }
     const reqData = {
       attachments: [pdfFile],
       ...data,

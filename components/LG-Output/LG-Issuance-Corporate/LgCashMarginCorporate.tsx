@@ -16,6 +16,7 @@ import { BidCard } from "./BidCard";
 import { convertDateToCommaString, formatAmount } from "@/utils";
 import { CashMarginBidCard } from "./CashMarginBidCard";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
+import ViewFileAttachment from "@/components/shared/ViewFileAttachment";
 
 const LGInfo = ({
   label,
@@ -155,10 +156,15 @@ export const LGCashMarginCorporate = ({
                   />
                 )
               )}
+              {data.issueLgWithStandardText &&
+                data?.attachments &&
+                data.attachments.length > 0 &&
+                data.attachments.map((attachment, index) => (
+                  <ViewFileAttachment key={index} attachment={attachment} />
+                ))}
               <h2 className="text-[18px] font-semibold mt-6 text-[#1A1A26]">
                 Beneficiary Details
               </h2>
-
               {beneficiaryDetails.map(
                 (
                   detail: { label: string; value: string },

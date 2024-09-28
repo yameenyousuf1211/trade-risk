@@ -8,6 +8,7 @@ import {
   formatNumberByAddingDigitsToStart,
 } from "@/utils";
 import { formatFirstLetterOfWord } from "../helper";
+import ViewFileAttachment from "@/components/shared/ViewFileAttachment";
 
 export const CashMarginBidCard = ({
   bidDetail,
@@ -61,7 +62,7 @@ export const CashMarginBidCard = ({
 
   return (
     <div className={`border border-borderCol rounded-lg mt-4`}>
-      <div className="border-b-2 border-[#979797] py-3 px-3">
+      <div className="py-3 px-3">
         <div className="grid grid-cols-2">
           <div>
             <p className="text-[#92929D] text-sm">Bid Number</p>
@@ -102,6 +103,10 @@ export const CashMarginBidCard = ({
             </p>
           </div>
         </div>
+        {bidDetail.attachments.length > 0 &&
+          bidDetail.attachments.map((attachment, index) => (
+            <ViewFileAttachment key={index} attachment={attachment} />
+          ))}
       </div>
       <div className="p-4">
         <p className="font-semibold text-[17px]">

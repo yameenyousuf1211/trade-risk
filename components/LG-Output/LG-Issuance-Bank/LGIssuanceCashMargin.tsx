@@ -374,6 +374,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
           },
           (error) => {
             setUploadError(error.message);
+            toast.error(error.message);
           },
           (progressBar, progress) => {
             setShowProgressBar(progressBar);
@@ -408,6 +409,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
           );
         },
         (error) => {
+          toast.error(error.message);
           console.log(error);
         }
       );

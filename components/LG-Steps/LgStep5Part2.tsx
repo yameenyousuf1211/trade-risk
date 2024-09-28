@@ -108,6 +108,7 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({
           },
           (error) => {
             setUploadError(error.message);
+            toast.error(error.message);
           },
           (progressBar, progress) => {
             setShowProgressBar(progressBar);

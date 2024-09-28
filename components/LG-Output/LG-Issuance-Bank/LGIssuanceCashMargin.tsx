@@ -23,6 +23,9 @@ import BidPreviewCashMargin from "./BidPreviewCashMargin";
 import { DDInput } from "@/components/LCSteps/helpers";
 import { getCities } from "@/services/apis/helpers.api";
 import { toast } from "sonner";
+import FileUploadService from "@/services/apis/fileUpload.api";
+import { FileCard } from "@/components/LCSteps/Step7";
+import ViewFileAttachment from "@/components/shared/ViewFileAttachment";
 
 const LGInfo = ({
   label,
@@ -67,6 +70,19 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
   const lgCollectInType = watch("collectLg.type");
   const [isPreview, setIsPreview] = useState(false);
   const [formData, setFormData] = useState<any>(null);
+  const [showProgressBar, setShowProgressBar] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [files, setFiles] = useState<
+    {
+      file: File;
+      url: string;
+      userFileName: string;
+      firebaseFileName: string;
+      fileSize: number;
+      fileType: string;
+    }[]
+  >([]);
   const [isoCodeIssue, setIsoCodeIssue] = useState<string | null>(
     data.lgIssueIn.isoCode
   );
@@ -213,6 +229,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
         issueLg: mostRecentBid.issueLg,
         collectLg: mostRecentBid.collectLg,
       });
+      setFiles(mostRecentBid.attachments);
       setIsPreview(true);
     }
 
@@ -268,6 +285,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
       bidType: "LG Issuance",
       lc: data._id,
       bidValidity: formData.bidValidity,
+      attachments: files,
       issueLg: {
         branchAddress: formData.issueLg.branchAddress,
         email: formData.issueLg.email,
@@ -304,6 +322,98 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     setIsPreview(false);
     setUserBidStatus({});
     setUserBid(null);
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = event.target.files;
+    if (selectedFiles) {
+      const newFiles = Array.from(selectedFiles);
+
+      // Define allowed MIME types, not just file extensions
+      const allowedFileTypes = [
+        "application/pdf", // PDF
+        "image/jpeg", // JPEG/JPG
+        "image/jpg", // JPG (not always required as image/jpeg covers this)
+        "image/tiff", // TIFF
+        "application/msword", // DOC
+        "image/png",
+      ];
+
+      // Filter files based on MIME types
+      const filteredFiles = newFiles.filter((file) => {
+        return allowedFileTypes.includes(file.type);
+      });
+      // Proceed with the file upload for valid files
+      filteredFiles.forEach((file) => {
+        FileUploadService.upload(
+          file,
+          (url, firebaseFileName) => {
+            const newFile = {
+              file,
+              url,
+              userFileName: file.name, // User's file name for display
+              firebaseFileName, // Firebase's file name for deletion
+              fileSize: file.size,
+              fileType: file.type.split("/")[1].toUpperCase(), // Get file type from MIME type
+            };
+
+            setFiles((prevFiles) => {
+              const updatedFiles = [...prevFiles, newFile];
+              setValue(
+                "attachments",
+                updatedFiles.map((f) => ({
+                  url: f.url,
+                  userFileName: f.userFileName,
+                  firebaseFileName: f.firebaseFileName,
+                  fileSize: f.fileSize,
+                  fileType: f.fileType,
+                }))
+              );
+              return updatedFiles.slice(0, 1);
+            });
+          },
+          (error) => {
+            toast.error("Unable to upload file");
+            setUploadError(error.message);
+          },
+          (progressBar, progress) => {
+            setShowProgressBar(progressBar);
+            setProgress(progress);
+          }
+        );
+      });
+    }
+  };
+
+  const handleRemoveFile = (userFileName: string) => {
+    const fileToRemove = files.find(
+      (file) => file.userFileName === userFileName
+    );
+    if (fileToRemove) {
+      FileUploadService.delete(
+        fileToRemove.firebaseFileName, // Use Firebase file name for deletion
+        () => {
+          const updatedFiles = files.filter(
+            (file) => file.userFileName !== userFileName
+          );
+          setFiles(updatedFiles);
+          setValue(
+            "attachments",
+            updatedFiles.map((f) => ({
+              url: f.url,
+              userFileName: f.userFileName,
+              firebaseFileName: f.firebaseFileName,
+              fileSize: f.fileSize,
+              fileType: f.fileType,
+            }))
+          );
+        },
+        (error) => {
+          toast.error("Unable to remove file");
+          console.log(error);
+        }
+      );
+    }
   };
 
   return (
@@ -353,7 +463,12 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
               value={detail.value || "-"}
             />
           ))}
-
+          {data.issueLgWithStandardText &&
+            data?.attachments &&
+            data.attachments.length > 0 &&
+            data.attachments.map((attachment, index) => (
+              <ViewFileAttachment key={index} attachment={attachment} />
+            ))}
           <h2 className="font-semibold text-lg mt-3">Beneficiary Details</h2>
           {beneficiaryDetails.map((detail, index) => (
             <LGInfo
@@ -367,6 +482,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
       {isPreview ? (
         <BidPreviewCashMargin
           formData={formData}
+          files={files}
           onSubmitBid={onSubmitBid}
           setIsPreview={setIsPreview}
           handleNewBid={handleNewBid}
@@ -445,32 +561,46 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
             </div>
 
             {/* Upload Section */}
-            <label
-              htmlFor="attachment-input"
-              className="cursor-pointer flex flex-col justify-center items-center border-[3px] border-borderCol border-dotted py-4 rounded-md bg-transparent my-4"
-            >
-              <input
-                id="attachment-input"
-                type="file"
-                multiple
-                style={{ display: "none" }}
-              />
-              <div className="size-12 bg-white center rounded-full shadow-sm">
-                <Image
-                  src="/images/attachment.svg"
-                  alt="att"
-                  width={27}
-                  height={27}
+            {files.length < 1 && (
+              <label
+                htmlFor="attachment-input"
+                className="cursor-pointer flex flex-col justify-center items-center border-[3px] border-borderCol border-dotted py-4 rounded-md bg-transparent my-4"
+              >
+                <input
+                  id="attachment-input"
+                  type="file"
+                  multiple={false}
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                  accept=".jpg,.jpeg,.pdf,.tiff,.doc,.png"
                 />
+                <div className="size-12 bg-white center rounded-full shadow-sm">
+                  <Image
+                    src="/images/attachment.svg"
+                    alt="att"
+                    width={27}
+                    height={27}
+                  />
+                </div>
+                <p className="text-lg font-semibold text-lightGray mt-4">
+                  Upload Your Attachment Here
+                </p>
+                <p className="text-lightGray">
+                  Drag your files here or click to select from your device
+                </p>
+              </label>
+            )}
+            {files.length > 0 && (
+              <div className="my-3 flex flex-col gap-y-3">
+                {files.map((file) => (
+                  <FileCard
+                    key={file.userFileName}
+                    file={file}
+                    onRemoveFile={handleRemoveFile}
+                  />
+                ))}
               </div>
-              <p className="text-lg font-semibold text-lightGray mt-4">
-                Upload Your Attachment Here
-              </p>
-              <p className="text-lightGray">
-                Drag your files here or click to select from your device
-              </p>
-            </label>
-
+            )}
             {/* Corporate Wants to Issue Section */}
             <div className="w-full bg-gray-50 p-4 rounded-lg mb-4 border border-gray-300">
               <p className="text-sm font-semibold mb-2">

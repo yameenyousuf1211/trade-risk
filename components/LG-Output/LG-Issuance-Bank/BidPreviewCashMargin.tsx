@@ -5,6 +5,7 @@ import { ConfirmationModal } from "../ConfirmationModal";
 import { useAuth } from "@/context/AuthProvider";
 import { convertDateAndTimeToString } from "../../../utils/helper/helper";
 import { formatFirstLetterOfWord } from "../helper";
+import ViewFileAttachment from "@/components/shared/ViewFileAttachment";
 
 const BidPreviewCashMargin = ({
   formData,
@@ -12,12 +13,14 @@ const BidPreviewCashMargin = ({
   setIsPreview,
   handleNewBid,
   userBidStatus,
+  files,
 }: {
   formData: any;
   onSubmitBid: () => void;
   setIsPreview: (value: boolean) => void;
   userBidStatus: { label: string; status: string };
   handleNewBid: () => void;
+  files: any;
 }) => {
   const { user } = useAuth();
   const [isApproved, setIsApproved] = useState<boolean>(false);
@@ -83,7 +86,10 @@ const BidPreviewCashMargin = ({
           per annum
         </p>
       </div>
-
+      {files.length > 0 &&
+        files.map((attachment, index) => (
+          <ViewFileAttachment key={index} attachment={attachment} />
+        ))}
       <div className="mt-4 border p-4 rounded-md bg-[#f6f7f9]">
         <h4 className="font-semibold">LG Issue Information</h4>
         <p className="mt-2 text-[#5f5f5f]">

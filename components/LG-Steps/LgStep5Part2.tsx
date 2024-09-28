@@ -12,6 +12,8 @@ import Image from "next/image";
 import { FileCard } from "../LCSteps/Step7";
 import useStepStore from "@/store/lcsteps.store";
 import { STANDARD_TEXT } from "@/utils/constant/lg";
+import FileUploadService from "@/services/apis/fileUpload.api";
+import { toast } from "sonner";
 
 const LgStep5Part2: React.FC<LgStepsProps3> = ({
   register,
@@ -21,12 +23,21 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({
 }) => {
   const issueLgWithStandardText = watch("issueLgWithStandardText");
   const lgStandardText = watch("lgStandardText");
-
+  const attachments = watch("attachments");
+  const [showProgressBar, setShowProgressBar] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [files, setFiles] = useState<
+    {
+      file: File;
+      url: string;
+      userFileName: string;
+      firebaseFileName: string;
+      fileSize: number;
+      fileType: string;
+    }[]
+  >([]);
   // State to hold the selected file (only one file allowed)
-  useEffect(() => {
-    console.log(issueLgWithStandardText, "issueLg");
-  }, [issueLgWithStandardText]);
-  const [selectedFile, setSelectedFile] = useState<FileList | null>(null);
   const { addStep, removeStep } = useStepStore();
 
   useEffect(() => {
@@ -34,28 +45,108 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({
       if (lgStandardText) addStep(STANDARD_TEXT);
       else removeStep(STANDARD_TEXT);
     } else if (issueLgWithStandardText === "false") {
-      if (selectedFile) addStep(STANDARD_TEXT);
+      if (files.length > 0) addStep(STANDARD_TEXT);
       else removeStep(STANDARD_TEXT);
     } else {
       removeStep(STANDARD_TEXT);
     }
-  }, [issueLgWithStandardText, lgStandardText, selectedFile]);
+  }, [issueLgWithStandardText, lgStandardText, files]);
+
+  useEffect(() => {
+    if (attachments?.length > 0) {
+      setFiles(attachments);
+    }
+  }, [attachments]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      // Only allow one file to be selected
-      setSelectedFile(files);
+    const selectedFiles = event.target.files;
+    if (selectedFiles) {
+      const newFiles = Array.from(selectedFiles);
 
-      // Update the attachments array with just the one selected file
-      setValue("attachments", [files]);
+      // Define allowed MIME types, not just file extensions
+      const allowedFileTypes = [
+        "application/pdf", // PDF
+        "image/jpeg", // JPEG/JPG
+        "image/jpg", // JPG (not always required as image/jpeg covers this)
+        "image/tiff", // TIFF
+        "application/msword", // DOC
+        "image/png",
+      ];
+
+      // Filter files based on MIME types
+      const filteredFiles = newFiles.filter((file) => {
+        return allowedFileTypes.includes(file.type);
+      });
+      // Proceed with the file upload for valid files
+      filteredFiles.forEach((file) => {
+        FileUploadService.upload(
+          file,
+          (url, firebaseFileName) => {
+            const newFile = {
+              file,
+              url,
+              userFileName: file.name, // User's file name for display
+              firebaseFileName, // Firebase's file name for deletion
+              fileSize: file.size,
+              fileType: file.type.split("/")[1].toUpperCase(), // Get file type from MIME type
+            };
+
+            setFiles((prevFiles) => {
+              const updatedFiles = [...prevFiles, newFile];
+              setValue(
+                "attachments",
+                updatedFiles.map((f) => ({
+                  url: f.url,
+                  userFileName: f.userFileName,
+                  firebaseFileName: f.firebaseFileName,
+                  fileSize: f.fileSize,
+                  fileType: f.fileType,
+                }))
+              );
+              return updatedFiles.slice(0, 1);
+            });
+          },
+          (error) => {
+            toast.error("Unable to upload file");
+            setUploadError(error.message);
+          },
+          (progressBar, progress) => {
+            setShowProgressBar(progressBar);
+            setProgress(progress);
+          }
+        );
+      });
     }
   };
 
-  const handleRemoveFile = (name: string) => {
-    if (selectedFile && selectedFile[0].name === name) {
-      setSelectedFile(null);
-      setValue("attachments", []);
+  const handleRemoveFile = (userFileName: string) => {
+    const fileToRemove = files.find(
+      (file) => file.userFileName === userFileName
+    );
+    if (fileToRemove) {
+      FileUploadService.delete(
+        fileToRemove.firebaseFileName, // Use Firebase file name for deletion
+        () => {
+          const updatedFiles = files.filter(
+            (file) => file.userFileName !== userFileName
+          );
+          setFiles(updatedFiles);
+          setValue(
+            "attachments",
+            updatedFiles.map((f) => ({
+              url: f.url,
+              userFileName: f.userFileName,
+              firebaseFileName: f.firebaseFileName,
+              fileSize: f.fileSize,
+              fileType: f.fileType,
+            }))
+          );
+        },
+        (error) => {
+          toast.error("Unable to remove file");
+          console.log(error);
+        }
+      );
     }
   };
 
@@ -117,39 +208,44 @@ const LgStep5Part2: React.FC<LgStepsProps3> = ({
             </div>
           ) : (
             <div id="step7" className="w-full rounded-lg h-full scroll-target">
-              <div className="bg-[#F5F7F9] p-2 mt-2 rounded-md">
-                <label
-                  htmlFor="attachment-input"
-                  className="cursor-pointer flex flex-col justify-center items-center border-4 border-borderCol border-dotted py-4 rounded-md bg-[#F5F7F9]"
-                >
-                  <input
-                    id="attachment-input"
-                    type="file"
-                    onChange={handleFileChange}
-                    style={{ display: "none" }}
-                    accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                  />
-                  <div className="size-12 bg-white center rounded-full shadow-sm">
-                    <Image
-                      src="/images/attachment.svg"
-                      alt="att"
-                      width={27}
-                      height={27}
+              {files.length < 1 && (
+                <div className="bg-[#F5F7F9] p-2 mt-2 rounded-md">
+                  <label
+                    htmlFor="attachment-input"
+                    className="cursor-pointer flex flex-col justify-center items-center border-4 border-borderCol border-dotted py-4 rounded-md bg-[#F5F7F9]"
+                  >
+                    <input
+                      id="attachment-input"
+                      type="file"
+                      multiple={false}
+                      onChange={handleFileChange}
+                      style={{ display: "none" }}
+                      accept=".jpg,.jpeg,.pdf,.tiff,.doc,.png"
                     />
-                  </div>
-                  <p className="text-lg font-semibold text-lightGray mt-4">
-                    Attach a LG draft here
-                  </p>
-                  Drag your file here or click to select from your device
-                </label>
-              </div>
-              {selectedFile && (
-                <div className="flex flex-col gap-y-3 mt-5">
-                  <FileCard
-                    key={selectedFile[0].name}
-                    file={selectedFile}
-                    onRemoveFile={() => handleRemoveFile(selectedFile[0].name)}
-                  />
+                    <div className="size-12 bg-white center rounded-full shadow-sm">
+                      <Image
+                        src="/images/attachment.svg"
+                        alt="att"
+                        width={27}
+                        height={27}
+                      />
+                    </div>
+                    <p className="text-lg font-semibold text-lightGray mt-4">
+                      Attach a LG draft here
+                    </p>
+                    Drag your file here or click to select from your device
+                  </label>
+                </div>
+              )}
+              {files.length > 0 && (
+                <div className="mt-3 flex flex-col gap-y-3">
+                  {files.map((file) => (
+                    <FileCard
+                      key={file.userFileName}
+                      file={file}
+                      onRemoveFile={handleRemoveFile}
+                    />
+                  ))}
                 </div>
               )}
             </div>

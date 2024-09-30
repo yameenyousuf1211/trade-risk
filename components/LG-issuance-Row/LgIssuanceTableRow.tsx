@@ -322,6 +322,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
             lgDetails !== "Choose any other type of LGs" && !checkedValue
           }
           value={currencyType}
+          defaultValue="USD"
           onValueChange={(value) => {
             setValue(`${name}.currencyType`, value);
           }}

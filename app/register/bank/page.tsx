@@ -36,15 +36,23 @@ export const CheckBoxInput = ({
   id,
   register,
   onChange,
+  checked,
 }: {
   label: string;
   id: string;
   register: any;
   onChange?: any;
+  checked?: boolean; // Accept checked prop
 }) => {
   return (
     <div className="my-2 flex items-center space-x-2 font-roboto">
-      <input type="checkbox" id={id} {...register(id)} onChange={onChange} />
+      <input
+        type="checkbox"
+        id={id}
+        {...register(id)}
+        onChange={onChange}
+        checked={checked} // Bind checked prop
+      />
       <label htmlFor={id} className="text-sm leading-none text-[#44444F]">
         {label}
       </label>

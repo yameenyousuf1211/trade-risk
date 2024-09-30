@@ -114,6 +114,7 @@ const LgStep6Part2: React.FC<LgStepsProps2> = ({
               onValueChange={(value) => {
                 setValue("lgDetails.currency", value);
               }}
+              defaultValue={"USD"}
             >
               <SelectTrigger className="w-[100px] bg-borderCol/80 h-12">
                 <SelectValue placeholder="USD" />

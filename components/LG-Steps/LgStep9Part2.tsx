@@ -21,12 +21,12 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
   type, // Accept type prop
 }) => {
   const lgDetails = watch(type === "issue" ? "lgIssueIn" : "lgCollectIn");
+  const isSameAsIssue = watch("isSameAsIssuance");
+
   const lgIssueInDetails = watch("lgIssueIn");
   const [isoCode, setIsoCode] = useState<string | null>(
     lgDetails?.isoCode || ""
   );
-
-  const [isSameAsIssue, setIsSameAsIssue] = useState(false); // State to track checkbox
 
   // Whenever the isoCode changes, update the form values
   useEffect(() => {
@@ -39,10 +39,14 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
   // Whenever the checkbox changes, update the form values
   useEffect(() => {
     if (isSameAsIssue) {
-      // Copy values from lgIssueIn to lgCollectIn when checkbox is checked
       setValue("lgCollectIn", lgIssueInDetails);
     }
-  }, [isSameAsIssue, lgIssueInDetails, setValue]);
+  }, [
+    isSameAsIssue,
+    setValue,
+    lgIssueInDetails?.country,
+    lgIssueInDetails?.city,
+  ]);
 
   const { data: cities, isLoading } = useQuery({
     queryKey: ["cities", isoCode],
@@ -51,7 +55,7 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
   });
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsSameAsIssue(e.target.checked); // Update the checkbox state
+    setValue("isSameAsIssuance", e.target.checked);
     if (e.target.checked) {
       // Copy values from lgIssueIn to lgCollectIn when checked
       setValue("lgCollectIn", lgIssueInDetails);
@@ -85,7 +89,7 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
           <CheckBoxInput
             label="Same as LG physical issue"
             register={register}
-            id="sameAsIssueCheckbox" // ID for the checkbox
+            id="isSameAsIssuance" // ID for the checkbox
             onChange={handleCheckboxChange} // Call the handler
           />
         )}
@@ -96,12 +100,19 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
           <CountrySelect
             setIsoCode={setIsoCode}
             setValue={setValue}
+            value={lgDetails?.country}
             extraClassName="h-[3.5em]"
             name={
               type === "issue" ? "lgIssueIn.country" : "lgCollectIn.country"
             } // Adjust name based on type
             placeholder={lgDetails?.country || "Select Country"}
-            disabled={isSameAsIssue} // Disable when checkbox is checked
+            disabled={type !== "issue" && isSameAsIssue} // Disable when checkbox is checked
+            onChange={() => {
+              setValue(
+                type === "issue" ? "lgIssueIn.city" : "lgCollectIn.city",
+                ""
+              );
+            }}
           />
           <DDInput
             placeholder="Select City"
@@ -109,7 +120,9 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
             id={type === "issue" ? "lgIssueIn.city" : "lgCollectIn.city"} // Adjust id based on type
             value={lgDetails?.city}
             setValue={setValue}
-            disabled={isSameAsIssue || isLoading || !isoCode} // Disable when checkbox is checked or no isoCode
+            disabled={
+              (type !== "issue" && isSameAsIssue) || isLoading || !isoCode
+            } // Disable when checkbox is checked or no isoCode
             data={
               cities?.success
                 ? Array.from(

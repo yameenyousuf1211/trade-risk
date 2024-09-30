@@ -6,6 +6,8 @@ import { DDInput } from "../LCSteps/helpers";
 import { Input } from "../ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { getBanks } from "@/services/apis/helpers.api";
+import useStepStore from "@/store/lcsteps.store";
+import { LG_ISSUING_BANK } from "@/utils/constant/lg";
 
 export default function LgStep3CashMargin({
   register,
@@ -18,10 +20,34 @@ export default function LgStep3CashMargin({
   // Watch the entire preferredBanks object
   const preferredBanks = watch("preferredBanks");
   const preferredBanksArray = preferredBanks?.banks || [];
-
+  const { addStep, removeStep } = useStepStore();
   // Watch the country field
   const preferredCountry = watch("preferredBanks.country");
 
+  useEffect(() => {
+    const subscription = watch((value) => {
+      const issuingBanks = value.preferredBanks?.banks || [];
+      const preferredCountry = value.preferredBanks?.country || "";
+
+      const allFieldsFilled = issuingBanks.every(
+        (bank: any) =>
+          bank.bank?.trim() !== "" &&
+          bank.swiftCode?.trim() !== "" &&
+          bank.accountNumber?.trim() !== "" &&
+          preferredCountry.trim() !== ""
+      );
+
+      if (allFieldsFilled) {
+        console.log("Adding step:", LG_ISSUING_BANK);
+        addStep(LG_ISSUING_BANK);
+      } else {
+        console.log("Removing step:", LG_ISSUING_BANK);
+        removeStep(LG_ISSUING_BANK);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [watch, addStep, removeStep]);
   // Ensure there is always one preferred bank
   useEffect(() => {
     if (preferredBanksArray.length === 0) {

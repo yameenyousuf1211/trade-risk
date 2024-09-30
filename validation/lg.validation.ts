@@ -205,5 +205,6 @@ export const lg100CashMarginSchema = baseSchema.concat(
         ),
       })
       .required(),
+    isSameAsIssuance: Yup.boolean().default(false),
   })
 );

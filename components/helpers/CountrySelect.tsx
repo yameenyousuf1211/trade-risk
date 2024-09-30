@@ -27,6 +27,7 @@ export const CountrySelect = ({
   extraClassName,
   placeholder,
   value,
+  onChange,
   disabled,
 }: {
   setIsoCode: any;
@@ -36,6 +37,7 @@ export const CountrySelect = ({
   placeholder?: string;
   extraClassName?: string;
   disabled?: boolean;
+  onChange?: any;
   value?: string;
 }) => {
   const [countryOpen, setCountryOpen] = useState(false);
@@ -97,6 +99,7 @@ export const CountrySelect = ({
                       setCountryCode(currentValue);
                       setValueChange &&
                         setValueChange((prev: boolean) => !prev);
+                      onChange && onChange();
                     }}
                   >
                     <Check

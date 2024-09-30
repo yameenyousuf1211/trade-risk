@@ -32,6 +32,7 @@ import {
   LC_DETAILS,
   LG_DETAILS,
   LG_ISSUING_BANK,
+  LG_PREFERRED_BANKS,
   PHYSICAL_LG,
   PRICE_QUOTE,
   REMARKS,
@@ -68,7 +69,7 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
   const lgCrumbs = [
     CHOOSE_TYPE,
     APPLICANT_DETAILS,
-    LG_ISSUING_BANK,
+    LG_PREFERRED_BANKS,
     TYPE_OF_LG,
     STANDARD_TEXT,
     LG_DETAILS,

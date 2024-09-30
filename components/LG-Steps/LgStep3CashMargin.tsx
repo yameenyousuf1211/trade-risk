@@ -7,7 +7,7 @@ import { Input } from "../ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { getBanks } from "@/services/apis/helpers.api";
 import useStepStore from "@/store/lcsteps.store";
-import { LG_ISSUING_BANK } from "@/utils/constant/lg";
+import { LG_PREFERRED_BANKS } from "@/utils/constant/lg";
 
 export default function LgStep3CashMargin({
   register,
@@ -38,11 +38,9 @@ export default function LgStep3CashMargin({
       );
 
       if (allFieldsFilled) {
-        console.log("Adding step:", LG_ISSUING_BANK);
-        addStep(LG_ISSUING_BANK);
+        addStep(LG_PREFERRED_BANKS);
       } else {
-        console.log("Removing step:", LG_ISSUING_BANK);
-        removeStep(LG_ISSUING_BANK);
+        removeStep(LG_PREFERRED_BANKS);
       }
     });
 

@@ -180,6 +180,7 @@ export default function LgIssuance() {
       // Update existing data
       removeUnnecessaryFields(responseData);
     }
+    console.log(responseData, "responseData");
     if (storeData.data._id) {
       const { response, success } = await onUpdateLC({
         payload: responseData,

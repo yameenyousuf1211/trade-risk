@@ -87,6 +87,7 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
         </div>
         {type !== "issue" && (
           <CheckBoxInput
+            checked={isSameAsIssue}
             label="Same as LG physical issue"
             register={register}
             id="isSameAsIssuance" // ID for the checkbox

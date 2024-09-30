@@ -82,6 +82,9 @@ export default function LgIssuance() {
             setValue(key, value);
           }
         }
+        if (key === "isSameAsIssuance") {
+          setValue(key, value);
+        }
         // if (key == "expectedPrice") {
         //   console.log("🚀 ~ expectedPrice store value 123", value);
         // }

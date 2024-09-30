@@ -16,3 +16,4 @@ export const BENEFICIARY = "Beneficiary";
 export const PHYSICAL_LG = "Physical LG";
 export const REMARKS = "Remarks";
 export const PRICE_QUOTE = "Price Quote";
+export const LG_PREFERRED_BANKS = "LG Preferred Banks";

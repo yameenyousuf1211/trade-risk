@@ -10,7 +10,6 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { LgStepsProps5 } from "@/types/lg";
-import LgIssuanceTableRow from "../LG-issuance-Row/LgIssuanceTableRow";
 import { convertStringToNumber } from "@/utils";
 import {
   Select,
@@ -22,6 +21,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getCurrency } from "@/services/apis/helpers.api";
 import { Input } from "../ui/input";
+import LgIssuanceTableRow from "../LG-issuance-Row/LgIssuanceTableRow";
 
 const LgStep5Helper: FC<LgStepsProps5> = ({
   register,

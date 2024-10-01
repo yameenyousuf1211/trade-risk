@@ -68,7 +68,7 @@ const LgStep12: React.FC<LgStepsProps10> = ({
     retentionMoneyBondExpectedDate,
     advancePaymentBondExpectedDate,
     lgCashMarginExpectedDate,
-    lcStartDate && new Date()
+    lcStartDate
   );
   return (
     <div

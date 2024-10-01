@@ -16,7 +16,7 @@ import useDiscountingStore from "@/store/discounting.store";
 import useConfirmationDiscountingStore from "@/store/confirmationDiscounting.store";
 import useLcIssuance from "@/store/issueance.store";
 import { getLgBondTotal } from "../LG-Output/helper";
-import { formatAmount } from '../../utils/helper/helper';
+import { formatAmount } from "../../utils/helper/helper";
 
 const DraftCard = ({
   noBorder,

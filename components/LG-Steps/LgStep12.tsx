@@ -53,7 +53,6 @@ const LgStep12: React.FC<LgStepsProps10> = ({
       : null;
   };
 
-  // Find the maximum lgExpiryDate
   const maxLgExpiryDate = findMaxDate(
     bidBondExpiryDate,
     performanceBondExpiryDate,

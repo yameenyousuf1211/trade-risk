@@ -380,14 +380,14 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
   };
 
   const beneficiaryDetails = [
-    { label: "Beneficiary Name", value: data.beneficiaryDetails.name },
-    { label: "Beneficiary Address", value: data.beneficiaryDetails.address },
-    { label: "Beneficiary Country", value: data.beneficiaryDetails.country },
+    { label: "Beneficiary Name", value: data?.beneficiaryDetails?.name },
+    { label: "Beneficiary Address", value: data?.beneficiaryDetails?.address },
+    { label: "Beneficiary Country", value: data?.beneficiaryDetails?.country },
     {
       label: "Beneficiary Phone",
-      value: data.beneficiaryDetails.phoneNumber,
+      value: data?.beneficiaryDetails?.phoneNumber,
     },
-    { label: "Beneficiary City", value: data.beneficiaryDetails.city },
+    { label: "Beneficiary City", value: data?.beneficiaryDetails?.city },
   ].filter((detail) => detail.value);
 
   const handleNewBid = () => {
@@ -418,13 +418,13 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
               convertDateAndTimeToStringGMT({ date: data.createdAt })}
             , by{" "}
             <span className="text-blue-500">
-              {formatFirstLetterOfWord(data.applicantDetails.company)}
+              {formatFirstLetterOfWord(data?.applicantDetails?.company)}
             </span>
           </h5>
           <h3 className="text-[#92929D] text-base font-light">
             Total LG Amount Requested{" "}
             <span className="text-[20px] text-[#1A1A26] font-semibold">
-              {data.totalContractCurrency || "USD"}{" "}
+              {data?.totalContractCurrency || "USD"}{" "}
               {formatAmount(getLgBondTotal(data))}.00
             </span>
           </h3>
@@ -432,7 +432,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
         <div className="ml-7 mr-1 mt-2">
           <LGInfo
             label="Applicant Name"
-            value={data.applicantDetails.company}
+            value={data?.applicantDetails?.company}
           />
           {data.totalContractCurrency && data.totalContractValue && (
             <LGInfo
@@ -632,7 +632,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           bidValidityDate={
             userBid ? convertDateToCommaString(userBid.bidValidity) : undefined
           }
-          bidNumber={userBid ? userBid._id.substring(0, 6) : undefined}
+          bidNumber={userBid ? userBid.bidNumber : undefined}
           handleNewBid={handleNewBid}
           allBondsFilled={Object.values(bondPrices).some((bank) =>
             Object.values(bank).every((price) => price !== null && price !== "")

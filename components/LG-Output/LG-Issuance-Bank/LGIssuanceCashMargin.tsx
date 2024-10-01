@@ -99,17 +99,17 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     { label: "LG Type", value: data.typeOfLg },
     {
       label: "LG Tenor",
-      value: `${data.lgDetails.lgTenor.lgTenorValue} ${data.lgDetails.lgTenor.lgTenorType}`,
+      value: `${data?.lgDetails?.lgTenor?.lgTenorValue} ${data?.lgDetails?.lgTenor?.lgTenorType}`,
     },
     {
       label: "Expected Date of LG Issuance",
-      value: convertDateToCommaString(data.lgDetails.expectedDateToIssueLg),
+      value: convertDateToCommaString(data?.lgDetails?.expectedDateToIssueLg),
     },
     {
       label: "LG Expiry Date",
-      value: convertDateToCommaString(data.lgDetails.lgExpiryDate),
+      value: convertDateToCommaString(data?.lgDetails?.lgExpiryDate),
     },
-    { label: "Purpose of LG", value: data.remarks },
+    { label: "Purpose of LG", value: data?.remarks },
   ].filter((detail) => detail.value);
 
   const applicantDetails = [

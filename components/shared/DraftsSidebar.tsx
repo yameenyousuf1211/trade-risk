@@ -103,11 +103,11 @@ const DraftCard = ({
         <p className="text-[16px] font-semibold uppercase">
           {draft.currency || "USD"}{" "}
           {draft?.amount
-            ? draft.amount?.price?.toLocaleString()
+            ? draft.amount?.price?.toLocaleString() + ".00"
             : (draft as ILcs)?.type === "LG Issuance" &&
               draft.lgIssuance === "LG 100% Cash Margin"
             ? draft?.lgDetails?.amount?.toLocaleString()
-              ? draft?.lgDetails?.amount?.toLocaleString()
+              ? draft?.lgDetails?.amount?.toLocaleString() + ".00"
               : "0.00"
             : total.toLocaleString() + ".00"}
         </p>

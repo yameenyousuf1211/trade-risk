@@ -286,7 +286,7 @@ export const AddBid = ({
               : `px-3 mt-2 bg-[#F2994A] hover:bg-[#F2994A]/90 text-white opacity-80 ${
                   isNotification && "bg-[#0e1829] hover:bg-black/90 "
                 }`
-          } rounded-md w-full p-2 capitalize hover:opacity-85 font-roboto`}
+          } rounded-md w-full h-10 capitalize hover:opacity-85 font-roboto`}
           disabled={
             (((lcData?.status === "Accepted" && !isNotification) ||
               (lcData?.status === "Expired" && !isNotification)) &&

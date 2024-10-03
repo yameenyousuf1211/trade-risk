@@ -18,8 +18,6 @@ interface SearchParams {
   };
 }
 
-
-
 const HomePage = ({ searchParams }: SearchParams) => {
   const { page, limit, search, filter } = searchParams;
   const { user } = useAuth();
@@ -41,12 +39,9 @@ const HomePage = ({ searchParams }: SearchParams) => {
       enabled: !!user?.business?._id,
     });
   // console.log("fetching LCSSS", data);
-  console.log(user?.business, "user");
   if (user && user.type !== "corporate") {
     redirect("/dashboard");
   }
-
-
 
   return (
     <DashboardLayout>
@@ -66,7 +61,6 @@ const HomePage = ({ searchParams }: SearchParams) => {
           />
         </div>
         <div className="w-[20vw]  /5 w-[1 00%] mb-5  sticky top-10 h-[88vh]">
-
           <Sidebar isBank={false} />
         </div>
       </div>

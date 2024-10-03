@@ -346,6 +346,8 @@ export default function LgIssuance() {
           register={register}
           watch={watch}
           setStepCompleted={handleStepCompletion}
+          draft={storeData?.data?._id}
+          reset={reset}
         />
         <LgStep2
           register={register}

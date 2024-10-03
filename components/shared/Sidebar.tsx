@@ -171,9 +171,20 @@ const RequestCard = ({
   const { user } = useAuth();
 
   const bidsExist = Array.isArray(data?.bids);
+  // Filter pending bids and exclude expired ones
   const pendingBids = bidsExist
-    ? data.bids.filter((bid) => bid.status === "Pending")
+    ? data.bids.filter(
+        (bid) =>
+          bid.status === "Pending" && new Date(bid.bidValidity) > new Date()
+      )
     : [];
+
+  // Check if the last date of receiving bids has passed for banks
+  const isBidsExpiredForBank =
+    isBank && data.lastDateOfReceivingBids
+      ? new Date(data.lastDateOfReceivingBids) < new Date()
+      : false;
+
   const showData = bidsExist
     ? !data.bids.some((bid) => bid.bidBy === user?._id)
     : true;
@@ -189,10 +200,10 @@ const RequestCard = ({
     advancePaymentBond +
     performanceBond +
     retentionMoneyBond;
-  console.log(data, "RequestCard");
+
   return (
     <>
-      {isBank && riskType !== "myRisk" ? (
+      {isBank && riskType !== "myRisk" && !isBidsExpiredForBank ? (
         showData &&
         data.status !== "Expired" &&
         data.status !== "Accepted" &&
@@ -202,7 +213,7 @@ const RequestCard = ({
               {/* Data */}
               <div className="font-roboto">
                 <div className="flex items-center justify-between">
-                  <p className="font-regular text-[#1A1A26] text-[14px]">
+                  <p className="ml-[15%] font-medium text-[#1A1A26] text-[15px]">
                     Request #{formatNumberByAddingDigitsToStart(data.refId)}
                   </p>
                   <div className="w-10">
@@ -279,7 +290,6 @@ const RequestCard = ({
                   false
                 }
                 id={data?._id}
-                // isRisk={isRisk}
               />
             </div>
           </>
@@ -289,7 +299,7 @@ const RequestCard = ({
           {/* Data */}
           <div className="px-3 pt-2">
             <div className="flex items-center justify-between">
-              <p className="font-regular text-[#1A1A26] text-[14px]">
+              <p className="ml-[15%] font-medium text-[#1A1A26] text-[15px]">
                 Request #{formatNumberByAddingDigitsToStart(data.refId)}
               </p>
               <div className="w-10">
@@ -358,9 +368,6 @@ const RequestCard = ({
                 {pendingBids.length} bid
                 {pendingBids.length > 1 ? "s" : ""}
               </p>
-              {/* {pendingBids.length > 1 && (
-                <TableDialog bids={pendingBids} lcId={data._id} isViewAll />
-              )} */}
             </div>
           </div>
 

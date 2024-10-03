@@ -9,10 +9,34 @@ const LgStep1: React.FC<LgStepsProps1> = ({
   register,
   watch,
   setStepCompleted,
+  draft,
+  reset,
 }) => {
   const lgIssuance = watch("lgIssuance") || "LG Re-issuance in another country";
   const { setValue } = useBreadCrumbsTypeStore();
   const { addStep, removeStep } = useStepStore();
+
+  useEffect(() => {
+    if (!draft) {
+      reset(
+        {
+          lgIssuance: lgIssuance,
+          beneficiaryDetails: {
+            name: "",
+            address: "",
+            phoneNumber: "",
+          },
+          applicantDetails: {
+            crNumber: "",
+          },
+        },
+        {
+          keepValues: false, // Reset other fields
+          keepDirtyValues: false,
+        }
+      );
+    }
+  }, [lgIssuance, reset, watch]);
 
   useEffect(() => {
     if (lgIssuance) setValue(lgIssuance);

@@ -198,6 +198,7 @@ export default function MuiGrid({
             height: 72,
             borderRadius: 1.15,
             justifyContent: "center",
+            marginTop: "2%",
           },
           "& .MuiDataGrid-headerContainer": {
             backgroundColor: "#F5F7F9", // Your custom background color
@@ -206,6 +207,7 @@ export default function MuiGrid({
             height: 72,
             borderRadius: 1.15,
             justifyContent: "center",
+            gap: "4.5px",
           },
         }}
       />

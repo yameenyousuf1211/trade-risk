@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { ApiResponse, ILcs, IRisk, Country } from "@/types/type";
 import {
   convertDateToString,
@@ -17,7 +16,11 @@ import {
   BidsCountrySelect,
   DateRangePicker,
   SearchBar,
+  TableBidStatus,
 } from "../helpers";
+import MuiGrid from "./CustomTableGrid";
+import { useDebounce } from "@uidotdev/usehooks";
+import { formatFirstLetterOfWord } from "../LG-Output/helper";
 
 export const RequestTable = ({
   isBank,
@@ -31,7 +34,14 @@ export const RequestTable = ({
   isLoading: boolean;
 }) => {
   const [allCountries, setAllCountries] = useState<Country[]>([]);
-  const [tableData, setTableData] = useState<ILcs[]>([]);
+  const [tableData, setTableData] = useState<any>();
+  const [search, setSearch] = useState("");
+  const [debouncedSearch] = useDebounce(search, 700);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+  console.log(data, "tableData");
 
   const { data: countriesData } = useQuery({
     queryKey: ["countries"],
@@ -40,7 +50,7 @@ export const RequestTable = ({
 
   useEffect(() => {
     if (data) {
-      setTableData(data.data);
+      setTableData(data);
     }
   }, [data]);
 
@@ -77,85 +87,142 @@ export const RequestTable = ({
     return total;
   };
 
-  const columns: GridColDef[] = [
+  const columns = [
+    { field: "id", headerName: "ID", width: 200, hide: true },
     {
       field: "refId",
-      headerName: "Ref No",
-      width: 150,
+      width: 100,
       sortable: true,
+      hideSortIcons: true,
       disableColumnMenu: true,
       renderHeader: () => (
         <div className="flex items-center justify-between">
-          <span className="font-bold text-[#44444F] text-[14px]">Ref no</span>
+          <span className="font-bold text-[#44444F]">
+            {isBank ? "Deal ID" : "Ref No"}
+          </span>
           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer mx-2">
             <ChevronUp className="size-4" />
           </div>
         </div>
       ),
+      valueFormatter: (value) => formatNumberByAddingDigitsToStart(value),
     },
     {
       field: "startDate",
-      headerName: "Request On",
-      width: 150,
+      width: 140,
       sortable: true,
-      disableColumnMenu: true,
+      hideSortIcons: true,
+      align: "center",
       renderHeader: () => (
         <div className="flex items-center justify-between">
-          <span className="font-bold text-[#44444F] text-[14px]">
-            Request On
+          <span className="font-bold text-[#44444F]">
+            {isBank ? "Deal Received" : "Request On"}
           </span>
           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer mx-2">
             <ChevronUp className="size-4" />
           </div>
         </div>
       ),
+      renderCell: (params) => {
+        const item = params.row;
+        return (
+          <>
+            {item?.period?.startDate
+              ? convertDateToString(item?.period?.startDate)
+              : item?.startDate
+              ? convertDateToString((item as IRisk)?.startDate)
+              : (item as IRisk)?.createdAt &&
+                convertDateToString(new Date((item as IRisk)?.createdAt))}
+          </>
+        );
+      },
     },
     {
       field: "endDate",
-      headerName: "Expires On",
-      width: 150,
+      minWidth: 140,
       sortable: true,
-      disableColumnMenu: true,
+      hideSortIcons: true,
+      align: "center",
       renderHeader: () => (
         <div className="flex items-center justify-between">
-          <span className="font-bold text-[#44444F] text-[14px]">
-            Expires On
-          </span>
+          <span className="font-bold text-[#44444F]">Expires On</span>
           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer mx-2">
             <ChevronUp className="size-4" />
           </div>
         </div>
       ),
+      renderCell: (params) => {
+        const item = params.row;
+        return (
+          <>
+            {item?.period?.endDate
+              ? convertDateToString(item?.period?.endDate)
+              : item?.expiryDate
+              ? convertDateToString((item as IRisk)?.lastDateOfReceivingBids)
+              : item?.lastDateOfReceivingBids
+              ? convertDateToString(item?.lastDateOfReceivingBids)
+              : "-"}
+          </>
+        );
+      },
     },
     {
       field: "type",
-      headerName: "Product Type",
-      width: 150,
+      width: 170,
       sortable: true,
       disableColumnMenu: true,
+      hideSortIcons: true,
       renderHeader: () => (
         <div className="flex items-center justify-between">
-          <span className="font-bold text-[#44444F] text-[14px]">
-            Product Type
-          </span>
+          <span className="font-bold text-[#44444F]">Product Type</span>
           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer mx-2">
             <ChevronUp className="size-4" />
           </div>
         </div>
       ),
+      renderCell: (params) => {
+        const item = params.row;
+        return (
+          <>
+            {item?.type === "LG Issuance"
+              ? item?.lgIssuance
+              : item?.type ||
+                (item as IRisk)?.riskParticipationTransaction?.type}
+          </>
+        );
+      },
     },
     {
       field: "issuingBank",
       headerName: "Issuing Bank",
       width: 200,
+      align: "center",
       renderCell: (params) => {
-        const flag = getCountryFlagByName(params.value?.country);
+        const item = params.row.issuingBanks?.[0];
+        const flag = getCountryFlagByName(item?.country);
         return (
-          <div className="flex items-center gap-x-2">
+          <div className="space-x-1">
             <span className="emoji-font text-[16px]">{flag}</span>
-            <span>{params.value?.bank || "-"}</span>
+            {item?.bank ? (
+              <span>{formatFirstLetterOfWord(item.bank)}</span>
+            ) : (
+              <span>-</span>
+            )}
           </div>
         );
+      },
+      sortable: false,
+      disableColumnMenu: true,
+    },
+    {
+      field: "issuingCountry",
+      headerName: "Issuing Country",
+      width: 150,
+      align: "center",
+      hide: true,
+      renderCell: (params) => {
+        const item = params.row.issuingBanks?.[0];
+        return <>{item?.country || "-"}</>;
       },
       sortable: false,
       disableColumnMenu: true,
@@ -166,6 +233,18 @@ export const RequestTable = ({
       width: 150,
       sortable: false,
       disableColumnMenu: true,
+      align: "center",
+      renderCell: (params) => {
+        const item = params.row;
+        return (
+          <>
+            {(item.exporterInfo &&
+              formatFirstLetterOfWord(item.exporterInfo?.beneficiaryName)) ||
+              formatFirstLetterOfWord(item?.beneficiaryDetails?.name) ||
+              ""}
+          </>
+        );
+      },
     },
     {
       field: "applicantName",
@@ -173,13 +252,28 @@ export const RequestTable = ({
       width: 150,
       sortable: false,
       disableColumnMenu: true,
+      align: "center",
+      renderCell: (params) => {
+        const item = params.row;
+        return (
+          <>
+            {((item.importerInfo &&
+              formatFirstLetterOfWord(item.importerInfo?.applicantName)) ||
+              item?.applicantDetails?.name ||
+              item?.applicantDetails?.company) ??
+              "-"}
+          </>
+        );
+      },
     },
     {
       field: "amount",
       headerName: "Amount",
       width: 150,
       sortable: true,
+      hideSortIcons: true,
       disableColumnMenu: true,
+      align: "center",
       renderHeader: () => (
         <div className="flex items-center justify-between">
           <span className="font-bold text-[#44444F] text-[14px]">Amount</span>
@@ -188,13 +282,36 @@ export const RequestTable = ({
           </div>
         </div>
       ),
+      renderCell: (params) => {
+        const item = params.row;
+        return (
+          <>
+            {item.type === "LG Issuance"
+              ? item.lgIssuance === "LG 100% Cash Margin"
+                ? `${
+                    item.lgDetails.currency || "USD"
+                  } ${item?.lgDetails?.amount?.toLocaleString()}`
+                : `${item.totalContractCurrency || "USD"} ${getTotal(
+                    item
+                  ).toLocaleString()}`
+              : item?.amount
+              ? `${
+                  item?.currency ? item.currency.toUpperCase() : "USD"
+                } ${item?.amount?.price?.toLocaleString()}`
+              : `${item?.currency ? item.currency.toUpperCase() : "USD"} ${(
+                  item as IRisk
+                )?.riskParticipationTransaction?.amount?.toLocaleString()}`}
+          </>
+        );
+      },
     },
     {
       field: "bids",
       headerName: "Bids",
-      width: 150,
+      width: isBank ? 150 : 80,
       sortable: true,
       disableColumnMenu: true,
+      hideSortIcons: true,
       renderHeader: () => (
         <div className="flex items-center justify-between">
           <span className="font-bold text-[#44444F] text-[14px]">Bids</span>
@@ -203,15 +320,35 @@ export const RequestTable = ({
           </div>
         </div>
       ),
+      renderCell: (params) => {
+        const item = params.row;
+        return (
+          <>
+            {!isBank ? (
+              item.bids?.length === 1 ? (
+                "1 bid"
+              ) : (
+                `${item.bids?.length || 0} bids`
+              )
+            ) : (
+              <TableBidStatus id={item._id} lcData={item} isRisk={isRisk} />
+            )}
+          </>
+        );
+      },
     },
     {
       field: "actions",
       width: 50,
-      renderHeader: () => <Plus className="text-primary" />,
+      renderHeader: () => (
+        <div className="center size-5 cursor-pointer rounded-full bg-black">
+          <Plus strokeWidth={2.5} className="size-4 text-white" />
+        </div>
+      ),
       disableColumnMenu: true,
       sortable: false,
       renderCell: (params) => {
-        const originalItem = tableData[params.id];
+        const originalItem = params.row;
         return (
           <ButtonBase>
             {originalItem.type == "LG Issuance" &&
@@ -233,58 +370,11 @@ export const RequestTable = ({
     },
   ];
 
-  const rows = tableData.map((item, index) => ({
-    id: index,
-    refId: item?.refId ? formatNumberByAddingDigitsToStart(item?.refId) : "-",
-    period: item.period,
-    type:
-      item?.type === "LG Issuance"
-        ? item?.lgIssuance
-        : item?.type || (item as IRisk)?.riskParticipationTransaction?.type,
-    startDate: item?.period?.startDate
-      ? convertDateToString(item?.period?.startDate)
-      : item?.startDate
-      ? convertDateToString((item as IRisk)?.startDate)
-      : (item as IRisk)?.createdAt &&
-        convertDateToString(new Date((item as IRisk)?.createdAt)),
-    endDate: item?.period?.endDate
-      ? convertDateToString(item?.period?.endDate)
-      : item?.expiryDate
-      ? convertDateToString((item as IRisk)?.lastDateOfReceivingBids)
-      : item?.lastDateOfReceivingBids
-      ? convertDateToString(item?.lastDateOfReceivingBids)
-      : "-",
-    issuingBank: item.issuingBanks?.[0] || {},
-    beneficiaryName:
-      (item.exporterInfo && item.exporterInfo?.beneficiaryName) ||
-      item?.beneficiaryDetails?.name ||
-      "",
-    applicantName:
-      ((item.importerInfo && item.importerInfo?.applicantName) ||
-        item?.applicantDetails?.name ||
-        item?.applicantDetails?.company) ??
-      "-",
-    amount:
-      item.type === "LG Issuance"
-        ? item.lgIssuance === "LG 100% Cash Margin"
-          ? `${
-              item.lgDetails.currency || "USD"
-            } ${item?.lgDetails?.amount?.toLocaleString()}`
-          : `${item.totalContractCurrency || "USD"} ${getTotal(
-              item
-            ).toLocaleString()}`
-        : item?.amount
-        ? `${
-            item?.currency ? item.currency.toUpperCase() : "USD"
-          } ${item?.amount?.price?.toLocaleString()}`
-        : `${item?.currency ? item.currency.toUpperCase() : "USD"} ${(
-            item as IRisk
-          )?.riskParticipationTransaction?.amount?.toLocaleString()}`,
-    bids: item.bids?.length === 1 ? "1 bid" : `${item.bids?.length || 0} bids`,
-  }));
-
   return (
-    <div style={{ width: "100%" }}>
+    <div
+      style={{ width: "100%", backgroundColor: "white" }}
+      className="p-5 rounded-lg border border-[#E2E2EA]"
+    >
       <div className="mb-4 flex w-full items-center justify-between gap-x-2">
         <h2 className="text-[16px] font-semibold text-[#1A1A26]">
           {isBank ? "Deals Received by Corporates" : "Transaction Requests"}
@@ -306,49 +396,18 @@ export const RequestTable = ({
           <Ellipsis className="mx-3" />
         </div>
       </div>
-      <DataGrid
-        rows={rows}
+      <MuiGrid
+        data={tableData?.data || []}
         columns={columns}
-        pageSize={10}
-        rowsPerPageOptions={[5, 10, 20]}
+        rowCount={tableData?.pagination?.totalItems || 0}
         loading={isLoading}
-        autoHeight={true}
-        style={{ border: "none" }}
-        disableSelectionOnClick
-        sx={{
-          "& .MuiDataGrid-root": {
-            border: "none", // Removes the border around the whole table
-          },
-          "& .MuiDataGrid-row": {
-            border: "none", // Removes the row border
-            backgroundColor: "white",
-            marginBottom: "3.5px", // Add vertical spacing between rows
-            marginTop: "3.5px", // Add vertical spacing between rows
-          },
-          "& .MuiDataGrid-cell": {
-            border: "1px solid rgba(224, 224, 224, 1)", // Adds the cell border
-            borderRadius: "4px", // Add rounded corners
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: "#F0F0F0", // Header background color
-            borderBottom: "none", // Removes bottom border from headers
-          },
-          "& .MuiDataGrid-columnSeparator--sideRight": {
-            display: "none", // Removes the vertical line in the header for column boundaries
-          },
-          "& .MuiDataGrid-columnHeaderTitle": {
-            fontWeight: "bold", // Optional: Make header text bold
-          },
-          "& .MuiDataGrid-sortIcon": {
-            display: "none", // Remove the default sort icon
-          },
-          "& .MuiDataGrid-columnHeader": {
-            position: "relative", // Ensures custom icon positioning
-            "&:hover .custom-sort-icon": {
-              display: "inline-block", // Show the custom icon on hover
-            },
-          },
+        paginationModel={paginationModel}
+        columnVisibilityModel={{
+          issuingCountry: isBank,
         }}
+        onPaginationModelChange={setPaginationModel}
+        search={search}
+        setSearch={setSearch}
       />
     </div>
   );

@@ -999,7 +999,11 @@ export const AddBid = ({
                           setValue={setValue}
                           key={lcData?._id}
                           disabled={{
-                            before: new Date(),
+                            before:
+                              lcData?.period?.startDate &&
+                              new Date(lcData.period.startDate) > new Date()
+                                ? new Date(lcData.period.startDate)
+                                : new Date(), // If the start date is in the future, use it, otherwise use the current date
                             after: new Date(lcData?.period?.endDate),
                           }}
                           // maxDate={null}

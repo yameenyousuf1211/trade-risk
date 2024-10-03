@@ -186,7 +186,10 @@ export const BidPreview: React.FC<BidPreviewProps> = ({
               placeholder="Bid Validity"
               leftText={false}
               value={selectedBidValidity}
-              disabled={{ after: new Date(lastDateOfReceivingBids) }}
+              disabled={{
+                after: new Date(lastDateOfReceivingBids),
+                before: new Date(),
+              }}
               setValue={setSelectedBidValidity}
               isLg={true}
             />

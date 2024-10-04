@@ -10,7 +10,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { LgStepsProps5 } from "@/types/lg";
-import { convertStringToNumber } from "@/utils";
+import { convertStringToNumber, formatAmount } from "@/utils";
 import {
   Select,
   SelectContent,
@@ -102,9 +102,7 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
   };
 
   const handleTotalContractValueBlur = () => {
-    setDisplayTotalContractValue(
-      `${formatNumberWithCommas(totalContractValue || 0)}.00`
-    );
+    setDisplayTotalContractValue(`${formatAmount(totalContractValue || 0)}`);
   };
 
   const handleTotalContractValueFocus = () => {

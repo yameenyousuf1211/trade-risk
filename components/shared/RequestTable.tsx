@@ -309,7 +309,7 @@ export const RequestTable = ({
     {
       field: "bids",
       headerName: "Bids",
-      width: isBank ? 150 : 80,
+      width: isBank ? 150 : 100,
       sortable: true,
       disableColumnMenu: true,
       hideSortIcons: true,

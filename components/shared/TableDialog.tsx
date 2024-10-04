@@ -10,19 +10,10 @@ import { Button } from "@/components/ui/button";
 import { IBids } from "@/types/type";
 import { acceptOrRejectBid } from "@/services/apis/bids.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  convertDateAndTimeToStringGMTNoTsx,
-  convertDateToCommaString,
-} from "@/utils";
+import { convertDateAndTimeToStringGMTNoTsx } from "@/utils";
 import { toast } from "sonner";
-import { fetchSingleLc } from "@/services/apis/lcs.api";
 import { useAuth } from "@/context/AuthProvider";
-import { BidsSort } from "../helpers";
-import { fetchSingleRisk } from "@/services/apis/risk.api";
-import Image from "next/image";
 import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
-import { LGCashMarginDialog } from "../LG-Output/Bank/LG-Cash-Margin/LGCashMargin";
-import ViewFileAttachment from "./ViewFileAttachment";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 import { formatFirstLetterOfWord, LcLgInfo } from "../LG-Output/helper";
 import {
@@ -30,6 +21,7 @@ import {
   formatNumberByAddingDigitsToStart,
 } from "../../utils/helper/helper";
 import LGIssuanceCashMarginDialog from "../LG-Output/LG-Issuance-Bank/LGIssuanceCashMargin";
+import SharedLCDetails from "./SharedLCDetails";
 
 export const BidCard = ({
   data,
@@ -291,7 +283,7 @@ export const TableDialog = ({
         ) : (
           <div className="relative mt-0 flex h-full items-start justify-between overflow-y-hidden">
             <div className="h-full max-h-[90vh] min-h-[85vh] w-full overflow-y-scroll border-r-2 border-r-borderCol pb-5">
-              <div className="bg-[#F5F7F9] px-4 pt-2">
+              <div className="bg-bg px-4 pt-2">
                 <h2 className="mb-1 text-2xl font-semibold">
                   <span className="font-normal text-para">LC Amount:</span> USD{" "}
                   {lcData && lcData.amount
@@ -313,164 +305,7 @@ export const TableDialog = ({
 
                 <div className="mt-3 h-[2px] w-full bg-neutral-800" />
               </div>
-              {/* Main Info */}
-              <div className="bg-[#F5F7F9] px-4">
-                <h2 className="text-xl font-semibold mt-1">LC Details</h2>
-                <LcLgInfo
-                  label="LC Issuing Bank"
-                  value={
-                    (lcData &&
-                      lcData?.issuingBanks?.length > 0 &&
-                      formatFirstLetterOfWord(lcData?.issuingBanks[0]?.bank)) ||
-                    ""
-                  }
-                />
-                {lcData?.advisingBank?.bank && (
-                  <LcLgInfo
-                    label="Advising Bank"
-                    value={
-                      (lcData &&
-                        formatFirstLetterOfWord(lcData.advisingBank?.bank)) ||
-                      ""
-                    }
-                  />
-                )}
-                {lcData?.confirmingBank?.bank && (
-                  <LcLgInfo
-                    label="Preferred Confirming Bank"
-                    value={
-                      (lcData &&
-                        formatFirstLetterOfWord(lcData.confirmingBank?.bank)) ||
-                      ""
-                    }
-                  />
-                )}
-                <LcLgInfo
-                  label="Payment Terms"
-                  value={
-                    lcData?.paymentTerms && lcData?.paymentTerms !== "Sight LC"
-                      ? `${lcData.paymentTerms}: ${
-                          lcData.extraInfo?.days + " days" || ""
-                        } at ${lcData.extraInfo?.other || ""}`
-                      : lcData?.paymentTerms || "-"
-                  }
-                />
-                {lcData?.transhipment && (
-                  <LcLgInfo
-                    label="Transhipment"
-                    value={lcData && lcData.transhipment ? "Yes" : "No"}
-                  />
-                )}
-                {lcData?.shipmentPort?.port && lcData.shipmentPort?.country && (
-                  <LcLgInfo
-                    label="Port of Shipment"
-                    noBorder
-                    value={`${lcData.shipmentPort.port}, ${lcData.shipmentPort.country}`}
-                  />
-                )}
-              </div>
-              <div className="mt- 5 h-[2px] w-full bg-borderCol" />
-              {/* LC Details */}
-              <div className="mt-2 px-4">
-                <LcLgInfo
-                  label="LC Issuance (Expected)"
-                  value={
-                    lcData &&
-                    convertDateToCommaString(lcData?.period?.startDate)
-                  }
-                />
-                <LcLgInfo
-                  label="LC Expiry Date"
-                  value={
-                    lcData &&
-                    lcData.period &&
-                    convertDateToCommaString(lcData.period?.endDate)
-                  }
-                />
-                <LcLgInfo
-                  label="Confirmation Date (Expected)"
-                  value={
-                    lcData?.expectedConfirmationDate
-                      ? convertDateToCommaString(
-                          lcData?.expectedConfirmationDate
-                        )
-                      : lcData?.expectedDiscountingDate
-                      ? convertDateToCommaString(
-                          lcData?.expectedDiscountingDate
-                        )
-                      : "-"
-                  }
-                />
-                <LcLgInfo
-                  label="Last date for receiving Bids"
-                  value={
-                    lcData &&
-                    convertDateToCommaString(lcData.lastDateOfReceivingBids)
-                  }
-                />
-                {lcData?.attachments &&
-                  lcData.attachments.length > 0 &&
-                  lcData.attachments.map((attachment, index) => (
-                    <ViewFileAttachment key={index} attachment={attachment} />
-                  ))}
-                <h2 className="text-xl font-semibold mt-3">Importer Info</h2>
-                <LcLgInfo
-                  label="Applicant"
-                  value={(lcData && lcData.importerInfo?.applicantName) || ""}
-                />
-                <LcLgInfo
-                  label="Country of Import"
-                  noBorder
-                  value={(lcData && lcData.importerInfo?.countryOfImport) || ""}
-                />
-
-                <h2 className="text-xl font-semibold mt-3">Exporter Info</h2>
-                <LcLgInfo
-                  label="Beneficiary Name"
-                  value={(lcData && lcData.exporterInfo?.beneficiaryName) || ""}
-                />
-                <LcLgInfo
-                  label="Beneficiary Country"
-                  value={
-                    (lcData && lcData.exporterInfo?.beneficiaryCountry) || ""
-                  }
-                />
-                <LcLgInfo
-                  label="Country of Export"
-                  value={(lcData && lcData.exporterInfo?.countryOfExport) || ""}
-                />
-                <LcLgInfo
-                  label="Charges on account of"
-                  value="Beneficiary"
-                  noBorder
-                />
-                {lcData?.type === "LC Confirmation & Discounting" && (
-                  <div>
-                    <h2 className="text-xl font-semibold mt-3">
-                      Confirmation Info
-                    </h2>
-                    <LcLgInfo
-                      label="Charges on account Of"
-                      value={lcData?.confirmationInfo.behalfOf || ""}
-                    />
-                  </div>
-                )}
-                {lcData?.type?.includes("Discount") && (
-                  <div>
-                    <h2 className="text-xl font-semibold mt-3">
-                      Discounting Info
-                    </h2>
-                    <LcLgInfo
-                      label="Charges on account Of"
-                      value={lcData?.discountingInfo.behalfOf || ""}
-                    />
-                    <LcLgInfo
-                      label="Discounted At"
-                      value={lcData?.discountingInfo?.discountAtSight || ""}
-                    />
-                  </div>
-                )}
-              </div>
+              <SharedLCDetails lcData={lcData} />
             </div>
             {/* Right Section */}
             <div className="flex h-full w-full flex-col justify-start px-5">

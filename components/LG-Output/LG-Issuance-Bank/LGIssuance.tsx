@@ -17,45 +17,9 @@ import {
   getLgBondTotal,
   sortBanksAlphabetically,
   formatFirstLetterOfWord,
+  LcLgInfo,
 } from "../helper";
-import { FileSearch } from "lucide-react";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
-
-const LGInfo = ({
-  label,
-  value,
-  noBorder,
-  link,
-}: {
-  label: string;
-  value: string | null;
-  noBorder?: boolean;
-  link?: string;
-}) => {
-  return (
-    <div
-      className={`flex items-start justify-between py-2 ${
-        !noBorder && "border-b border-b-borderCol"
-      }`}
-    >
-      <p className="font-roboto text-sm font-normal text-para">{label}</p>
-      {link ? (
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center capitalize font-semibold text-right text-base max-w-[100%] truncate"
-        >
-          <FileSearch className="mr-2" color="#29C084" /> {value}
-        </a>
-      ) : (
-        <p className="max-w-[60%] text-right text-sm font-semibold capitalize">
-          {value || "-"}
-        </p>
-      )}
-    </div>
-  );
-};
 
 const groupBidsByBank = (
   bids: any[],
@@ -425,33 +389,33 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
             Total LG Amount Requested{" "}
             <span className="text-[20px] text-[#1A1A26] font-semibold">
               {data?.totalContractCurrency || "USD"}{" "}
-              {formatAmount(getLgBondTotal(data))}.00
+              {formatAmount(getLgBondTotal(data))}
             </span>
           </h3>
         </div>
         <div className="ml-7 mr-1 mt-2">
-          <LGInfo
+          <LcLgInfo
             label="Applicant Name"
             value={data?.applicantDetails?.company}
           />
           {data.totalContractCurrency && data.totalContractValue && (
-            <LGInfo
+            <LcLgInfo
               label="Total Contract Value"
               value={
                 `${data.totalContractCurrency} ${formatAmount(
                   data.totalContractValue
-                )}.00` || null
+                )}` || null
               }
             />
           )}
-          <LGInfo
+          <LcLgInfo
             label="Last Date for Receiving Bids"
             value={
               convertDateToCommaString(data.lastDateOfReceivingBids) || null
             }
           />
           {data.purpose && (
-            <LGInfo label="Purpose of LG" value={data.purpose || null} />
+            <LcLgInfo label="Purpose of LG" value={data.purpose || null} />
           )}
 
           <h2 className="my-2 text-xl font-semibold text-[#1A1A26]">
@@ -459,7 +423,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           </h2>
 
           {beneficiaryDetails.map((detail, index) => (
-            <LGInfo
+            <LcLgInfo
               key={index}
               label={detail.label}
               value={detail.value || "-"}
@@ -509,20 +473,20 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                     <>
                       <h3 className="mb-1 font-semibold mt-4">LG Details</h3>
                       {data.otherBond?.Contract && (
-                        <LGInfo
+                        <LcLgInfo
                           label="LG Type"
                           value={data.otherBond.name || "-"}
                         />
                       )}
-                      <LGInfo
+                      <LcLgInfo
                         label="Amount"
                         value={
                           `${selectedBond?.currencyType} ${formatAmount(
                             selectedBond?.cashMargin
-                          )}.00` || null
+                          )}` || null
                         }
                       />
-                      <LGInfo
+                      <LcLgInfo
                         label="Expected Date of Issuance"
                         value={
                           selectedBond.expectedDate
@@ -532,7 +496,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                             : null
                         }
                       />
-                      <LGInfo
+                      <LcLgInfo
                         label="Expiry Date"
                         value={
                           selectedBond.lgExpiryDate
@@ -543,7 +507,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                         }
                       />
                       {/* {selectedBond.expectedPricing && (
-                        <LGInfo
+                        <LcLgInfo
                           label="Expected Price"
                           value={
                             selectedBond.expectedPricing
@@ -552,7 +516,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                           }
                         />
                       )} */}
-                      <LGInfo
+                      <LcLgInfo
                         label="LG Tenor"
                         value={
                           selectedBond?.lgTenor
@@ -569,7 +533,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
                         }
                       />
                       {selectedBond.attachments?.length > 0 && (
-                        <LGInfo
+                        <LcLgInfo
                           label="LG Text Draft"
                           value={
                             selectedBond.attachments[0].userFileName.length > 20

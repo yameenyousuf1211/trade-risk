@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ApiResponse, ILcs, IRisk, Country } from "@/types/type";
 import {
   convertDateToString,
+  formatAmount,
   formatNumberByAddingDigitsToStart,
 } from "@/utils";
 import { getCountries } from "@/services/apis/helpers.api";
@@ -101,7 +102,7 @@ export const RequestTable = ({
             {isBank ? "Deal ID" : "Ref No"}
           </span>
           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer mx-2">
-            <ChevronUp className="size-4" />
+            <ChevronUp className="size-3" />
           </div>
         </div>
       ),
@@ -119,7 +120,7 @@ export const RequestTable = ({
             {isBank ? "Deal Received" : "Request On"}
           </span>
           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer mx-2">
-            <ChevronUp className="size-4" />
+            <ChevronUp className="size-3" />
           </div>
         </div>
       ),
@@ -147,7 +148,7 @@ export const RequestTable = ({
         <div className="flex items-center justify-between">
           <span className="font-bold text-[#44444F]">Expires On</span>
           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer mx-2">
-            <ChevronUp className="size-4" />
+            <ChevronUp className="size-3" />
           </div>
         </div>
       ),
@@ -176,7 +177,7 @@ export const RequestTable = ({
         <div className="flex items-center justify-between">
           <span className="font-bold text-[#44444F]">Product Type</span>
           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer mx-2">
-            <ChevronUp className="size-4" />
+            <ChevronUp className="size-3" />
           </div>
         </div>
       ),
@@ -288,13 +289,13 @@ export const RequestTable = ({
           <>
             {item.type === "LG Issuance"
               ? item.lgIssuance === "LG 100% Cash Margin"
-                ? `${
-                    item.lgDetails.currency || "USD"
-                  } ${item?.lgDetails?.amount?.toLocaleString()}`
-                : `${item.totalContractCurrency || "USD"} ${getTotal(
-                    item
-                  ).toLocaleString()}`
-              : item?.amount
+                ? `${item.lgDetails.currency || "USD"} ${formatAmount(
+                    item?.lgDetails?.amount
+                  )}`
+                : `${item.totalContractCurrency || "USD"} ${formatAmount(
+                    getTotal(item)
+                  )}`
+              : formatAmount(item?.amount)
               ? `${
                   item?.currency ? item.currency.toUpperCase() : "USD"
                 } ${item?.amount?.price?.toLocaleString()}`
@@ -316,7 +317,7 @@ export const RequestTable = ({
         <div className="flex items-center justify-between">
           <span className="font-bold text-[#44444F] text-[14px]">Bids</span>
           <div className="border border-primaryCol center rounded-full size-4 hover:bg-primaryCol hover:text-white transition-colors duration-100 cursor-pointer mx-2">
-            <ChevronUp className="size-4" />
+            <ChevronUp className="size-3" />
           </div>
         </div>
       ),
@@ -339,7 +340,7 @@ export const RequestTable = ({
     },
     {
       field: "actions",
-      width: 50,
+      width: 30,
       renderHeader: () => (
         <div className="center size-5 cursor-pointer rounded-full bg-black">
           <Plus strokeWidth={2.5} className="size-4 text-white" />
@@ -359,7 +360,7 @@ export const RequestTable = ({
               <LGCashMarginCorporate data={originalItem} />
             ) : (
               <TableDialog
-                lcId={originalItem._id}
+                lcData={originalItem}
                 bids={originalItem.bids}
                 isRisk={isRisk}
               />

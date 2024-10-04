@@ -10,50 +10,13 @@ import {
   BgRadioInputLG,
   getLgBondTotal,
   formatFirstLetterOfWord,
+  LcLgInfo,
 } from "../helper";
 import { BidsSort } from "@/components/helpers";
 import { BidCard } from "./BidCard";
 import { convertDateToCommaString, formatAmount } from "@/utils";
 import { DocDraftIcon } from "@/public/images/DocDraftIcon";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
-
-const LGInfo = ({
-  label,
-  value,
-  noBorder,
-  link,
-}: {
-  label: string;
-  value: string;
-  noBorder?: boolean;
-  link?: string;
-}) => {
-  return (
-    <div
-      className={`flex items-start justify-between py-2 ${
-        !noBorder && "border-b border-b-borderCol"
-      }`}
-    >
-      <p className="font-roboto text-para font-normal text-base text-[#696974]">
-        {label}
-      </p>
-      {link ? (
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center capitalize font-semibold text-right text-base max-w-[100%] truncate"
-        >
-          <FileSearch className="mr-2" color="#29C084" /> {value}
-        </a>
-      ) : (
-        <p className="capitalize font-semibold text-right text-base max-w-[60%]">
-          {value}
-        </p>
-      )}
-    </div>
-  );
-};
 
 export const LGTableBidStatus = ({
   isViewAll,
@@ -99,7 +62,7 @@ export const LGTableBidStatus = ({
       value:
         `${data[selectedValue]?.currencyType} ${formatAmount(
           data[selectedValue]?.cashMargin
-        )}.00` || "-",
+        )}` || "-",
     },
     data[selectedValue]?.valueInPercentage !== undefined && {
       label: "% of the contract",
@@ -132,7 +95,7 @@ export const LGTableBidStatus = ({
       label: "Total Contract Value",
       value: `${data.totalContractCurrency} ${formatAmount(
         data.totalContractValue
-      )}.00`,
+      )}`,
     },
     {
       label: "Last Date for Receiving Bids",
@@ -193,7 +156,7 @@ export const LGTableBidStatus = ({
               LG Amount:{" "}
               <span className="font-semibold text-black">
                 {data.totalContractCurrency || "USD"}{" "}
-                {formatAmount(getLgBondTotal(data))}.00
+                {formatAmount(getLgBondTotal(data))}
               </span>
             </h1>
             <h5 className="text-sm text-[#696974] font-light">
@@ -217,7 +180,11 @@ export const LGTableBidStatus = ({
                 detail: { label: string; value: string },
                 index: Key | null | undefined
               ) => (
-                <LGInfo key={index} label={detail.label} value={detail.value} />
+                <LcLgInfo
+                  key={index}
+                  label={detail.label}
+                  value={detail.value}
+                />
               )
             )}
 
@@ -288,12 +255,16 @@ export const LGTableBidStatus = ({
                 detail: { label: string; value: string },
                 index: Key | null | undefined
               ) => (
-                <LGInfo key={index} label={detail.label} value={detail.value} />
+                <LcLgInfo
+                  key={index}
+                  label={detail.label}
+                  value={detail.value}
+                />
               )
             )}
 
             {data[selectedValue]?.attachments?.length > 0 && (
-              <LGInfo
+              <LcLgInfo
                 label="LG Text Draft"
                 value={
                   data[selectedValue]?.attachments[0].userFileName.length > 20
@@ -317,7 +288,11 @@ export const LGTableBidStatus = ({
                 detail: { label: string; value: string },
                 index: Key | null | undefined
               ) => (
-                <LGInfo key={index} label={detail.label} value={detail.value} />
+                <LcLgInfo
+                  key={index}
+                  label={detail.label}
+                  value={detail.value}
+                />
               )
             )}
           </div>

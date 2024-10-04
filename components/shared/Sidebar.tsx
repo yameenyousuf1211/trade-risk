@@ -218,7 +218,7 @@ const RequestCard = ({
                   </p>
                   <div className="w-10">
                     <TableDialog
-                      lcId={data._id}
+                      lcData={data}
                       bids={data.bids}
                       isRisk={isRisk}
                     />
@@ -310,11 +310,7 @@ const RequestCard = ({
                   data?.lgIssuance === "LG 100% Cash Margin" ? (
                   <LGCashMarginCorporate data={data} />
                 ) : (
-                  <TableDialog
-                    lcId={data._id}
-                    bids={data.bids}
-                    isRisk={isRisk}
-                  />
+                  <TableDialog lcData={data} bids={data.bids} isRisk={isRisk} />
                 )}
               </div>
             </div>
@@ -418,7 +414,7 @@ export const Sidebar = ({
       queryFn: () => fetchLcs({ userId: user?.business?._id }),
       enabled: !!user?._id,
     });
-  console.log(data, "Need");
+
   const {
     data: allLcs,
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
@@ -427,19 +423,6 @@ export const Sidebar = ({
       queryFn: () => fetchAllLcs({ limit: 20 }),
       enabled: !!user?._id,
     });
-  console.log(data, "Nested");
-  const {
-    data: allRisk,
-  }: { data: ApiResponse<IRisk> | undefined; error: any; isLoading: boolean } =
-    useQuery({
-      queryKey: ["fetch-risks"],
-      queryFn: () =>
-        fetchRisk({ createdBy: riskType === "myRisk" ? true : false }),
-      enabled: !!user?._id && user.type === "bank",
-    });
-
-  console.log(allRisk, "ALL_RISKS");
-  console.log(allLcs, "ALL_LCS");
 
   const getHeaders = (data: any) => {
     const headers = new Set();
@@ -648,19 +631,7 @@ export const Sidebar = ({
             {isBank ? "Needs Action" : "Needs Your Attention"}
           </h4>
           <div className="flex flex-col gap-y-5">
-            {isRisk
-              ? allRisk &&
-                allRisk?.data &&
-                allRisk?.data.map((item: ILcs) => (
-                  <RequestCard
-                    riskType={riskType}
-                    isRisk={isRisk}
-                    isBank={isBank}
-                    data={item}
-                    key={item._id}
-                  />
-                ))
-              : isBank
+            {isBank
               ? allLcs &&
                 allLcs.data &&
                 allLcs.data.map((item: ILcs) => (

@@ -61,13 +61,13 @@ const NotificationCard = ({
         <>
           <TableDialog
             bids={data?.bids}
-            lcId={requestId}
+            lcData={data}
             isRisk={false}
             buttonTitle="Accept"
           />
           <TableDialog
             bids={data?.bids}
-            lcId={requestId}
+            lcData={data}
             isRisk={false}
             buttonTitle="Reject"
           />

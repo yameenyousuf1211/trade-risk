@@ -10,6 +10,7 @@ import {
   BgRadioInputLG,
   getLgBondTotal,
   formatFirstLetterOfWord,
+  LcLgInfo,
 } from "../helper";
 import { BidsSort } from "@/components/helpers";
 import { BidCard } from "./BidCard";
@@ -17,31 +18,6 @@ import { convertDateToCommaString, formatAmount } from "@/utils";
 import { CashMarginBidCard } from "./CashMarginBidCard";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 import ViewFileAttachment from "@/components/shared/ViewFileAttachment";
-
-const LGInfo = ({
-  label,
-  value,
-  noBorder,
-}: {
-  label: string;
-  value: string;
-  noBorder?: boolean;
-}) => {
-  return (
-    <div
-      className={`flex items-start justify-between py-2 ${
-        !noBorder && "border-b border-b-borderCol"
-      }`}
-    >
-      <p className="font-roboto text-para font-normal text-base text-[#696974]">
-        {label}
-      </p>
-      <p className="capitalize text-black font-semibold text-right text-base max-w-[60%]">
-        {value}
-      </p>
-    </div>
-  );
-};
 
 export const LGCashMarginCorporate = ({
   isViewAll,
@@ -121,17 +97,17 @@ export const LGCashMarginCorporate = ({
                 LG Amount:{" "}
                 <span className="font-semibold text-black">
                   {data?.lgDetails?.currency || "USD"}{" "}
-                  {formatAmount(data?.lgDetails?.amount) + ".00"}
+                  {formatAmount(data?.lgDetails?.amount)}
                 </span>
-                <LGInfo
+                <LcLgInfo
                   label={"Applicant City"}
                   value={data?.createdBy.accountCity}
                 />
-                <LGInfo
+                <LcLgInfo
                   label={"Applicant Country"}
                   value={data?.applicantDetails.country}
                 />
-                <LGInfo
+                <LcLgInfo
                   label={"Last date for receiving bids"}
                   value={convertDateToCommaString(
                     data?.lastDateOfReceivingBids
@@ -149,7 +125,7 @@ export const LGCashMarginCorporate = ({
                   detail: { label: string; value: string },
                   index: Key | null | undefined
                 ) => (
-                  <LGInfo
+                  <LcLgInfo
                     key={index}
                     label={detail.label}
                     value={detail.value}
@@ -170,7 +146,7 @@ export const LGCashMarginCorporate = ({
                   detail: { label: string; value: string },
                   index: Key | null | undefined
                 ) => (
-                  <LGInfo
+                  <LcLgInfo
                     key={index}
                     label={detail.label}
                     value={detail.value}

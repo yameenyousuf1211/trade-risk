@@ -8,27 +8,16 @@ import {
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker, Loader } from "../helpers";
-import Image from "next/image";
-import {
-  convertDate,
-  convertDateAndTimeToString,
-  convertDateToCommaString,
-  formatNumberByAddingDigitsToStart,
-} from "@/utils";
+import { formatNumberByAddingDigitsToStart } from "@/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
-import { addBidTypes } from "@/validation/bids.validation";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { fetchSingleLc } from "@/services/apis/lcs.api";
 import { cn } from "@/lib/utils";
-import { fetchSingleRisk } from "@/services/apis/risk.api";
 import { IBids, IRisk } from "@/types/type";
 import { BgRadioInput, DDInput } from "../LCSteps/helpers";
-import { sendNotification } from "@/services/apis/notifications.api";
 import { useAuth } from "@/context/AuthProvider";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
@@ -36,6 +25,8 @@ import ViewFileAttachment from "./ViewFileAttachment";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 import { formatFirstLetterOfWord, LcLgInfo } from "../LG-Output/helper";
 import LGIssuanceCashMarginDialog from "../LG-Output/LG-Issuance-Bank/LGIssuanceCashMargin";
+import SharedLCDetails from "./SharedLCDetails";
+import { addBidTypes } from "@/validation/bids.validation";
 
 export const AddBid = ({
   isNotification = false,
@@ -148,16 +139,6 @@ export const AddBid = ({
     advancePaymentBond +
     performanceBond +
     retentionMoneyBond;
-
-  const formatNumberWithCommas = (value: string | number) => {
-    if (value === undefined || value === null) {
-      return "";
-    }
-
-    value = value.toString();
-    const numberString = value.replace(/,/g, "");
-    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
   const userBids = lcData?.bids?.filter((bid) => bid?.createdBy === user?._id);
 
   let userBidStatus = null;
@@ -205,7 +186,7 @@ export const AddBid = ({
             : `px-3 mt-2 bg-[#F2994A] hover:bg-[#F2994A]/90 text-white opacity-80 ${
                 isNotification && "bg-[#0e1829] hover:bg-black/90 "
               }`
-        } rounded-md w-full h-10 capitalize hover:opacity-85 font-roboto`}
+        } rounded-md w-full h-full capitalize hover:opacity-85 font-roboto`}
         disabled={
           (((lcData?.status === "Accepted" && !isNotification) ||
             (lcData?.status === "Expired" && !isNotification)) &&
@@ -275,161 +256,7 @@ export const AddBid = ({
                     </p>
                     <div className="h-[2px] w-full bg-neutral-800 mt-5" />
                   </div>
-
-                  {/* Main Info */}
-                  <div className="px-4 bg-bg pb-5">
-                    <h2 className="text-xl font-semibold mt-1">LC Details</h2>
-                    <LcLgInfo
-                      label="LC Issuing Bank"
-                      value={
-                        formatFirstLetterOfWord(
-                          lcData?.issuingBanks?.[0]?.bank
-                        ) || "-"
-                      }
-                    />
-                    <LcLgInfo
-                      label="Country of LC Issuing Bank"
-                      value={
-                        formatFirstLetterOfWord(
-                          lcData?.issuingBanks?.[0]?.country
-                        ) || "-"
-                      }
-                    />
-                    {lcData?.advisingBank?.bank && (
-                      <LcLgInfo
-                        label="LC Advising Bank"
-                        value={formatFirstLetterOfWord(
-                          lcData?.advisingBank?.bank
-                        )}
-                      />
-                    )}
-                    {lcData?.confirmingBank?.bank && (
-                      <LcLgInfo
-                        label="Preferred Confirming Bank"
-                        value={formatFirstLetterOfWord(
-                          lcData?.confirmingBank?.bank
-                        )}
-                      />
-                    )}
-                    <LcLgInfo
-                      label="Payment Terms"
-                      value={
-                        lcData?.paymentTerms &&
-                        lcData?.paymentTerms !== "Sight LC"
-                          ? `${lcData.paymentTerms}: ${
-                              lcData.extraInfo?.days + " days" || ""
-                            } at ${lcData.extraInfo?.other || ""}`
-                          : lcData?.paymentTerms || "-"
-                      }
-                    />
-                    {lcData?.transhipment && (
-                      <LcLgInfo
-                        label="Transhipment"
-                        value={lcData && lcData.transhipment ? "Yes" : "No"}
-                      />
-                    )}
-                    {lcData?.shipmentPort?.port &&
-                      lcData.shipmentPort?.country && (
-                        <LcLgInfo
-                          label="Port of Shipment"
-                          noBorder
-                          value={`${lcData.shipmentPort.port}, ${lcData.shipmentPort.country}`}
-                        />
-                      )}
-                  </div>
-                  {/* Separator */}
-                  <div className="h-[2px] w-full bg-borderCol" />
-                  {/* LC Details */}
-                  <div className="px-4 mt-4">
-                    <LcLgInfo
-                      label="LC Issuance (Expected)"
-                      value={convertDateToCommaString(lcData.period?.startDate)}
-                    />
-                    <LcLgInfo
-                      label="LC Expiry Date"
-                      value={
-                        lcData?.period?.endDate
-                          ? convertDateToCommaString(lcData?.period?.endDate)
-                          : "-"
-                      }
-                    />
-                    <LcLgInfo
-                      label="Confirmation Date (Expected)"
-                      value={
-                        lcData?.expectedConfirmationDate
-                          ? convertDateToCommaString(
-                              lcData?.expectedConfirmationDate
-                            )
-                          : lcData?.expectedDiscountingDate
-                          ? convertDateToCommaString(
-                              lcData?.expectedDiscountingDate
-                            )
-                          : "-"
-                      }
-                    />
-                    <LcLgInfo
-                      label="Last date for receiving Bids"
-                      value={
-                        lcData?.lastDateOfReceivingBids
-                          ? convertDateToCommaString(
-                              lcData?.lastDateOfReceivingBids
-                            )
-                          : "-"
-                      }
-                    />
-                    <LcLgInfo
-                      label="Product Description"
-                      value={lcData?.productDescription || ""}
-                      noBorder
-                    />
-
-                    {lcData?.attachments &&
-                      lcData.attachments.length > 0 &&
-                      lcData.attachments.map((attachment, index) => (
-                        <ViewFileAttachment
-                          key={index}
-                          attachment={attachment}
-                        />
-                      ))}
-                    <h2 className="text-xl font-semibold mt-3">
-                      Importer Info
-                    </h2>
-                    <LcLgInfo
-                      label="Applicant"
-                      value={lcData?.importerInfo?.applicantName || ""}
-                    />
-                    <LcLgInfo
-                      label="Country of Import"
-                      noBorder
-                      value={lcData?.importerInfo?.countryOfImport || ""}
-                    />
-                    {lcData?.type === "LC Confirmation & Discounting" && (
-                      <div>
-                        <h2 className="text-xl font-semibold mt-3">
-                          Confirmation Info
-                        </h2>
-                        <LcLgInfo
-                          label="Charges on account Of"
-                          value={lcData?.confirmationInfo.behalfOf || ""}
-                        />
-                      </div>
-                    )}
-                    {isDiscount && (
-                      <div>
-                        <h2 className="text-xl font-semibold mt-3">
-                          Discounting Info
-                        </h2>
-                        <LcLgInfo
-                          label="Charges on account Of"
-                          value={lcData?.discountingInfo.behalfOf || ""}
-                        />
-                        <LcLgInfo
-                          label="Discounted At"
-                          value={lcData?.discountingInfo?.discountAtSight || ""}
-                        />
-                      </div>
-                    )}
-                  </div>
+                  <SharedLCDetails lcData={lcData} />
                 </>
               )}
             </div>

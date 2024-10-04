@@ -69,14 +69,14 @@ const Notification = ({ notification }: { notification: INotifications }) => {
           ) : data?.status !== "Accepted" ? (
             <>
               <TableDialog
+                lcData={data}
                 bids={data?.bids}
-                lcId={requestId}
                 isRisk={false}
                 buttonTitle="Accept"
               />
               <TableDialog
+                lcData={data}
                 bids={data?.bids}
-                lcId={requestId}
                 isRisk={false}
                 buttonTitle="Reject"
               />

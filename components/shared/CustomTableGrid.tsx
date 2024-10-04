@@ -5,13 +5,14 @@ import {
   DataGrid,
   gridPageCountSelector,
   GridPagination,
-  GridToolbarQuickFilter,
+  GridRowSpacingParams,
   useGridApiContext,
   useGridSelector,
 } from "@mui/x-data-grid";
 import { Pagination } from "@mui/material";
 import PaginationItem from "@mui/material/PaginationItem";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCallback } from "react";
 
 // Custom styled pagination for a closer look to the image
 function PrevPagination() {
@@ -112,16 +113,23 @@ export default function MuiGrid({
     router.push(`${pathname}?${queryString}`, { scroll: false });
   };
 
+  const getRowSpacing = useCallback((params: GridRowSpacingParams) => {
+    return {
+      top: 5,
+    };
+  }, []);
+
   return (
-    <Box sx={{ height: "auto", width: "100%" }}>
+    <Box sx={{ width: "100%" }}>
       <DataGrid
         rows={data}
-        scrollbarSize={0}
+        scrollbarSize={10}
         rowCount={rowCount}
         columns={columns}
         disableRowSelectionOnClick={true}
         columnHeaderHeight={45}
         loading={loading}
+        getRowSpacing={getRowSpacing}
         pageSizeOptions={[10]} // Updated to 10 items per page
         paginationModel={paginationModel}
         rowHeight={40}
@@ -143,9 +151,7 @@ export default function MuiGrid({
           "& .MuiDataGrid-row": {
             border: "none",
             backgroundColor: "white",
-            marginBottom: "3.5px",
-            marginTop: "3.5px",
-            gap: "4.5px",
+            gap: 0.7,
           },
           "& .MuiDataGrid-cell": {
             border: "1px solid rgba(224, 224, 224, 1)",
@@ -207,7 +213,6 @@ export default function MuiGrid({
             height: 72,
             borderRadius: 1.15,
             justifyContent: "center",
-            gap: "4.5px",
           },
         }}
       />

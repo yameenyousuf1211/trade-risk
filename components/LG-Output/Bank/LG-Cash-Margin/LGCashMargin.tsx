@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import useLGCashMarginStore from "@/store/LGCashMarginStore";
-import { LGInfo } from "../../helper";
+import { LcLgInfo } from "../../helper";
 import { ApplicantQuery } from "../../LG-Issuance-Bank/ApplicantQuery";
 import { PreviewLGCash } from "./content/PreviewLGCash";
 import { LGCashBankRightSection } from "./content/LGCashBankRightSection";
@@ -79,19 +79,19 @@ export const LGCashMarginDialog = () => {
           </div>
 
           {applicant.map((app, key) => (
-            <LGInfo key={key} label={app.name} value={app.value} />
+            <LcLgInfo key={key} label={app.name} value={app.value} />
           ))}
         </div>
 
         <div className="p-3">
           <h1 className="text-lg font-bold">LG Details</h1>
           {lgDetails.map((detail, key) => (
-            <LGInfo key={key} label={detail.name} value={detail.value} />
+            <LcLgInfo key={key} label={detail.name} value={detail.value} />
           ))}
 
           <h1 className="mt-3 text-lg font-bold">Beneficiary Details</h1>
           {beneficiaryDetails.map((detail, key) => (
-            <LGInfo key={key} label={detail.name} value={detail.value} />
+            <LcLgInfo key={key} label={detail.name} value={detail.value} />
           ))}
         </div>
       </div>

@@ -37,6 +37,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
           draft: false,
         }),
       enabled: !!user?.business?._id,
+      staleTime: 5 * 60 * 1000,
     });
   // console.log("fetching LCSSS", data);
   if (user && user.type !== "corporate") {

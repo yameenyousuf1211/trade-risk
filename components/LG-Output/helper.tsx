@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, FileSearch } from "lucide-react";
 
 export const BgRadioInputLG = ({
   id,
@@ -75,14 +75,16 @@ export const BgRadioInputLG = ({
   );
 };
 
-export const LGInfo = ({
+export const LcLgInfo = ({
   label,
   value,
   noBorder,
+  link,
 }: {
   label: string;
-  value: string;
+  value: string | null;
   noBorder?: boolean;
+  link?: string;
 }) => {
   return (
     <div
@@ -90,10 +92,21 @@ export const LGInfo = ({
         !noBorder && "border-b border-b-borderCol"
       }`}
     >
-      <p className="font-roboto text-para font-normal text-sm">{label}</p>
-      <p className="capitalize font-semibold text-right text-sm max-w-[60%]">
-        {value}
-      </p>
+      <p className="font-roboto text-sm font-normal text-para">{label}</p>
+      {link ? (
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center capitalize font-semibold text-right text-base max-w-[100%] truncate"
+        >
+          <FileSearch className="mr-2" color="#29C084" /> {value}
+        </a>
+      ) : (
+        <p className="max-w-[60%] text-right text-sm font-semibold capitalize">
+          {value || "-"}
+        </p>
+      )}
     </div>
   );
 };

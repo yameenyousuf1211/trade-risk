@@ -8,6 +8,7 @@ import { AddBid } from "./AddBid";
 import {
   fetchAllLcs,
   fetchLcs,
+  fetchPendingBids,
   getBankLcStatus,
 } from "@/services/apis/lcs.api";
 import { ApiResponse, IBids, ILcs, IRisk } from "@/types/type";
@@ -76,7 +77,6 @@ const SliderCard = ({
     advancePaymentBond +
     performanceBond +
     retentionMoneyBond;
-  const isExpired = new Date(info?.bidValidity) < new Date();
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
       <p>
@@ -131,28 +131,22 @@ const SliderCard = ({
       <p className="font-roboto text-para text-sm font-medium truncate capitalize">
         {info.bidBy?.country || "Pakistan"}
       </p>
-      {isExpired ? (
-        <div className="col-span-2 mt-2 flex justify-center items-center bg-black text-white rounded-lg py-2">
-          Bid Expired
-        </div>
-      ) : (
-        <div className="flex items-center gap-x-2 mt-2">
-          <Button
-            onClick={() => handleSubmit("Accepted", info._id)}
-            className="border-2 border-[#90ee8f] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
-            disabled={isPending}
-          >
-            <Check className="size-5 text-para" color="lightGreen" />
-          </Button>
-          <Button
-            onClick={() => handleSubmit("Rejected", info._id)}
-            className="border-2 border-[#ff0000] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
-            disabled={isPending}
-          >
-            <X className="size-5 text-para" color="red" />
-          </Button>
-        </div>
-      )}
+      <div className="flex items-center gap-x-2 mt-2">
+        <Button
+          onClick={() => handleSubmit("Accepted", info._id)}
+          className="border-2 border-[#90ee8f] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
+          disabled={isPending}
+        >
+          <Check className="size-5 text-para" color="lightGreen" />
+        </Button>
+        <Button
+          onClick={() => handleSubmit("Rejected", info._id)}
+          className="border-2 border-[#ff0000] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
+          disabled={isPending}
+        >
+          <X className="size-5 text-para" color="red" />
+        </Button>
+      </div>
     </div>
   );
 };
@@ -170,24 +164,13 @@ const RequestCard = ({
 }) => {
   const { user } = useAuth();
 
-  const bidsExist = Array.isArray(data?.bids);
-  // Filter pending bids and exclude expired ones
-  const pendingBids = bidsExist
-    ? data.bids.filter(
-        (bid) =>
-          bid.status === "Pending" && new Date(bid.bidValidity) > new Date()
-      )
-    : [];
-
   // Check if the last date of receiving bids has passed for banks
   const isBidsExpiredForBank =
     isBank && data.lastDateOfReceivingBids
       ? new Date(data.lastDateOfReceivingBids) < new Date()
       : false;
 
-  const showData = bidsExist
-    ? !data.bids.some((bid) => bid.bidBy === user?._id)
-    : true;
+  const showData = !data.bids.some((bid) => bid.bidBy === user?._id) || true;
 
   const otherBond = data?.otherBond?.cashMargin ?? 0;
   const bidBond = data?.bidBond?.cashMargin ?? 0;
@@ -294,7 +277,7 @@ const RequestCard = ({
             </div>
           </>
         )
-      ) : pendingBids.length > 0 ? (
+      ) : (
         <div className="flex flex-col gap-y-1 bg-[#F5F7F9] rounded-md">
           {/* Data */}
           <div className="px-3 pt-2">
@@ -344,7 +327,7 @@ const RequestCard = ({
             <h3 className="text-xl font-semibold uppercase">
               {data?.totalContractCurrency ||
                 data.currency ||
-                data?.lgDetails.currency ||
+                data?.lgDetails?.currency ||
                 "USD"}{" "}
               {(data as ILcs)?.type === "LG Issuance" &&
               data.lgIssuance === "LG 100% Cash Margin"
@@ -361,8 +344,8 @@ const RequestCard = ({
             </h3>
             <div className="flex items-center justify-between gap-x-2">
               <p className="font-roboto text-gray-500 text-sm font-semibold">
-                {pendingBids.length} bid
-                {pendingBids.length > 1 ? "s" : ""}
+                {data.bids.length} bid
+                {data.bids.length > 1 ? "s" : ""}
               </p>
             </div>
           </div>
@@ -370,10 +353,10 @@ const RequestCard = ({
           {/* Slider cards*/}
           <div className="w-full">
             <Swiper
-              slidesPerView={pendingBids.length > 1 ? 1.2 : 1}
+              slidesPerView={data.bids.length > 1 ? 1.2 : 1}
               spaceBetween={10}
             >
-              {pendingBids.map((info: IBids) => (
+              {data.bids.map((info: IBids) => (
                 <SwiperSlide key={info._id}>
                   <SliderCard
                     isRisk={isRisk}
@@ -386,7 +369,7 @@ const RequestCard = ({
             </Swiper>
           </div>
         </div>
-      ) : null}
+      )}
     </>
   );
 };
@@ -411,7 +394,7 @@ export const Sidebar = ({
   }: { data: ApiResponse<ILcs> | undefined; error: any; isLoading: boolean } =
     useQuery({
       queryKey: ["bid-status", "fetch-lcs", "fetch-risks"],
-      queryFn: () => fetchLcs({ userId: user?.business?._id }),
+      queryFn: () => fetchPendingBids(),
       enabled: !!user?._id,
     });
 
@@ -635,12 +618,12 @@ export const Sidebar = ({
               ? allLcs &&
                 allLcs.data &&
                 allLcs.data.map((item: ILcs) => (
-                  <RequestCard isBank={isBank} data={item} key={item._id} />
+                  <RequestCard isBank={true} data={item} key={item._id} />
                 ))
               : data &&
                 data.data &&
                 data.data.map((item: ILcs) => (
-                  <RequestCard isBank={isBank} data={item} key={item._id} />
+                  <RequestCard isBank={false} data={item} key={item._id} />
                 ))}
           </div>
         </div>

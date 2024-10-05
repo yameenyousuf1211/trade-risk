@@ -43,14 +43,14 @@ export const BidCard = ({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bid-status"] });
+      // queryClient.invalidateQueries({
+      //   queryKey: ["bid-status"],
+      // });
     },
   });
 
   // Function to check if the bid has expired
   const isExpired = new Date(data.bidValidity) < new Date();
-
-  // Don't render the component if the bid is expired
-  if (isExpired) return null;
 
   const handleSubmit = async (status: string, id: string) => {
     const { success, response } = await mutateAsync({
@@ -68,7 +68,11 @@ export const BidCard = ({
   };
 
   return (
-    <div className="rounded-lg border border-borderCol px-3 py-5">
+    <div
+      className={`rounded-lg border border-borderCol px-3 py-5 ${
+        isExpired ? "opacity-60" : ""
+      }`}
+    >
       <div className="grid grid-cols-2 gap-y-4">
         <div>
           <p className="mb-1 text-sm text-para">Bid Number</p>
@@ -148,25 +152,35 @@ export const BidCard = ({
         )}
 
         {data.status === "Pending" && !isBank && (
-          <div className="col-span-2 mt-2 flex gap-4">
-            <Button
-              size="lg"
-              className="flex-1 bg-[#29C084] hover:bg-[#29C084]/90"
-              onClick={() => handleSubmit("Accepted", data._id)}
-              disabled={isPending}
-            >
-              Accept
-            </Button>
-            <Button
-              size="lg"
-              className="flex-1 bg-[#f4f7fa] text-para"
-              variant="ghost"
-              onClick={() => handleSubmit("Rejected", data._id)}
-              disabled={isPending}
-            >
-              Reject
-            </Button>
-          </div>
+          <>
+            {isExpired ? (
+              // Show Bid Expired div if the bid is expired
+              <div className="col-span-2 mt-2 flex justify-center items-center bg-black text-white rounded-lg py-2">
+                Bid Expired
+              </div>
+            ) : (
+              // Show Accept and Reject buttons if the bid is not expired
+              <div className="col-span-2 mt-2 flex gap-4">
+                <Button
+                  size="lg"
+                  className="flex-1 bg-[#29C084] hover:bg-[#29C084]/90"
+                  onClick={() => handleSubmit("Accepted", data._id)}
+                  disabled={isPending}
+                >
+                  Accept
+                </Button>
+                <Button
+                  size="lg"
+                  className="flex-1 bg-[#f4f7fa] text-para"
+                  variant="ghost"
+                  onClick={() => handleSubmit("Rejected", data._id)}
+                  disabled={isPending}
+                >
+                  Reject
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
 

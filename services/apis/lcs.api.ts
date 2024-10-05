@@ -135,3 +135,14 @@ export const deleteLcDraft = async (id: string) => {
     return { success: false, response: (error as any).response.data.message };
   }
 };
+
+export const fetchPendingBids = async () => {
+  try {
+    const { data } = await api.get(`/lcs/pending-bids`);
+
+    return data;
+  } catch (error) {
+    console.error(error);
+    return { success: false, response: (error as any).response.data.message };
+  }
+};

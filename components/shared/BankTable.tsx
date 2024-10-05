@@ -17,6 +17,7 @@ import MuiGrid from "./CustomTableGrid";
 import { useAuth } from "@/context/AuthProvider";
 import { AddBid } from "./AddBid";
 import { Button } from "../ui/button";
+import { gridCellStyling } from "./RequestTable";
 
 export const BankTable = ({
   data,
@@ -94,7 +95,11 @@ export const BankTable = ({
       ),
       renderCell: (params) => {
         const item = params.row;
-        return convertDateToString(item.createdAt);
+        return (
+          <div style={gridCellStyling}>
+            {convertDateToString(item.createdAt)}
+          </div>
+        );
       },
     },
     {
@@ -122,7 +127,7 @@ export const BankTable = ({
               "-"
           );
         return (
-          <div className="space-x-2">
+          <div className="space-x-2" style={gridCellStyling}>
             <span className="emoji-font text-[16px]">{flag}</span>
             <span>
               {(item as IBids)?.lcInfo?.[1]?.country ||
@@ -153,7 +158,7 @@ export const BankTable = ({
         const flag =
           allCountries && getCountryFlagByName((item as any).bidBy?.[2]);
         return (
-          <div className="space-x-2">
+          <div className="space-x-2" style={gridCellStyling}>
             <span className="emoji-font text-[16px]">{flag}</span>
             <span>{(item as any).lc?.confirmingBank?.bank || "-"}</span>
           </div>
@@ -176,13 +181,13 @@ export const BankTable = ({
       renderCell: (params) => {
         const item = params.row;
         return (
-          <>
+          <div style={gridCellStyling}>
             {(item as IBids)?.discountMargin
               ? `${(item as IBids)?.discountBaseRate.toUpperCase()} + ${(
                   item as IBids
                 ).discountMargin.toLocaleString()}.00%`
               : "-"}
-          </>
+          </div>
         );
       },
     },
@@ -202,11 +207,11 @@ export const BankTable = ({
       renderCell: (params) => {
         const item = params.row;
         return (
-          <>
+          <div style={gridCellStyling}>
             {((item as IBids)?.confirmationPrice &&
               (item as IBids).confirmationPrice.toLocaleString() + ".00%") ||
               "-"}
-          </>
+          </div>
         );
       },
     },
@@ -226,13 +231,13 @@ export const BankTable = ({
       renderCell: (params) => {
         const item = params.row;
         return (
-          <>
+          <div style={gridCellStyling}>
             {(item as IBids)?.perAnnum
               ? "Per Annum"
               : !item.perAnnum
               ? "Flat"
               : "-"}
-          </>
+          </div>
         );
       },
     },
@@ -252,11 +257,11 @@ export const BankTable = ({
       renderCell: (params) => {
         const item = params.row;
         return (
-          <>
+          <div style={gridCellStyling}>
             {((item as IBids)?.confirmationPrice &&
               (item as IBids).confirmationPrice.toLocaleString() + ".00%") ||
               "-"}
-          </>
+          </div>
         );
       },
     },

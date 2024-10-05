@@ -151,11 +151,12 @@ export default function MuiGrid({
           "& .MuiDataGrid-row": {
             border: "none",
             backgroundColor: "white",
-            gap: 0.7,
+            marginTop: "0px",
           },
           "& .MuiDataGrid-cell": {
-            border: "1px solid rgba(224, 224, 224, 1)",
-            borderRadius: "4px",
+            border: "none",
+            paddingLeft: "4px",
+            paddingRight: "4px",
           },
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "#F0F0F0",
@@ -194,9 +195,6 @@ export default function MuiGrid({
               padding: "0px",
               borderWidth: 0,
             },
-          "& .MuiDataGrid-cell[data-field='actions']": {
-            width: 30,
-          },
           "& .MuiDataGrid-footerContainer": {
             backgroundColor: "#F5F7F9", // Your custom background color
             borderColor: "#E2E2EA",
@@ -213,6 +211,9 @@ export default function MuiGrid({
             height: 72,
             borderRadius: 1.15,
             justifyContent: "center",
+          },
+          "& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cell:focus": {
+            outline: "none !important",
           },
         }}
       />

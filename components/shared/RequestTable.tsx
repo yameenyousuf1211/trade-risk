@@ -22,6 +22,17 @@ import {
 import MuiGrid from "./CustomTableGrid";
 import { useDebounce } from "@uidotdev/usehooks";
 import { formatFirstLetterOfWord } from "../LG-Output/helper";
+import { GridComparatorFn } from "@mui/x-data-grid";
+
+export const gridCellStyling = {
+  border: "1px solid rgba(224, 224, 224, 1)",
+  borderRadius: "4px",
+  height: "100%",
+  padding: "0 8px", // Add padding for visual spacing
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+};
 
 export const RequestTable = ({
   isBank,
@@ -89,10 +100,12 @@ export const RequestTable = ({
   };
 
   const columns = [
-    { field: "id", headerName: "ID", width: 200, hide: true },
+    { field: "id", headerName: "ID", width: 200 },
     {
       field: "refId",
-      width: 100,
+      flex: 1,
+      minWidth: 100,
+      align: "center",
       sortable: true,
       hideSortIcons: true,
       disableColumnMenu: true,
@@ -106,13 +119,20 @@ export const RequestTable = ({
           </div>
         </div>
       ),
-      valueFormatter: (value) => formatNumberByAddingDigitsToStart(value),
+      renderCell: (params) => (
+        <div style={gridCellStyling}>
+          {formatNumberByAddingDigitsToStart(params.value)}
+        </div>
+      ),
     },
     {
       field: "startDate",
-      width: 140,
+      flex: 1,
+      minWidth: 140,
       sortable: true,
       hideSortIcons: true,
+      valueGetter: (params, row) =>
+        new Date(row.period?.startDate || row.startDate || row.createdAt),
       align: "center",
       renderHeader: () => (
         <div className="flex items-center justify-between">
@@ -127,23 +147,28 @@ export const RequestTable = ({
       renderCell: (params) => {
         const item = params.row;
         return (
-          <>
+          <div style={gridCellStyling}>
             {item?.period?.startDate
               ? convertDateToString(item?.period?.startDate)
               : item?.startDate
               ? convertDateToString((item as IRisk)?.startDate)
               : (item as IRisk)?.createdAt &&
                 convertDateToString(new Date((item as IRisk)?.createdAt))}
-          </>
+          </div>
         );
       },
     },
     {
       field: "endDate",
+      flex: 1,
       minWidth: 140,
       sortable: true,
       hideSortIcons: true,
       align: "center",
+      valueGetter: (params, row) =>
+        new Date(
+          row.period?.endDate || row.expiryDate || row.lastDateOfReceivingBids
+        ),
       renderHeader: () => (
         <div className="flex items-center justify-between">
           <span className="font-bold text-[#44444F]">Expires On</span>
@@ -155,7 +180,7 @@ export const RequestTable = ({
       renderCell: (params) => {
         const item = params.row;
         return (
-          <>
+          <div style={gridCellStyling}>
             {item?.period?.endDate
               ? convertDateToString(item?.period?.endDate)
               : item?.expiryDate
@@ -163,15 +188,17 @@ export const RequestTable = ({
               : item?.lastDateOfReceivingBids
               ? convertDateToString(item?.lastDateOfReceivingBids)
               : "-"}
-          </>
+          </div>
         );
       },
     },
     {
       field: "type",
-      width: 170,
+      flex: 1,
+      minWidth: 170,
       sortable: true,
       disableColumnMenu: true,
+      align: "center",
       hideSortIcons: true,
       renderHeader: () => (
         <div className="flex items-center justify-between">
@@ -184,25 +211,27 @@ export const RequestTable = ({
       renderCell: (params) => {
         const item = params.row;
         return (
-          <>
+          <div style={gridCellStyling}>
             {item?.type === "LG Issuance"
               ? item?.lgIssuance
               : item?.type ||
                 (item as IRisk)?.riskParticipationTransaction?.type}
-          </>
+          </div>
         );
       },
     },
     {
       field: "issuingBank",
       headerName: "Issuing Bank",
-      width: 200,
+      flex: 1,
+      minWidth: 200,
+      sortable: false,
       align: "center",
       renderCell: (params) => {
         const item = params.row.issuingBanks?.[0];
         const flag = getCountryFlagByName(item?.country);
         return (
-          <div className="space-x-1">
+          <div className="space-x-1" style={gridCellStyling}>
             <span className="emoji-font text-[16px]">{flag}</span>
             {item?.bank ? (
               <span>{formatFirstLetterOfWord(item.bank)}</span>
@@ -212,65 +241,52 @@ export const RequestTable = ({
           </div>
         );
       },
-      sortable: false,
-      disableColumnMenu: true,
-    },
-    {
-      field: "issuingCountry",
-      headerName: "Issuing Country",
-      width: 150,
-      align: "center",
-      hide: true,
-      renderCell: (params) => {
-        const item = params.row.issuingBanks?.[0];
-        return <>{item?.country || "-"}</>;
-      },
-      sortable: false,
-      disableColumnMenu: true,
     },
     {
       field: "beneficiaryName",
       headerName: "Beneficiary",
-      width: 150,
+      flex: 1,
+      minWidth: 150,
       sortable: false,
       disableColumnMenu: true,
       align: "center",
       renderCell: (params) => {
         const item = params.row;
         return (
-          <>
+          <div style={gridCellStyling}>
             {(item.exporterInfo &&
               formatFirstLetterOfWord(item.exporterInfo?.beneficiaryName)) ||
               formatFirstLetterOfWord(item?.beneficiaryDetails?.name) ||
               ""}
-          </>
+          </div>
         );
       },
     },
     {
       field: "applicantName",
       headerName: "Applicant",
-      width: 150,
+      flex: 1,
+      minWidth: 180,
       sortable: false,
       disableColumnMenu: true,
       align: "center",
       renderCell: (params) => {
         const item = params.row;
         return (
-          <>
+          <div style={gridCellStyling}>
             {((item.importerInfo &&
               formatFirstLetterOfWord(item.importerInfo?.applicantName)) ||
               item?.applicantDetails?.name ||
               item?.applicantDetails?.company) ??
               "-"}
-          </>
+          </div>
         );
       },
     },
     {
       field: "amount",
-      headerName: "Amount",
-      width: 150,
+      flex: 1,
+      minWidth: 150,
       sortable: true,
       hideSortIcons: true,
       disableColumnMenu: true,
@@ -286,7 +302,7 @@ export const RequestTable = ({
       renderCell: (params) => {
         const item = params.row;
         return (
-          <>
+          <div style={gridCellStyling}>
             {item.type === "LG Issuance"
               ? item.lgIssuance === "LG 100% Cash Margin"
                 ? `${item.lgDetails.currency || "USD"} ${formatAmount(
@@ -302,17 +318,19 @@ export const RequestTable = ({
               : `${item?.currency ? item.currency.toUpperCase() : "USD"} ${(
                   item as IRisk
                 )?.riskParticipationTransaction?.amount?.toLocaleString()}`}
-          </>
+          </div>
         );
       },
     },
     {
       field: "bids",
-      headerName: "Bids",
       width: isBank ? 150 : 100,
-      sortable: true,
+      sortable: true, // Enable sorting
       disableColumnMenu: true,
       hideSortIcons: true,
+      valueGetter: (value) => {
+        return value.length || 0; // Return 0 if no bids
+      },
       renderHeader: () => (
         <div className="flex items-center justify-between">
           <span className="font-bold text-[#44444F] text-[14px]">Bids</span>
@@ -325,15 +343,11 @@ export const RequestTable = ({
         const item = params.row;
         return (
           <>
-            {!isBank ? (
-              item.bids?.length === 1 ? (
-                "1 bid"
-              ) : (
-                `${item.bids?.length || 0} bids`
-              )
-            ) : (
-              <TableBidStatus id={item._id} lcData={item} isRisk={isRisk} />
-            )}
+            {!isBank
+              ? item.bids?.length === 1
+                ? "1 bid"
+                : `${item.bids?.length || 0} bids`
+              : null}
           </>
         );
       },
@@ -341,6 +355,7 @@ export const RequestTable = ({
     {
       field: "actions",
       width: 30,
+      align: "center",
       renderHeader: () => (
         <div className="center size-5 cursor-pointer rounded-full bg-black">
           <Plus strokeWidth={2.5} className="size-4 text-white" />

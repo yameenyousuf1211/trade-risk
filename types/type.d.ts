@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 export interface ILoginFields {
   email: string;
   password: string;

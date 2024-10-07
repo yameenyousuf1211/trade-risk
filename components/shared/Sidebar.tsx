@@ -30,9 +30,11 @@ import {
 } from "@/components/ui/select";
 import { TableDialog } from "./TableDialog";
 import { usePathname } from "next/navigation";
-import { fetchRisk } from "@/services/apis/risk.api";
-import { formatFirstLetterOfWord } from "../LG-Output/helper";
-import { formatNumberByAddingDigitsToStart } from "../../utils/helper/helper";
+import { formatFirstLetterOfWord, getLgBondTotal } from "../LG-Output/helper";
+import {
+  formatAmount,
+  formatNumberByAddingDigitsToStart,
+} from "../../utils/helper/helper";
 import { LGCashMarginCorporate } from "../LG-Output/LG-Issuance-Corporate/LgCashMarginCorporate";
 import { LGTableBidStatus } from "../LG-Output/LG-Issuance-Corporate/LgTableBidStatus";
 
@@ -66,17 +68,7 @@ const SliderCard = ({
     if (!success) return toast.error(response as string);
     else return toast.success(`Bid ${status}`);
   };
-  const otherBond = lcData?.otherBond?.cashMargin ?? 0;
-  const bidBond = lcData?.bidBond?.cashMargin ?? 0;
-  const advancePaymentBond = lcData?.advancePaymentBond?.cashMargin ?? 0;
-  const performanceBond = lcData?.performanceBond?.cashMargin ?? 0;
-  const retentionMoneyBond = lcData?.retentionMoneyBond?.cashMargin ?? 0;
-  const total =
-    otherBond +
-    bidBond +
-    advancePaymentBond +
-    performanceBond +
-    retentionMoneyBond;
+
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
       <p>
@@ -85,14 +77,14 @@ const SliderCard = ({
             lcData.lgIssuance !== "LG 100% Cash Margin" &&
             "USD ")}{" "}
         {lcData.lgIssuance === "LG 100% Cash Margin" ? (
-          <>{info?.confirmationPrice?.toLocaleString()}.00% Per Annum</>
+          <>{info?.confirmationPrice?.toFixed(2)}% Per Annum</>
         ) : lcData?.type === "LG Issuance" ? (
-          <>{total?.toLocaleString()}.00</>
+          <>{getLgBondTotal(info)}</>
         ) : lcData?.type === "LC Confirmation" ? (
           <div>
             <div>
               <p className="text-[16px]">
-                {info?.confirmationPrice?.toLocaleString()}.00% Per Annum
+                {info?.confirmationPrice?.toFixed(2)}% Per Annum
               </p>
               <p className="text-[#5625F2] text-[12px]">Confirmation Rate</p>
             </div>
@@ -102,13 +94,13 @@ const SliderCard = ({
             <div>
               <p className="text-[16px]">
                 {formatFirstLetterOfWord(info.discountBaseRate)} +{" "}
-                {info?.discountMargin?.toLocaleString()}.00%
+                {info?.discountMargin?.toFixed(2)}%
               </p>
               <p className="text-[#5625F2] text-[12px]">Discount pricing</p>
             </div>
             <div>
               <p className="text-[16px]">
-                {info?.confirmationPrice?.toLocaleString()}.00% Per Annum
+                {info?.confirmationPrice?.toFixed(2)}% Per Annum
               </p>
               <p className="text-[#5625F2] text-[12px]">Confirmation Rate</p>
             </div>
@@ -118,7 +110,7 @@ const SliderCard = ({
             <div>
               <p className="text-[16px]">
                 {formatFirstLetterOfWord(info.discountBaseRate)} +{" "}
-                {info?.discountMargin?.toLocaleString()}.00%
+                {info?.discountMargin?.toFixed(2)}%
               </p>
               <p className="text-[#5625F2] text-[12px]">Discount pricing</p>
             </div>
@@ -172,18 +164,6 @@ const RequestCard = ({
 
   const showData = !data.bids.some((bid) => bid.bidBy === user?._id) || true;
 
-  const otherBond = data?.otherBond?.cashMargin ?? 0;
-  const bidBond = data?.bidBond?.cashMargin ?? 0;
-  const advancePaymentBond = data?.advancePaymentBond?.cashMargin ?? 0;
-  const performanceBond = data?.performanceBond?.cashMargin ?? 0;
-  const retentionMoneyBond = data?.retentionMoneyBond?.cashMargin ?? 0;
-  const total =
-    otherBond +
-    bidBond +
-    advancePaymentBond +
-    performanceBond +
-    retentionMoneyBond;
-
   return (
     <>
       {isBank && riskType !== "myRisk" && !isBidsExpiredForBank ? (
@@ -200,11 +180,7 @@ const RequestCard = ({
                     Request #{formatNumberByAddingDigitsToStart(data.refId)}
                   </p>
                   <div className="w-10">
-                    <TableDialog
-                      lcData={data}
-                      bids={data.bids}
-                      isRisk={isRisk}
-                    />
+                    <AddBid lcData={data} isEyeIcon={true} />
                   </div>
                 </div>
                 <p className="capitalize text-lg font-semibold my-1">
@@ -250,30 +226,16 @@ const RequestCard = ({
                     "USD"}{" "}
                   {(data as ILcs)?.type === "LG Issuance" &&
                   data.lgIssuance === "LG 100% Cash Margin"
-                    ? data.lgDetails.amount?.toLocaleString() + ".00"
+                    ? formatAmount(data.lgDetails.amount)
                     : (data as ILcs)?.type === "LG Issuance" &&
                       data.lgIssuance !== "LG 100% Cash Margin"
-                    ? total?.toLocaleString() + ".00"
+                    ? formatAmount(getLgBondTotal(data))
                     : (data as ILcs)?.amount
-                    ? (data as ILcs).amount?.price?.toLocaleString() + ".00"
-                    : (
-                        data as IRisk
-                      )?.riskParticipationTransaction?.amount?.toLocaleString() +
-                      ".00"}
+                    ? formatAmount((data as ILcs).amount?.price)
+                    : formatAmount(data?.amount)}
                 </h3>
               </div>
-
-              <AddBid
-                triggerTitle="Add Bid"
-                status="Add Bid"
-                isBank={isBank}
-                isDiscount={
-                  ((data as ILcs)?.type &&
-                    (data as ILcs)?.type.includes("Discount")) ||
-                  false
-                }
-                id={data?._id}
-              />
+              <AddBid lcData={data} id={data._id} />
             </div>
           </>
         )
@@ -293,7 +255,7 @@ const RequestCard = ({
                   data?.lgIssuance === "LG 100% Cash Margin" ? (
                   <LGCashMarginCorporate data={data} />
                 ) : (
-                  <TableDialog lcData={data} bids={data.bids} isRisk={isRisk} />
+                  <TableDialog lcData={data} bids={data.bids} />
                 )}
               </div>
             </div>
@@ -331,16 +293,13 @@ const RequestCard = ({
                 "USD"}{" "}
               {(data as ILcs)?.type === "LG Issuance" &&
               data.lgIssuance === "LG 100% Cash Margin"
-                ? data.lgDetails.amount?.toLocaleString() + ".00"
+                ? formatAmount(data.lgDetails.amount)
                 : (data as ILcs)?.type === "LG Issuance" &&
                   data.lgIssuance !== "LG 100% Cash Margin"
-                ? total?.toLocaleString() + ".00"
+                ? formatAmount(getLgBondTotal(data))
                 : (data as ILcs)?.amount
-                ? (data as ILcs).amount?.price?.toLocaleString() + ".00"
-                : (
-                    data as IRisk
-                  )?.riskParticipationTransaction?.amount?.toLocaleString() +
-                  ".00"}
+                ? formatAmount((data as ILcs).amount?.price)
+                : formatAmount(data?.amount)}
             </h3>
             <div className="flex items-center justify-between gap-x-2">
               <p className="font-roboto text-gray-500 text-sm font-semibold">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ApiResponse, ILcs, IRisk, Country } from "@/types/type";
+import { ApiResponse, ILcs, IRisk, Country, IBids } from "@/types/type";
 import {
   convertDateToString,
   formatAmount,
@@ -21,8 +21,8 @@ import {
 } from "../helpers";
 import MuiGrid from "./CustomTableGrid";
 import { useDebounce } from "@uidotdev/usehooks";
-import { formatFirstLetterOfWord } from "../LG-Output/helper";
-import { GridComparatorFn } from "@mui/x-data-grid";
+import { formatFirstLetterOfWord, getLgBondTotal } from "../LG-Output/helper";
+import { AddBid } from "./AddBid";
 
 export const gridCellStyling = {
   border: "1px solid rgba(224, 224, 224, 1)",
@@ -82,21 +82,6 @@ export const RequestTable = ({
       (c: Country) => c.name.toLowerCase() === countryName?.toLowerCase()
     );
     return country ? country.flag : undefined;
-  };
-
-  const getTotal = (item: any) => {
-    const otherBond = item?.otherBond?.cashMargin ?? 0;
-    const bidBond = item?.bidBond?.cashMargin ?? 0;
-    const advancePaymentBond = item?.advancePaymentBond?.cashMargin ?? 0;
-    const performanceBond = item?.performanceBond?.cashMargin ?? 0;
-    const retentionMoneyBond = item?.retentionMoneyBond?.cashMargin ?? 0;
-    const total =
-      otherBond +
-      bidBond +
-      advancePaymentBond +
-      performanceBond +
-      retentionMoneyBond;
-    return total;
   };
 
   const columns = [
@@ -301,23 +286,18 @@ export const RequestTable = ({
       ),
       renderCell: (params) => {
         const item = params.row;
+        const currency = item?.currency
+          ? item.currency.toUpperCase()
+          : item?.lgDetails?.currency || item?.totalContractCurrency || "USD";
         return (
           <div style={gridCellStyling}>
             {item.type === "LG Issuance"
               ? item.lgIssuance === "LG 100% Cash Margin"
-                ? `${item.lgDetails.currency || "USD"} ${formatAmount(
-                    item?.lgDetails?.amount
-                  )}`
-                : `${item.totalContractCurrency || "USD"} ${formatAmount(
-                    getTotal(item)
-                  )}`
-              : formatAmount(item?.amount)
-              ? `${
-                  item?.currency ? item.currency.toUpperCase() : "USD"
-                } ${item?.amount?.price?.toLocaleString()}`
-              : `${item?.currency ? item.currency.toUpperCase() : "USD"} ${(
-                  item as IRisk
-                )?.riskParticipationTransaction?.amount?.toLocaleString()}`}
+                ? `${currency} ${formatAmount(item?.lgDetails?.amount)}`
+                : `${currency} ${formatAmount(getLgBondTotal(item))}`
+              : item?.amount
+              ? `${currency} ${formatAmount(item?.amount?.price)}`
+              : `${currency} ${formatAmount(item?.amount)}`}
           </div>
         );
       },
@@ -343,17 +323,21 @@ export const RequestTable = ({
         const item = params.row;
         return (
           <>
-            {!isBank
-              ? item.bids?.length === 1
-                ? "1 bid"
-                : `${item.bids?.length || 0} bids`
-              : null}
+            {!isBank ? (
+              item.bids?.length === 1 ? (
+                "1 bid"
+              ) : (
+                `${item.bids?.length || 0} bids`
+              )
+            ) : (
+              <AddBid lcData={item} />
+            )}
           </>
         );
       },
     },
     {
-      field: "actions",
+      field: "actionsCorporate",
       width: 30,
       align: "center",
       renderHeader: () => (
@@ -367,18 +351,16 @@ export const RequestTable = ({
         const originalItem = params.row;
         return (
           <ButtonBase>
-            {originalItem.type == "LG Issuance" &&
-            originalItem.lgIssuance !== "LG 100% Cash Margin" ? (
+            {isBank ? (
+              <AddBid lcData={originalItem} isEyeIcon={true} />
+            ) : originalItem.type == "LG Issuance" &&
+              originalItem.lgIssuance !== "LG 100% Cash Margin" ? (
               <LGTableBidStatus data={originalItem} />
             ) : originalItem.type == "LG Issuance" &&
               originalItem.lgIssuance === "LG 100% Cash Margin" ? (
               <LGCashMarginCorporate data={originalItem} />
             ) : (
-              <TableDialog
-                lcData={originalItem}
-                bids={originalItem.bids}
-                isRisk={isRisk}
-              />
+              <TableDialog lcData={originalItem} id={originalItem._id} />
             )}
           </ButtonBase>
         );

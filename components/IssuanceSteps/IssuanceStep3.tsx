@@ -16,6 +16,7 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
+import { formatAmount } from "@/utils";
 
 const NumberInput = ({
   name,
@@ -54,16 +55,13 @@ const NumberInput = ({
         setRawValue(amount);
         setValue("amount.price", amount?.price?.toString());
         setValue("amount.margin", amount?.price?.toString());
-
       }
     }
   }, [amount]);
 
   const handleBlur = () => {
     if (rawValue) {
-      const formattedValueWithCents = `${parseInt(
-        rawValue
-      ).toLocaleString()}.00`;
+      const formattedValueWithCents = `${formatAmount(parseInt(rawValue))}`;
       setCurrencyValue(formattedValueWithCents);
     }
   };
@@ -118,7 +116,7 @@ export const IssuanceStep3 = ({ register, watch, setValue }: Props) => {
 
   const handleIncrement = () => {
     const currentValue = watch("amount.amountPercentage") || "0";
-    const numericValue = parseFloat(currentValue.replace('%', '')) || 0;
+    const numericValue = parseFloat(currentValue.replace("%", "")) || 0;
     const newValue = (numericValue + 0.5).toFixed(1);
     if (Number(newValue) > 100) {
       return;
@@ -128,7 +126,7 @@ export const IssuanceStep3 = ({ register, watch, setValue }: Props) => {
 
   const handleDecrement = () => {
     const currentValue = watch("amount.amountPercentage") || "0";
-    const numericValue = parseFloat(currentValue.replace('%', '')) || 0;
+    const numericValue = parseFloat(currentValue.replace("%", "")) || 0;
     let newValue = numericValue - 0.5;
 
     if (newValue < 0) newValue = 0;

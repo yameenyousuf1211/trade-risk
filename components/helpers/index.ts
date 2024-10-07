@@ -2,7 +2,6 @@ import { BidsSort } from "./BidsSort";
 import { NumberInput } from "./NumberInput";
 import { BidsCountrySelect } from "./BidsCountrySelect";
 import { TelephoneInput } from "./TelephoneInput";
-import { TableBidStatus } from "./TableBidStatus";
 import { Loader } from "./Loader";
 import { Pagination } from "./Pagination";
 import { DisclaimerDialog } from "./DisclaimerDialog";
@@ -15,8 +14,8 @@ import { FloatingInput } from "@/components/helpers/FloatingInput";
 import { DateRangePicker } from "./DateRangePicker";
 import { SearchBar } from "./SearchBar";
 import { Filter } from "./Filter";
-import {AddRole} from "./AddRole";
-import {Roles} from "./Roles";
+import { AddRole } from "./AddRole";
+import { Roles } from "./Roles";
 export {
   Filter,
   SearchBar,
@@ -30,11 +29,10 @@ export {
   DisclaimerDialog,
   Pagination,
   Loader,
-  TableBidStatus,
   TelephoneInput,
   BidsCountrySelect,
   NumberInput,
   BidsSort,
   AddRole,
-  Roles
+  Roles,
 };

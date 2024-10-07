@@ -93,12 +93,6 @@ export const BidCard = ({
             {convertDateToYYYYMMDD(data.bidValidity)}
           </p>
         </div>
-
-        <div className={data.status === "Expired" ? "opacity-50" : ""}>
-          {/* <p className="text-sm text-para mb-1">Minimum Charges</p>
-      <p className="text-lg font-semibold text-text">AED 30,000.00</p> */}
-        </div>
-
         {data.status === "Pending" && !isBank && (
           <>
             <DialogClose id="close-button" className="hidden"></DialogClose>

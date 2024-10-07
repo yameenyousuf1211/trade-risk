@@ -13,24 +13,28 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { convertDateAndTimeToStringGMTNoTsx } from "@/utils";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthProvider";
-import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
-import { formatFirstLetterOfWord, LcLgInfo } from "../LG-Output/helper";
+import {
+  formatFirstLetterOfWord,
+  getLgBondTotal,
+  LcLgInfo,
+} from "../LG-Output/helper";
 import {
   formatAmount,
   formatNumberByAddingDigitsToStart,
 } from "../../utils/helper/helper";
-import LGIssuanceCashMarginDialog from "../LG-Output/LG-Issuance-Bank/LGIssuanceCashMargin";
 import SharedLCDetails from "./SharedLCDetails";
+import { getStatusStyles } from "./AddBid";
+import { fetchSingleLc } from "@/services/apis/lcs.api";
 
 export const BidCard = ({
   data,
   isBank,
-  isRisk,
+  setShowPreview,
 }: {
   data: IBids;
   isBank?: boolean;
-  isRisk?: boolean;
+  setShowPreview?: (value: boolean) => void;
 }) => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -48,7 +52,7 @@ export const BidCard = ({
     const { success, response } = await mutateAsync({
       status,
       id,
-      key: isRisk ? "risk" : "lc",
+      key: "lc",
     });
     if (!success) return toast.error(response as string);
     else {
@@ -198,43 +202,42 @@ export const BidCard = ({
             : ""}
         </Button>
       )}
+      {data.status === "Rejected" && isBank && (
+        <Button
+          className="bg-[#5625F2] text-white hover:bg-[#5625F2] mt-5"
+          onClick={() => setShowPreview(false)}
+        >
+          Submit A New Bid
+        </Button>
+      )}
     </div>
   );
 };
 
 export const TableDialog = ({
-  lcData,
+  lcData: passedLcData,
   bids,
-  isBank,
   isViewAll,
   buttonTitle,
-  isRisk = false,
+  id,
+  myBidsPage = false,
 }: {
   lcData: any;
   bids: IBids[];
   isBank?: boolean;
   buttonTitle?: string;
   isViewAll?: boolean;
-  isRisk?: boolean;
+  id?: string;
+  myBidsPage?: boolean;
 }) => {
-  const { user } = useAuth();
-  const userBids =
-    isBank && user && bids?.filter((bid) => bid?.createdBy === user?._id);
-
-  const otherBond = lcData?.otherBond?.cashMargin ?? 0;
-  const bidBond = lcData?.bidBond?.cashMargin ?? 0;
-  const advancePaymentBond = lcData?.advancePaymentBond?.cashMargin ?? 0;
-  const performanceBond = lcData?.performanceBond?.cashMargin ?? 0;
-  const retentionMoneyBond = lcData?.retentionMoneyBond?.cashMargin ?? 0;
-  const total =
-    otherBond +
-    bidBond +
-    advancePaymentBond +
-    performanceBond +
-    retentionMoneyBond;
+  const { data: lcData = passedLcData, isLoading } = useQuery({
+    queryKey: [`single-lc`, id],
+    queryFn: () => fetchSingleLc(id),
+    enabled: myBidsPage && !!id && !passedLcData, // Only fetch if passedLcData is not provided
+  });
 
   const sortedBids = (bidsArray: IBids[]) => {
-    return bidsArray.sort(
+    return bidsArray?.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
@@ -242,25 +245,34 @@ export const TableDialog = ({
 
   return (
     <Dialog>
-      <DialogTrigger
-        className={`${
-          isViewAll
-            ? "font-roboto text-sm font-light text-primaryCol underline"
-            : `center w-full rounded-md border px-1 py-2 ${
-                buttonTitle === "Accept" || buttonTitle === "Reject"
-                  ? "bg-[#2F3031] px-7 text-white"
-                  : null
-              } `
-        }`}
-      >
-        {isViewAll ? (
-          <p>View all</p>
-        ) : buttonTitle ? (
-          <p> {buttonTitle}</p>
-        ) : (
-          <Eye className="size-5" />
-        )}
-      </DialogTrigger>
+      {myBidsPage ? (
+        <DialogTrigger
+          style={getStatusStyles(bids.status)}
+          className="rounded-md w-full h-10"
+        >
+          {bids.status}
+        </DialogTrigger>
+      ) : (
+        <DialogTrigger
+          className={`${
+            isViewAll
+              ? "font-roboto text-sm font-light text-primaryCol underline"
+              : `center w-full rounded-md border px-1 py-2 ${
+                  buttonTitle === "Accept" || buttonTitle === "Reject"
+                    ? "bg-[#2F3031] px-7 text-white"
+                    : null
+                } `
+          }`}
+        >
+          {isViewAll ? (
+            <p>View all</p>
+          ) : buttonTitle ? (
+            <p> {buttonTitle}</p>
+          ) : (
+            <Eye className="size-5" />
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent className="h-full !max-h-[95vh] w-full max-w-6xl !p-0 flex flex-col">
         <div className="flex max-h-20 items-center justify-between border-b border-b-borderCol !py-5 px-7">
           <div className="flex flex-col items-center w-1/2">
@@ -274,74 +286,58 @@ export const TableDialog = ({
             <X className="size-7" />
           </DialogClose>
         </div>
-        {lcData?.type === "LG Issuance" &&
-        lcData?.lgIssuance === "LG 100% Cash Margin" ? (
-          <LGIssuanceCashMarginDialog data={lcData} />
-        ) : lcData?.type === "LG Issuance" &&
-          lcData?.lgIssuance !== "LG 100% Cash Margin" ? (
-          <LGIssuanceDialog data={lcData} />
-        ) : (
-          <div className="relative mt-0 flex h-full items-start justify-between overflow-y-hidden">
-            <div className="h-full max-h-[90vh] min-h-[85vh] w-full overflow-y-scroll border-r-2 border-r-borderCol pb-5">
-              <div className="bg-bg px-4 pt-2">
-                <h2 className="mb-1 text-2xl font-semibold">
-                  <span className="font-normal text-para">LC Amount:</span> USD{" "}
-                  {lcData && lcData.amount
-                    ? formatAmount(lcData?.amount?.price)
-                    : formatAmount(total)}
-                </h2>
-                <p className="font-roboto text-sm text-para">
-                  Created at,{" "}
-                  {lcData &&
-                    convertDateAndTimeToStringGMT({
-                      date: lcData.createdAt,
-                    })}
-                  , by{" "}
-                  <span className="capitalize text-text">
-                    {(lcData && lcData.exporterInfo?.beneficiaryName) ||
-                      lcData?.createdBy?.name}
-                  </span>
-                </p>
+        <div className="relative mt-0 flex h-full items-start justify-between overflow-y-hidden">
+          <div className="h-full max-h-[90vh] min-h-[85vh] w-full overflow-y-scroll border-r-2 border-r-borderCol pb-5">
+            <div className="bg-bg px-4 pt-2">
+              <h2 className="mb-1 text-2xl font-semibold">
+                <span className="font-normal text-para">LC Amount:</span> USD{" "}
+                {lcData && lcData.amount
+                  ? formatAmount(lcData?.amount?.price)
+                  : formatAmount(getLgBondTotal(lcData))}
+              </h2>
+              <p className="font-roboto text-sm text-para">
+                Created at,{" "}
+                {lcData &&
+                  convertDateAndTimeToStringGMT({
+                    date: lcData.createdAt,
+                  })}
+                , by{" "}
+                <span className="capitalize text-text">
+                  {(lcData && lcData.exporterInfo?.beneficiaryName) ||
+                    lcData?.createdBy?.name}
+                </span>
+              </p>
 
-                <div className="mt-3 h-[2px] w-full bg-neutral-800" />
-              </div>
-              <SharedLCDetails lcData={lcData} />
+              <div className="mt-3 h-[2px] w-full bg-neutral-800" />
             </div>
-            {/* Right Section */}
-            <div className="flex h-full w-full flex-col justify-start px-5">
-              {/* Filter Section */}
-              <div className="flex w-full items-center justify-between pt-5">
-                <div className="flex items-center gap-x-2">
-                  <p className="rounded-xl bg-primaryCol px-3 py-1 text-lg font-semibold text-white">
-                    {isBank ? userBids?.length : bids?.length}
-                  </p>
-                  <p className="text-xl font-semibold">
-                    {isBank ? "View Bids" : "Bids received"}
-                  </p>
-                </div>
+            <SharedLCDetails lcData={lcData} />
+          </div>
+          {/* Right Section */}
+          <div className="flex h-full w-full flex-col justify-start px-5">
+            {/* Filter Section */}
+            <div className="flex w-full items-center justify-between pt-5">
+              <div className="flex items-center gap-x-2">
+                <p className="rounded-xl bg-primaryCol px-3 py-1 text-lg font-semibold text-white">
+                  {bids?.length}
+                </p>
+                <p className="text-xl font-semibold">{"Bids received"}</p>
               </div>
-              {/* Bids */}
-              <div className="mt-5 flex max-h-[90vh] flex-col gap-y-4 overflow-y-auto overflow-x-hidden pb-5">
-                {isBank
-                  ? userBids &&
-                    userBids.length > 0 &&
-                    sortedBids(userBids)?.map((data: IBids) => (
-                      <BidCard
-                        isRisk={isRisk}
-                        data={data}
-                        key={data._id}
-                        isBank
-                      />
-                    ))
-                  : bids &&
-                    bids.length > 0 &&
-                    sortedBids(bids)?.map((data: IBids) => (
-                      <BidCard data={data} key={data._id} isRisk={isRisk} />
-                    ))}
-              </div>
+            </div>
+            {/* Bids */}
+            <div className="mt-5 flex max-h-[90vh] flex-col gap-y-4 overflow-y-auto overflow-x-hidden pb-5">
+              {myBidsPage ? (
+                <BidCard data={bids} key={bids._id} isBank={false} />
+              ) : (
+                lcData &&
+                lcData.bids &&
+                lcData.bids.length > 0 &&
+                sortedBids(bids)?.map((data: IBids) => (
+                  <BidCard data={data} key={data._id} isBank={false} />
+                ))
+              )}
             </div>
           </div>
-        )}
+        </div>
       </DialogContent>
     </Dialog>
   );

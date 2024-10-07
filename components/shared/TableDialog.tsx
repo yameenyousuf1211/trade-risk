@@ -257,7 +257,7 @@ export const TableDialog = ({
           className={`${
             isViewAll
               ? "font-roboto text-sm font-light text-primaryCol underline"
-              : `center w-full rounded-md border px-1 py-2 ${
+              : `center w-full rounded-md border py-2 ${
                   buttonTitle === "Accept" || buttonTitle === "Reject"
                     ? "bg-[#2F3031] px-7 text-white"
                     : null

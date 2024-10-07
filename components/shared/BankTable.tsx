@@ -18,6 +18,7 @@ import { AddBid } from "./AddBid";
 import { Button } from "../ui/button";
 import { gridCellStyling } from "./RequestTable";
 import { TableDialog } from "./TableDialog";
+import { formatFirstLetterOfWord } from "../LG-Output/helper";
 
 export const BankTable = ({
   data,
@@ -130,8 +131,10 @@ export const BankTable = ({
           <div className="space-x-2" style={gridCellStyling}>
             <span className="emoji-font text-[16px]">{flag}</span>
             <span>
-              {(item as IBids)?.lcInfo?.[1]?.country ||
-                (item as IRisk)?.lc?.issuingBanks?.[0]?.bank ||
+              {formatFirstLetterOfWord((item as IBids)?.lcInfo?.[1]?.country) ||
+                formatFirstLetterOfWord(
+                  (item as IRisk)?.lc?.issuingBanks?.[0]?.bank
+                ) ||
                 "-"}
             </span>
           </div>
@@ -160,7 +163,11 @@ export const BankTable = ({
         return (
           <div className="space-x-2" style={gridCellStyling}>
             <span className="emoji-font text-[16px]">{flag}</span>
-            <span>{(item as any).lc?.confirmingBank?.bank || "-"}</span>
+            <span>
+              {formatFirstLetterOfWord(
+                (item as any).lc?.confirmingBank?.bank
+              ) || "-"}
+            </span>
           </div>
         );
       },

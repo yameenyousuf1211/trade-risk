@@ -7,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { TableDataCell } from "../shared/RequestTable";
 import { LgStepsProps5 } from "@/types/lg";
 import { Check, Link, X } from "lucide-react";
 import { Input } from "../ui/input";
@@ -17,6 +16,23 @@ import { cn } from "@/lib/utils";
 import useLcIssuance from "@/store/issueance.store";
 import { Button } from "../ui/button";
 import FileUploadService from "@/services/apis/fileUpload.api";
+
+export const TableDataCell = ({
+  data,
+  children,
+  className,
+  childDivClassName,
+}: any) => {
+  return (
+    <TableCell className={`max-w-[180px] px-1 py-1 ${className}`}>
+      <div
+        className={`w-full truncate rounded-md border border-borderCol p-2 py-2.5 text-center text-sm capitalize text-lightGray ${childDivClassName}`}
+      >
+        {children ? children : data !== undefined ? String(data) : "-"}
+      </div>
+    </TableCell>
+  );
+};
 
 const LgIssuanceTableRow: FC<LgStepsProps5> = ({
   register,

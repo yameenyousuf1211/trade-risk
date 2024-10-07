@@ -1,8 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Check, Dot, X } from "lucide-react";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
+import { ArrowLeft, ArrowRight, Check, Dot, X } from "lucide-react";
 import Link from "next/link";
-import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { AddBid } from "./AddBid";
 import {
@@ -20,7 +21,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthProvider";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -155,7 +156,7 @@ const RequestCard = ({
   data: ILcs | IRisk;
 }) => {
   const { user } = useAuth();
-
+  const [currentIndex, setCurrentIndex] = useState(0);
   // Check if the last date of receiving bids has passed for banks
   const isBidsExpiredForBank =
     isBank && data.lastDateOfReceivingBids
@@ -163,6 +164,60 @@ const RequestCard = ({
       : false;
 
   const showData = !data.bids.some((bid) => bid.bidBy === user?._id) || true;
+
+  const ButtonGroup = ({ next, previous, goToSlide }) => {
+    const totalItems = data.bids.length;
+    const slidesToShow = responsive.desktop.items;
+
+    useEffect(() => {
+      if (currentIndex >= totalItems) {
+        setCurrentIndex(currentIndex % totalItems);
+      }
+    }, [currentIndex, totalItems]);
+
+    return (
+      <div className="flex justify-center items-center">
+        <button onClick={previous} className="carousel-arrow mx-2">
+          <ArrowLeft color="black" size={16} />
+        </button>
+        <div className="flex items-center mx-4">
+          {Array.from({ length: totalItems }).map((_, index) => {
+            return (
+              <button
+                key={index}
+                onClick={() => goToSlide(index * slidesToShow)}
+                className={`mx-1 w-2 h-2 rounded-full ${
+                  currentIndex === index ? "bg-black" : "bg-gray-400"
+                }`}
+              />
+            );
+          })}
+        </div>
+        <button onClick={next} className="carousel-arrow mx-2">
+          <ArrowRight color="black" size={16} />
+        </button>
+      </div>
+    );
+  };
+
+  const handleAfterChange = (previousSlide, { currentSlide }) => {
+    setCurrentIndex(currentSlide);
+  };
+
+  const responsive = {
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
+      items: 1,
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 464 },
+      items: 1,
+    },
+    mobile: {
+      breakpoint: { max: 464, min: 0 },
+      items: 1,
+    },
+  };
 
   return (
     <>
@@ -176,10 +231,10 @@ const RequestCard = ({
               {/* Data */}
               <div className="font-roboto">
                 <div className="flex items-center justify-between">
-                  <p className="ml-[15%] font-medium text-[#1A1A26] text-[15px]">
+                  <p className="font-medium text-[#1A1A26] text-[15px] flex-grow text-center">
                     Request #{formatNumberByAddingDigitsToStart(data.refId)}
                   </p>
-                  <div className="w-10">
+                  <div className="w-8 text-right">
                     <AddBid lcData={data} isEyeIcon={true} />
                   </div>
                 </div>
@@ -303,7 +358,7 @@ const RequestCard = ({
             </h3>
             <div className="flex items-center justify-between gap-x-2">
               <p className="font-roboto text-gray-500 text-sm font-semibold">
-                {data.bids.length} bid
+                {currentIndex + 1 + "/" + data.bids.length} bid
                 {data.bids.length > 1 ? "s" : ""}
               </p>
             </div>
@@ -311,21 +366,26 @@ const RequestCard = ({
 
           {/* Slider cards*/}
           <div className="w-full">
-            <Swiper
-              slidesPerView={data.bids.length > 1 ? 1.2 : 1}
-              spaceBetween={10}
+            <Carousel
+              responsive={responsive}
+              autoPlay={true}
+              autoPlaySpeed={3000}
+              arrows={false}
+              renderButtonGroupOutside={true}
+              customButtonGroup={<ButtonGroup />}
+              showDots={false}
+              afterChange={handleAfterChange}
+              itemClass="px-2.5"
             >
               {data.bids.map((info: IBids) => (
-                <SwiperSlide key={info._id}>
-                  <SliderCard
-                    isRisk={isRisk}
-                    info={info}
-                    lcData={data}
-                    key={info._id}
-                  />
-                </SwiperSlide>
+                <SliderCard
+                  isRisk={isRisk}
+                  info={info}
+                  lcData={data}
+                  key={info._id}
+                />
               ))}
-            </Swiper>
+            </Carousel>
           </div>
         </div>
       )}

@@ -126,7 +126,11 @@ export const getLgBondTotal = (item: any) => {
   return total;
 };
 
-export const formatFirstLetterOfWord = (name: string) => {
+export const formatFirstLetterOfWord = (name: string | undefined | null) => {
+  if (!name) {
+    return ""; // Return an empty string or any default value if name is undefined or null
+  }
+
   const segmenter = new Intl.Segmenter("en", { granularity: "word" });
   const segments = Array.from(segmenter.segment(name));
 

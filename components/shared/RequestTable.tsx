@@ -11,13 +11,12 @@ import { Plus, ChevronUp, Ellipsis, ListFilter } from "lucide-react"; // Import 
 import { LGTableBidStatus } from "../LG-Output/LG-Issuance-Corporate/LgTableBidStatus"; // Import your components
 import { LGCashMarginCorporate } from "../LG-Output/LG-Issuance-Corporate/LgCashMarginCorporate";
 import { TableDialog } from "./TableDialog";
-import { ButtonBase } from "@mui/material"; // To make cells clickable
+import { ButtonBase, styled } from "@mui/material"; // To make cells clickable
 import {
   ProductFilter,
   BidsCountrySelect,
   DateRangePicker,
   SearchBar,
-  TableBidStatus,
 } from "../helpers";
 import MuiGrid from "./CustomTableGrid";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -261,8 +260,8 @@ export const RequestTable = ({
           <div style={gridCellStyling}>
             {((item.importerInfo &&
               formatFirstLetterOfWord(item.importerInfo?.applicantName)) ||
-              item?.applicantDetails?.name ||
-              item?.applicantDetails?.company) ??
+              formatFirstLetterOfWord(item?.applicantDetails?.name) ||
+              formatFirstLetterOfWord(item?.applicantDetails?.company)) ??
               "-"}
           </div>
         );
@@ -322,17 +321,17 @@ export const RequestTable = ({
       renderCell: (params) => {
         const item = params.row;
         return (
-          <>
+          <div style={isBank ? undefined : gridCellStyling}>
             {!isBank ? (
               item.bids?.length === 1 ? (
-                "1 bid"
+                <span className="font-bold">1 bid</span>
               ) : (
-                `${item.bids?.length || 0} bids`
+                <span className="font-bold">{item.bids?.length || 0} bids</span>
               )
             ) : (
               <AddBid lcData={item} />
             )}
-          </>
+          </div>
         );
       },
     },

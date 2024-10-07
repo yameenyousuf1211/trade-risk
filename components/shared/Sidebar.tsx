@@ -302,7 +302,7 @@ const RequestCard = ({
               <p className="ml-[15%] font-medium text-[#1A1A26] text-[15px]">
                 Request #{formatNumberByAddingDigitsToStart(data.refId)}
               </p>
-              <div className="w-10">
+              <div className="w-8">
                 {data?.type == "LG Issuance" &&
                 data?.lgIssuance !== "LG 100% Cash Margin" ? (
                   <LGTableBidStatus data={data} />

@@ -91,25 +91,30 @@ export const BidCard = ({
             </p>
           </div>
         )}
-        {data?.discountMargin &&
+        {(data?.discountBaseRate || data?.discountMargin) &&
           data.bidType === "LC Confirmation & Discounting" && (
             <div>
               <p className="mb-1 text-sm text-para">Discount Pricing</p>
               <p className="text-lg font-semibold">
-                {`${data.discountBaseRate.toUpperCase()} + `}
-                <span className="text-text">{`${data.discountMargin}%`}</span>
+                {`${data?.discountBaseRate?.toUpperCase() || "-"} + `}
+                <span className="text-text">{`${
+                  data?.discountMargin ?? "-"
+                }%`}</span>
               </p>
             </div>
           )}
-        {data?.discountMargin && data.bidType === "LC Discounting" && (
-          <div>
-            <p className="mb-1 text-sm text-para">Discount Rate</p>
-            <p className="text-lg font-semibold">
-              {data?.discountBaseRate.toUpperCase()} +{" "}
-              <span className="text-text">{data.discountMargin}% </span>
-            </p>
-          </div>
-        )}
+        {(data?.discountBaseRate || data?.discountMargin) &&
+          data.bidType === "LC Discounting" && (
+            <div>
+              <p className="mb-1 text-sm text-para">Discount Rate</p>
+              <p className="text-lg font-semibold">
+                {`${data?.discountBaseRate?.toUpperCase() || "-"} + `}
+                <span className="text-text">{`${
+                  data?.discountMargin ?? "-"
+                }%`}</span>
+              </p>
+            </div>
+          )}
         <div>
           <p className="mb-1 text-sm text-para ">Country</p>
           <p className="text-lg font-semibold capitalize">
@@ -243,6 +248,15 @@ export const TableDialog = ({
     );
   };
 
+  const getMatchingBids = () => {
+    if (myBidsPage && lcData && lcData.bids && lcData.bids.length > 0 && bids) {
+      return lcData.bids.filter((lcBid: any) => lcBid._id === bids._id);
+    }
+    return [];
+  };
+
+  const matchedBids = getMatchingBids();
+
   return (
     <Dialog>
       {myBidsPage ? (
@@ -257,7 +271,7 @@ export const TableDialog = ({
           className={`${
             isViewAll
               ? "font-roboto text-sm font-light text-primaryCol underline"
-              : `center w-full rounded-md border py-2 ${
+              : `center w-full rounded-md border px-1.5 py-2 ${
                   buttonTitle === "Accept" || buttonTitle === "Reject"
                     ? "bg-[#2F3031] px-7 text-white"
                     : null
@@ -318,23 +332,23 @@ export const TableDialog = ({
             <div className="flex w-full items-center justify-between pt-5">
               <div className="flex items-center gap-x-2">
                 <p className="rounded-xl bg-primaryCol px-3 py-1 text-lg font-semibold text-white">
-                  {bids?.length}
+                  {bids?.length || matchedBids.length || 0}
                 </p>
                 <p className="text-xl font-semibold">{"Bids received"}</p>
               </div>
             </div>
             {/* Bids */}
             <div className="mt-5 flex max-h-[90vh] flex-col gap-y-4 overflow-y-auto overflow-x-hidden pb-5">
-              {myBidsPage ? (
-                <BidCard data={bids} key={bids._id} isBank={false} />
-              ) : (
-                lcData &&
-                lcData.bids &&
-                lcData.bids.length > 0 &&
-                sortedBids(bids)?.map((data: IBids) => (
-                  <BidCard data={data} key={data._id} isBank={false} />
-                ))
-              )}
+              {myBidsPage
+                ? matchedBids?.map((bid) => (
+                    <BidCard data={bid} key={bid._id} isBank={false} />
+                  ))
+                : lcData &&
+                  lcData.bids &&
+                  lcData.bids.length > 0 &&
+                  sortedBids(bids)?.map((data: IBids) => (
+                    <BidCard data={data} key={data._id} isBank={false} />
+                  ))}
             </div>
           </div>
         </div>

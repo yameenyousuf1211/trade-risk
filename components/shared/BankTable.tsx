@@ -86,6 +86,7 @@ export const BankTable = ({
       sortable: true,
       hideSortIcons: true,
       align: "center",
+      valueGetter: (params, row) => row.createdAt,
       renderHeader: () => (
         <div className="flex items-center justify-between">
           <span className="font-bold text-[#44444F]">Date Submitted</span>
@@ -108,6 +109,8 @@ export const BankTable = ({
       flex: 3,
       hideSortIcons: true,
       align: "center",
+      valueGetter: (params, row) =>
+        row.lcInfo?.[1]?.country || row.lc?.issuingBanks?.[0]?.bank,
       renderHeader: () => (
         <div className="flex items-center justify-between">
           <span className="font-bold text-[#44444F]">
@@ -146,6 +149,7 @@ export const BankTable = ({
       flex: 2,
       hideSortIcons: true,
       align: "center",
+      valueGetter: (params, row) => row.lc?.confirmingBank?.bank,
       renderHeader: () => (
         <div className="flex items-center justify-between">
           <span className="font-bold text-[#44444F] whitespace-normal max-w-[150px]">

@@ -184,6 +184,10 @@ export const RequestTable = ({
       disableColumnMenu: true,
       align: "center",
       hideSortIcons: true,
+      valueGetter: (value, row) =>
+        row?.type === "LG Issuance"
+          ? row?.lgIssuance
+          : row?.type || (row as IRisk)?.riskParticipationTransaction?.type,
       renderHeader: () => (
         <div className="flex items-center justify-between">
           <span className="font-bold text-[#44444F]">Product Type</span>

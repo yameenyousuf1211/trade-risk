@@ -18,7 +18,6 @@ export const BidCard = ({
   isBank?: boolean;
   isRisk?: boolean;
 }) => {
-  console.log(data, "hhhhhhh");
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation({
@@ -68,7 +67,7 @@ export const BidCard = ({
         <div className={data.status === "Expired" ? "opacity-50" : ""}>
           <p className="text-sm text-para mb-1">Confirmation Rate</p>
           <p className="text-lg font-semibold text-text">
-            {data.amount}% per annum
+            {data.amount || 0}% per annum
           </p>
         </div>
 

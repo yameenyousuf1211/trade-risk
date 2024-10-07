@@ -15,6 +15,8 @@ import useConfirmationStore from "@/store/lc.store";
 import useDiscountingStore from "@/store/discounting.store";
 import useConfirmationDiscountingStore from "@/store/confirmationDiscounting.store";
 import useLcIssuance from "@/store/issueance.store";
+import { getLgBondTotal } from "../LG-Output/helper";
+import { formatAmount } from '../../utils/helper/helper';
 
 const DraftCard = ({
   noBorder,
@@ -69,18 +71,6 @@ const DraftCard = ({
     }
   };
 
-  const otherBond = draft?.otherBond?.cashMargin ?? 0;
-  const bidBond = draft?.bidBond?.cashMargin ?? 0;
-  const advancePaymentBond = draft?.advancePaymentBond?.cashMargin ?? 0;
-  const performanceBond = draft?.performanceBond?.cashMargin ?? 0;
-  const retentionMoneyBond = draft?.retentionMoneyBond?.cashMargin ?? 0;
-  const total =
-    otherBond +
-    bidBond +
-    advancePaymentBond +
-    performanceBond +
-    retentionMoneyBond;
-
   return (
     <div className={`${noBorder ? "" : "border-b border-borderCol"} pb-2 py-2`}>
       <div className="flex items-center w-full justify-between gap-x-1">
@@ -103,13 +93,13 @@ const DraftCard = ({
         <p className="text-[16px] font-semibold uppercase">
           {draft.currency || "USD"}{" "}
           {draft?.amount
-            ? draft.amount?.price?.toLocaleString() + ".00"
+            ? formatAmount(draft.amount?.price)
             : (draft as ILcs)?.type === "LG Issuance" &&
               draft.lgIssuance === "LG 100% Cash Margin"
             ? draft?.lgDetails?.amount?.toLocaleString()
-              ? draft?.lgDetails?.amount?.toLocaleString() + ".00"
+              ? formatAmount(draft?.lgDetails?.amount)
               : "0.00"
-            : total.toLocaleString() + ".00"}
+            : formatAmount(getLgBondTotal(draft))}
         </p>
         <Button
           className="!py-0 font-roboto h-8 px-2 text-sm font-normal bg-transparent hover:bg-[#FF0000] hover:text-white border border-[#FF0000] text-[#FF0000]"

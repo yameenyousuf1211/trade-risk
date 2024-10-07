@@ -20,8 +20,6 @@ import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 import ViewFileAttachment from "@/components/shared/ViewFileAttachment";
 
 export const LGCashMarginCorporate = ({
-  isViewAll,
-  buttonTitle,
   data,
 }: {
   buttonTitle?: string;
@@ -56,14 +54,8 @@ export const LGCashMarginCorporate = ({
 
   return (
     <Dialog>
-      <DialogTrigger className={`center border  rounded-md w-full px-1 py-2`}>
-        {isViewAll ? (
-          <p>View all</p>
-        ) : buttonTitle ? (
-          <p> {buttonTitle}</p>
-        ) : (
-          <Eye className="size-5" />
-        )}
+      <DialogTrigger className={`center border rounded-md w-full px-1 py-2`}>
+        <Eye className="size-5" color="black" />
       </DialogTrigger>
       <DialogContent className="h-full !max-h-[95vh] w-full max-w-6xl !p-0 flex flex-col">
         <div className="col-span-2 flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">

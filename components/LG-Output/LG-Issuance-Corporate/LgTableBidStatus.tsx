@@ -19,8 +19,6 @@ import { DocDraftIcon } from "@/public/images/DocDraftIcon";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 export const LGTableBidStatus = ({
-  isViewAll,
-  buttonTitle,
   data,
 }: {
   buttonTitle?: string;
@@ -122,24 +120,8 @@ export const LGTableBidStatus = ({
 
   return (
     <Dialog>
-      <DialogTrigger
-        className={`${
-          isViewAll
-            ? "font-roboto text-sm text-primaryCol font-light underline"
-            : `center border  rounded-md w-full px-1 py-2 ${
-                buttonTitle === "Accept" || buttonTitle === "Reject"
-                  ? "bg-[#2F3031] text-white px-7"
-                  : null
-              } `
-        }`}
-      >
-        {isViewAll ? (
-          <p>View all</p>
-        ) : buttonTitle ? (
-          <p> {buttonTitle}</p>
-        ) : (
-          <Eye className="size-5" />
-        )}
+      <DialogTrigger className={`center border rounded-md w-full px-1 py-2`}>
+        <Eye className="size-5" color="black" />
       </DialogTrigger>
       <DialogContent className="w-full max-w-6xl !p-0 !max-h-[95vh] h-full grid grid-cols-2 gap-0 justify-start">
         <div className="col-span-2 flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">

@@ -1,4 +1,5 @@
 "use client";
+import { formatAmount } from "@/utils";
 import { useState } from "react";
 
 export const NumberInput = ({
@@ -33,9 +34,7 @@ export const NumberInput = ({
 
   const handleBlur = () => {
     if (rawValue) {
-      const formattedValueWithCents = `${parseInt(
-        rawValue
-      ).toLocaleString()}.00`;
+      const formattedValueWithCents = `${formatAmount(parseInt(rawValue))}`;
       setCurrencyValue(formattedValueWithCents);
     }
   };

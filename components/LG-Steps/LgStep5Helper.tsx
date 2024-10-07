@@ -251,12 +251,14 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
               {listValue !== "Choose any other type of LGs" && (
                 <>
                   USD{" "}
-                  {formatNumberWithCommas(
-                    bidBondAmount +
-                      advancePaymentBondAmount +
-                      performanceBondAmount +
-                      retentionMoneyBondAmount
-                  ) + ".00"}
+                  {formatAmount(
+                    formatNumberWithCommas(
+                      bidBondAmount +
+                        advancePaymentBondAmount +
+                        performanceBondAmount +
+                        retentionMoneyBondAmount
+                    )
+                  )}
                 </>
               )}
               <div className="flex items-center gap-4 border p-2 border-[#E2E2EA] text-black ">

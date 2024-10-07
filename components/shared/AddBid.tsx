@@ -5,216 +5,166 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Plus, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { DatePicker, Loader } from "../helpers";
-import { formatNumberByAddingDigitsToStart } from "@/utils";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addBid } from "@/services/apis/bids.api";
-import { toast } from "sonner";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { fetchSingleLc } from "@/services/apis/lcs.api";
-import { cn } from "@/lib/utils";
-import { IBids, IRisk } from "@/types/type";
-import { BgRadioInput, DDInput } from "../LCSteps/helpers";
+import { Eye, Plus, X } from "lucide-react";
+import { convertDateAndTimeToString } from "@/utils";
+import { useEffect, useState } from "react";
+import { IBids, ILcs } from "@/types/type";
 import { useAuth } from "@/context/AuthProvider";
-import { yupResolver } from "@hookform/resolvers/yup";
 import LGIssuanceDialog from "../LG-Output/LG-Issuance-Bank/LGIssuance";
-import ViewFileAttachment from "./ViewFileAttachment";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
-import { formatFirstLetterOfWord, LcLgInfo } from "../LG-Output/helper";
 import LGIssuanceCashMarginDialog from "../LG-Output/LG-Issuance-Bank/LGIssuanceCashMargin";
 import SharedLCDetails from "./SharedLCDetails";
-import { addBidTypes } from "@/validation/bids.validation";
+import { BidCard } from "./TableDialog";
+import { BidForm } from "./LCBidForm";
+import { getLgBondTotal } from "../LG-Output/helper";
+import { formatAmount } from "../../utils/helper/helper";
+
+export const getStatusStyles = (status: string) => {
+  switch (status) {
+    case "Add Bid":
+      return {
+        backgroundColor: "blue",
+        color: "white",
+      };
+    case "Rejected":
+      return {
+        backgroundColor: "#FF020229",
+        color: "red",
+      };
+    case "Pending":
+      return {
+        backgroundColor: "rgba(242, 153, 74, 0.2)",
+        color: "orange",
+      };
+    case "Accepted":
+      return {
+        backgroundColor: "rgba(41, 192, 132, 0.2)",
+        color: "rgba(41, 192, 132, 1)",
+      };
+    case "Expired":
+      return {
+        backgroundColor: "rgba(151, 151, 151, 0.32)",
+        color: "rgba(126, 126, 126, 1)",
+      };
+    case "Not Applicable":
+      return {
+        backgroundColor: "black",
+        color: "white",
+      };
+    default:
+      return {};
+  }
+};
 
 export const AddBid = ({
-  isNotification = false,
-  isDiscount,
-  isInfo,
-  status,
-  triggerTitle,
-  border,
-  id,
-  setIsAddNewBid,
-  isAddNewBid = false,
-  isCorporate,
-  isBank,
-  bidData,
-  isRisk = false,
+  isEyeIcon = false,
+  lcData,
 }: {
-  isDiscount?: boolean;
-  isNotification?: boolean;
-  isInfo?: boolean;
-  status?: string;
-  triggerTitle: string;
-  border?: boolean;
-  id: string;
-  setIsAddNewBid?: any;
-  isCorporate?: boolean;
+  isEyeIcon?: boolean;
   bidData?: any;
-  isBank?: boolean;
-  isRisk?: boolean;
+  lcData: ILcs;
 }) => {
-  const queryClient = useQueryClient();
-  const [discountBaseRate, setDiscountBaseRate] = useState("");
-  const [discountMargin, setDiscountMargin] = useState("");
-  const [confirmationPriceType, setConfirmationPriceType] = useState("");
   const { user } = useAuth();
-  const buttonRef = useRef<HTMLButtonElement>(null); // console.log(id, "_______-id");
+  const isDiscount = lcData?.type.includes("Discount");
+  const [showPreview, setShowPreview] = useState(false);
+  const [userBidStatus, setUserBidStatus] = useState<any>({});
+  const [userBids, setUserBids] = useState();
 
-  const { data: lcData, isLoading } = useQuery({
-    queryKey: [`single-lc`, id],
-    queryFn: () => fetchSingleLc(id),
-    enabled: !isRisk,
-  });
+  const bidDeadline = new Date(lcData?.lastDateOfReceivingBids);
+  const isExpired = new Date() > bidDeadline;
 
-  const { mutateAsync } = useMutation({
-    mutationFn: addBid,
-    onSuccess: () => {
-      console.log("onsuccess.... invalidating queries");
-      queryClient.invalidateQueries({
-        queryKey: ["bid-status"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["fetch-lcs"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["single-lc"],
-      });
-    },
-  });
-
-  console.log(lcData, "lcDataaaaaasdasdasd");
-
-  const {
-    handleSubmit,
-    register,
-    setValue,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    resolver: yupResolver(addBidTypes),
-  });
-  const onSubmit: SubmitHandler<typeof addBidTypes> = async (data) => {
-    if (isDiscount && !discountBaseRate)
-      return toast.error("Please provide discount base rate");
-    if (isDiscount && !discountMargin)
-      return toast.error("Please provide discount margin");
-
-    const baseData = {
-      confirmationPrice: data.confirmationPrice,
-      lc: lcData?._id,
-      type: lcData?.type!,
-      validity: data.validity,
-    };
-
-    const reqData = isDiscount
-      ? {
-          ...baseData,
-          discountMargin,
-          discountBaseRate,
-          perAnnum: confirmationPriceType === "perAnnum" ? true : false,
-        }
-      : baseData;
-    // @ts-ignore
-    const { success, response } = await mutateAsync(reqData);
-
-    if (!success) return toast.error(response);
-    else {
-      console.log(response?.data, "response?.data");
-      buttonRef?.current?.click();
-
-      toast.success("Bid added");
-    }
+  const handleFormSubmitSuccess = () => {
+    setShowPreview(false);
   };
 
-  const otherBond = lcData?.otherBond?.cashMargin ?? 0;
-  const bidBond = lcData?.bidBond?.cashMargin ?? 0;
-  const advancePaymentBond = lcData?.advancePaymentBond?.cashMargin ?? 0;
-  const performanceBond = lcData?.performanceBond?.cashMargin ?? 0;
-  const retentionMoneyBond = lcData?.retentionMoneyBond?.cashMargin ?? 0;
-  const total =
-    otherBond +
-    bidBond +
-    advancePaymentBond +
-    performanceBond +
-    retentionMoneyBond;
-  const userBids = lcData?.bids?.filter((bid) => bid?.createdBy === user?._id);
+  useEffect(() => {
+    const userBids =
+      lcData?.bids
+        .filter((bid: any) => bid.createdBy === user?._id)
+        .sort(
+          (a: any, b: any) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        ) || [];
 
-  let userBidStatus = null;
-  if (userBids?.length > 0) {
-    if (userBids.some((bid) => bid.status === "Pending")) {
-      userBidStatus = "Pending";
-    } else {
-      userBidStatus = userBids[0].status;
+    const mostRecentBid = userBids.length > 0 && userBids[0];
+    setUserBids(userBids);
+    setShowPreview(true);
+
+    const anotherBankBidAccepted = lcData?.bids.some(
+      (bid: any) => bid.status === "Accepted" && bid.createdBy !== user._id
+    );
+
+    if (mostRecentBid && anotherBankBidAccepted) {
+      setUserBidStatus({
+        label: "Another Bank Bid Accepted",
+        status: "Not Accepted",
+      });
+    } else if (!mostRecentBid && anotherBankBidAccepted) {
+      setUserBidStatus({
+        label: "Bid Not Applicable",
+        status: "Not Applicable",
+      });
+    } else if (mostRecentBid) {
+      if (mostRecentBid.status === "Pending") {
+        setUserBidStatus({
+          label: `Bid Submitted on ${convertDateAndTimeToString(
+            mostRecentBid.createdAt
+          )}`,
+          status: "Pending",
+        });
+      } else if (mostRecentBid.status === "Accepted") {
+        setUserBidStatus({
+          label: "Bid Accepted",
+          status: "Accepted",
+        });
+      } else if (mostRecentBid.status === "Rejected") {
+        setUserBidStatus({
+          label: "Bid Rejected",
+          status: "Rejected",
+        });
+      } else if (new Date(mostRecentBid.bidValidity) < new Date()) {
+        setUserBidStatus({
+          label: "Bid Expired",
+          status: "Expired",
+        });
+      }
     }
-  }
-  const currentDate = new Date();
-  const bidDeadline = new Date(lcData?.lastDateOfReceivingBids);
-  const isBidClosed = currentDate > bidDeadline;
+  }, [lcData?.bids, user?._id]);
 
-  const computedStatus =
-    userBidStatus || status || lcData?.status || triggerTitle;
+  const computedStatus = isExpired
+    ? "Expired"
+    : userBidStatus.status
+    ? userBidStatus.status
+    : "Add Bid";
 
   return (
     <Dialog>
-      <DialogTrigger
-        className={`${
-          status === "Accepted"
-            ? `bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084] ${
-                border && "border border-[#29C084]"
-              }`
-            : lcData?.status === "Accepted" || lcData?.status === "Expired"
-            ? "bg-[#1A1A26] text-white text-sm cursor-not-allowed"
-            : status === "Rejected"
-            ? `bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000] ${
-                border && "border border-[#D20000]"
-              }`
-            : status === "Expired"
-            ? `bg-[#97979752] hover:bg-[#97979752] text-[#7E7E7E] hover:text-[#7E7E7E] ${
-                border &&
-                "border border-[#7E7E7E] bg-[#9797971A] text-[#7E7E7E]"
-              }`
-            : status === "Add bid" && !isBank
-            ? "bg-primaryCol hover:bg-primaryCol text-white hover:text-white"
-            : status === "Add Bid" && computedStatus === "Add Bid" && isBank
-            ? "bg-primaryCol hover:bg-primaryCol text-white text-sm"
-            : status === "Add Bid" && computedStatus === "Rejected" && isBank
-            ? "bg-[#FF020229] hover:bg-[#FF020229] text-[#D20000] hover:text-[#D20000]"
-            : status === "Add Bid" && computedStatus === "Accepted" && isBank
-            ? "bg-[#29C08433] hover:bg-[#29C08433] text-[#29C084] hover:text-[#29C084]"
-            : `px-3 mt-2 bg-[#F2994A] hover:bg-[#F2994A]/90 text-white opacity-80 ${
-                isNotification && "bg-[#0e1829] hover:bg-black/90 "
-              }`
-        } rounded-md w-full h-full capitalize hover:opacity-85 font-roboto`}
-        disabled={
-          (((lcData?.status === "Accepted" && !isNotification) ||
-            (lcData?.status === "Expired" && !isNotification)) &&
-            status !== "Accepted" &&
-            !isNotification) ||
-          (computedStatus === "Pending" && !isNotification)
-        }
-      >
-        {status === "Accepted"
-          ? "Accepted"
-          : lcData?.status === "Accepted" || lcData?.status === "Expired"
-          ? "Not Applicable"
-          : computedStatus || "Pending"}
-      </DialogTrigger>
+      {isEyeIcon ? (
+        <DialogTrigger className={`center border rounded-md w-full px-1 py-2`}>
+          <Eye className="size-5" color="black" />
+        </DialogTrigger>
+      ) : (
+        <DialogTrigger
+          style={getStatusStyles(computedStatus)}
+          className="rounded-md w-full h-10"
+        >
+          {computedStatus}
+        </DialogTrigger>
+      )}
       <DialogContent className="h-full !max-h-[95vh] w-full max-w-6xl !p-0 flex flex-col">
         <div className="flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
           <div className="flex flex-col items-center w-1/2">
             <h2 className="text-2xl font-semibold text-center">
-              {(lcData?.type === "LG Issuance" &&
+              {lcData?.type === "LG Issuance" &&
               lcData.lgIssuance === "LG 100% Cash Margin"
                 ? lcData.lgIssuance
                 : lcData?.type === "LG Issuance" &&
                   lcData.lgIssuance !== "LG 100% Cash Margin"
                 ? "LG Re-Issuance"
-                : lcData?.type || "Risk Participation") + " Request"}
+                : lcData?.type}
             </h2>
           </div>
-          <DialogClose onClick={() => setIsAddNewBid && setIsAddNewBid(false)}>
+          <DialogClose>
             <X className="size-7" />
           </DialogClose>
         </div>
@@ -228,41 +178,35 @@ export const AddBid = ({
           <div className="overflow-y-hidden relative mt-0 flex items-start justify-between h-full">
             {/* Left Section */}
             <div className="w-full border-r-2 border-r-borderCol h-full overflow-y-auto max-h-[95vh]">
-              {isLoading ? (
-                <div className="w-full h-full center">
-                  <Loader />
+              <>
+                <div className="pt-5 px-4 bg-bg">
+                  <h2 className="text-2xl font-semibold mb-1">
+                    <span className="text-para font-medium">LC Amount:</span>{" "}
+                    {lcData?.currency || "USD"}{" "}
+                    {lcData?.amount?.price
+                      ? formatAmount(lcData?.amount?.price)
+                      : formatAmount(getLgBondTotal(lcData)) ?? ""}
+                  </h2>
+                  <p className="font-roboto text-sm text-para">
+                    Created at,{" "}
+                    {lcData &&
+                      convertDateAndTimeToStringGMT({
+                        date: lcData.createdAt,
+                      })}
+                    , by{" "}
+                    <span className="capitalize text-text">
+                      {(lcData && lcData.exporterInfo?.beneficiaryName) ||
+                        lcData?.createdBy?.name}
+                    </span>
+                  </p>
+                  <div className="h-[2px] w-full bg-neutral-800 mt-5" />
                 </div>
-              ) : (
-                <>
-                  <div className="pt-5 px-4 bg-bg">
-                    <h2 className="text-2xl font-semibold mb-1">
-                      <span className="text-para font-medium">LC Amount:</span>{" "}
-                      {lcData?.currency || "USD"}{" "}
-                      {lcData?.amount?.price
-                        ? lcData?.amount?.price?.toLocaleString() + ".00"
-                        : total?.toLocaleString() + ".00" ?? ""}
-                    </h2>
-                    <p className="font-roboto text-sm text-para">
-                      Created at,{" "}
-                      {lcData &&
-                        convertDateAndTimeToStringGMT({
-                          date: lcData.createdAt,
-                        })}
-                      , by{" "}
-                      <span className="capitalize text-text">
-                        {(lcData && lcData.exporterInfo?.beneficiaryName) ||
-                          lcData?.createdBy?.name}
-                      </span>
-                    </p>
-                    <div className="h-[2px] w-full bg-neutral-800 mt-5" />
-                  </div>
-                  <SharedLCDetails lcData={lcData} />
-                </>
-              )}
+                <SharedLCDetails lcData={lcData} />
+              </>
             </div>
 
             {/* Right Section */}
-            {isBidClosed ? (
+            {isExpired ? (
               <div className="w-full h-full flex justify-center items-center px-5 overflow-y-auto max-h-[95vh]">
                 <p className="text-xl font-medium">
                   This LC is not accepting bids at the moment
@@ -271,506 +215,31 @@ export const AddBid = ({
             ) : (
               <div className="w-full h-full flex flex-col justify-start px-5 overflow-y-auto max-h-[95vh]">
                 <p className="text-xl font-semibold pt-5">
-                  {computedStatus == "Add bid" || !isInfo
+                  {computedStatus == "Add bid" || !showPreview
                     ? "Submit Your Bid"
                     : "View Bids"}
                 </p>
-                {isInfo ? (
-                  // This is where we filter the bids for the logged-in user
-                  (() => {
-                    // console.log("🚀 ~ file: AddBid.tsx ~ line 116 ~ user ~ user", user);
-                    let userBids;
-                    if (isCorporate) {
-                      userBids = lcData?.bids;
-                    } else {
-                      userBids = lcData?.bids?.filter(
-                        (bid) => bid?.bidBy?._id === user?.business?._id
-                      );
-                    }
-                    const sortedBids = userBids?.sort(
-                      (a, b) =>
-                        new Date(b.createdAt).getTime() -
-                        new Date(a.createdAt).getTime()
-                    );
-
-                    return (
-                      <>
-                        {sortedBids && sortedBids.length > 0 ? (
-                          sortedBids.map((bid: IBids, index: number) => (
-                            <div
-                              className="border-borderCol px-4 mt-3   py-4  border  rounded-lg"
-                              key={bid._id}
-                            >
-                              <div
-                                key={bid._id || index}
-                                className="grid grid-cols-2 gap-y-3"
-                              >
-                                {/* Conditionally apply opacity to div based on status */}
-
-                                {/* Bid Number */}
-                                <div
-                                  className={
-                                    bid.status === "Expired" ? "opacity-50" : ""
-                                  }
-                                >
-                                  <p className="mb-1 text-sm text-para font-roboto">
-                                    Bid Number
-                                  </p>
-                                  <p className="text-lg font-semibold">
-                                    {formatNumberByAddingDigitsToStart(
-                                      bid?.bidNumber
-                                    )}
-                                  </p>
-                                </div>
-
-                                {/* Submitted by */}
-                                <div
-                                  className={
-                                    bid.status === "Expired" ? "opacity-50" : ""
-                                  }
-                                >
-                                  <p className="mb-1 text-sm text-para font-roboto">
-                                    Submitted by
-                                  </p>
-                                  <p className="text-lg font-semibold capitalize">
-                                    {bid
-                                      ? formatFirstLetterOfWord(
-                                          bid?.bidBy?.name
-                                        )
-                                      : "Habib Bank Limited"}
-                                  </p>
-                                </div>
-
-                                {lcData?.type !== "LC Discounting" && (
-                                  <div
-                                    className={
-                                      bid.status === "Expired"
-                                        ? "opacity-50"
-                                        : ""
-                                    }
-                                  >
-                                    <p className="mb-1 text-sm text-para font-roboto">
-                                      Confirmation Rate
-                                    </p>
-                                    <p className="text-lg font-semibold text-text">
-                                      {bid ? bid.confirmationPrice : "1.75"}%{" "}
-                                      <span className="text-black">
-                                        per annum
-                                      </span>
-                                    </p>
-                                  </div>
-                                )}
-
-                                {lcData?.type === "LC Discounting" && (
-                                  <div
-                                    className={
-                                      bid.status === "Expired"
-                                        ? "opacity-50"
-                                        : ""
-                                    }
-                                  >
-                                    <p className="mb-1 text-sm text-para font-roboto">
-                                      Discount Rate
-                                    </p>
-                                    <p className="text-lg font-semibold capitalize">
-                                      {bid ? (
-                                        <>
-                                          {bid?.discountBaseRate.toUpperCase()}{" "}
-                                          +{" "}
-                                          <span className="text-text">
-                                            {bid?.discountMargin}%
-                                          </span>{" "}
-                                        </>
-                                      ) : (
-                                        "-"
-                                      )}
-                                    </p>
-                                  </div>
-                                )}
-                                {lcData?.type ===
-                                  "LC Confirmation & Discounting" && (
-                                  <div
-                                    className={
-                                      bid.status === "Expired"
-                                        ? "opacity-50"
-                                        : ""
-                                    }
-                                  >
-                                    <p className="mb-1 text-sm text-para font-roboto">
-                                      Discount Pricing
-                                    </p>
-                                    <p className="text-lg font-semibold">
-                                      {bid &&
-                                        `${bid.discountBaseRate.toUpperCase()} + `}
-                                      <span className="text-text">{`${bid.discountMargin}%`}</span>
-                                    </p>
-                                  </div>
-                                )}
-                                {/* Country */}
-                                <div
-                                  className={
-                                    bid.status === "Expired" ? "opacity-50" : ""
-                                  }
-                                >
-                                  <p className="mb-1 text-sm text-para font-roboto">
-                                    Country
-                                  </p>
-                                  <p className="text-lg font-semibold capitalize">
-                                    {bid ? bid.bidBy.country : "Pakistan"}
-                                  </p>
-                                </div>
-                                {lcData?.type === "LC Discounting" && (
-                                  <div
-                                    className={
-                                      bidData.status === "Expired"
-                                        ? "opacity-50"
-                                        : ""
-                                    }
-                                  >
-                                    <p className="mb-1 text-sm text-para">
-                                      Term
-                                    </p>
-                                    <p className="text-lg font-semibold text-text">
-                                      <span className="text-black">
-                                        {bid?.perAnnum ? "Per Annum" : "Flat"}
-                                      </span>
-                                    </p>
-                                  </div>
-                                )}
-                                <div
-                                  className={
-                                    bid.status === "Expired" ? "opacity-50" : ""
-                                  }
-                                >
-                                  <p className="mb-1 text-sm text-para font-roboto">
-                                    Bid Received
-                                  </p>
-                                  <p className="text-lg font-semibold">
-                                    {convertDateAndTimeToStringGMT({
-                                      date: bid.createdAt,
-                                      sameLine: false,
-                                    })}
-                                  </p>
-                                </div>
-                                <div
-                                  className={
-                                    bid.status === "Expired" ? "opacity-50" : ""
-                                  }
-                                >
-                                  <p className="mb-1 text-sm text-para font-roboto">
-                                    Bid Expiry
-                                  </p>
-                                  <p className="font-semibold text-lg">
-                                    {convertDateAndTimeToStringGMT({
-                                      date: bid.bidValidity,
-                                      sameLine: false,
-                                    })}
-                                  </p>
-                                </div>
-                                <div
-                                  className={
-                                    bid.status === "Expired" ? "opacity-50" : ""
-                                  }
-                                ></div>
-                              </div>
-                              <Button
-                                className={`w-full ${
-                                  bid.status === "Accepted"
-                                    ? "bg-[#29C08433] hover:bg-[#29C08433]"
-                                    : bid.status === "Rejected"
-                                    ? "bg-[#FF02021A] hover:bg-[#FF02021A]"
-                                    : bid.status === "Expired"
-                                    ? "bg-[#97979733] hover:bg-[#97979733]"
-                                    : bid.status === "Pending"
-                                    ? "bg-[#F4D0131A] hover:bg-[#F4D0131A]"
-                                    : ""
-                                } mt-2 text-black`}
-                              >
-                                {bid.status === "Accepted"
-                                  ? "Bid Accepted"
-                                  : bid.status === "Rejected"
-                                  ? "Bid Rejected"
-                                  : bid.status === "Expired"
-                                  ? "Request Expired"
-                                  : bid.status === "Pending"
-                                  ? "Bid Submitted"
-                                  : bid.status}
-                              </Button>
-                            </div>
-                          ))
-                        ) : (
-                          <p>No bids found for the logged-in user.</p>
-                        )}
-
-                        {/* Button for submitting a new bid if status is Rejected */}
-                        {status === "Rejected" && !isCorporate && (
-                          <Button
-                            onClick={() => setIsAddNewBid(true)}
-                            className="bg-[#5625F2] text-white hover:bg-[#5625F2] mt-5"
-                          >
-                            Submit A New Bid
-                          </Button>
-                        )}
-                      </>
-                    );
-                  })()
-                ) : (
-                  <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="flex flex-col gap-y-4 py-4 px-4 mt-5 border border-borderCol rounded-lg"
-                  >
-                    <div>
-                      <div>
-                        <label
-                          htmlFor="validity"
-                          className="block font-semibold mb-2"
-                        >
-                          Bid Validity
-                        </label>
-                        <DatePicker
-                          setValue={setValue}
-                          key={lcData?._id}
-                          disabled={{
-                            before:
-                              lcData?.period?.startDate &&
-                              new Date(lcData.period.startDate) > new Date()
-                                ? new Date(lcData.period.startDate)
-                                : new Date(), // If the start date is in the future, use it, otherwise use the current date
-                            after: new Date(lcData?.period?.endDate),
-                          }}
-                          // maxDate={null}
-                          isPast={false}
+                {showPreview ? (
+                  <>
+                    {userBids && userBids.length > 0 ? (
+                      userBids.map((bid: IBids, index: number) => (
+                        <BidCard
+                          data={bid}
+                          key={bid._id}
+                          isBank
+                          setShowPreview={setShowPreview}
                         />
-                      </div>
-                      {errors.validity && (
-                        <span className="text-red-500 text-[12px]">
-                          {errors.validity.message}
-                        </span>
-                      )}
-                    </div>
-                    {lcData?.type !== "LC Discounting" && (
-                      <>
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <label
-                              htmlFor="confirmation"
-                              className="block font-semibold mb-2"
-                            >
-                              {lcData?.type === "LC Discounting"
-                                ? "Discount Rate"
-                                : isDiscount
-                                ? "Confirmation Pricing"
-                                : "Your Pricing"}
-                            </label>
-                            <p className="text-xs text-[#29C084]">
-                              Client&apos;s Expected Price:{" "}
-                              {lcData?.confirmationInfo?.pricePerAnnum} P.A
-                            </p>
-                          </div>
-                          <input
-                            placeholder="Enter your pricing per annum (%)"
-                            type="text"
-                            inputMode="numeric"
-                            className={cn(
-                              "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            )}
-                            max={100}
-                            {...register("confirmationPrice")}
-                            onChange={(event) => {
-                              const newValue: any = event.target.value.replace(
-                                /[^0-9.]/g,
-                                ""
-                              );
-                              event.target.value = newValue;
-                              setValue("confirmationPrice", newValue);
-                            }}
-                            onBlur={(event: ChangeEvent<HTMLInputElement>) => {
-                              if (
-                                event.target.value.includes("%") ||
-                                event.target.value.length === 0
-                              )
-                                return;
-                              event.target.value += "%";
-                            }}
-                            onKeyUp={(event: any) => {
-                              if (
-                                Number(event.target.value.replace("%", "")) >
-                                100
-                              ) {
-                                event.target.value = "100.0%";
-                              }
-                            }}
-                          />
-                        </div>
-                        {errors.confirmationPrice && (
-                          <span className="text-red-500 text-[12px]">
-                            {errors.confirmationPrice.message}
-                          </span>
-                        )}
-                      </>
+                      ))
+                    ) : (
+                      <p>No bids found for the logged-in user.</p>
                     )}
-                    {isDiscount && (
-                      <div className="flex gap-3">
-                        <label
-                          className={`px-3 py-4 w-full transition-colors duration-100 ${
-                            confirmationPriceType === "perAnnum"
-                              ? "bg-[#EEE9FE]"
-                              : "border border-borderCol bg-white"
-                          } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
-                        >
-                          <input
-                            type="radio"
-                            name="confirmationPriceType"
-                            value={"perAnnum"}
-                            onChange={(e) => {
-                              console.log(e.target.value);
-                              setConfirmationPriceType(e.target.value);
-                              if (lcData?.type === "LC Discounting") {
-                                setValue("confirmationPrice", "1");
-                              }
-                            }}
-                            className="accent-primaryCol size-4"
-                          />
-                          Per Annum
-                        </label>
-                        <label
-                          className={`px-3 py-4 w-full transition-colors duration-100 ${
-                            confirmationPriceType === "flat"
-                              ? "bg-[#EEE9FE]"
-                              : "border border-borderCol bg-white"
-                          } rounded-md flex items-center gap-x-3 mb-2 text-lightGray text-sm `}
-                        >
-                          <input
-                            type="radio"
-                            name="confirmationPriceType"
-                            value={"flat"}
-                            onChange={(e) => {
-                              setConfirmationPriceType(e.target.value);
-                              if (lcData?.type === "LC Discounting") {
-                                setValue("confirmationPrice", "1");
-                              }
-                            }}
-                            className="accent-primaryCol size-4"
-                          />
-                          Flat
-                        </label>
-                      </div>
-                    )}
-
-                    {isDiscount && (
-                      <div className="">
-                        <div className="flex items-center justify-between">
-                          <label
-                            htmlFor="discount"
-                            className="block font-semibold mb-2"
-                          >
-                            {lcData?.type === "LC Discounting"
-                              ? "Discount Spread"
-                              : "Discount Pricing"}
-                          </label>
-                          <p className="text-xs text-[#29C084]">
-                            Client&apos;s Expected Price:{" "}
-                            {lcData?.type === "LC Discounting"
-                              ? lcData?.baseRate?.toUpperCase()
-                              : lcData?.discountingInfo?.basePerRate?.toUpperCase()}
-                            +{lcData?.discountingInfo?.pricePerAnnum} P.A
-                          </p>
-                        </div>
-                        <div className="flex flex-col gap-y-3 items-center w-full">
-                          <label
-                            id="base-rate"
-                            className="border border-borderCol py -2 .5 px-3 rounded-md w-full flex items-center justify-between"
-                          >
-                            <p className="text-sm w-full text-black text-m uted-foreground">
-                              Select Base Rate
-                            </p>
-                            <div className="text-end">
-                              <DDInput
-                                id="baseRate"
-                                label="Base Rate"
-                                type="baseRate"
-                                value={discountBaseRate}
-                                placeholder="Select Value"
-                                setValue={setValue}
-                                onSelectValue={(value) => {
-                                  setDiscountBaseRate(value);
-                                  if (lcData?.type === "LC Discounting") {
-                                    setValue("confirmationPrice", "1");
-                                  }
-                                }}
-                                data={["KIBOR", "LIBOR", "SOFR"]}
-                              />
-                            </div>
-                          </label>
-                          <Plus strokeWidth={4.5} className="size-4" />
-                          <input
-                            type="text"
-                            placeholder="Margin (%)"
-                            inputMode="numeric"
-                            id="margin"
-                            value={discountMargin}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                              const newValue = e.target.value.replace(
-                                /[^0-9.]/g,
-                                ""
-                              );
-                              e.target.value = newValue;
-                              if (lcData?.type === "LC Discounting") {
-                                setValue("confirmationPrice", "1");
-                              }
-                              setDiscountMargin(newValue);
-                            }}
-                            onBlur={(event: ChangeEvent<HTMLInputElement>) => {
-                              if (
-                                event.target.value.includes("%") ||
-                                event.target.value.length === 0
-                              )
-                                return;
-                              event.target.value += "%";
-                            }}
-                            onKeyUp={(event: any) => {
-                              if (
-                                Number(event.target.value.replace("%", "")) >
-                                100
-                              ) {
-                                event.target.value = "100.0%";
-                              }
-                            }}
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-2 mt-2">
-                      <DialogClose
-                        ref={buttonRef}
-                        // id="submit-button-close"
-                        className="hidden"
-                      ></DialogClose>
-                      <Button
-                        className="bg-[#29C084] hover:bg-[#29C084]/90 text-white hover:text-white w-full"
-                        size="lg"
-                        type="submit"
-                        disabled={isSubmitting}
-                      >
-                        Submit
-                      </Button>
-                      <DialogClose
-                        className="w-full"
-                        onClick={() => setIsAddNewBid(false)}
-                      >
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="lg"
-                          className="bg-borderCol hover:bg-borderCol/90 text-para hover:text-para w-full"
-                        >
-                          Cancel
-                        </Button>
-                      </DialogClose>
-                    </div>
-                  </form>
+                  </>
+                ) : (
+                  <BidForm
+                    lcData={lcData}
+                    isDiscount={isDiscount}
+                    onSubmitSuccess={handleFormSubmitSuccess}
+                  />
                 )}
               </div>
             )}

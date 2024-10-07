@@ -12,6 +12,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { TagsInput } from "react-tag-input-component";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { formatAmount } from "@/utils";
 
 const AmountInput = ({
   register,
@@ -49,9 +50,7 @@ const AmountInput = ({
 
   const handleBlur = () => {
     if (rawValue) {
-      const formattedValueWithCents = `${parseInt(
-        rawValue
-      ).toLocaleString()}.00`;
+      const formattedValueWithCents = `${formatAmount(parseInt(rawValue))}`;
       setCurrencyValue(formattedValueWithCents);
     }
   };

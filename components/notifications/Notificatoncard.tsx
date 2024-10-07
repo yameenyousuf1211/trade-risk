@@ -5,9 +5,9 @@ import { useAuth } from "@/context/AuthProvider";
 import { removeId } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSingleLc2 } from "@/services/apis/lcs.api";
-import { TableBidStatus } from "../helpers";
 import { TableDialog } from "../shared/TableDialog";
 import { Loader2 } from "lucide-react";
+import { AddBid } from "../shared/AddBid";
 
 const ButtonSkeleton = () => {
   const { user } = useAuth();
@@ -38,14 +38,7 @@ const NotificationCard = ({
     queryFn: () => fetchSingleLc2(requestId),
   });
 
-  const renderBankContent = () => (
-    <TableBidStatus
-      id={requestId}
-      lcData={data}
-      isRisk={false}
-      isNotification={true}
-    />
-  );
+  const renderBankContent = () => <AddBid lcData={data} id={data._id} />;
 
   const renderUserContent = () => {
     if (data?.status === "Accepted") {
@@ -62,13 +55,13 @@ const NotificationCard = ({
           <TableDialog
             bids={data?.bids}
             lcData={data}
-            isRisk={false}
+            id={data._id}
             buttonTitle="Accept"
           />
           <TableDialog
             bids={data?.bids}
             lcData={data}
-            isRisk={false}
+            id={data._id}
             buttonTitle="Reject"
           />
         </>

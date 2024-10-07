@@ -348,7 +348,7 @@ const LgIssuanceTableRow: FC<LgStepsProps5> = ({
             setDisplayCashMargin(rawValue);
           }}
           onBlur={() => {
-            setDisplayCashMargin(`${formatAmount(cashMargin || 0)}.00`);
+            setDisplayCashMargin(`${formatAmount(cashMargin || 0)}`);
           }}
           onFocus={() => {
             setDisplayCashMargin(cashMargin);

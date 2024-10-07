@@ -4,9 +4,9 @@ import { updateNotification } from "@/services/apis/notifications.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthProvider";
 import { fetchSingleLc2 } from "@/services/apis/lcs.api";
-import { TableBidStatus } from "../helpers";
 import { removeId } from "@/utils";
 import { TableDialog } from "../shared/TableDialog";
+import { AddBid } from "../shared/AddBid";
 
 const Notification = ({ notification }: { notification: INotifications }) => {
   const { user } = useAuth();
@@ -54,12 +54,7 @@ const Notification = ({ notification }: { notification: INotifications }) => {
           {isLoading ? (
             <div className="text-center">Loading...</div>
           ) : (
-            <TableBidStatus
-              id={requestId}
-              lcData={data}
-              isRisk={false}
-              isNotification={true}
-            />
+            <AddBid lcData={data} id={data._id} />
           )}
         </div>
       ) : (
@@ -68,18 +63,8 @@ const Notification = ({ notification }: { notification: INotifications }) => {
             <div className="text-center">Loading...</div>
           ) : data?.status !== "Accepted" ? (
             <>
-              <TableDialog
-                lcData={data}
-                bids={data?.bids}
-                isRisk={false}
-                buttonTitle="Accept"
-              />
-              <TableDialog
-                lcData={data}
-                bids={data?.bids}
-                isRisk={false}
-                buttonTitle="Reject"
-              />
+              <TableDialog lcData={data} id={data._id} buttonTitle="Accept" />
+              <TableDialog lcData={data} id={data._id} buttonTitle="Reject" />
             </>
           ) : (
             <div className="border-gray-300 cursor-default bg-[#2F3031] text-white py-2 px-20 rounded-lg">

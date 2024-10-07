@@ -10,7 +10,6 @@ import {
   BidsCountrySelect,
   DateRangePicker,
   SearchBar,
-  TableBidStatus,
   Filter,
 } from "../helpers";
 import MuiGrid from "./CustomTableGrid";
@@ -18,6 +17,7 @@ import { useAuth } from "@/context/AuthProvider";
 import { AddBid } from "./AddBid";
 import { Button } from "../ui/button";
 import { gridCellStyling } from "./RequestTable";
+import { TableDialog } from "./TableDialog";
 
 export const BankTable = ({
   data,
@@ -185,7 +185,7 @@ export const BankTable = ({
             {(item as IBids)?.discountMargin
               ? `${(item as IBids)?.discountBaseRate.toUpperCase()} + ${(
                   item as IBids
-                ).discountMargin.toLocaleString()}.00%`
+                ).discountMargin.toFixed(2)}%`
               : "-"}
           </div>
         );
@@ -209,7 +209,7 @@ export const BankTable = ({
         return (
           <div style={gridCellStyling}>
             {((item as IBids)?.confirmationPrice &&
-              (item as IBids).confirmationPrice.toLocaleString() + ".00%") ||
+              (item as IBids).confirmationPrice.toFixed(2) + "%") ||
               "-"}
           </div>
         );
@@ -259,7 +259,7 @@ export const BankTable = ({
         return (
           <div style={gridCellStyling}>
             {((item as IBids)?.confirmationPrice &&
-              (item as IBids).confirmationPrice.toLocaleString() + ".00%") ||
+              (item as IBids).confirmationPrice.toFixed(2) + "%") ||
               "-"}
           </div>
         );
@@ -273,32 +273,7 @@ export const BankTable = ({
       align: "center",
       renderCell: (params) => {
         const item = params.row;
-        return item.status !== "Pending" ? (
-          <AddBid
-            triggerTitle={item.status}
-            status={item.status}
-            isInfo={item.status !== "Add bid" && !isAddNewBid}
-            setIsAddNewBid={setIsAddNewBid}
-            isAddNewBid={isAddNewBid}
-            isDiscount={
-              ((item as IBids).bidType &&
-                (item as IBids).bidType.includes("Discount")) ||
-              false
-            }
-            border
-            bidData={item}
-            id={item?.lc._id}
-            isRisk={isRisk}
-            isCorporate={isCorporate}
-          />
-        ) : (
-          <Button
-            variant="ghost"
-            className="bg-[#F2994A33] hover:bg-[#F2994A33] text-[#F2994A] hover:text-[#F2994A] rounded-md w-full p-2 capitalize hover:opacity-85 border border-[#F2994A]"
-          >
-            {item?.status}
-          </Button>
-        );
+        return <TableDialog bids={item} myBidsPage={true} id={item.lc._id} />;
       },
     },
   ];

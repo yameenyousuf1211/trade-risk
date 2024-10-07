@@ -25,9 +25,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { companyInfoSchema } from "@/validation";
-import { z } from "zod";
 import useRegisterStore from "@/store/register.store";
 import {
   CountrySelect,

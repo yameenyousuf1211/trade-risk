@@ -16,7 +16,6 @@ import {
 import useCountries from "@/hooks/useCountries";
 import { lcIssuanceSchema } from "@/validation/lc.validation";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
 import useLoading from "@/hooks/useLoading";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";

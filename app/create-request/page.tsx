@@ -12,7 +12,6 @@ import {
   Step7,
 } from "@/components/LCSteps";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";

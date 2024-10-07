@@ -14,7 +14,6 @@ import {
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { z } from "zod";
 import { onCreateLC, onUpdateLC } from "@/services/apis/lcs.api";
 import { usePathname, useRouter } from "next/navigation";
 import { confirmationDiscountSchema } from "@/validation/lc.validation";

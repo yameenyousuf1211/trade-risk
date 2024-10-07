@@ -86,9 +86,11 @@ export const AddBid = ({
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         ) || [];
 
-    const mostRecentBid = userBids.length > 0 && userBids[0];
+    const mostRecentBid = userBids.length > 0 ? userBids[0] : null;
     setUserBids(userBids);
-    setShowPreview(true);
+    if (userBids.length > 0) {
+      setShowPreview(true);
+    }
 
     const anotherBankBidAccepted = lcData?.bids.some(
       (bid: any) => bid.status === "Accepted" && bid.createdBy !== user._id

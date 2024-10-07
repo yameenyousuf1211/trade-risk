@@ -193,7 +193,6 @@ export default function MuiGrid({
           "& .MuiDataGrid-cell[data-field='bids'], & .MuiDataGrid-cell[data-field='actions']":
             {
               padding: "0px",
-              borderWidth: 0,
             },
           "& .MuiDataGrid-footerContainer": {
             backgroundColor: "#F5F7F9", // Your custom background color

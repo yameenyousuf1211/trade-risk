@@ -142,7 +142,9 @@ export const AddBid = ({
   return (
     <Dialog>
       {isEyeIcon ? (
-        <DialogTrigger className={`center border rounded-md w-full px-1 py-2`}>
+        <DialogTrigger
+          className={`center border rounded-md w-full px-1.5 py-2`}
+        >
           <Eye className="size-5" color="black" />
         </DialogTrigger>
       ) : (

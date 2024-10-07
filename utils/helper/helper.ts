@@ -490,7 +490,10 @@ export const convertStringValueToDate = (responseData: any) => {
 };
 
 export const formatAmount = (amount: number | string) => {
-  return Number(amount).toFixed(2).toLocaleString("en-US");
+  return Number(amount).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 };
 
 export const formatNumberByAddingDigitsToStart = (

@@ -47,7 +47,7 @@ function TablePagination({
       variant="outlined"
       shape="rounded"
       size="large"
-      count={pageCount + 1}
+      count={pageCount}
       page={page + 1}
       onChange={(event, newPage) => {
         onPageChange(event as any, newPage - 1);

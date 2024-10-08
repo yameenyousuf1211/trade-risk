@@ -107,7 +107,7 @@ export const UserProfile = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[150px]">
           <DropdownMenuItem asChild>
-            {/* <Link href="/setting">Settings</Link> */}
+            <Link href="/setting">Settings</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <LogoutBtn />

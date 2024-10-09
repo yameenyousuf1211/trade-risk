@@ -38,11 +38,14 @@ export default function AddBank() {
   const [flags, setFlags] = useState<string[]>([]);
   const [isoCode, setIsoCode] = useState("");
   const [cities, setCities] = useState([]);
-
   // State to store the currentBanks locally
   const [currentBanks, setCurrentBanks] = useState(
     user?.business?.currentBanks
   );
+
+  useEffect(() => {
+    setCurrentBanks(user?.business?.currentBanks);
+  }, [user]);
 
   const { data: banks, isLoading: banksLoading } = useQuery({
     queryKey: ["banks", countryVal],
@@ -91,20 +94,14 @@ export default function AddBank() {
     };
     const updatedBanks = [...currentBanks, newBank];
     setCurrentBanks(updatedBanks);
-    const banksToSend = updatedBanks.map(
-      ({ _id, ...bankWithoutId }) => bankWithoutId
-    );
-    console.log(banksToSend, "banksToSend");
-    const { success } = await addRemoveBank({
-      currentBanks: banksToSend,
-    });
+    const { success } = await addRemoveBank(updatedBanks);
 
     if (!success) return toast.error("Failed to add bank");
     toast.success("Bank added successfully");
     setCountryVal("");
     setBankVal("");
     setCityVal("");
-    queryClient.invalidateQueries({ queryKey: ["user"] });
+    queryClient.invalidateQueries({ queryKey: ["current-user"] });
   };
 
   return (
@@ -145,6 +142,8 @@ export default function AddBank() {
                           : currentValue
                       );
                       setCountryCode(currentValue);
+                      setBankVal("");
+                      setCityVal("");
                       setCountryOpen(false);
                     }}
                   >

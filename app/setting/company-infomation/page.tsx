@@ -8,9 +8,10 @@ import { Bank, IUser } from "@/types/type";
 import { useQueryClient } from "@tanstack/react-query";
 import { Pen, X } from "lucide-react";
 import Image from "next/image";
-import React, { use, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatFirstLetterOfWord } from "../../../components/LG-Output/helper";
+import { useAuth } from "@/context/AuthProvider";
 
 export default function CompanyInformation() {
   const {
@@ -24,6 +25,10 @@ export default function CompanyInformation() {
   );
   const [edit, setEdit] = useState<boolean>(false);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    setCurrentBanks(user?.business?.currentBanks);
+  }, [user]);
 
   if (isError) {
     return <div>Error</div>;
@@ -53,16 +58,11 @@ export default function CompanyInformation() {
   };
 
   const removeBankFromApi = async (updatedBanks: Bank[]) => {
-    const banksToSend = updatedBanks.map(
-      ({ _id, ...bankWithoutId }) => bankWithoutId
-    );
-    const { success } = await addRemoveBank({
-      currentBanks: banksToSend,
-    });
+    const { success } = await addRemoveBank(updatedBanks);
 
     if (!success) return toast.error("Failed to update banks");
     toast.success("Banks updated successfully");
-    queryClient.invalidateQueries({ queryKey: ["user"] });
+    queryClient.invalidateQueries({ queryKey: ["current-user"] });
   };
 
   return (
@@ -84,7 +84,10 @@ export default function CompanyInformation() {
               size={20}
             />
           </div>
-          <SettingTab label="Company Name" text={user?.name || "-"} />
+          <SettingTab
+            label="Company Name"
+            text={user?.business?.pocName || "-"}
+          />
           <SettingTab label="Company Logo (1:1)">
             <Image src={"/images/logo.svg"} alt="Logo" width={30} height={30} />
           </SettingTab>

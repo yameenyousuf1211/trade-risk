@@ -18,10 +18,12 @@ import { Bank, Country } from "@/types/type";
 import { bankCountries } from "@/utils/data";
 import { getBanks, getCities } from "@/services/apis/helpers.api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { addBank, removeBank } from "@/services/apis/user.api";
+import { addRemoveBank } from "@/services/apis/user.api";
 import { toast } from "sonner";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function AddBank() {
+  const { user } = useCurrentUser();
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryVal, setCountryVal] = useState("");
   const [cityOpen, setCityOpen] = useState(false);
@@ -36,6 +38,11 @@ export default function AddBank() {
   const [flags, setFlags] = useState<string[]>([]);
   const [isoCode, setIsoCode] = useState("");
   const [cities, setCities] = useState([]);
+
+  // State to store the currentBanks locally
+  const [currentBanks, setCurrentBanks] = useState(
+    user?.business?.currentBanks
+  );
 
   const { data: banks, isLoading: banksLoading } = useQuery({
     queryKey: ["banks", countryVal],
@@ -77,18 +84,27 @@ export default function AddBank() {
   const handleBank = async () => {
     if (!countryVal || !bankVal || !cityVal)
       return toast.error("Please fill all fields");
-    const { success, response } = await addBank({
-      country: countryVal,
+    const newBank = {
       name: bankVal,
+      country: countryVal,
       city: cityVal,
-      action: "add",
+    };
+    const updatedBanks = [...currentBanks, newBank];
+    setCurrentBanks(updatedBanks);
+    const banksToSend = updatedBanks.map(
+      ({ _id, ...bankWithoutId }) => bankWithoutId
+    );
+    console.log(banksToSend, "banksToSend");
+    const { success } = await addRemoveBank({
+      currentBanks: banksToSend,
     });
+
     if (!success) return toast.error("Failed to add bank");
     toast.success("Bank added successfully");
-    queryClient.invalidateQueries({ queryKey: ["user"] });
     setCountryVal("");
     setBankVal("");
     setCityVal("");
+    queryClient.invalidateQueries({ queryKey: ["user"] });
   };
 
   return (

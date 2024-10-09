@@ -54,12 +54,7 @@ const HomePage = ({ searchParams }: SearchParams) => {
             <ProgressCharts title="My Actions" />
             <LineCharts />
           </div>
-          <RequestTable
-            isBank={false}
-            data={data}
-            key={"Corporate"}
-            isLoading={isLoading}
-          />
+          <RequestTable data={data} key={"Corporate"} isLoading={isLoading} />
         </div>
         <div className="w-[20vw]  /5 w-[1 00%] mb-5  sticky top-10 h-[88vh]">
           <Sidebar isBank={false} />

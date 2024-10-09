@@ -46,7 +46,7 @@ export const fetchAllLcs = async ({
 }) => {
   try {
     const { data } = await api.get(
-      `/lcs?limit=${limit || 7}&page=${page || 1}&search=${
+      `/lcs?limit=${limit || 10}&page=${page || 1}&search=${
         search || ""
       }&filter=${(filter && encodeURIComponent(filter)) || ""}`
     );

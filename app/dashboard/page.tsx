@@ -46,7 +46,6 @@ const DashboardPage = ({ searchParams }: SearchParams) => {
           {/* Data Table */}
 
           <RequestTable
-            isBank={true}
             data={data}
             key={"Bank"}
             isRisk={false}

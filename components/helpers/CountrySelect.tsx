@@ -29,6 +29,7 @@ export const CountrySelect = ({
   value,
   onChange,
   disabled,
+  isNewView = false,
 }: {
   setIsoCode: any;
   setValue: any;
@@ -39,6 +40,7 @@ export const CountrySelect = ({
   disabled?: boolean;
   onChange?: any;
   value?: string;
+  isNewView?: boolean; // New prop type
 }) => {
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryVal, setCountryVal] = useState(value || "");
@@ -64,17 +66,40 @@ export const CountrySelect = ({
             role="combobox"
             aria-expanded={countryOpen}
             disabled={disabled}
-            className={`capitalize font-roboto w-full justify-between font-normal text-sm ${
-              countryVal ? "text-lightGray" : "text-gray-400"
-            } ${extraClassName}`}
+            className={cn(
+              `capitalize font-roboto w-full justify-between font-normal text-sm flex items-center`,
+              countryVal ? "text-lightGray" : "text-gray-400",
+              extraClassName
+            )}
           >
-            {countryVal
-              ? countries?.find(
-                  (country: string) =>
-                    country.toLowerCase() === countryVal.toLowerCase()
-                )
-              : placeholder || "Select country..."}
-            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            {isNewView ? (
+              <>
+                <span className="mr-auto text-black">Country</span>
+                <span className="flex items-center space-x-2">
+                  <span>
+                    {countryVal
+                      ? countries?.find(
+                          (country: string) =>
+                            country.toLowerCase() === countryVal.toLowerCase()
+                        )
+                      : "Select Country"}
+                  </span>
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="flex-1 text-left">
+                  {countryVal
+                    ? countries?.find(
+                        (country: string) =>
+                          country.toLowerCase() === countryVal.toLowerCase()
+                      )
+                    : placeholder || "Select country..."}
+                </span>
+                <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0">

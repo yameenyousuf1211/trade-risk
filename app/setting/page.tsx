@@ -9,16 +9,18 @@ import { Bank } from "@/types/type";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 import AddBank from "@/components/helpers/AddBank";
-import { formatPhoneNumber } from "@/utils";
-import RemoveBank from "@/components/helpers/RemoveBank";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { addRemoveBank } from "@/services/apis/user.api";
 
 export default function Setting() {
   const [companyEdit, setComapnyBank] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [editMode, setEditMode] = useState(false);
-
   const { user, isLoading } = useCurrentUser();
+  const [currentBanks, setCurrentBanks] = useState(
+    user?.business?.currentBanks || []
+  );
+  const queryClient = useQueryClient();
   if (isLoading) return <div>Loading...</div>;
 
   const groupedBanks: { [key: string]: Bank[] } =
@@ -29,6 +31,25 @@ export default function Setting() {
       acc[bank.country].push(bank);
       return acc;
     }, {});
+
+  const handleRemoveBank = (id: string) => {
+    const updatedBanks = currentBanks.filter((bank) => bank._id !== id);
+    setCurrentBanks(updatedBanks);
+    removeBankFromApi(updatedBanks);
+  };
+
+  const removeBankFromApi = async (updatedBanks: Bank[]) => {
+    const banksToSend = updatedBanks.map(
+      ({ _id, ...bankWithoutId }) => bankWithoutId
+    );
+    const { success } = await addRemoveBank({
+      currentBanks: banksToSend,
+    });
+
+    if (!success) return toast.error("Failed to update banks");
+    toast.success("Banks updated successfully");
+    queryClient.invalidateQueries({ queryKey: ["user"] });
+  };
 
   return (
     <SettingLayout
@@ -149,7 +170,12 @@ export default function Setting() {
                       key={`${bank._id}-${idx}`}
                       className="flex items-start gap-x-2"
                     >
-                      {companyEdit && <RemoveBank id={bank._id} />}
+                      {companyEdit && (
+                        <X
+                          onClick={() => handleRemoveBank(bank._id)}
+                          className="size-4 text-red-500 cursor-pointer"
+                        />
+                      )}
                       <p className="text-[#44444F] text-sm capitalize">
                         {bank.name}
                       </p>

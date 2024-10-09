@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SettingLayout from "@/components/layouts/SettingLayout";
 import { Edit, Eye, Pencil, X } from "lucide-react";
 import SettingTab from "@/components/SettingTab";
@@ -18,14 +18,20 @@ export default function Setting() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [editMode, setEditMode] = useState(false);
   const { user, isLoading } = useCurrentUser();
+
   const [currentBanks, setCurrentBanks] = useState(
     user?.business?.currentBanks || []
   );
+
+  useEffect(() => {
+    setCurrentBanks(user?.business?.currentBanks);
+  }, [user]);
+
   const queryClient = useQueryClient();
   if (isLoading) return <div>Loading...</div>;
 
   const groupedBanks: { [key: string]: Bank[] } =
-    user.business.currentBanks.reduce((acc: any, bank: any) => {
+    user?.business?.currentBanks.reduce((acc: any, bank: any) => {
       if (!acc[bank.country]) {
         acc[bank.country] = [];
       }
@@ -40,16 +46,10 @@ export default function Setting() {
   };
 
   const removeBankFromApi = async (updatedBanks: Bank[]) => {
-    const banksToSend = updatedBanks.map(
-      ({ _id, ...bankWithoutId }) => bankWithoutId
-    );
-    const { success } = await addRemoveBank({
-      currentBanks: banksToSend,
-    });
-
+    const { success } = await addRemoveBank(updatedBanks);
     if (!success) return toast.error("Failed to update banks");
     toast.success("Banks updated successfully");
-    queryClient.invalidateQueries({ queryKey: ["user"] });
+    queryClient.invalidateQueries({ queryKey: ["current-user"] });
   };
 
   return (

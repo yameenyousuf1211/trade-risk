@@ -141,6 +141,8 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
   });
 
   const validateFields = (data: any) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!data.bidValidity) {
       toast.error("Bid Validity is required");
       return false;
@@ -157,6 +159,10 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
       toast.error("Issue LG Email is required");
       return false;
     }
+    if (!emailRegex.test(data.issueLg.email)) {
+      toast.error("Please enter a valid Issue LG Email address");
+      return false;
+    }
     if (!data.issueLg?.branchName) {
       toast.error("Issue LG Branch Name is required");
       return false;
@@ -171,6 +177,10 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     }
     if (!data.collectLg?.email) {
       toast.error("Collect LG Email is required");
+      return false;
+    }
+    if (!emailRegex.test(data.collectLg.email)) {
+      toast.error("Please enter a valid Collect LG Email address");
       return false;
     }
     if (!data.collectLg?.branchName) {

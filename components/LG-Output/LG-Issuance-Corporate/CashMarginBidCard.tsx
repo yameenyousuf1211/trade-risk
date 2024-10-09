@@ -9,6 +9,7 @@ import {
 } from "@/utils";
 import { formatFirstLetterOfWord } from "../helper";
 import ViewFileAttachment from "@/components/shared/ViewFileAttachment";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 export const CashMarginBidCard = ({
   bidDetail,
@@ -72,7 +73,9 @@ export const CashMarginBidCard = ({
           </div>
           <div>
             <p className="text-[#92929D] text-sm">Submitted By</p>
-            <p className="font-semibold text-xl">{bidDetail.bidBy.name}</p>
+            <p className="font-semibold text-xl">
+              {formatFirstLetterOfWord(bidDetail.bidBy.name)}
+            </p>
           </div>
         </div>
         <div className="grid grid-cols-2 mt-4">
@@ -93,13 +96,19 @@ export const CashMarginBidCard = ({
           <div className="text-start">
             <p className="text-[#92929D] text-sm">Bid Received</p>
             <p className="font-semibold text-xl">
-              {convertDateAndTimeToString(bidDetail?.createdAt)}
+              {convertDateAndTimeToStringGMT({
+                date: bidDetail?.createdAt,
+                sameLine: false,
+              })}
             </p>
           </div>
           <div>
             <p className="text-[#92929D] text-sm">Bid Expiry</p>
             <p className="font-semibold text-xl">
-              {convertDateAndTimeToString(bidDetail?.bidValidity)}
+              {convertDateAndTimeToStringGMT({
+                date: bidDetail?.bidValidity,
+                sameLine: false,
+              })}
             </p>
           </div>
         </div>

@@ -11,6 +11,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import AddBank from "@/components/helpers/AddBank";
 import { toast } from "sonner";
 import { addRemoveBank } from "@/services/apis/user.api";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Setting() {
   const [companyEdit, setComapnyBank] = useState<boolean>(false);

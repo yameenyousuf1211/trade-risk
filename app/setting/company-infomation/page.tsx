@@ -8,7 +8,7 @@ import { Bank, IUser } from "@/types/type";
 import { useQueryClient } from "@tanstack/react-query";
 import { Pen, X } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { toast } from "sonner";
 import { formatFirstLetterOfWord } from "../../../components/LG-Output/helper";
 
@@ -23,6 +23,7 @@ export default function CompanyInformation() {
     user?.business?.currentBanks || []
   );
   const [edit, setEdit] = useState<boolean>(false);
+  const queryClient = useQueryClient();
 
   if (isError) {
     return <div>Error</div>;
@@ -61,6 +62,7 @@ export default function CompanyInformation() {
 
     if (!success) return toast.error("Failed to update banks");
     toast.success("Banks updated successfully");
+    queryClient.invalidateQueries({ queryKey: ["user"] });
   };
 
   return (

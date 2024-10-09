@@ -12,7 +12,6 @@ import {
   BgRadioInputLG,
   getLgBondTotal,
   formatFirstLetterOfWord,
-  LcLgInfo,
 } from "../helper";
 import { DatePicker } from "@/components/helpers";
 import { useForm } from "react-hook-form";
@@ -28,6 +27,29 @@ import FileUploadService from "@/services/apis/fileUpload.api";
 import { FileCard } from "@/components/LCSteps/Step7";
 import ViewFileAttachment from "@/components/shared/ViewFileAttachment";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
+
+const LGInfo = ({
+  label,
+  value,
+  noBorder,
+}: {
+  label: string;
+  value: string | null;
+  noBorder?: boolean;
+}) => {
+  return (
+    <div
+      className={`flex items-start justify-between py-2 ${
+        !noBorder && "border-b border-b-borderCol"
+      }`}
+    >
+      <p className="font-roboto text-sm font-normal text-para">{label}</p>
+      <p className="max-w-[60%] text-right text-sm font-semibold capitalize">
+        {value || "-"}
+      </p>
+    </div>
+  );
+};
 
 const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
   const { user } = useAuth();
@@ -119,6 +141,8 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
   });
 
   const validateFields = (data: any) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!data.bidValidity) {
       toast.error("Bid Validity is required");
       return false;
@@ -135,6 +159,10 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
       toast.error("Issue LG Email is required");
       return false;
     }
+    if (!emailRegex.test(data.issueLg.email)) {
+      toast.error("Please enter a valid Issue LG Email address");
+      return false;
+    }
     if (!data.issueLg?.branchName) {
       toast.error("Issue LG Branch Name is required");
       return false;
@@ -149,6 +177,10 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     }
     if (!data.collectLg?.email) {
       toast.error("Collect LG Email is required");
+      return false;
+    }
+    if (!emailRegex.test(data.collectLg.email)) {
+      toast.error("Please enter a valid Collect LG Email address");
       return false;
     }
     if (!data.collectLg?.branchName) {
@@ -412,12 +444,12 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
             LG Amount:{" "}
             <span className="text-[20px] text-[#1A1A26] font-semibold">
               {data?.lgDetails?.currency || "USD"}{" "}
-              {formatAmount(data?.lgDetails?.amount)}
+              {formatAmount(data?.lgDetails?.amount) + ".00"}
             </span>
           </h3>
           <div>
             {applicantDetails.map((detail, index) => (
-              <LcLgInfo
+              <LGInfo
                 key={index}
                 label={detail.label}
                 value={detail.value || "-"}
@@ -428,7 +460,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
         <div className="p-4">
           <h2 className="font-semibold text-lg">LG Details</h2>
           {lgDetails.map((detail, index) => (
-            <LcLgInfo
+            <LGInfo
               key={index}
               label={detail.label}
               value={detail.value || "-"}
@@ -442,7 +474,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
             ))}
           <h2 className="font-semibold text-lg mt-3">Beneficiary Details</h2>
           {beneficiaryDetails.map((detail, index) => (
-            <LcLgInfo
+            <LGInfo
               key={index}
               label={detail.label}
               value={detail.value || "-"}

@@ -335,7 +335,7 @@ export const TableDialog = ({
             <div className="flex w-full items-center justify-between pt-5">
               <div className="flex items-center gap-x-2">
                 <p className="rounded-xl bg-primaryCol px-3 py-1 text-lg font-semibold text-white">
-                  {bids?.length || matchedBids.length || 0}
+                  {lcData.bids?.length || matchedBids.length || 0}
                 </p>
                 <p className="text-xl font-semibold">{"Bids received"}</p>
               </div>
@@ -349,7 +349,7 @@ export const TableDialog = ({
                 : lcData &&
                   lcData.bids &&
                   lcData.bids.length > 0 &&
-                  sortedBids(bids)?.map((data: IBids) => (
+                  sortedBids(lcData.bids).map((data: IBids) => (
                     <BidCard data={data} key={data._id} isBank={false} />
                   ))}
             </div>

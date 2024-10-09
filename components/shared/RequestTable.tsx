@@ -22,6 +22,8 @@ import MuiGrid from "./CustomTableGrid";
 import { useDebounce } from "@uidotdev/usehooks";
 import { formatFirstLetterOfWord, getLgBondTotal } from "../LG-Output/helper";
 import { AddBid } from "./AddBid";
+import io from "socket.io-client";
+import { useAuth } from "@/context/AuthProvider";
 
 export const gridCellStyling = {
   border: "1px solid rgba(224, 224, 224, 1)",
@@ -33,26 +35,32 @@ export const gridCellStyling = {
   textOverflow: "ellipsis",
 };
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+let formattedBaseUrl = BASE_URL?.endsWith("api")
+  ? BASE_URL.slice(0, -3)
+  : BASE_URL;
+formattedBaseUrl =
+  BASE_URL === undefined ? "https://trade.yameenyousuf.com" : BASE_URL;
+
 export const RequestTable = ({
-  isBank,
   data,
   isLoading,
   isRisk = false,
 }: {
-  isBank: boolean;
   isRisk?: boolean;
   data: ApiResponse<ILcs> | IRisk | undefined;
   isLoading: boolean;
 }) => {
+  const { user } = useAuth();
+  const isBank = user?.type === "bank";
   const [allCountries, setAllCountries] = useState<Country[]>([]);
-  const [tableData, setTableData] = useState<any>();
+  const [tableData, setTableData] = useState<any>([]);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 700);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
   });
-  console.log(data, "tableData");
 
   const { data: countriesData } = useQuery({
     queryKey: ["countries"],
@@ -60,7 +68,7 @@ export const RequestTable = ({
   });
 
   useEffect(() => {
-    if (data) {
+    if (data && Array.isArray(data?.data)) {
       setTableData(data);
     }
   }, [data]);
@@ -82,6 +90,62 @@ export const RequestTable = ({
     );
     return country ? country.flag : undefined;
   };
+
+  useEffect(() => {
+    const socket = io(formattedBaseUrl, {
+      transportOptions: {
+        polling: {
+          extraHeaders: {
+            business: user?.business?._id, // Pass the businessId in headers
+            type: isBank ? "bank" : "corporate", // Pass the type in headers
+          },
+        },
+      },
+    });
+
+    if (isBank) {
+      socket.on("lc-created", (newLcData) => {
+        setTableData((prevTableData) => {
+          const updatedData = Array.isArray(prevTableData?.data)
+            ? [newLcData, ...prevTableData.data].slice(0, 10)
+            : [newLcData];
+
+          return {
+            ...prevTableData,
+            data: updatedData,
+          };
+        });
+      });
+    }
+
+    if (!isBank) {
+      socket.on("bid-created", (newBidData) => {
+        setTableData((prevTableData) => {
+          const updatedData = Array.isArray(prevTableData?.data)
+            ? prevTableData.data
+            : [];
+
+          const newTableData = updatedData.map((item) =>
+            item._id === newBidData.lc
+              ? {
+                  ...item,
+                  bids: [...(item.bids || []), newBidData],
+                }
+              : item
+          );
+
+          return {
+            ...prevTableData,
+            data: newTableData,
+          };
+        });
+      });
+    }
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [formattedBaseUrl, user?.business?._id]);
 
   const columns = [
     { field: "id", headerName: "ID", width: 200 },

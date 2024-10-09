@@ -14,7 +14,6 @@ import PaginationItem from "@mui/material/PaginationItem";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback } from "react";
 
-// Custom styled pagination for a closer look to the image
 function PrevPagination() {
   return (
     <div className="flex items-center px-3">
@@ -102,7 +101,8 @@ export default function MuiGrid({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pathname = window.location.pathname; // Gets the current route
+  const pathname =
+    typeof window !== "undefined" ? window.location.pathname : "";
 
   const handlePaginationChange = (newPaginationModel) => {
     const page = newPaginationModel?.page + 1;
@@ -124,6 +124,7 @@ export default function MuiGrid({
       <DataGrid
         rows={data}
         scrollbarSize={10}
+        getRowId={(row) => row._id}
         rowCount={rowCount}
         columns={columns}
         disableRowSelectionOnClick={true}

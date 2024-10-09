@@ -74,12 +74,7 @@ const RiskRequestPage = ({ searchParams }: Props) => {
                 )}
               </div>
             </div>
-            <RequestTable
-              data={data}
-              isBank={true}
-              isLoading={isLoading}
-              isRisk={true}
-            />
+            <RequestTable data={data} isLoading={isLoading} isRisk={true} />
           </div>
         </div>
 

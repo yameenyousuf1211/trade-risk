@@ -36,10 +36,6 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
     );
   }, [isoCode]);
 
-  useEffect(() => {
-    refetch();
-  }, [lgDetails?.isoCode]);
-
   // Whenever the checkbox changes, update the form values
   useEffect(() => {
     if (isSameAsIssue) {
@@ -66,6 +62,9 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
     setValue("isSameAsIssuance", e.target.checked);
     if (e.target.checked) {
       setValue("lgCollectIn", lgIssueInDetails);
+      setIsoCode(lgIssueInDetails?.isoCode);
+    } else {
+      refetch();
     }
   };
 

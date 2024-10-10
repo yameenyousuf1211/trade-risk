@@ -3,7 +3,7 @@ import { Button } from "../../ui/button";
 import { ApplicantQuery } from "./ApplicantQuery";
 import {
   cn,
-  convertDateAndTimeToString,
+  convertDateAndTimeToStringGMTNoTsx,
   convertDateToCommaString,
   formatAmount,
 } from "@/utils";
@@ -261,7 +261,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     } else if (mostRecentBid) {
       if (mostRecentBid.status === "Pending") {
         setUserBidStatus({
-          label: `Bid Submitted on ${convertDateAndTimeToString(
+          label: `Bid Submitted on ${convertDateAndTimeToStringGMTNoTsx(
             mostRecentBid.createdAt
           )}`,
           status: "Pending",

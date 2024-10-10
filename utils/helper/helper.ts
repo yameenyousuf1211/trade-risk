@@ -244,35 +244,11 @@ export const convertDateAndTimeToString = (date: any) => {
   const day = String(jsDate.getDate()).padStart(2, "0");
   const hours = String(jsDate.getHours()).padStart(2, "0");
   const minutes = String(jsDate.getMinutes()).padStart(2, "0");
-  const seconds = String(jsDate.getSeconds()).padStart(2, "0");
 
-  const formattedDate = `${month} ${day} ${year} ${hours}:${minutes}:${seconds}`;
-  console.log(formattedDate);
+  const formattedDate = `${month} ${day} ${year} ${hours}:${minutes}`;
   return formattedDate;
 };
-export const findTime = (date: Date) => {
-  const now = new Date();
-  console.log(date);
 
-  const messageDate = new Date(date);
-
-  const minutesDifference = differenceInMinutes(now, messageDate);
-  const hoursDifference = differenceInHours(now, messageDate);
-  const daysDifference = differenceInDays(now, messageDate);
-  const monthsDifference = differenceInMonths(now, messageDate);
-
-  if (minutesDifference < 1) {
-    return "now";
-  } else if (minutesDifference < 60) {
-    return `${minutesDifference}m ago`;
-  } else if (hoursDifference < 24) {
-    return `${hoursDifference}h ago`;
-  } else if (daysDifference < 30) {
-    return `${daysDifference}d ago`;
-  } else {
-    return `${monthsDifference}mo ago`;
-  }
-};
 export const compareValues = (
   a: any,
   b: any,

@@ -48,7 +48,11 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
     lgIssueInDetails?.city,
   ]);
 
-  const { data: cities, isLoading } = useQuery({
+  const {
+    data: cities,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["cities", isoCode],
     queryFn: () => getCities(isoCode!),
     enabled: !!isoCode, // Fetch cities only when isoCode is set
@@ -57,15 +61,10 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue("isSameAsIssuance", e.target.checked);
     if (e.target.checked) {
-      // Copy values from lgIssueIn to lgCollectIn when checked
       setValue("lgCollectIn", lgIssueInDetails);
+      setIsoCode(lgIssueInDetails?.isoCode);
     } else {
-      // Clear values when unchecked
-      setValue("lgCollectIn", {
-        country: "",
-        city: "",
-        isoCode: "",
-      });
+      refetch();
     }
   };
 
@@ -101,6 +100,7 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
           <CountrySelect
             setIsoCode={setIsoCode}
             setValue={setValue}
+            isNewView={true}
             value={lgDetails?.country}
             extraClassName="h-[3.5em]"
             name={

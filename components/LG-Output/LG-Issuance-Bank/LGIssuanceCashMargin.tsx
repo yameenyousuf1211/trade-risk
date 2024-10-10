@@ -1,9 +1,9 @@
-import React, { useState, useEffect, use, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { Button } from "../../ui/button";
 import { ApplicantQuery } from "./ApplicantQuery";
 import {
   cn,
-  convertDateAndTimeToString,
+  convertDateAndTimeToStringGMTNoTsx,
   convertDateToCommaString,
   formatAmount,
 } from "@/utils";
@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import FileUploadService from "@/services/apis/fileUpload.api";
 import { FileCard } from "@/components/LCSteps/Step7";
 import ViewFileAttachment from "@/components/shared/ViewFileAttachment";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 const LGInfo = ({
   label,
@@ -140,6 +141,8 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
   });
 
   const validateFields = (data: any) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!data.bidValidity) {
       toast.error("Bid Validity is required");
       return false;
@@ -156,6 +159,10 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
       toast.error("Issue LG Email is required");
       return false;
     }
+    if (!emailRegex.test(data.issueLg.email)) {
+      toast.error("Please enter a valid Issue LG Email address");
+      return false;
+    }
     if (!data.issueLg?.branchName) {
       toast.error("Issue LG Branch Name is required");
       return false;
@@ -170,6 +177,10 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     }
     if (!data.collectLg?.email) {
       toast.error("Collect LG Email is required");
+      return false;
+    }
+    if (!emailRegex.test(data.collectLg.email)) {
+      toast.error("Please enter a valid Collect LG Email address");
       return false;
     }
     if (!data.collectLg?.branchName) {
@@ -250,7 +261,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     } else if (mostRecentBid) {
       if (mostRecentBid.status === "Pending") {
         setUserBidStatus({
-          label: `Bid Submitted on ${convertDateAndTimeToString(
+          label: `Bid Submitted on ${convertDateAndTimeToStringGMTNoTsx(
             mostRecentBid.createdAt
           )}`,
           status: "Pending",
@@ -422,17 +433,9 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
         <div className="border-r-2 border-b-2  bg-[#F5F7F9] p-4 flex flex-col gap-3 border-[#F5F7F9]">
           <h5 className="text-[14px] text-[#696974]">
             Created at,{" "}
-            {new Date(data.createdAt).toLocaleDateString("en-US", {
-              month: "short",
-              day: "2-digit",
-              year: "numeric",
-            })}{" "}
-            {new Date(data.createdAt).toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            })}{" "}
-            by{" "}
+            {data.createdAt &&
+              convertDateAndTimeToStringGMT({ date: data.createdAt })}
+            , by{" "}
             <span className="text-blue-500">
               {formatFirstLetterOfWord(data.applicantDetails.company)}
             </span>
@@ -508,7 +511,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                 setValue={setValue}
                 disabled={{
                   before: new Date(),
-                  after: new Date(data?.lastDateOfReceivingBids),
+                  after: new Date(data?.lgDetails?.lgExpiryDate),
                 }}
                 leftText={false}
               />
@@ -658,6 +661,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                   placeholder="Select City"
                   label="City"
                   id={"issueLg.city"}
+                  value={watch("issueLg.city")}
                   setValue={setValue}
                   disabled={isLoadingIssue || !isoCodeIssue}
                   data={
@@ -730,6 +734,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
                   placeholder="Select City"
                   label="City"
                   id={"collectLg.city"}
+                  value={watch("collectLg.city")}
                   setValue={setValue}
                   disabled={isLoadingCollect || !isoCodeCollect}
                   data={

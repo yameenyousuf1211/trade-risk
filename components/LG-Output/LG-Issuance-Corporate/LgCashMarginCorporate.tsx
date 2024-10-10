@@ -102,16 +102,8 @@ export const LGCashMarginCorporate = ({
             <div className="border-b bg-[#F5F7F9] p-4 flex flex-col gap-3 border-[#F5F7F9]">
               <h5 className="text-sm text-[#696974] font-light">
                 Created at,{" "}
-                {new Date(data?.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "2-digit",
-                  year: "numeric",
-                })}{" "}
-                {new Date(data?.createdAt).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                })}
+                {data.createdAt &&
+                  convertDateAndTimeToStringGMT({ date: data.createdAt })}
                 , by{" "}
                 <span className="text-[#50B5FF]">
                   {formatFirstLetterOfWord(data?.applicantDetails?.company)}

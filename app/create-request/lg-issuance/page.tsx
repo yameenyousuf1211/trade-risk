@@ -33,6 +33,7 @@ import {
 import { bankCountries } from "@/utils/data";
 import {
   lg100CashMarginSchema,
+  lgIssuanceWithinCountry,
   lgReIssuanceSchema,
 } from "@/validation/lg.validation";
 import { Loader2 } from "lucide-react";
@@ -145,20 +146,6 @@ export default function LgIssuance() {
     } else {
       handleFinalSubmission(responseData);
     }
-
-    // delete responseData.test;
-
-    // // Set default value for lgDetailsType if not defined
-    // if (responseData.lgDetailsType === undefined) {
-    //   responseData.lgDetailsType = "Choose any other type of LGs";
-    // }
-
-    // // Handle draft submissions
-    // if (responseData.draft) {
-    //   await handleDraftSubmission(responseData);
-    // } else {
-    //   await handleFinalSubmission(responseData);
-    // }
   };
 
   // Function to handle draft submissions
@@ -176,11 +163,6 @@ export default function LgIssuance() {
       delete responseData.beneficiaryBankDetails;
     } else {
       removeUnnecessaryFieldsForLgCreate(responseData);
-      // console.log("🚀 ~ handleFinalSubmission ~ responseData lastDateOfReceivingBids DATE:", responseData.lastDateOfReceivingBids);
-      // console.log("🚀 ~ handleFinalSubmission ~ responseData advancePaymentBond DATE:", responseData.advancePaymentBond.expectedDate);
-      // console.log("🚀 ~ handleFinalSubmission ~ responseData performanceBond DATE:", responseData.performanceBond.expectedDate)
-      // console.log("🚀 ~ handleFinalSubmission ~ responseData retentionMoneyBond DATE:", responseData.retentionMoneyBond.expectedDate)
-      // Update existing data
       removeUnnecessaryFields(responseData);
     }
     console.log(responseData, "responseData");
@@ -240,10 +222,13 @@ export default function LgIssuance() {
       }
 
       removeUnnecessaryFieldsForLgCreate(responseData);
-      removeUnnecessaryFields(responseData);
-      // const validate = bondRequiredFields(responseData)
-      // if(!validate) return toast.error("Please Select at least one Bond");
-      convertStringValueToDate(responseData);
+      if (lgIssuance === LG.issuanceWithinTheCountry) {
+        delete responseData.physicalLg;
+        delete responseData.issuingBanks;
+        delete responseData.issueLgWithStandardText;
+        delete responseData.lgIssueIn.country;
+        delete responseData.lgIssueIn.country;
+      }
     } else if (responseData.lgIssuance === "LG 100% Cash Margin") {
       delete responseData.retentionMoneyBond;
       delete responseData.advancePaymentBond;
@@ -263,15 +248,23 @@ export default function LgIssuance() {
           abortEarly: true,
           stripUnknown: true,
         });
-      } else {
+      } else if (responseData.lgIssuance === LG.reIssuanceInAnotherCountry) {
         await lgReIssuanceSchema.validate(responseData, {
+          abortEarly: true,
+          stripUnknown: true,
+        });
+      } else {
+        await lgIssuanceWithinCountry.validate(responseData, {
           abortEarly: true,
           stripUnknown: true,
         });
       }
       console.log("🚀 ~ handleFinalSubmission ~ validatedData", responseData);
       const { response, success } = storeData?.data?._id
-        ? await onUpdateLC({ payload: responseData, id: storeData?.data?._id })
+        ? await onUpdateLC({
+            payload: responseData,
+            id: storeData?.data?._id,
+          })
         : await onCreateLC(responseData);
       handleResponse(
         success,
@@ -357,7 +350,8 @@ export default function LgIssuance() {
           flags={flags}
           setValue={setValue}
         />
-        {lgIssuance === LG.cashMargin ? (
+        {lgIssuance === LG.cashMargin ||
+        lgIssuance === LG.issuanceWithinTheCountry ? (
           <LgStep3CashMargin
             data={countryNames}
             flags={countryFlags}
@@ -419,28 +413,54 @@ export default function LgIssuance() {
             data={[]}
             flags={[]}
           />
-        ) : (
+        ) : lgIssuance === LG.reIssuanceInAnotherCountry ? (
           <LgStep6
             register={register}
             setStepCompleted={handleStepCompletion}
             setValue={setValue}
             watch={watch}
           />
+        ) : null}
+        {lgIssuance === LG.issuanceWithinTheCountry && (
+          <LgStep9Part2
+            register={register}
+            watch={watch}
+            setStepCompleted={handleStepCompletion}
+            data={countries}
+            flags={flags}
+            step={6}
+            setValue={setValue}
+            type="issue" // Pass "issue" for lgIssueIn
+          />
         )}
 
+        {lgIssuance === LG.issuanceWithinTheCountry && (
+          <LgStep9Part2
+            register={register}
+            watch={watch}
+            setStepCompleted={handleStepCompletion}
+            data={countries}
+            flags={flags}
+            step={7}
+            setValue={setValue}
+            type="collect" // Pass "collect" for lgCollectIn
+          />
+        )}
         <LgStep7
           setValue={setValue}
           register={register}
           watch={watch}
+          step={lgIssuance === LG.issuanceWithinTheCountry ? 8 : 7}
           setStepCompleted={handleStepCompletion}
         />
-        {lgIssuance === LG.reIssuanceInAnotherCountry && (
+        {(lgIssuance === LG.reIssuanceInAnotherCountry ||
+          lgIssuance === LG.issuanceWithinTheCountry) && (
           <LgStep8
             register={register}
             setValue={setValue}
             watch={watch}
             setStepCompleted={handleStepCompletion}
-            step={8}
+            step={lgIssuance === LG.issuanceWithinTheCountry ? 9 : 8}
           />
         )}
 

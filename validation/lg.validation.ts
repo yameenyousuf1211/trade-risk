@@ -208,3 +208,41 @@ export const lg100CashMarginSchema = baseSchema.concat(
     isSameAsIssuance: Yup.boolean().default(false),
   })
 );
+
+export const lgIssuanceWithinCountry = lgReIssuanceSchema
+  .omit(["issuingBanks"])
+  .concat(
+    Yup.object().shape({
+      preferredBanks: Yup.object()
+        .shape({
+          country: Yup.string().required("Preferred Bank Country is required"),
+          banks: Yup.array()
+            .of(
+              Yup.object().shape({
+                bank: Yup.string().required("Bank is required"),
+                swiftCode: Yup.string().nullable(),
+                accountNumber: Yup.string().nullable(),
+              })
+            )
+            .min(1, "At least one bank is required"),
+        })
+        .required(),
+      lgIssueIn: Yup.object()
+        .shape({
+          city: Yup.string().required("City for LG Issue is required"),
+          isoCode: Yup.string().required(
+            "Please select Lg Issue In country again"
+          ),
+        })
+        .required(),
+      lgCollectIn: Yup.object()
+        .shape({
+          city: Yup.string().required("City for LG Collection is required"),
+          isoCode: Yup.string().required(
+            "Please select Lg Collect In country again"
+          ),
+        })
+        .required(),
+      isSameAsIssuance: Yup.boolean().default(false),
+    })
+  );

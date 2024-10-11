@@ -39,5 +39,5 @@ export const values = [
 export const LG = Object.freeze({
   cashMargin: "LG 100% Cash Margin",
   reIssuanceInAnotherCountry: "LG Re-issuance in another country",
-  advising: "LG Advising",
+  issuanceWithinTheCountry: "LG issuance within the country",
 });

@@ -18,6 +18,9 @@ export default function LgStep3CashMargin({
   setValue,
 }: LgStepsProps3) {
   // Watch the entire preferredBanks object
+  const lgIssuance = watch("lgIssuance");
+  const lgIssuanceWithinCountry =
+    lgIssuance === "LG issuance within the country";
   const preferredBanks = watch("preferredBanks");
   const preferredBanksArray = preferredBanks?.banks || [];
   const { addStep, removeStep } = useStepStore();
@@ -139,7 +142,7 @@ export default function LgStep3CashMargin({
               </div>
             ) : null}
           </div>
-          <div className="flex items-center gap-3 pt-2 px-2 pb-2">
+          <div className="flex gap-3 pt-2 px-2 pb-2">
             <DDInput
               placeholder="Select Bank"
               label="Bank"
@@ -167,21 +170,41 @@ export default function LgStep3CashMargin({
                 placeholder="Type here"
               />
             </label>
-            <label
-              id={`preferredBanks.banks[${index}].accountNumber`}
-              className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
-            >
-              <p className="w-full text-sm text-lightGray">Account Number</p>
-              <Input
-                register={register}
-                name={`preferredBanks.banks[${index}].accountNumber`}
-                type="text"
+            {!lgIssuanceWithinCountry && (
+              <label
                 id={`preferredBanks.banks[${index}].accountNumber`}
-                className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
-                placeholder="Type here"
-              />
-            </label>
+                className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+              >
+                <p className="w-full text-sm text-lightGray">Account Number</p>
+                <Input
+                  register={register}
+                  name={`preferredBanks.banks[${index}].accountNumber`}
+                  type="text"
+                  id={`preferredBanks.banks[${index}].accountNumber`}
+                  className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+                  placeholder="Type here"
+                />
+              </label>
+            )}
           </div>
+          {lgIssuanceWithinCountry && (
+            <div className="px-2 pb-2">
+              <label
+                id={`preferredBanks.banks[${index}].accountNumber`}
+                className="border p-1 px-3 rounded-md w-full flex items-center justify-between bg-white"
+              >
+                <p className="w-full text-sm text-lightGray">Account Number</p>
+                <Input
+                  register={register}
+                  name={`preferredBanks.banks[${index}].accountNumber`}
+                  type="text"
+                  id={`preferredBanks.banks[${index}].accountNumber`}
+                  className="block bg-none text-sm text-end border-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-[180px]"
+                  placeholder="Type here"
+                />
+              </label>
+            </div>
+          )}
         </div>
       ))}
 

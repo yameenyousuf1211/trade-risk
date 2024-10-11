@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCities } from "@/services/apis/helpers.api";
 import { CountrySelect } from "../helpers";
 import { CheckBoxInput } from "@/app/register/bank/page";
+import { mapCountryToIsoCode } from "../../utils/helper/helper";
 
 interface LgStep9Part2Props extends LgStepsProps2 {
   type: "issue" | "collect"; // Add a type prop
@@ -22,11 +23,18 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
 }) => {
   const lgDetails = watch(type === "issue" ? "lgIssueIn" : "lgCollectIn");
   const isSameAsIssue = watch("isSameAsIssuance");
-
+  const lgIssuance = watch("lgIssuance");
+  const preferredCountry = watch("preferredBanks.country");
   const lgIssueInDetails = watch("lgIssueIn");
   const [isoCode, setIsoCode] = useState<string | null>(
     lgDetails?.isoCode || ""
   );
+
+  useEffect(() => {
+    if (lgIssuance === "LG issuance within the country") {
+      setIsoCode(mapCountryToIsoCode(preferredCountry));
+    }
+  });
 
   // Whenever the isoCode changes, update the form values
   useEffect(() => {
@@ -98,24 +106,26 @@ const LgStep9Part2: React.FC<LgStep9Part2Props> = ({
 
       <div className="w-full">
         <div className="flex items-center gap-3 mb-2">
-          <CountrySelect
-            setIsoCode={setIsoCode}
-            setValue={setValue}
-            isNewView={true}
-            value={lgDetails?.country}
-            extraClassName="h-[3.5em]"
-            name={
-              type === "issue" ? "lgIssueIn.country" : "lgCollectIn.country"
-            } // Adjust name based on type
-            placeholder={lgDetails?.country || "Select Country"}
-            disabled={type !== "issue" && isSameAsIssue} // Disable when checkbox is checked
-            onChange={() => {
-              setValue(
-                type === "issue" ? "lgIssueIn.city" : "lgCollectIn.city",
-                ""
-              );
-            }}
-          />
+          {lgIssuance === "LG 100% Cash Margin" && (
+            <CountrySelect
+              setIsoCode={setIsoCode}
+              setValue={setValue}
+              isNewView={true}
+              value={lgDetails?.country}
+              extraClassName="h-[3.5em]"
+              name={
+                type === "issue" ? "lgIssueIn.country" : "lgCollectIn.country"
+              } // Adjust name based on type
+              placeholder={lgDetails?.country || "Select Country"}
+              disabled={type !== "issue" && isSameAsIssue} // Disable when checkbox is checked
+              onChange={() => {
+                setValue(
+                  type === "issue" ? "lgIssueIn.city" : "lgCollectIn.city",
+                  ""
+                );
+              }}
+            />
+          )}
           <DDInput
             placeholder="Select City"
             label="City"

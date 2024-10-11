@@ -72,7 +72,6 @@ const LgStep1: React.FC<LgStepsProps1> = ({
           name="lgIssuance"
           value="LG issuance within the country"
           register={register}
-          disabled
           checked={lgIssuance === "LG issuance within the country"}
         />
         <BgRadioInput

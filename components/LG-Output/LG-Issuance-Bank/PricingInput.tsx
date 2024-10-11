@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { BankData } from "../../../types/LGBankTypes";
 
 interface PricingInputProps {
   pricingValue: string;
   setPricingValue: (value: string) => void;
   updateBondPrices: (value: string) => void;
-  selectedBank?: string | undefined;
-  bankData?: BankData;
   selectedBondPrice?: number | string;
 }
 
@@ -14,11 +11,8 @@ export const PricingInput: React.FC<PricingInputProps> = ({
   pricingValue,
   setPricingValue,
   updateBondPrices,
-  selectedBank,
   selectedBondPrice,
-  bankData,
 }) => {
-  console.log(selectedBondPrice, "selectedBondPrice");
   const [internalValue, setInternalValue] = useState<string>(pricingValue);
 
   useEffect(() => {

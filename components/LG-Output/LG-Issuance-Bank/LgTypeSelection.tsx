@@ -15,7 +15,7 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
   setSelectedLgType,
   data,
   bondPrices,
-  selectedBank,
+  selectedBank = "",
 }) => {
   const lgTypes = [
     { type: "Bid Bond", value: data.bidBond },
@@ -45,10 +45,16 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
           bondValue?.currencyType
         } ${formatAmount(bondValue?.cashMargin)}`;
 
-        const enteredPrice = bondPrices[selectedBank]?.[lgType.type]
-          ? bondPrices[selectedBank]?.[lgType.type]?.endsWith("%")
-            ? bondPrices[selectedBank]?.[lgType.type]
-            : `${bondPrices[selectedBank]?.[lgType.type]}%`
+        const enteredPrice = selectedBank
+          ? bondPrices[selectedBank]?.[lgType.type]
+            ? bondPrices[selectedBank]?.[lgType.type]?.endsWith("%")
+              ? bondPrices[selectedBank]?.[lgType.type]
+              : `${bondPrices[selectedBank]?.[lgType.type]}%`
+            : null
+          : bondPrices[lgType.type]
+          ? bondPrices[lgType.type]?.endsWith("%")
+            ? bondPrices[lgType.type]
+            : `${bondPrices[lgType.type]}%`
           : null;
 
         const expired = isBondExpired(bondValue?.lgExpiryDate); // Check if the bond is expired

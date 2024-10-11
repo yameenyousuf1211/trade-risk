@@ -24,6 +24,7 @@ import { formatFirstLetterOfWord, getLgBondTotal } from "../LG-Output/helper";
 import { AddBid } from "./AddBid";
 import io from "socket.io-client";
 import { useAuth } from "@/context/AuthProvider";
+import { LGIssuanceWithinCountryCorporate } from "../LG-Output/LG-Issuance-Corporate/LGIssuanceWithinCountryCorporate";
 
 export const gridCellStyling = {
   border: "1px solid rgba(224, 224, 224, 1)",
@@ -421,8 +422,12 @@ export const RequestTable = ({
             {isBank ? (
               <AddBid lcData={originalItem} isEyeIcon={true} />
             ) : originalItem.type == "LG Issuance" &&
-              originalItem.lgIssuance !== "LG 100% Cash Margin" ? (
+              originalItem.lgIssuance ===
+                "LG Re-issuance in another country" ? (
               <LGTableBidStatus data={originalItem} />
+            ) : originalItem.type == "LG Issuance" &&
+              originalItem.lgIssuance === "LG issuance within the country" ? (
+              <LGIssuanceWithinCountryCorporate data={originalItem} />
             ) : originalItem.type == "LG Issuance" &&
               originalItem.lgIssuance === "LG 100% Cash Margin" ? (
               <LGCashMarginCorporate data={originalItem} />

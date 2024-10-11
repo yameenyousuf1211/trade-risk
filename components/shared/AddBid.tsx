@@ -18,6 +18,7 @@ import { BidCard } from "./TableDialog";
 import { BidForm } from "./LCBidForm";
 import { getLgBondTotal } from "../LG-Output/helper";
 import { formatAmount } from "../../utils/helper/helper";
+import { LgIssuanceWithinCountryBank } from "../LG-Output/LG-Issuance-Bank/LgIssuanceWithinCountryBank";
 
 export const getStatusStyles = (status: string) => {
   switch (status) {
@@ -176,8 +177,11 @@ export const AddBid = ({
         lcData?.lgIssuance === "LG 100% Cash Margin" ? (
           <LGIssuanceCashMarginDialog data={lcData} />
         ) : lcData?.type === "LG Issuance" &&
-          lcData?.lgIssuance !== "LG 100% Cash Margin" ? (
+          lcData?.lgIssuance === "LG Re-issuance in another country" ? (
           <LGIssuanceDialog data={lcData} />
+        ) : lcData?.type === "LG Issuance" &&
+          lcData?.lgIssuance === "LG issuance within the country" ? (
+          <LgIssuanceWithinCountryBank data={lcData} />
         ) : (
           <div className="overflow-y-hidden relative mt-0 flex items-start justify-between h-full">
             {/* Left Section */}

@@ -251,6 +251,10 @@ const CreateDiscountPage = () => {
           if (!success) return toast.error(response);
           else {
             setValues(getStateValues(useDiscountingStore.getInitialState()));
+            queryClient.invalidateQueries({
+              queryKey: ["bid-status"],
+            });
+            queryClient.invalidateQueries(["fetch-lcs"]);
             toast.success("LC created successfully");
             router.push("/");
             reset();

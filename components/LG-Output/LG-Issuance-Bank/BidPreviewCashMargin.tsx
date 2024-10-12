@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthProvider";
 import { convertDateAndTimeToString } from "../../../utils/helper/helper";
 import { formatFirstLetterOfWord } from "../helper";
 import ViewFileAttachment from "@/components/shared/ViewFileAttachment";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 const BidPreviewCashMargin = ({
   formData,
@@ -70,7 +71,7 @@ const BidPreviewCashMargin = ({
         <h4 className="text-gray-500 mb-2">Bid Validity</h4>
         <p className="font-semibold">
           {formData?.bidValidity
-            ? convertDateAndTimeToString(formData?.bidValidity)
+            ? convertDateAndTimeToStringGMT({ date: formData?.bidValidity })
             : "-"}
         </p>
 

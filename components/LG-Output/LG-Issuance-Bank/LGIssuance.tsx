@@ -133,7 +133,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
 
   useEffect(() => {
     const userBids = data.bids
-      .filter((bid: any) => bid.createdBy === user._id)
+      .filter((bid: any) => bid.createdBy === user?._id)
       .sort(
         (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -153,7 +153,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
     }
 
     const anotherBankBidAccepted = data.bids.some(
-      (bid: any) => bid.status === "Accepted" && bid.createdBy !== user._id
+      (bid: any) => bid.status === "Accepted" && bid.createdBy !== user?._id
     );
 
     if (mostRecentBid && anotherBankBidAccepted) {
@@ -193,7 +193,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
         });
       }
     }
-  }, [data.bids, sortedIssuingBanks, user._id]);
+  }, [data.bids, sortedIssuingBanks, user?._id]);
 
   const selectedBond = availableBondTypes.find(
     (bond) => bond.type === selectedLgType

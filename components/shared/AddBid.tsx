@@ -94,7 +94,7 @@ export const AddBid = ({
     }
 
     const anotherBankBidAccepted = lcData?.bids.some(
-      (bid: any) => bid.status === "Accepted" && bid.createdBy !== user._id
+      (bid: any) => bid.status === "Accepted" && bid.createdBy !== user?._id
     );
 
     if (mostRecentBid && anotherBankBidAccepted) {

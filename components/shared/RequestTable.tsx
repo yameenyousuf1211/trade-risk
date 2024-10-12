@@ -24,7 +24,7 @@ import { formatFirstLetterOfWord, getLgBondTotal } from "../LG-Output/helper";
 import { AddBid } from "./AddBid";
 import io from "socket.io-client";
 import { useAuth } from "@/context/AuthProvider";
-import { LGIssuanceWithinCountryCorporate } from "../LG-Output/LG-Issuance-Corporate/LGIssuanceWithinCountryCorporate";
+import { LGIssuanceWithinCountryCorporate } from "../LG-Output/LG-Issuance-Corporate/LgIssuanceWithinCountryCorporate";
 
 export const gridCellStyling = {
   border: "1px solid rgba(224, 224, 224, 1)",

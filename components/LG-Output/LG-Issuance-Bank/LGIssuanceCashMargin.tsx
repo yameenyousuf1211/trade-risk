@@ -57,6 +57,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     useState("");
   const [userBidStatus, setUserBidStatus] = useState<any>({});
   const [userBid, setUserBid] = useState();
+  const [bidNotApplicable, setBidNotApplicable] = useState(false);
   const queryClient = useQueryClient();
   const {
     register,
@@ -229,11 +230,16 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
         (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
-
+    const anotherBankBidAccepted = data.bids.some(
+      (bid: any) => bid.status === "Accepted" && bid.createdBy !== user?._id
+    );
+    if (anotherBankBidAccepted) {
+      setBidNotApplicable(true);
+    }
     const mostRecentBid = userBids[0];
     setUserBid(mostRecentBid);
 
-    if (mostRecentBid) {
+    if (userBids.length > 0 && mostRecentBid) {
       setFormData({
         bidValidity: mostRecentBid.bidValidity,
         confirmationPrice: mostRecentBid.confirmationPrice,
@@ -243,10 +249,6 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
       setFiles(mostRecentBid.attachments);
       setIsPreview(true);
     }
-
-    const anotherBankBidAccepted = data.bids.some(
-      (bid: any) => bid.status === "Accepted" && bid.createdBy !== user?._id
-    );
 
     if (mostRecentBid && anotherBankBidAccepted) {
       setUserBidStatus({
@@ -333,6 +335,8 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     setIsPreview(false);
     setUserBidStatus({});
     setUserBid(null);
+    setFormData(null);
+    setUserBidStatus({});
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -482,7 +486,11 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
           ))}
         </div>
       </div>
-      {isPreview ? (
+      {bidNotApplicable ? (
+        <div className="flex-1 justify-center items-center w-full h-full">
+          <p>Bid Not Applicable</p>
+        </div>
+      ) : isPreview ? (
         <BidPreviewCashMargin
           formData={formData}
           files={files}

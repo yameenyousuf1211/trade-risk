@@ -368,8 +368,7 @@ const RequestCard = ({
           <div className="w-full">
             <Carousel
               responsive={responsive}
-              autoPlay={true}
-              autoPlaySpeed={3000}
+              autoPlay={false}
               arrows={false}
               renderButtonGroupOutside={true}
               customButtonGroup={<ButtonGroup />}

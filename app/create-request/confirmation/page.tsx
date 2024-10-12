@@ -262,6 +262,10 @@ const ConfirmationPage = () => {
             setValues(
               getStateValues(useConfirmationDiscountingStore.getInitialState())
             );
+            queryClient.invalidateQueries({
+              queryKey: ["bid-status"],
+            });
+            queryClient.invalidateQueries(["fetch-lcs"]);
             toast.success("LC created successfully");
             router.push("/");
             reset();

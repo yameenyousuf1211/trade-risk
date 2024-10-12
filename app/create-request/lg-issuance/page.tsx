@@ -36,6 +36,7 @@ import {
   lgIssuanceWithinCountry,
   lgReIssuanceSchema,
 } from "@/validation/lg.validation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -53,7 +54,7 @@ export default function LgIssuance() {
   const countryNames = bankCountries.map((country) => country.name);
   const countryFlags = bankCountries.map((country) => country.flag);
   // const isoCodes = bankCountries.map((country) => country.isoCode);
-
+  const queryClient = useQueryClient();
   const storeData = useLcIssuance();
   // console.log("🚀 ~ LgIssuance ~ storeData:", storeData);
   const { countries, flags } = useCountries();
@@ -266,11 +267,16 @@ export default function LgIssuance() {
             id: storeData?.data?._id,
           })
         : await onCreateLC(responseData);
+      queryClient.invalidateQueries({
+        queryKey: ["bid-status"],
+      });
+      queryClient.invalidateQueries(["fetch-lcs"]);
       handleResponse(
         success,
         response,
         "LG Issuance request submitted successfully"
       );
+
       setIsLoading(false);
     } catch (validationError) {
       console.log(

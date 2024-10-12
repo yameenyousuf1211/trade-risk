@@ -10,6 +10,7 @@ import { BidsSort } from "@/components/helpers";
 import { BidCard } from "./BidCard";
 import { convertDateToCommaString, formatAmount } from "@/utils";
 import { SharedLgIssuanceDetails } from "@/components/helpers/SharedLgIssuanceDetails";
+import { BidCardWithinCountry } from "./BidCardWithinCountry";
 
 export const LGIssuanceWithinCountryCorporate = ({
   data,
@@ -18,10 +19,6 @@ export const LGIssuanceWithinCountryCorporate = ({
   isViewAll?: boolean;
   data: any;
 }) => {
-  const memoizedIssuingBanks = useMemo(
-    () => data.issuingBanks,
-    [data.issuingBanks]
-  );
   const sortedBids = data.bids.sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
@@ -33,7 +30,9 @@ export const LGIssuanceWithinCountryCorporate = ({
       </DialogTrigger>
       <DialogContent className="w-full max-w-6xl !p-0 !max-h-[95vh] h-full grid grid-cols-2 gap-0 justify-start">
         <div className="col-span-2 flex items-center justify-between border-b border-b-borderCol px-7 !py-5 max-h-20">
-          <h2 className="text-lg font-semibold">LG Re-Issuance Request</h2>
+          <h2 className="text-lg font-semibold">
+            LG Issuance within the country
+          </h2>
           <DialogClose>
             <X className="size-7" />
           </DialogClose>
@@ -58,12 +57,10 @@ export const LGIssuanceWithinCountryCorporate = ({
           </div>
 
           {sortedBids.map((bidDetail: any, key: any) => (
-            <BidCard
+            <BidCardWithinCountry
               key={bidDetail._id}
               bidDetail={bidDetail}
-              overallStatus={data.status}
-              issuingBanks={memoizedIssuingBanks}
-              otherBond={data.otherBond}
+              data={data}
             />
           ))}
         </div>

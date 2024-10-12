@@ -49,6 +49,15 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
     },
   });
 
+  // This function will be called when the user confirms the bid submission
+  const handleSubmitBid = (bidData: any) => {
+    const updatedBidData = {
+      ...bidData,
+      lc: data._id,
+    };
+    mutation.mutate(updatedBidData);
+  };
+
   // Fetch cities based on isoCode for issueLg
   const { data: citiesIssue, isLoading: isLoadingIssue } = useQuery({
     queryKey: ["cities", data.lgIssueIn.isoCode],
@@ -187,6 +196,8 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
     setShowPreview(false);
     setPricingValue("");
     setBondPrices({});
+    setUserBidStatus({});
+    setUserBid(null);
     const firstValidBond = availableBondTypes.find(
       (bond) => !isBondExpired(bond.value?.lgExpiryDate)
     );
@@ -203,7 +214,7 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
         {showPreview ? (
           <BidPreviewWithinCountry
             onBack={handleBack}
-            handleSubmit={mutation.mutate}
+            handleSubmit={handleSubmitBid}
             data={data}
             userBidStatus={userBidStatus}
             bondPrices={bondPrices}

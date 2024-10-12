@@ -32,11 +32,34 @@ export const BidPreviewWithinCountry: React.FC<BidPreviewProps> = ({
   bidValidityDate,
   userBidStatus,
 }) => {
-  const [selectedBidValidity, setSelectedBidValidity] = useState<string>();
+  const [selectedBidValidity, setSelectedBidValidity] = useState<Date>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleConfirmSubmit = () => {
-    handleSubmit(selectedBidValidity);
+    const bidData = {
+      bidType: "LG Issuance",
+      bidValidity: selectedBidValidity || bidValidityDate,
+      issueLg: {
+        branchAddress: formData.issueLg.branchAddress,
+        branchName: formData.issueLg.branchName,
+        city: formData.issueLg.city || data?.lgIssueIn?.city,
+      },
+      collectLg: {
+        branchAddress: formData.collectLg.branchAddress,
+        branchName: formData.collectLg.branchName,
+        city: formData.collectLg.city || data?.lgCollectIn?.city,
+      },
+      bids: availableBonds.map((bond) => ({
+        bidType: bond.type,
+        price: bondPrices[bond.type]
+          ? parseInt(bondPrices[bond.type].replace("%", ""), 10)
+          : 0, // Convert price to integer and remove % symbol
+        bank: "",
+        perAnnum: true,
+      })),
+    };
+
+    handleSubmit(bidData);
     setIsModalOpen(false);
   };
 
@@ -198,6 +221,7 @@ export const BidPreviewWithinCountry: React.FC<BidPreviewProps> = ({
                   before: new Date(),
                   after: new Date(data?.lastDateOfReceivingBids),
                 }}
+                isLg={true}
                 leftText={false}
               />
             </div>

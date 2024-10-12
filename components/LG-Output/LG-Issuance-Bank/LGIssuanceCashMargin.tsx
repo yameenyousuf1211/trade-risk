@@ -137,7 +137,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
   const mutation = useMutation({
     mutationFn: (newData: any) => submitLgBid(newData),
     onSuccess: () => {
-      queryClient.invalidateQueries(["bondData"]);
+      queryClient.invalidateQueries({ queryKey: ["bondData"] });
     },
   });
 

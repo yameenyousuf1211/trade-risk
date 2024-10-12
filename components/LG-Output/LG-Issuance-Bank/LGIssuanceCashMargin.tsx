@@ -434,7 +434,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
   return (
     <div className="mt-0 flex w-full h-full items-start justify-between overflow-y-scroll">
       <div className="flex-1 border-r-2 border-[#F5F7F9]">
-        <div className="border-r-2 border-b-2  bg-[#F5F7F9] p-4 flex flex-col gap-3 border-[#F5F7F9]">
+        <div className="border-r-2 border-b-2 bg-[#F5F7F9] p-4 flex flex-col gap-3 border-[#F5F7F9]">
           <h5 className="text-[14px] text-[#696974]">
             Created at,{" "}
             {data.createdAt &&

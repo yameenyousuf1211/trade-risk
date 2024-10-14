@@ -11,7 +11,7 @@ import { Plus, ChevronUp, Ellipsis, ListFilter } from "lucide-react"; // Import 
 import { LGTableBidStatus } from "../LG-Output/LG-Issuance-Corporate/LgTableBidStatus"; // Import your components
 import { LGCashMarginCorporate } from "../LG-Output/LG-Issuance-Corporate/LgCashMarginCorporate";
 import { TableDialog } from "./TableDialog";
-import { ButtonBase, styled } from "@mui/material"; // To make cells clickable
+import { ButtonBase, styled } from "@mui/material";
 import {
   ProductFilter,
   BidsCountrySelect,

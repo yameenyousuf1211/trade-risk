@@ -51,7 +51,6 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
     },
   });
 
-  // This function will be called when the user confirms the bid submission
   const handleSubmitBid = (bidData: any) => {
     const updatedBidData = {
       ...bidData,

@@ -64,31 +64,26 @@ export const BidPreviewWithinCountry: React.FC<BidPreviewProps> = ({
   };
 
   return (
-    <div className="px-4 flex-1">
+    <div className="flex-1">
       <h2 className="text-xl font-semibold mb-4 gap-1 flex items-center justify-between">
-        {allBondsFilled ? (
-          <div className="flex justify-between items-center w-full">
-            {userBidStatus.status !== "Pending" &&
-            userBidStatus.status !== "Accepted" &&
-            userBidStatus.status !== "Rejected" &&
-            userBidStatus.status !== "Expired" &&
-            userBidStatus.status !== "Not Accepted" &&
-            userBidStatus.status !== "Not Applicable" ? (
-              <div className="flex items-center">
-                <Button variant="ghost" onClick={onBack} className="mr-1 p-1">
-                  <ChevronLeft className="h-6 w-6" />
-                </Button>
-                <span>Preview Before Final Submission</span>
-              </div>
-            ) : (
-              <div className="flex justify-between items-center w-full">
-                <p>Your Bid</p>
-              </div>
-            )}
-          </div>
-        ) : (
-          <>Your Bid</>
-        )}
+        <div className="flex justify-between items-center w-full">
+          {userBidStatus.status !== "Pending" &&
+          userBidStatus.status !== "Accepted" &&
+          userBidStatus.status !== "Rejected" &&
+          userBidStatus.status !== "Not Accepted" &&
+          userBidStatus.status !== "Not Applicable" ? (
+            <div className="flex items-center">
+              <Button variant="ghost" onClick={onBack} className="mr-1 p-1">
+                <ChevronLeft className="h-6 w-6" />
+              </Button>
+              <span>Preview Before Final Submission</span>
+            </div>
+          ) : (
+            <div className="flex justify-between items-center w-full">
+              <p>Your Bid</p>
+            </div>
+          )}
+        </div>
       </h2>
 
       <div className="border border-[#E2E2EA] p-4 rounded">
@@ -135,8 +130,8 @@ export const BidPreviewWithinCountry: React.FC<BidPreviewProps> = ({
                   <p className="text-[14px] font-light">
                     {data?.otherBond?.Contract
                       ? `${data?.otherBond.name} - ${
-                          data?.otherBond.value.currencyType
-                        } ${formatAmount(data?.otherBond.value.cashMargin)}`
+                          data?.otherBond.currencyType
+                        } ${formatAmount(data?.otherBond.cashMargin)}`
                       : `${lgType.type} - ${
                           lgType.value.currencyType
                         } ${formatAmount(lgType.value.cashMargin)}`}

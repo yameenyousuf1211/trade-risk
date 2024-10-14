@@ -29,6 +29,7 @@ export const DDInput = ({
   type,
   onSelectValue,
   extStyle = "",
+  buttonStyle = "",
 }: {
   id: string;
   label: string;
@@ -40,6 +41,7 @@ export const DDInput = ({
   type?: string;
   setValue: UseFormSetValue<any>;
   extStyle?: string;
+  buttonStyle?: string;
   onSelectValue?: (value: string) => void;
 }) => {
   const [ddOpen, setDdOpen] = useState(false);
@@ -69,7 +71,7 @@ export const DDInput = ({
             aria-expanded={ddOpen}
             className={`capitalize w-fit border-none justify-between font-normal text-sm ${
               disabled || !value ? "text-gray-500" : "text-black"
-            }`}
+            } ${buttonStyle}`}
             disabled={disabled}
           >
             {ddVal ? ddVal : value ? value : placeholder}

@@ -443,11 +443,7 @@ const LGIssuanceDialog = ({ data }: { data: any }) => {
           ) : (
             <div>
               <div className="flex items-center justify-between">
-                <h5 className="font-semibold">Submit your bid</h5>
-                {/* <div className="flex flex-col rounded-sm border border-[#E2E2EA] bg-[#F5F7F9] px-2 py-1">
-                  <h6 className="text-[0.85rem] text-[#ADADAD]">Created by:</h6>
-                  <h5 className="text-[0.95rem] font-normal">{user.name}</h5>
-                </div> */}
+                <h5 className="font-semibold mt-3">Submit your bid</h5>
               </div>
               <div className="mt-2 rounded-md border border-[#E2E2EA] p-2">
                 <BankSelection

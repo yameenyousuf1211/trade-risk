@@ -64,6 +64,8 @@ export const bankCountries = [
   { name: "Bangladesh", isoCode: "BD", flag: "🇧🇩" },
   { name: "Nigeria", isoCode: "NG", flag: "🇳🇬" },
   { name: "India", isoCode: "IN", flag: "🇮🇳" },
+  { name: "Egypt", isoCode: "EG", flag: "🇪🇬" },
+  { name: "France", isoCode: "FR", flag: "🇫🇷" },
 ];
 
 export const bankCountriesPlain = [

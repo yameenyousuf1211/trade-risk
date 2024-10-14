@@ -11,6 +11,7 @@ import {
 import useStepStore from "@/store/lcsteps.store";
 import { CONFIRMATION_CHARGES } from "@/utils/constant/lg";
 import { formatFirstLetterOfWord } from "../LG-Output/helper";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useAuth } from "@/context/AuthProvider";
 
 export const Step6 = ({
@@ -91,21 +92,15 @@ export const Step6 = ({
   };
 
   useEffect(() => {
-    const country = user?.business?.accountCountry;
-    if (
-      country &&
-      eurozoneCountries.includes(formatFirstLetterOfWord(country))
-    ) {
+    const country = formatFirstLetterOfWord(user?.business?.accountCountry);
+    if (country && eurozoneCountries.includes(country)) {
       setBaseRateOptions(baseRatesByCountry.Eurozone);
-    } else if (
-      country &&
-      baseRatesByCountry[formatFirstLetterOfWord(country)]
-    ) {
+    } else if (country && baseRatesByCountry[country]) {
       setBaseRateOptions(baseRatesByCountry[country]);
     } else {
       setBaseRateOptions(["OIS", "REPO", "IBOR"]);
     }
-  }, []);
+  }, [user?.business?.accountCountry]);
 
   return (
     <div

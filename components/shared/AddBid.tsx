@@ -161,11 +161,14 @@ export const AddBid = ({
           <div className="flex flex-col items-center w-1/2">
             <h2 className="text-2xl font-semibold text-center">
               {lcData?.type === "LG Issuance" &&
-              lcData.lgIssuance === "LG 100% Cash Margin"
-                ? lcData.lgIssuance
+              lcData?.lgIssuance === "LG 100% Cash Margin"
+                ? "LG 100% Cash Margin"
                 : lcData?.type === "LG Issuance" &&
-                  lcData.lgIssuance !== "LG 100% Cash Margin"
-                ? "LG Re-Issuance"
+                  lcData?.lgIssuance === "LG Re-issuance in another country"
+                ? "LG Re-issuance in another country"
+                : lcData?.type === "LG Issuance" &&
+                  lcData?.lgIssuance === "LG issuance within the country"
+                ? "LG issuance within the country"
                 : lcData?.type}
             </h2>
           </div>

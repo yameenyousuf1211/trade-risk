@@ -76,22 +76,41 @@ const LgStep2: React.FC<LgStepsProps2> = ({
             "Saudi Arabian General Investment Authority",
             "Saudi Arabian Military Industries",
             "Saudi Arabian Public Investment Fund",
+            "French Construction",
+            "Airbus",
+            "Renault",
+            "Peugeot",
+            "Michelin",
+            "Saint-Gobain",
+            "Dassault Aviation",
+            "Alstom",
+            "Thales Group",
+            "Safran",
+            "Schneider Electric",
+            "Valeo",
+            "Arkema",
+            "TechnipFMC",
+            "Faurecia",
+            "Vinci",
+            "Bolloré",
+            "Aperam",
+            "L’Oréal",
+            "Soprema",
+            "EssilorLuxottica",
+            "Plastic Omnium",
+            "Groupe PSA",
+            "Alstom Transport",
+            "Eiffage",
+            "Kering",
+            "Groupe Renault",
+            "CMA CGM",
+            "Groupe SEB",
+            "Draxlmaier Group",
+            "Technocampus",
           ]}
           setValue={setValue}
           extStyle="flex-1"
         />
-
-        {/* {lgIssuance === LG.cashMargin && (
-          <DDInput
-            value={company}
-            placeholder="Select"
-            label="Bank Account"
-            id=""
-            data={["Company 1", "Company 2", "Company 3"]}
-            setValue={() => null}
-            extStyle="flex-1"
-          />
-        )} */}
         <label
           id="applicantDetails.crNumber"
           className="border p-1 px-3 rounded-md w-full flex items-center justify-between  bg-white flex-1"

@@ -502,7 +502,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="flex-1 px-4 pb-2">
           {/* Form View */}
-          <h3 className="text-xl font-medium text-black mt-1 mb-3">
+          <h3 className="text-xl font-semibold text-black my-3">
             Submit your bid
           </h3>
 

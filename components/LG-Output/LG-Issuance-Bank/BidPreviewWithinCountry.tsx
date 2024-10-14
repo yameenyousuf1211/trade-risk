@@ -208,7 +208,7 @@ export const BidPreviewWithinCountry: React.FC<BidPreviewProps> = ({
           userBidStatus.status !== "Expired" &&
           userBidStatus.status !== "Not Accepted" &&
           userBidStatus.status !== "Not Applicable" && (
-            <div className="w-full mb-2">
+            <div className="w-full my-2">
               <label htmlFor="bidValidity" className="block font-semibold mb-2">
                 Bid Validity
               </label>
@@ -226,7 +226,7 @@ export const BidPreviewWithinCountry: React.FC<BidPreviewProps> = ({
               />
             </div>
           )}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mt-2.5">
           {["Pending", "Not Accepted", "Rejected", "Expired"].includes(
             userBidStatus.status
           ) ? (

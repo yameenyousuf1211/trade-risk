@@ -6,6 +6,7 @@ import { PricingInput } from "./PricingInput";
 import { BidPreviewWithinCountry } from "./BidPreviewWithinCountry";
 import {
   convertDateAndTimeToString,
+  convertDateAndTimeToStringGMTNoTsx,
   convertDateToCommaString,
   formatAmount,
 } from "@/utils";
@@ -17,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { DDInput } from "@/components/LCSteps/helpers";
 import { getCities } from "@/services/apis/helpers.api";
+import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
 
 export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
   const {
@@ -117,7 +119,7 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
     } else if (mostRecentBid) {
       if (mostRecentBid.status === "Pending") {
         setUserBidStatus({
-          label: `Bid Submitted on ${convertDateAndTimeToString(
+          label: `Bid Submitted on ${convertDateAndTimeToStringGMTNoTsx(
             mostRecentBid.createdAt
           )}`,
           status: "Pending",
@@ -231,7 +233,7 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
         ) : (
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex items-center justify-between">
-              <h5 className="font-semibold">Submit your bid</h5>
+              <h5 className="font-semibold mt-4">Submit your bid</h5>
             </div>
             <div className="mt-2 rounded-md border border-[#E2E2EA] p-2">
               {!data.otherBond?.Contract && (

@@ -38,6 +38,7 @@ import {
 } from "../../utils/helper/helper";
 import { LGCashMarginCorporate } from "../LG-Output/LG-Issuance-Corporate/LgCashMarginCorporate";
 import { LGTableBidStatus } from "../LG-Output/LG-Issuance-Corporate/LgTableBidStatus";
+import { LGIssuanceWithinCountryCorporate } from "../LG-Output/LG-Issuance-Corporate/LgIssuanceWithinCountryCorporate";
 
 const SliderCard = ({
   info,
@@ -303,14 +304,17 @@ const RequestCard = ({
                 Request #{formatNumberByAddingDigitsToStart(data.refId)}
               </p>
               <div className="w-8">
-                {data?.type == "LG Issuance" &&
-                data?.lgIssuance !== "LG 100% Cash Margin" ? (
+                {data.type == "LG Issuance" &&
+                data.lgIssuance === "LG Re-issuance in another country" ? (
                   <LGTableBidStatus data={data} />
-                ) : data?.type == "LG Issuance" &&
-                  data?.lgIssuance === "LG 100% Cash Margin" ? (
+                ) : data.type == "LG Issuance" &&
+                  data.lgIssuance === "LG issuance within the country" ? (
+                  <LGIssuanceWithinCountryCorporate data={data} />
+                ) : data.type == "LG Issuance" &&
+                  data.lgIssuance === "LG 100% Cash Margin" ? (
                   <LGCashMarginCorporate data={data} />
                 ) : (
-                  <TableDialog lcData={data} bids={data.bids} />
+                  <TableDialog lcData={data} id={data._id} />
                 )}
               </div>
             </div>

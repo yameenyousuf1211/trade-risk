@@ -7,6 +7,9 @@ import {
   UseFormSetValue,
   UseFormGetValues,
 } from "react-hook-form";
+import { useAuth } from "@/context/AuthProvider";
+import { baseRatesByCountry, eurozoneCountries } from "@/utils";
+import { formatFirstLetterOfWord } from "../LG-Output/helper";
 
 export const Step7Disounting = ({
   register,
@@ -22,6 +25,8 @@ export const Step7Disounting = ({
   const discountAtSight = watch("discountingInfo.discountAtSight");
   const behalfOf = watch("discountingInfo.behalfOf");
   const baseRate = watch("discountingInfo.basePerRate");
+  const { user } = useAuth();
+  const [baseRateOptions, setBaseRateOptions] = useState<string[]>([]);
 
   let pricePerAnnum = getValues("discountingInfo.pricePerAnnum");
   useEffect(() => {
@@ -48,6 +53,23 @@ export const Step7Disounting = ({
     newValue = newValue.toFixed(1);
     setValue("discountingInfo.pricePerAnnum", `${newValue}%`);
   };
+
+  useEffect(() => {
+    const country = user?.business?.accountCountry;
+    if (
+      country &&
+      eurozoneCountries.includes(formatFirstLetterOfWord(country))
+    ) {
+      setBaseRateOptions(baseRatesByCountry.Eurozone);
+    } else if (
+      country &&
+      baseRatesByCountry[formatFirstLetterOfWord(country)]
+    ) {
+      setBaseRateOptions(baseRatesByCountry[country]);
+    } else {
+      setBaseRateOptions(["OIS", "REPO", "IBOR"]);
+    }
+  }, []);
 
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full h-full">
@@ -108,7 +130,7 @@ export const Step7Disounting = ({
             value={baseRate}
             placeholder="Select Value"
             setValue={setValue}
-            data={["KIBOR", "LIBOR", "SOFR"]}
+            data={baseRateOptions}
           />
         </div>
 

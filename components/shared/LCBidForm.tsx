@@ -3,13 +3,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addBid } from "@/services/apis/bids.api";
 import { toast } from "sonner";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "../helpers";
 import { addBidTypes } from "@/validation/bids.validation";
 import { DDInput } from "../LCSteps/helpers";
 import { useAuth } from "@/context/AuthProvider";
 import { cn } from "@/lib/utils";
+import { formatFirstLetterOfWord } from "../LG-Output/helper";
 
 export const BidForm = ({
   lcData,
@@ -20,10 +21,12 @@ export const BidForm = ({
   isDiscount: boolean;
   onSubmitSuccess: () => void;
 }) => {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [discountBaseRate, setDiscountBaseRate] = useState("");
   const [discountMargin, setDiscountMargin] = useState("");
   const [confirmationPriceType, setConfirmationPriceType] = useState("");
+  const [baseRateOptions, setBaseRateOptions] = useState<string[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const { mutateAsync } = useMutation({
@@ -44,6 +47,23 @@ export const BidForm = ({
   } = useForm({
     resolver: yupResolver(addBidTypes),
   });
+
+  useEffect(() => {
+    const country = user?.business?.accountCountry;
+    if (
+      country &&
+      eurozoneCountries.includes(formatFirstLetterOfWord(country))
+    ) {
+      setBaseRateOptions(baseRatesByCountry.Eurozone);
+    } else if (
+      country &&
+      baseRatesByCountry[formatFirstLetterOfWord(country)]
+    ) {
+      setBaseRateOptions(baseRatesByCountry[country]);
+    } else {
+      setBaseRateOptions(["OIS", "REPO", "IBOR"]);
+    }
+  }, []);
 
   const onSubmit: SubmitHandler<typeof addBidTypes> = async (data) => {
     if (isDiscount && !discountBaseRate)
@@ -156,9 +176,11 @@ export const BidForm = ({
               type="baseRate"
               value={discountBaseRate}
               placeholder="Select Value"
+              buttonStyle="w-full"
               setValue={setValue}
+              extStyle="p-0 pl-0"
               onSelectValue={setDiscountBaseRate}
-              data={["KIBOR", "LIBOR", "SOFR"]}
+              data={baseRateOptions} // Dynamically generated options
             />
             <input
               type="text"

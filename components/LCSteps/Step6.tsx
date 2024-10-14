@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BgRadioInput, DDInput } from "./helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/utils";
+import { baseRatesByCountry, cn, eurozoneCountries } from "@/utils";
 import {
   UseFormRegister,
   UseFormWatch,
@@ -10,6 +10,8 @@ import {
 } from "react-hook-form";
 import useStepStore from "@/store/lcsteps.store";
 import { CONFIRMATION_CHARGES } from "@/utils/constant/lg";
+import { formatFirstLetterOfWord } from "../LG-Output/helper";
+import { useAuth } from "@/context/AuthProvider";
 
 export const Step6 = ({
   title,
@@ -27,6 +29,8 @@ export const Step6 = ({
   setStepCompleted?: any;
 }) => {
   const { addStep, removeStep } = useStepStore();
+  const { user } = useAuth();
+  const [baseRateOptions, setBaseRateOptions] = useState<string[]>([]);
   const behalfOf = watch(
     isDiscount ? "discountingInfo.behalfOf" : "confirmationInfo.behalfOf"
   );
@@ -85,6 +89,23 @@ export const Step6 = ({
       ? setValue("discountingInfo.pricePerAnnum", `${newValue}%`)
       : setValue("confirmationInfo.pricePerAnnum", `${newValue}%`);
   };
+
+  useEffect(() => {
+    const country = user?.business?.accountCountry;
+    if (
+      country &&
+      eurozoneCountries.includes(formatFirstLetterOfWord(country))
+    ) {
+      setBaseRateOptions(baseRatesByCountry.Eurozone);
+    } else if (
+      country &&
+      baseRatesByCountry[formatFirstLetterOfWord(country)]
+    ) {
+      setBaseRateOptions(baseRatesByCountry[country]);
+    } else {
+      setBaseRateOptions(["OIS", "REPO", "IBOR"]);
+    }
+  }, []);
 
   return (
     <div
@@ -180,7 +201,7 @@ export const Step6 = ({
                   value={baseRate}
                   placeholder="Select Value"
                   setValue={setValue}
-                  data={["KIBOR", "LIBOR", "SOFR"]}
+                  data={baseRateOptions}
                 />
               </div>
             </label>

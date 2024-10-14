@@ -17,11 +17,13 @@ export const LgTypeSelection: React.FC<LgTypeSelectionProps> = ({
   bondPrices,
   selectedBank = "",
 }) => {
+  console.log(data, "data123");
   const lgTypes = [
     { type: "Bid Bond", value: data.bidBond },
     { type: "Advance Payment Bond", value: data.advancePaymentBond },
     { type: "Performance Bond", value: data.performanceBond },
     { type: "Retention Money Bond", value: data.retentionMoneyBond },
+    { type: data.otherBond?.name, value: data.otherBond },
   ];
 
   const isBondExpired = (expiryDate: string | undefined) => {

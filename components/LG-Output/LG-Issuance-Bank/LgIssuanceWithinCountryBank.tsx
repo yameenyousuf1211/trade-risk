@@ -19,6 +19,7 @@ import { useForm } from "react-hook-form";
 import { DDInput } from "@/components/LCSteps/helpers";
 import { getCities } from "@/services/apis/helpers.api";
 import { convertDateAndTimeToStringGMT } from "@/utils/helper/dateAndTimeGMT";
+import { toast } from "sonner";
 
 export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
   const {
@@ -50,6 +51,27 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
       setShowPreview(true); // Automatically show preview after submit
     },
   });
+  const isBondExpired = (expiryDate: string | undefined) => {
+    if (!expiryDate) return false;
+    const expiry = new Date(expiryDate).getTime();
+    const now = new Date().getTime();
+    return expiry < now;
+  };
+  const bondTypes = [
+    { type: "Bid Bond", value: data.bidBond },
+    { type: "Advance Payment Bond", value: data.advancePaymentBond },
+    { type: "Performance Bond", value: data.performanceBond },
+    { type: "Retention Money Bond", value: data.retentionMoneyBond },
+    { type: data?.otherBond?.name, value: data.otherBond },
+  ];
+  const availableBondTypes = bondTypes.filter(
+    (bond) => bond.value?.Contract && !isBondExpired(bond.value?.lgExpiryDate)
+  );
+  useEffect(() => {
+    if (availableBondTypes.length > 0) {
+      setSelectedLgType(availableBondTypes[0].type);
+    }
+  }, [availableBondTypes, selectedLgType]);
 
   const handleSubmitBid = (bidData: any) => {
     const updatedBidData = {
@@ -73,14 +95,6 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
     enabled: !!data.lgCollectIn.isoCode, // Fetch cities only when isoCodeCollect is set
   });
 
-  const bondTypes = [
-    { type: "Bid Bond", value: data.bidBond },
-    { type: "Advance Payment Bond", value: data.advancePaymentBond },
-    { type: "Performance Bond", value: data.performanceBond },
-    { type: "Retention Money Bond", value: data.retentionMoneyBond },
-    { type: "Other Bond", value: data.otherBond },
-  ];
-
   useEffect(() => {
     const userBids = data.bids
       .filter((bid: any) => bid.createdBy === user?._id)
@@ -90,11 +104,15 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
       );
 
     const mostRecentBid = userBids[0];
-    setUserBid;
     if (mostRecentBid) {
+      const bondPrices = mostRecentBid.bids.reduce((acc, bid) => {
+        acc[bid.bidType] = `${bid.price}%`;
+        return acc;
+      }, {});
+      setBondPrices(bondPrices);
       setFormData({
         bidValidity: mostRecentBid.bidValidity,
-        confirmationPrice: mostRecentBid.confirmationPrice,
+        price: mostRecentBid.price,
         issueLg: mostRecentBid.issueLg,
         collectLg: mostRecentBid.collectLg,
       });
@@ -142,14 +160,6 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
     }
   }, [data.bids, user?._id]);
 
-  const availableBondTypes = bondTypes.filter((bond) => bond.value?.Contract);
-  const isBondExpired = (expiryDate: string | undefined) => {
-    if (!expiryDate) return false;
-    const expiry = new Date(expiryDate).getTime();
-    const now = new Date().getTime();
-    return expiry < now;
-  };
-
   useEffect(() => {
     setPricingValue(bondPrices[selectedLgType] || "");
   }, [selectedLgType, bondPrices]);
@@ -159,9 +169,10 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
   )?.value;
 
   const anyPricingFilled = () => {
-    return Object.values(bondPrices).some(
-      (price) => price !== null && price !== "" && price !== "0%"
-    );
+    return availableBondTypes.every((bond) => {
+      const price = bondPrices[bond.type];
+      return price !== null && price !== "" && price !== "0%";
+    });
   };
 
   const updateBondPrices = (newValue: string) => {
@@ -177,7 +188,24 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
   };
 
   const onSubmit = (formData: any) => {
-    console.log(formData, "formData");
+    const requiredFields = [
+      "issueLg.branchName",
+      "issueLg.branchAddress",
+      "collectLg.branchName",
+      "collectLg.branchAddress",
+    ];
+    if (lgIssueInType === "alternate") {
+      requiredFields.push("issueLg.city");
+    }
+    if (lgCollectInType === "alternate") {
+      requiredFields.push("collectLg.city");
+    }
+
+    const allFieldsFilled = requiredFields.every((field) => !!watch(field));
+    if (!allFieldsFilled || !anyPricingFilled()) {
+      toast.error("Please fill all required fields before previewing.");
+      return;
+    }
     const updatedData = {
       ...formData,
       collectLg: {
@@ -208,7 +236,7 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
   };
 
   return (
-    <div className="mt-0 flex h-full justify-between items-start overflow-y-scroll">
+    <div className="mt-0 flex h-full justify-between items-start overflow-y-scroll space-x-4">
       <SharedLgIssuanceDetails data={data} />
 
       <div className="flex-1 pt-3 pb-6 pr-2">
@@ -236,7 +264,7 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
         ) : (
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex items-center justify-between">
-              <h5 className="font-semibold mt-4">Submit your bid</h5>
+              <h5 className="font-semibold text-xl">Submit your bid</h5>
             </div>
             <div className="mt-2 rounded-md border border-[#E2E2EA] p-2">
               {!data.otherBond?.Contract && (

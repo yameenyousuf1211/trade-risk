@@ -13,6 +13,7 @@ export default function LgStep3CashMargin({
   register,
   watch,
   setStepCompleted,
+  draft,
   data,
   flags,
   setValue,
@@ -61,6 +62,17 @@ export default function LgStep3CashMargin({
       ]);
     }
   }, [preferredBanksArray.length, setValue]);
+
+  useEffect(() => {
+    if (preferredCountry && !draft) {
+      const resetBanks = preferredBanksArray.map(() => ({
+        bank: "",
+        swiftCode: "",
+        accountNumber: "",
+      }));
+      setValue("preferredBanks.banks", resetBanks);
+    }
+  }, [preferredCountry, preferredBanksArray.length]);
 
   // Fetch banks dynamically based on selected country
   const { data: preferredBankOptions, isLoading } = useQuery({

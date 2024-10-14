@@ -83,7 +83,7 @@ export const SharedLgIssuanceDetails = ({ data }) => {
   ].filter((detail) => detail.value);
 
   return (
-    <div className="overflow-auto m-0 p-0 pb-8 flex-1">
+    <div className="overflow-auto m-0 p-0 pb-4 flex-1">
       <div className="border-r-2 border-b-2  bg-[#F5F7F9] p-4 flex flex-col gap-3 border-[#F5F7F9]">
         <h1 className="text-[#92929D] text-2xl">
           LG Amount:{" "}

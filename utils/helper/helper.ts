@@ -317,6 +317,8 @@ export const mapCountryToIsoCode = (country: string) => {
     bahrain: "BH",
     qatar: "QA",
     nigeria: "NG",
+    egypt: "EG",
+    france: "FR",
   };
   console.log(countryToIsoMap[country]);
 

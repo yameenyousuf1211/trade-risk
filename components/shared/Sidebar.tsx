@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { ArrowLeft, ArrowRight, Check, Dot, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Dot, Triangle, X } from "lucide-react";
 import Link from "next/link";
 import "swiper/css";
 import { AddBid } from "./AddBid";
@@ -39,6 +39,7 @@ import {
 import { LGCashMarginCorporate } from "../LG-Output/LG-Issuance-Corporate/LgCashMarginCorporate";
 import { LGTableBidStatus } from "../LG-Output/LG-Issuance-Corporate/LgTableBidStatus";
 import { LGIssuanceWithinCountryCorporate } from "../LG-Output/LG-Issuance-Corporate/LgIssuanceWithinCountryCorporate";
+import { ConfirmationModal } from "../LG-Output/ConfirmationModal";
 
 const SliderCard = ({
   info,
@@ -49,39 +50,88 @@ const SliderCard = ({
   isRisk?: boolean;
   lcData: ILcs;
 }) => {
+  const [currentBondIndex, setCurrentBondIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [actionStatus, setActionStatus] = useState<string>("");
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: acceptOrRejectBid,
     onSuccess: () => {
-      // queryClient.invalidateQueries({
-      //   queryKey: ["bid-status-change"],
-      // });
+      queryClient.invalidateQueries({
+        queryKey: ["bid-status-change"],
+      });
     },
   });
 
-  const handleSubmit = async (status: string, id: string) => {
+  const handleSubmit = async () => {
     const { success, response } = await mutateAsync({
-      status,
-      id,
+      status: actionStatus,
+      id: info._id,
       key: isRisk ? "risk" : "lc",
     });
     queryClient.invalidateQueries(["bid-status", "fetch-lcs", "fetch-risks"]);
     if (!success) return toast.error(response as string);
-    else return toast.success(`Bid ${status}`);
+    else return toast.success(`Bid ${actionStatus}`);
+  };
+
+  const handleActionStatus = (actionStatus: string) => {
+    setActionStatus(actionStatus);
+    setIsModalOpen(true);
+  };
+
+  const handleUp = () => {
+    setCurrentBondIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+  };
+
+  const handleDown = () => {
+    setCurrentBondIndex((prevIndex) =>
+      prevIndex < info.bids.length - 1 ? prevIndex + 1 : prevIndex
+    );
   };
 
   return (
     <div className="border border-borderCol py-3 px-2 rounded-lg max-w-full">
       <p>
-        {(lcData?.type === "LG Issuance" && lcData?.totalContractCurrency) ||
-          (lcData?.type === "LG Issuance" &&
-            lcData.lgIssuance !== "LG 100% Cash Margin" &&
-            "USD ")}{" "}
         {lcData.lgIssuance === "LG 100% Cash Margin" ? (
           <>{info?.confirmationPrice?.toFixed(2)}% Per Annum</>
         ) : lcData?.type === "LG Issuance" ? (
-          <>{getLgBondTotal(info)}</>
+          <div className="flex items-center justify-between">
+            <div className="text-black text-lg">
+              <div className="flex items-center space-x-1">
+                <span className="text-[14px]">
+                  {info.bids[currentBondIndex]?.price?.toFixed(2)}% P.A
+                </span>
+              </div>
+              <div className="text-[#5625F2] text-[12px]">Pricing</div>
+            </div>
+            <div className="text-black text-lg">
+              <div className="flex">
+                <span className="text-[14px]">
+                  {info.bids[currentBondIndex]?.bidType}
+                </span>
+                <div className="items-center">
+                  <span className="transform cursor-pointer" onClick={handleUp}>
+                    <Triangle fill="black" size={14} stroke="black" />
+                  </span>
+                  <span
+                    className="transform cursor-pointer"
+                    onClick={handleDown}
+                  >
+                    <Triangle
+                      fill="black"
+                      size={14}
+                      stroke="black"
+                      style={{
+                        transform: "rotate(180deg)",
+                      }}
+                    />
+                  </span>
+                </div>
+              </div>
+              <div className="text-[#5625F2] text-[12px]">LG Type</div>
+            </div>
+          </div>
         ) : lcData?.type === "LC Confirmation" ? (
           <div>
             <div>
@@ -127,20 +177,25 @@ const SliderCard = ({
       </p>
       <div className="flex items-center gap-x-2 mt-2">
         <Button
-          onClick={() => handleSubmit("Accepted", info._id)}
+          onClick={() => handleActionStatus("Accepted")}
           className="border-2 border-[#90ee8f] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
           disabled={isPending}
         >
           <Check className="size-5 text-para" color="lightGreen" />
         </Button>
         <Button
-          onClick={() => handleSubmit("Rejected", info._id)}
+          onClick={() => handleActionStatus("Rejected")}
           className="border-2 border-[#ff0000] bg-transparent hover:bg-transparent p-1 size-7 rounded-lg"
           disabled={isPending}
         >
           <X className="size-5 text-para" color="red" />
         </Button>
       </div>
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onConfirm={handleSubmit}
+        onCancel={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

@@ -87,7 +87,7 @@ export const DatePicker = ({
           </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0">
+      <PopoverContent className="p-0" align="end">
         <ValidatingCalendar
           disabled={disabled}
           initialDate={date}

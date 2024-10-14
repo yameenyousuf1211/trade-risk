@@ -130,7 +130,8 @@ export const BreadcrumbDetails = ({ isLg }: { isLg: boolean }) => {
   const { value } = useBreadCrumbsTypeStore();
 
   const breadcrumbItems = isLg
-    ? value == LG.reIssuanceInAnotherCountry
+    ? value == LG.reIssuanceInAnotherCountry ||
+      value == LG.issuanceWithinTheCountry
       ? lgCrumbs2
       : lgCrumbs
     : crumbs;

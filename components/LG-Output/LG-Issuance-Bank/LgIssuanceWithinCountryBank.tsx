@@ -213,7 +213,11 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
       <SharedLgIssuanceDetails data={data} />
 
       <div className="flex-1 pt-3 pb-6 pr-2">
-        {showPreview ? (
+        {userBidStatus.status === "Not Applicable" ? (
+          <div className="flex-1 text-center text-lg font-semibold mt-[30%] text-[#696974]">
+            <p>Bid Not Applicable</p>
+          </div>
+        ) : showPreview ? (
           <BidPreviewWithinCountry
             onBack={handleBack}
             handleSubmit={handleSubmitBid}

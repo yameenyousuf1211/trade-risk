@@ -4,6 +4,7 @@ import { ApplicantQuery } from "./ApplicantQuery";
 import {
   cn,
   convertDateAndTimeToString,
+  convertDateAndTimeToStringGMTNoTsx,
   convertDateToCommaString,
   formatAmount,
 } from "@/utils";
@@ -263,7 +264,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
     } else if (mostRecentBid) {
       if (mostRecentBid.status === "Pending") {
         setUserBidStatus({
-          label: `Bid Submitted on ${convertDateAndTimeToString(
+          label: `Bid Submitted on ${convertDateAndTimeToStringGMTNoTsx(
             mostRecentBid.createdAt
           )}`,
           status: "Pending",
@@ -487,7 +488,7 @@ const LGIssuanceCashMarginDialog = ({ data }: { data: any }) => {
         </div>
       </div>
       {bidNotApplicable ? (
-        <div className="flex-1 justify-center items-center w-full h-full">
+        <div className="flex-1 text-center text-lg font-semibold mt-[30%] text-[#696974]">
           <p>Bid Not Applicable</p>
         </div>
       ) : isPreview ? (

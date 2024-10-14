@@ -6,7 +6,6 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Eye, Plus, X } from "lucide-react";
-import { convertDateAndTimeToString } from "@/utils";
 import { useEffect, useState } from "react";
 import { IBids, ILcs } from "@/types/type";
 import { useAuth } from "@/context/AuthProvider";
@@ -17,7 +16,10 @@ import SharedLCDetails from "./SharedLCDetails";
 import { BidCard } from "./TableDialog";
 import { BidForm } from "./LCBidForm";
 import { getLgBondTotal } from "../LG-Output/helper";
-import { formatAmount } from "../../utils/helper/helper";
+import {
+  convertDateAndTimeToStringGMTNoTsx,
+  formatAmount,
+} from "../../utils/helper/helper";
 import { LgIssuanceWithinCountryBank } from "../LG-Output/LG-Issuance-Bank/LgIssuanceWithinCountryBank";
 
 export const getStatusStyles = (status: string) => {
@@ -110,7 +112,7 @@ export const AddBid = ({
     } else if (mostRecentBid) {
       if (mostRecentBid.status === "Pending") {
         setUserBidStatus({
-          label: `Bid Submitted on ${convertDateAndTimeToString(
+          label: `Bid Submitted on ${convertDateAndTimeToStringGMTNoTsx(
             mostRecentBid.createdAt
           )}`,
           status: "Pending",

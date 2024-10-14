@@ -49,21 +49,15 @@ export const BidForm = ({
   });
 
   useEffect(() => {
-    const country = user?.business?.accountCountry;
-    if (
-      country &&
-      eurozoneCountries.includes(formatFirstLetterOfWord(country))
-    ) {
+    const country = formatFirstLetterOfWord(user?.business?.accountCountry);
+    if (country && eurozoneCountries.includes(country)) {
       setBaseRateOptions(baseRatesByCountry.Eurozone);
-    } else if (
-      country &&
-      baseRatesByCountry[formatFirstLetterOfWord(country)]
-    ) {
+    } else if (country && baseRatesByCountry[country]) {
       setBaseRateOptions(baseRatesByCountry[country]);
     } else {
       setBaseRateOptions(["OIS", "REPO", "IBOR"]);
     }
-  }, []);
+  }, [user?.business?.accountCountry]);
 
   const onSubmit: SubmitHandler<typeof addBidTypes> = async (data) => {
     if (isDiscount && !discountBaseRate)
@@ -178,7 +172,7 @@ export const BidForm = ({
               placeholder="Select Value"
               buttonStyle="w-full"
               setValue={setValue}
-              extStyle="p-0 pl-0"
+              extStyle="pl-[0px]"
               onSelectValue={setDiscountBaseRate}
               data={baseRateOptions} // Dynamically generated options
             />
@@ -187,8 +181,23 @@ export const BidForm = ({
               placeholder="Margin (%)"
               inputMode="numeric"
               value={discountMargin}
+              max={100}
+              onFocus={(e: ChangeEvent<HTMLInputElement>) => {
+                e.target.value = discountMargin.replace("%", "");
+              }}
+              onBlur={(e: ChangeEvent<HTMLInputElement>) => {
+                if (
+                  !e.target.value.includes("%") &&
+                  e.target.value.length > 0
+                ) {
+                  setDiscountMargin(`${e.target.value}%`);
+                }
+              }}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                const newValue = e.target.value.replace(/[^0-9.]/g, "");
+                let newValue = e.target.value.replace(/[^0-9.]/g, "");
+                if (Number(newValue) > 100) {
+                  newValue = "100";
+                }
                 e.target.value = newValue;
                 setDiscountMargin(newValue);
               }}

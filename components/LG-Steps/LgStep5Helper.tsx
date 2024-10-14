@@ -252,12 +252,10 @@ const LgStep5Helper: FC<LgStepsProps5> = ({
                 <>
                   USD{" "}
                   {formatAmount(
-                    formatNumberWithCommas(
-                      bidBondAmount +
-                        advancePaymentBondAmount +
-                        performanceBondAmount +
-                        retentionMoneyBondAmount
-                    )
+                    bidBondAmount +
+                      advancePaymentBondAmount +
+                      performanceBondAmount +
+                      retentionMoneyBondAmount
                   )}
                 </>
               )}

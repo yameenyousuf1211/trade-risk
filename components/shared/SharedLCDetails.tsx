@@ -71,10 +71,6 @@ const SharedLcDetails = ({ lcData }: { lcData: any }) => {
       label: "Country of Export",
       value: lcData?.exporterInfo?.countryOfExport || "-",
     },
-    {
-      label: "Bank",
-      value: lcData?.exporterInfo?.bank || "-",
-    },
   ];
 
   const discountingInfo = lcData?.type.includes("Discount")
@@ -143,7 +139,7 @@ const SharedLcDetails = ({ lcData }: { lcData: any }) => {
             key={index}
             label={field.label}
             value={field.value || "-"}
-            noBorder={index === importerInfo.length - 1}
+            noBorder={index === importerInfo.length}
           />
         ))}
 

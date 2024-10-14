@@ -335,7 +335,7 @@ export const TableDialog = ({
             <div className="flex w-full items-center justify-between pt-5">
               <div className="flex items-center gap-x-2">
                 <p className="rounded-xl bg-primaryCol px-3 py-1 text-lg font-semibold text-white">
-                  {lcData.bids?.length || matchedBids.length || 0}
+                  {lcData?.bids?.length || matchedBids.length || 0}
                 </p>
                 <p className="text-xl font-semibold">{"Bids received"}</p>
               </div>

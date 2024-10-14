@@ -55,21 +55,15 @@ export const Step7Disounting = ({
   };
 
   useEffect(() => {
-    const country = user?.business?.accountCountry;
-    if (
-      country &&
-      eurozoneCountries.includes(formatFirstLetterOfWord(country))
-    ) {
+    const country = formatFirstLetterOfWord(user?.business?.accountCountry);
+    if (country && eurozoneCountries.includes(country)) {
       setBaseRateOptions(baseRatesByCountry.Eurozone);
-    } else if (
-      country &&
-      baseRatesByCountry[formatFirstLetterOfWord(country)]
-    ) {
+    } else if (country && baseRatesByCountry[country]) {
       setBaseRateOptions(baseRatesByCountry[country]);
     } else {
       setBaseRateOptions(["OIS", "REPO", "IBOR"]);
     }
-  }, []);
+  }, [user?.business?.accountCountry]);
 
   return (
     <div className="py-3 px-2 border border-borderCol rounded-lg w-full h-full">

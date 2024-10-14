@@ -65,8 +65,8 @@ export const eurozoneCountries = [
 ];
 
 export const baseRatesByCountry = {
-  US: ["SOFR", "LIBOR"],
-  Pakistan: ["KIBOR", "LIBOR"],
+  US: ["SOFR"],
+  Pakistan: ["KIBOR"],
   UK: ["SONIA", "LIBOR"],
   Japan: ["TONA"],
   Switzerland: ["SARON"],

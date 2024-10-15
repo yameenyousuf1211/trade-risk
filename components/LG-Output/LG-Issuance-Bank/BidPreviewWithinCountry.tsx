@@ -54,7 +54,7 @@ export const BidPreviewWithinCountry: React.FC<BidPreviewProps> = ({
         bidType: bond.type,
         price: bondPrices[bond.type]
           ? parseInt(bondPrices[bond.type].replace("%", ""), 10)
-          : 0, // Convert price to integer and remove % symbol
+          : 0, // Convert price to integer and
         bank: "",
         perAnnum: true,
       })),

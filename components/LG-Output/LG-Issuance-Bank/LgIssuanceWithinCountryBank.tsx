@@ -30,7 +30,7 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
     formState: { errors },
   } = useForm();
   const { user } = useAuth();
-  const [selectedLgType, setSelectedLgType] = useState<string>("Bid Bond");
+  const [selectedLgType, setSelectedLgType] = useState<string>("");
   const [pricingValue, setPricingValue] = useState<string>("");
   const [userBidStatus, setUserBidStatus] = useState<any>({});
   const [userBid, setUserBid] = useState<any>();
@@ -68,10 +68,10 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
     (bond) => bond.value?.Contract && !isBondExpired(bond.value?.lgExpiryDate)
   );
   useEffect(() => {
-    if (availableBondTypes.length > 0) {
+    if (availableBondTypes.length > 0 && !selectedLgType) {
       setSelectedLgType(availableBondTypes[0].type);
     }
-  }, [availableBondTypes, selectedLgType]);
+  }, [availableBondTypes]);
 
   const handleSubmitBid = (bidData: any) => {
     const updatedBidData = {
@@ -171,7 +171,9 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
   const anyPricingFilled = () => {
     return availableBondTypes.every((bond) => {
       const price = bondPrices[bond.type];
-      return price !== null && price !== "" && price !== "0%";
+      return (
+        price !== undefined && price !== null && price !== "" && price !== "0%"
+      );
     });
   };
 
@@ -206,6 +208,7 @@ export const LgIssuanceWithinCountryBank = ({ data }: { data: any }) => {
       toast.error("Please fill all required fields before previewing.");
       return;
     }
+    console.log(anyPricingFilled, "anyPricingFilled");
     const updatedData = {
       ...formData,
       collectLg: {

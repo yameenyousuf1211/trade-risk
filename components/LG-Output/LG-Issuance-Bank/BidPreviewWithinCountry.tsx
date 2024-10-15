@@ -7,6 +7,7 @@ import { formatFirstLetterOfWord } from "../helper";
 import { useAuth } from "@/context/AuthProvider";
 import { formatNumberByAddingDigitsToStart } from "../../../utils/helper/helper";
 import { DatePicker } from "@/components/helpers";
+import { toast } from "sonner";
 
 interface BidPreviewProps {
   onBack: () => void;
@@ -58,7 +59,6 @@ export const BidPreviewWithinCountry: React.FC<BidPreviewProps> = ({
         perAnnum: true,
       })),
     };
-
     handleSubmit(bidData);
     setIsModalOpen(false);
   };
@@ -250,7 +250,13 @@ export const BidPreviewWithinCountry: React.FC<BidPreviewProps> = ({
             <>
               <Button
                 className="w-full mt-4 bg-[#44C894] text-white hover:bg-[#44C894]"
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => {
+                  if (!selectedBidValidity) {
+                    toast.error("Please select bid validity date");
+                    return;
+                  }
+                  setIsModalOpen(true);
+                }}
               >
                 Submit Bid
               </Button>
